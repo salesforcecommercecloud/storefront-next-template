@@ -73,7 +73,7 @@ exports[`CarouselSection stories snapshot > CarouselOnly story renders and match
       </div>
     </div>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-previous"
       data-variant="outline"
@@ -106,7 +106,7 @@ exports[`CarouselSection stories snapshot > CarouselOnly story renders and match
       </span>
     </button>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-next"
       data-variant="outline"
@@ -150,12 +150,12 @@ exports[`CarouselSection stories snapshot > CenterTitleWithSubtitle story render
     class="text-center"
   >
     <h2
-      class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+      class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
     >
       Shop by category
     </h2>
     <p
-      class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+      class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
     >
       Explore our collections
     </p>
@@ -229,7 +229,7 @@ exports[`CarouselSection stories snapshot > CenterTitleWithSubtitle story render
       </div>
     </div>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-previous"
       data-variant="outline"
@@ -262,7 +262,7 @@ exports[`CarouselSection stories snapshot > CenterTitleWithSubtitle story render
       </span>
     </button>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-next"
       data-variant="outline"
@@ -307,7 +307,7 @@ exports[`CarouselSection stories snapshot > LeftTitleWithShopAll story renders a
   >
     <div>
       <h2
-        class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
+        class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground"
       >
         Featured
       </h2>
@@ -396,7 +396,7 @@ exports[`CarouselSection stories snapshot > LeftTitleWithShopAll story renders a
       </div>
     </div>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-previous"
       data-variant="outline"
@@ -429,7 +429,7 @@ exports[`CarouselSection stories snapshot > LeftTitleWithShopAll story renders a
       </span>
     </button>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-next"
       data-variant="outline"
@@ -473,7 +473,7 @@ exports[`CarouselSection stories snapshot > ShopAllLabelWithoutLink story render
     class="flex items-center justify-between"
   >
     <h2
-      class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
+      class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground"
     >
       New arrivals
     </h2>
@@ -554,7 +554,7 @@ exports[`CarouselSection stories snapshot > ShopAllLabelWithoutLink story render
       </div>
     </div>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-previous"
       data-variant="outline"
@@ -587,7 +587,7 @@ exports[`CarouselSection stories snapshot > ShopAllLabelWithoutLink story render
       </span>
     </button>
     <button
-      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
+      class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
       data-size="icon"
       data-slot="carousel-next"
       data-variant="outline"

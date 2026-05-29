@@ -32,8 +32,9 @@ export interface PageTypeConfig {
  * @param config - Configuration object containing page type metadata
  */
 export function PageType(config: PageTypeConfig) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function (target: any): any {
+    // The decorator returns the same target it was given. Class and function decorators
+    // are both supported, so we constrain to a generic that accepts either.
+    return function <T extends object>(target: T): T {
         // Store the page type metadata on the class/function
         Reflect.defineMetadata('page:type', config, target);
 
@@ -48,7 +49,7 @@ export function PageType(config: PageTypeConfig) {
  * @returns PageTypeConfig object or undefined if not found
  */
 export function getPageTypeMetadata(target: unknown): PageTypeConfig | undefined {
-    return Reflect.getMetadata('page:type', target as object);
+    return Reflect.getMetadata('page:type', target as object) as PageTypeConfig | undefined;
 }
 
 /**
@@ -58,7 +59,7 @@ export function getPageTypeMetadata(target: unknown): PageTypeConfig | undefined
  * @returns Object containing page type metadata
  */
 export function getPageTypeDefinitions(target: unknown): { pageType?: PageTypeConfig } {
-    const pageType = Reflect.getMetadata('page:type', target as object) || undefined;
+    const pageType = Reflect.getMetadata('page:type', target as object) as PageTypeConfig | undefined;
 
     return { pageType };
 }

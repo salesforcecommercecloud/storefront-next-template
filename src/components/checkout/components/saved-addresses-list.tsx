@@ -18,7 +18,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { AddressBookItem } from '@/lib/customer-profile-utils';
+import type { AddressBookItem } from '@/lib/customer/profile-utils';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 

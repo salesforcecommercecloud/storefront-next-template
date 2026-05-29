@@ -24,7 +24,7 @@ import CartContent from '@/components/cart/cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Utils
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 
@@ -74,10 +74,7 @@ describe('CartContent', () => {
         'item-2': { id: 'product-2', name: 'Product 2', variants: [{} as any] },
     } as any;
 
-    const mockBonusProductsById: Record<
-        string,
-        import('@salesforce/storefront-next-runtime/scapi').ShopperProducts.schemas['Product']
-    > = {};
+    const mockBonusProductsById: Record<string, import('@/scapi').ShopperProducts.schemas['Product']> = {};
 
     describe('BOPIS (Buy Online Pickup In Store) functionality', () => {
         const mockStore: ShopperStores.schemas['Store'] = {

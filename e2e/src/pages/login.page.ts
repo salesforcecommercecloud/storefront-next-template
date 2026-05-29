@@ -43,9 +43,15 @@ class LoginPage {
 
     /**
      * Navigate to the login page
-     * @param url - Optional URL path (defaults to /login)
+     * @param options - Optional navigation options (URL string or query params object)
      */
-    navigate(url: string = '/login'): void {
+    navigate(options?: string | { mode?: 'password' | 'passwordless' }): void {
+        let url = '/login';
+        if (typeof options === 'string') {
+            url = options;
+        } else if (options && 'mode' in options) {
+            url = `/login?mode=${options.mode}`;
+        }
         I.amOnPage(buildSitePath(url));
     }
 
@@ -57,7 +63,6 @@ class LoginPage {
         I.waitInUrl('/login', timeoutSeconds / 2);
         I.waitForElement(this.locators.emailInput, timeoutSeconds);
         I.seeElement(this.locators.emailInput);
-        I.seeElement(this.locators.passwordInput);
         I.seeElement(this.locators.signInButton);
     }
 

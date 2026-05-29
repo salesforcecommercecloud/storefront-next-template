@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
@@ -23,14 +23,7 @@ import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-
-type LoginActionResponse = {
-    success: boolean;
-    error?: string;
-    redirectUrl?: string;
-    showOTPForm?: boolean;
-    email?: string;
-};
+import type { action as loginAction } from '@/routes/_empty.login';
 
 interface LoginModalProps {
     /** Controls modal visibility */
@@ -73,7 +66,8 @@ export default function LoginModal({
     initialEmail,
 }: LoginModalProps): ReactElement {
     const { t } = useTranslation('login');
-    const fetcher = useFetcher<LoginActionResponse>();
+    const fetcher = useFetcher<typeof loginAction>();
+    const wasSubmittingRef = useRef(false);
     const [currentMode, setCurrentMode] = useState<'password' | 'passwordless'>(mode);
     const [showOTPModal, setShowOTPModal] = useState(false);
     const [otpEmail, setOtpEmail] = useState<string>('');
@@ -89,29 +83,37 @@ export default function LoginModal({
         }
     }, [isOpen, mode]);
 
-    // Handle action responses
+    // The login action returns data only on intermediate outcomes (OTP prompt, error).
+    // On successful login the action returns a Response (redirect) and fetcher.data stays
+    // undefined.
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data) {
-            const data = fetcher.data;
-
-            if (data.success && data.redirectUrl) {
-                // Login successful - redirect or call onSuccess
-                if (onSuccess) {
-                    onSuccess();
-                } else {
-                    window.location.href = data.redirectUrl;
-                }
-            } else if (data.showOTPForm && data.email) {
-                // Show OTP modal for passwordless verification
-                setOtpEmail(data.email);
-                setShowOTPModal(true);
-                setError(undefined);
-            } else if (data.error) {
-                // Show error
-                setError(data.error);
-            }
+        const data = fetcher.data;
+        if (!data) return;
+        if (data.showOTPForm && data.email) {
+            setOtpEmail(data.email);
+            setShowOTPModal(true);
+            setError(undefined);
+        } else if (data.error) {
+            setError(data.error);
         }
-    }, [fetcher.state, fetcher.data, onSuccess]);
+    }, [fetcher.data]);
+
+    // Close the modal on successful submit. After a submit cycle (state went non-idle
+    // then back to idle) with no fetcher.data, the action redirected → success.
+    useEffect(() => {
+        if (fetcher.state !== 'idle') {
+            wasSubmittingRef.current = true;
+            return;
+        }
+        if (!wasSubmittingRef.current) return;
+        wasSubmittingRef.current = false;
+        if (fetcher.data) return;
+        if (onSuccess) {
+            onSuccess();
+        } else {
+            onOpenChange(false);
+        }
+    }, [fetcher.state, fetcher.data, onSuccess, onOpenChange]);
 
     const handleOtpSuccess = () => {
         setShowOTPModal(false);
@@ -146,6 +148,7 @@ export default function LoginModal({
                     error={error}
                     isPasswordlessEnabled={isPasswordlessEnabled}
                     redirectPath={returnUrl}
+                    Form={fetcher.Form}
                 />
             );
         }
@@ -158,6 +161,7 @@ export default function LoginModal({
                 actionParams={actionParams}
                 onCheckoutAsGuest={onCheckoutAsGuest}
                 initialEmail={initialEmail}
+                Form={fetcher.Form}
             />
         );
     };

@@ -15,7 +15,7 @@
  */
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useSearchSuggestions } from './use-search-suggestions';
 import { useScapiFetcher } from './use-scapi-fetcher';
 

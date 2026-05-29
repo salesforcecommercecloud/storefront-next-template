@@ -22,7 +22,7 @@
 
 /** Red primary button (e.g. "Remove" in Remove Payment Method dialog, delete confirm in Authorized Pickup). */
 export const accountDestructiveButtonClasses =
-    'bg-account-action-destructive text-account-action-destructive-foreground hover:bg-account-action-destructive/90 focus-visible:ring-account-action-destructive/20 dark:focus-visible:ring-account-action-destructive/40 dark:bg-account-action-destructive/60';
+    'bg-account-action-destructive text-account-action-destructive-foreground hover:bg-account-action-destructive/90 focus-visible:ring-account-action-destructive/20';
 
 /** Error alert (e.g. form validation in Add Payment Method dialog). */
 export const accountDestructiveAlertClasses =

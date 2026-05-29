@@ -1,192 +1,21 @@
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import type { Preview } from '@storybook/react-vite';
-import type { ComponentType, ReactNode } from 'react';
-import { useMemo } from 'react';
-import { createMemoryRouter, Outlet, RouterProvider, type RouteObject } from 'react-router';
-import { applyProviders } from '../src/lib/provider-utils';
-import { storybookProviders } from './storybook-providers';
-import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
-import { masterProduct } from '@/components/__mocks__/master-variant-product';
+import { StoryShell, withRouter } from './decorators';
 import '../src/theme/index.css'; // Import global CSS
-import { UITargetProviders } from '@/targets/ui-target-providers';
-
-// Create HOC that applies all Storybook providers
-// This uses the real provider components with mock data injected via wrapper components
-const withStorybookProviders = applyProviders(...storybookProviders);
-
-// Create a stable wrapper component that applies providers
-const StorybookWrapper = withStorybookProviders(({ children }: { children: ReactNode }) => (
-    <div className="min-h-screen bg-background text-foreground">{children}</div>
-));
-
-// Router wrapper component that ensures React is initialized before rendering RouterProvider
-const RouterWrapper = ({
-    Story,
-    context,
-}: {
-    Story: ComponentType;
-    context: { parameters?: Record<string, unknown> };
-}) => {
-    // When a story provides `parameters.routeLoaderData`, wrap the story inside ancestor
-    // routes that expose their data via useRouteLoaderData(routeId). This lets components
-    // like CategoryBanner receive loader data without modifying the component itself.
-    const routeLoaderData = context.parameters?.routeLoaderData as Record<string, unknown> | undefined;
-
-    const WrappedStory = (
-        <StorybookWrapper>
-            <UITargetProviders>
-                <Story />
-            </UITargetProviders>
-        </StorybookWrapper>
-    );
-
-    // Build the main story route. When routeLoaderData is provided, each entry becomes a
-    // pathless ancestor layout route (element: <Outlet />) so useRouteLoaderData(id) resolves.
-    // The outermost entry gets path: '/' to anchor the route tree.
-    const storyRoute: RouteObject =
-        routeLoaderData && Object.keys(routeLoaderData).length > 0
-            ? Object.entries(routeLoaderData).reduceRight<RouteObject>(
-                  (child, [id, data], i) => ({
-                      ...(i === 0 ? { path: '/' } : {}),
-                      id,
-                      loader: () => data,
-                      element: <Outlet />,
-                      children: [child],
-                  }),
-                  { index: true, element: WrappedStory }
-              )
-            : { path: '/', element: WrappedStory };
-
-    // Create a memory router for components that use React Router hooks (e.g., useFetcher)
-    // This provides the data router context needed for useFetcher and other React Router hooks
-    // Using createMemoryRouter in framework mode is fine because both framework and data routers
-    // share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // IMPORTANT: Create router synchronously (not in useEffect) to ensure it's available during first render
-    // This is critical for static Storybook builds where async initialization causes empty div renders
-    const router = useMemo(
-        () =>
-            createMemoryRouter(
-                [
-                    storyRoute,
-                    {
-                        // Resource route for basket product enrichment
-                        // Used by useBasketWithProducts hook to fetch full product details
-                        path: '/resource/basket-products',
-                        loader: () => {
-                            // Pre-populate product data from mock
-                            // This simulates what would be fetched from the backend
-                            const productsById: Record<string, unknown> = {};
-                            inBasketProductDetails.data.forEach((product: { id?: string }) => {
-                                if (product.id) {
-                                    productsById[product.id] = product;
-                                }
-                            });
-                            return productsById;
-                        },
-                    },
-                    {
-                        // Resource route for basket product promotions
-                        // Used by useBasketWithPromotions hook to fetch product promotion data
-                        path: '/resource/basket-products-promotions',
-                        loader: () => {
-                            // Return products with empty productPromotions array
-                            // This prevents bonus product logic from being triggered in stories
-                            const productsWithPromotions: Record<string, unknown> = {};
-                            inBasketProductDetails.data.forEach((product: { id?: string }) => {
-                                if (product.id) {
-                                    productsWithPromotions[product.id] = {
-                                        ...product,
-                                        productPromotions: [],
-                                    };
-                                }
-                            });
-                            return productsWithPromotions;
-                        },
-                    },
-                    {
-                        // Action route for OTP verification
-                        // Used by OTP Modal component's useFetcher hook
-                        path: '/action/verify-otp',
-                        action: async () => ({ success: false, error: 'Mock OTP verification action' }),
-                    },
-                    {
-                        // Mock action route for cart item quantity updates
-                        // Used by useCartQuantityUpdate hook via fetcher.submit()
-                        path: '/action/cart-item-update',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for cart item removal
-                        // Used by useCartQuantityUpdate hook for remove operations
-                        path: '/action/cart-item-remove',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for bonus product addition
-                        // Used by useBonusProductAdd hook via fetcher.submit()
-                        path: '/action/bonus-product-add',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for checkout registration
-                        // Used by RegisterCustomerSelection component via fetcher.submit()
-                        path: '/action/initiate-checkout-registration',
-                        action: () => ({ success: true, email: 'test@example.com' }),
-                    },
-                    {
-                        // Mock action route for adding items to cart
-                        // Used by useProductActions hook via fetcher.submit()
-                        path: '/action/cart-item-add',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for adding product sets to cart
-                        // Used by useProductActions hook via fetcher.submit()
-                        path: '/action/cart-set-add',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for adding product bundles to cart
-                        // Used by useProductActions hook via fetcher.submit()
-                        path: '/action/cart-bundle-add',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for adding items to wishlist
-                        // Used by useWishlist hook via fetcher.submit()
-                        path: '/action/wishlist-add',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock action route for removing items from wishlist
-                        // Used by useWishlist hook via fetcher.submit()
-                        path: '/action/wishlist-remove',
-                        action: () => ({ success: true }),
-                    },
-                    {
-                        // Mock loader for SCAPI resource calls (e.g. product fetches inside CartItemModal).
-                        // useScapiFetcher calls fetcher.load('/resource/api/client/:resource') — without a
-                        // loader here React Router throws a 404 when Quick Add opens the modal.
-                        path: '/resource/api/client/:resource',
-                        loader: () => ({ success: true, data: masterProduct }),
-                    },
-                    {
-                        // Catch-all: absorbs navigations triggered by interactive components
-                        // (e.g. swatch <Link>, Quick Add "Buy it Now", product tile clicks).
-                        // Returns the user to the story root so the 404 error page is never shown.
-                        path: '*',
-                        element: WrappedStory,
-                    },
-                ],
-                {
-                    initialEntries: ['/'],
-                }
-            ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [WrappedStory, routeLoaderData]
-    );
-
-    return <RouterProvider router={router} />;
-};
 
 const a11yTestMode: 'off' | 'todo' | 'error' =
     process.env.STORYBOOK_DISABLE_A11Y === 'true'
@@ -211,13 +40,7 @@ const preview: Preview = {
             test: a11yTestMode,
         },
     },
-    decorators: [
-        (Story: ComponentType, context: { parameters?: Record<string, unknown> }) => {
-            // Use a wrapper component that ensures React is initialized before creating the router
-            return <RouterWrapper Story={Story} context={context} />;
-        },
-    ],
+    decorators: [withRouter(StoryShell)],
 };
 
 export default preview;
-

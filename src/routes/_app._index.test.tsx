@@ -17,11 +17,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import HomePage, { type HomePageData, loader } from './_app._index';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -146,10 +147,6 @@ vi.mock('@/components/home/skeleton', () => ({
     default: () => <div data-testid="home-skeleton" />,
 }));
 
-// Mock images
-vi.mock('/images/hero-new-arrivals.webp', () => ({ default: '/mock-image.png' }));
-vi.mock('/images/hero-cube.webp', () => ({ default: '/mock-hero-cube.webp' }));
-
 // Mock react-i18next with partial mock to preserve other exports
 vi.mock('react-i18next', async () => {
     const actual: any = await vi.importActual('react-i18next');
@@ -208,7 +205,7 @@ vi.mock('@/lib/decorators/region-definition', () => ({
     getRegionDefinition: vi.fn(() => ({ id: 'headerbanner' })),
 }));
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
@@ -237,6 +234,10 @@ vi.mock('@/lib/logger.server', () => ({
     })),
 }));
 
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() => Promise.resolve(EMPTY_WISHLIST_STATE)),
+}));
+
 const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
     const defaultData: HomePageData = {
         page: Promise.resolve({
@@ -245,8 +246,9 @@ const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
         }),
         searchResult: Promise.resolve(mockSearchResult),
         categories: Promise.resolve(mockCategories),
+        wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
         pageUrl: 'http://localhost/',
-        ogImageUrl: 'http://localhost/mock-hero-01.webp',
+        ogImageUrl: 'http://localhost/__ASSET_MOCK__',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<HomePage loaderData={data} />);

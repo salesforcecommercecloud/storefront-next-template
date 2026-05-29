@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { type ShouldRevalidateFunctionArgs, useAsyncError, useLocation, useNavigation } from 'react-router';
+import type { Route } from './+types/_app.search';
+import type { ShopperSearch } from '@/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
@@ -26,7 +30,7 @@ import ActiveFilters from '@/components/category-refinements/active-filters';
 import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
-import ProductGrid from '@/components/product-grid';
+import DeferredProductGrid from '@/components/product-grid';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
@@ -34,7 +38,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,
@@ -79,6 +83,7 @@ export type SearchPageData = {
     currency: string;
     locale: string;
     initialFiltersOpen?: boolean;
+    wishlistInitialState: Promise<WishlistInitialState>;
 };
 
 /**
@@ -86,7 +91,7 @@ export type SearchPageData = {
  * This function runs on the server during SSR and prepares data for the search page.
  * @returns Object containing search results, refinements, and page metadata
  */
-export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
+export async function loader(args: Route.LoaderArgs): Promise<SearchPageData> {
     const { context, request } = args;
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;
@@ -95,7 +100,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const logger = getLogger(context);
 
     const siteCtx = context.get(siteContext);
@@ -145,6 +150,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         currency,
         locale,
         initialFiltersOpen,
+        wishlistInitialState: fetchWishlistInitialState(context),
     };
 }
 
@@ -161,6 +167,23 @@ export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate 
     return defaultShouldRevalidate;
 }
 
+function ProductGridError() {
+    const rawError = useAsyncError();
+    const error = rawError instanceof NormalizedApiError ? rawError : null;
+    const { t } = useTranslation('common');
+    return (
+        <div role="alert" className="col-span-full py-8 text-center text-muted-foreground">
+            <p>{t('productGrid.loadFailed')}</p>
+            {import.meta.env.DEV && error && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status} </span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function SearchPage({
     loaderData: {
         searchTerm,
@@ -172,12 +195,13 @@ export default function SearchPage({
         currency,
         locale,
         initialFiltersOpen,
+        wishlistInitialState,
     },
 }: {
     loaderData: SearchPageData;
 }) {
     const { t } = useTranslation('search');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const limit = config.search.products.hits.limit;
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
@@ -262,7 +286,7 @@ export default function SearchPage({
     }, [analytics, searchTerm, analyticsKey, nonCriticalPromise]);
 
     return (
-        <Fragment>
+        <WishlistProvider initialState={wishlistInitialState}>
             <SeoMeta
                 title={
                     searchTerm
@@ -285,7 +309,7 @@ export default function SearchPage({
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <p>{t('results')}</p>
-                            <h1 className="text-3xl font-bold text-foreground">
+                            <h1 className="text-3xl font-bold leading-none tracking-[-0.75px] text-card-foreground">
                                 {searchTerm} ({searchResultCritical.total})
                             </h1>
                         </div>
@@ -331,7 +355,7 @@ export default function SearchPage({
                             {/* searchTopContent */}
                             <Region className="mb-8" page={page} regionId="searchTopContent" />
 
-                            <ProductGrid
+                            <DeferredProductGrid
                                 key={productGridDataKey}
                                 critical={searchResultCritical.hits ?? []}
                                 nonCritical={nonCriticalPromise}
@@ -339,6 +363,7 @@ export default function SearchPage({
                                 hasRefinementsPanel={filtersOpen}
                                 isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
+                                errorElement={<ProductGridError />}
                             />
 
                             {searchResultCritical.total > 1 && (
@@ -357,6 +382,6 @@ export default function SearchPage({
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </WishlistProvider>
     );
 }

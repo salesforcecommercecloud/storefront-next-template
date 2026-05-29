@@ -14,52 +14,71 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import MyCart from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { checkoutWithMultipleItems, checkoutWithOneItem } from '@/components/__mocks__/checkout-data';
-import { standardProd } from '@/components/__mocks__/standard-product-2';
+import MyCart from '../index';
+import { checkoutWithMultipleItems } from '@/components/__mocks__/checkout-data';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
-
-const mockSite = mockConfig.commerce.sites[0];
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
-function MyCartStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+const mockProductMap: Record<string, Record<string, unknown>> = {
+    '1ed3ed7fb732d0333d076ecf3e': {
+        id: '701642868279M',
+        name: 'Button Front Jacket',
+        master: { masterId: '25502228M' },
+        variationAttributes: [
+            { id: 'color', name: 'Color', values: [{ name: 'Grey Heather', value: 'JJ5FUXX' }] },
+            { id: 'size', name: 'Size', values: [{ name: '6', value: '006' }] },
+        ],
+        variationValues: { color: 'JJ5FUXX', size: '006' },
+        // No imageGroups so the "No image" placeholder renders rather than a
+        // broken thumbnail (the SCAPI demo CDN URLs frequently 404 in headless
+        // Storybook).
+        imageGroups: [],
+        price: 39.67,
+        tieredPrices: [{ price: 39.67, pricebook: 'gbp-m-list-prices', quantity: 1 }],
+    },
+    d0a0c366980053e7f2645d9706: {
+        id: '883360520599M',
+        name: 'Casual To Dressy Trousers',
+        master: { masterId: '25592770M' },
+        variationAttributes: [
+            { id: 'color', name: 'Color', values: [{ name: 'Black', value: 'BLACKFB' }] },
+            { id: 'size', name: 'Size', values: [{ name: '8', value: '008' }] },
+        ],
+        variationValues: { color: 'BLACKFB', size: '008' },
+        imageGroups: [],
+        price: 124.8,
+        tieredPrices: [{ price: 124.8, pricebook: 'gbp-m-list-prices', quantity: 1 }],
+    },
+};
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+const discountedBasket = {
+    ...checkoutWithMultipleItems.cart,
+    productItems: [
+        {
+            ...(checkoutWithMultipleItems.cart.productItems?.[0] ?? {}),
+            basePrice: 49.99,
+            price: 34.99,
+            priceAfterItemDiscount: 34.99,
+            tieredPrices: [{ price: 49.99, pricebook: 'gbp-m-list-prices', quantity: 1 }],
+        },
+    ],
+};
 
-        const logClick = action('my-cart-click');
-        const logToggle = action('my-cart-toggle');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            const accordionTrigger = target.closest('[data-state]');
-            if (accordionTrigger) {
-                logToggle({ state: accordionTrigger.getAttribute('data-state') || '' });
-            } else {
-                logClick({ element: target.textContent?.trim() || '' });
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const discountedProductMap: Record<string, Record<string, unknown>> = {
+    '1ed3ed7fb732d0333d076ecf3e': {
+        ...mockProductMap['1ed3ed7fb732d0333d076ecf3e'],
+        price: 49.99,
+        tieredPrices: [{ price: 49.99, pricebook: 'gbp-m-list-prices', quantity: 1 }],
+    },
+};
 
 const meta: Meta<typeof MyCart> = {
-    title: 'COMMON/My Cart',
+    title: 'CART/My Cart',
     component: MyCart,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -68,102 +87,108 @@ const meta: Meta<typeof MyCart> = {
         docs: {
             description: {
                 component: `
-A collapsible cart component that displays cart items in an accordion format. Used on checkout pages to show cart contents separately from order summary.
+### MyCart Component
 
-### Features:
-- Collapsible accordion
-- Item count display
-- Product items list
-- Expandable/collapsible state
-                `,
+Displays cart items on the checkout page, separate from the order summary. Each item shows its product image, name, variation attributes (color, size), price, quantity, and a delivery badge.
+
+**Key Features:**
+
+- **Product image** — Resolved from \`productMap\` via \`item.itemId\`. Falls back to a grey placeholder when no image is available.
+- **Variation attributes** — Displays color, size, etc. from the product API data (basket items don't carry variation metadata).
+- **Price with savings** — Uses \`ProductPrice\` with \`type="total"\`. When the item is on sale (\`priceAfterItemDiscount < basePrice\`), shows a strikethrough list price and a "Saved £X.XX" badge.
+- **Per-unit price** — Shown when \`quantity > 1\` (e.g., "£124.80 each").
+- **Delivery badge** — Every item shows a truck icon with "Delivery" text.
+
+**Known gap:** The delivery badge is hardcoded — there is no pickup variant. Items fulfilled via store pickup should show a different badge, but the component does not yet branch on shipment type.
+
+**Dependencies:**
+
+- \`@/components/product-price\`: price display with sale/strikethrough logic
+- \`@/components/link\`: site-context-aware product link
+- \`@/lib/product/product-utils\`: URL generation, variation display values
+- \`@/lib/product/image-groups-utils\`: image group selection
+- \`@/lib/images/dynamic-image\`: image URL resolution
+- \`@/lib/currency\`: currency formatting
+`,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     decorators: [
         (Story) => (
-            <MyCartStoryHarness>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+            <CheckoutActionLogger name="my-cart">
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
-            </MyCartStoryHarness>
+            </CheckoutActionLogger>
         ),
     ],
+    argTypes: {
+        basket: {
+            description:
+                'Basket object containing `productItems` array. Each item needs `itemId`, `productName`, `quantity`, and price fields.',
+            table: { type: { summary: "ShopperBasketsV2.schemas['Basket']" } },
+        },
+        productMap: {
+            description:
+                'Map of `itemId` → product data. Supplies images, variation attributes, and master product ID for URL generation. Falls back gracefully when missing.',
+            table: { type: { summary: "Record<string, ShopperProducts.schemas['Product']>" } },
+        },
+        promotions: {
+            description: 'Promotions map. Currently unused by the component — reserved for future use.',
+            table: { type: { summary: "Record<string, ShopperPromotions.schemas['Promotion']>" } },
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof MyCart>;
 
-// Create product map from standardProd
-const productMap: Record<string, typeof standardProd> = {
-    [standardProd.id]: standardProd,
-};
-
+/**
+ * Default: two items (one at qty 1, one at qty 3). Shows delivery badges,
+ * variation attributes (color, size), and per-unit "each" pricing on the
+ * higher-quantity line.
+ */
 export const Default: Story = {
-    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} />,
-    parameters: {
-        docs: {
-            story: `
-My cart with multiple items, collapsed by default.
-
-### Features:
-- Multiple items
-- Collapsed state
-- Item count shown
-            `,
-        },
-    },
+    render: () => (
+        <MyCart basket={checkoutWithMultipleItems.cart} productMap={mockProductMap as Record<string, never>} />
+    ),
     play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await waitForStorybookReady(canvasElement);
-
-        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
-        await expect(cartContainer).toBeInTheDocument();
+        await expect(canvas.getByTestId('my-cart-item-701642868279M')).toBeInTheDocument();
+        await expect(canvas.getByTestId('my-cart-item-883360520599M')).toBeInTheDocument();
+        await expect(canvas.getByText('Button Front Jacket')).toBeInTheDocument();
+        await expect(canvas.getByText('Casual To Dressy Trousers')).toBeInTheDocument();
+        await expect(canvas.getByText('Color: Grey Heather')).toBeInTheDocument();
+        await expect(canvas.getByText('Size: 6')).toBeInTheDocument();
     },
 };
 
-export const Expanded: Story = {
-    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} />,
-    parameters: {
-        docs: {
-            story: `
-My cart with items expanded by default.
-
-### Features:
-- Expanded state
-- Items visible
-            `,
-        },
-    },
+/**
+ * Item with a promotion discount applied. Shows strikethrough list price
+ * and a "Saved" badge.
+ */
+export const WithPromotion: Story = {
+    render: () => (
+        <MyCart basket={discountedBasket as never} productMap={discountedProductMap as Record<string, never>} />
+    ),
     play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await waitForStorybookReady(canvasElement);
-
-        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
-        await expect(cartContainer).toBeInTheDocument();
-    },
-};
-
-export const SingleItem: Story = {
-    render: () => <MyCart basket={checkoutWithOneItem.cart} productMap={productMap} />,
-    parameters: {
-        docs: {
-            story: `
-My cart with a single item.
-
-### Features:
-- Single item
-- Item count shows "1"
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
-        await expect(cartContainer).toBeInTheDocument();
+        await expect(canvas.getByTestId('my-cart-item-701642868279M')).toBeInTheDocument();
+        await expect(canvas.getByText(/Saved/)).toBeInTheDocument();
     },
 };

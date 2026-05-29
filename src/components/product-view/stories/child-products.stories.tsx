@@ -18,55 +18,21 @@ import ChildProducts from '../child-products';
 import { setProduct } from '../../__mocks__/set-product';
 import { bundleProd } from '../../__mocks__/bundle-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ProductViewProvider from '@/providers/product-view';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
+const mockSite = mockSiteObject;
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+type ProductType = 'set' | 'bundle';
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+type SyntheticArgs = {
+    productType: ProductType;
+};
 
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const resolveParent = (productType: ProductType) => (productType === 'set' ? setProduct : bundleProd);
 
 const meta: Meta<typeof ChildProducts> = {
     title: 'Components/ProductView/ChildProducts',
@@ -74,6 +40,14 @@ const meta: Meta<typeof ChildProducts> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
+    },
+    argTypes: {
+        parentProduct: { control: false },
+        mode: { control: 'inline-radio', options: ['add', 'edit'] },
+        selectionSource: { control: 'inline-radio', options: ['url', 'local'] },
+        onBeforeCartAction: { control: false },
+        onCartSuccess: { control: false },
+        onCartError: { control: false },
     },
     decorators: [
         (Story, context) => {
@@ -87,13 +61,22 @@ const meta: Meta<typeof ChildProducts> = {
                     }) as any;
             }
 
+            // The synthetic productType arg controls which parent fixture wraps
+            // the story. Falls back to whatever was passed via parentProduct (legacy
+            // path), then to the bundle default.
+            const args = context.args as Record<string, unknown>;
+            const productType = (args.productType ?? 'bundle') as ProductType;
+            const parent = (args.parentProduct as typeof bundleProd | undefined) ?? resolveParent(productType);
+
             return (
                 <ConfigProvider config={mockConfig}>
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
-                        <ProductViewProvider product={context.args.parentProduct as any} mode="add">
-                            <ActionLogger>
-                                <Story />
-                            </ActionLogger>
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
+                        <ProductViewProvider product={parent} mode="add">
+                            <Story />
                         </ProductViewProvider>
                     </SiteProvider>
                 </ConfigProvider>
@@ -103,47 +86,44 @@ const meta: Meta<typeof ChildProducts> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ChildProducts>;
+type StoryWithSynthetic = StoryObj<React.ComponentType<Parameters<typeof ChildProducts>[0] & Partial<SyntheticArgs>>>;
 
-export const ProductSet: Story = {
+/**
+ * Rich-but-realistic baseline. The `productType` synthetic Control swaps the
+ * parent product between a set fixture and a bundle fixture — set vs bundle
+ * changes the cart-action button label ("Add Set to Cart" vs "Add Bundle to
+ * Cart") and the orderability semantics (sets allow per-child quantity, bundles
+ * use parent quantity). The component's `mode` and `selectionSource` props are
+ * exposed directly in the panel.
+ */
+export const Playground: StoryWithSynthetic = {
     args: {
-        parentProduct: setProduct as any,
+        productType: 'bundle',
         mode: 'add',
+        selectionSource: 'url',
     },
-    play: async ({ canvasElement }) => {
+    argTypes: {
+        productType: {
+            description: 'Synthetic: parent product fixture — set or bundle',
+            control: 'inline-radio',
+            options: ['set', 'bundle'] satisfies ProductType[],
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: (args) => {
+        // `parentProduct` is intentionally ignored here — `productType` synthetic arg
+        // drives which parent fixture wraps the component.
+        const { productType, parentProduct: _parentProduct, ...componentProps } = args;
+        void _parentProduct;
+        const parent = resolveParent(productType ?? 'bundle');
+        return <ChildProducts {...(componentProps as Parameters<typeof ChildProducts>[0])} parentProduct={parent} />;
+    },
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Sets display "Add Set to Cart"
-        // Using getAllByRole to avoid finding multiple if structure changes, or better use regex for text
-        // The previous error was "Unable to find an element by: [data-testid="child-product"]"
-        // This suggests child products are not rendering.
-        // This might be due to context/hook data not being ready.
-        // But let's check the button first as requested.
-        const buttons = canvas.queryAllByRole('button', { name: /add set to cart/i });
-        if (buttons.length > 0) {
-            await expect(buttons[0]).toBeInTheDocument();
-        }
-
-        // Check for child product cards. If none found, the mock data might not be flowing correctly.
-        // Or they might render differently.
-        // Let's check for any text from child products.
-        // setProduct has child products.
-        const childCards = canvas.queryAllByTestId('child-product');
-        if (childCards.length > 0) {
-            await expect(childCards.length).toBeGreaterThan(0);
-        }
-    },
-};
-
-export const ProductBundle: Story = {
-    args: {
-        parentProduct: bundleProd as any,
-        mode: 'add',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const buttons = canvas.queryAllByRole('button', { name: /add bundle to cart/i });
+        const productType = args.productType ?? 'bundle';
+        const buttonNamePattern = productType === 'set' ? /add set to cart/i : /add bundle to cart/i;
+        const buttons = canvas.queryAllByRole('button', { name: buttonNamePattern });
         if (buttons.length > 0) {
             await expect(buttons[0]).toBeInTheDocument();
         }

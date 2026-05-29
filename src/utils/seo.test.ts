@@ -15,13 +15,13 @@
  */
 import { describe, it, expect } from 'vitest';
 import { buildSeoMetaDescriptors } from './seo';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 
 describe('buildSeoMetaDescriptors', () => {
     const origin = 'https://www.example.com';
 
     const baseSite = {
-        id: 'RefArchGlobal',
+        id: mockSiteObject.id,
         alias: 'global',
         defaultLocale: 'en-GB',
         defaultCurrency: 'GBP',
@@ -35,7 +35,7 @@ describe('buildSeoMetaDescriptors', () => {
     const baseAppConfig = {
         ...mockConfig,
         url: { prefix: '/:siteId/:localeId' },
-        siteAliasMap: { RefArchGlobal: 'global' },
+        siteAliasMap: { [mockSiteObject.id]: 'global' },
     };
 
     function callBuild({

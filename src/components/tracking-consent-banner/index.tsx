@@ -17,7 +17,6 @@ import { useState, useMemo } from 'react';
 import { useRouteLoaderData } from 'react-router';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/spinner';
@@ -82,7 +81,7 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
     const { shouldShowBanner, setTrackingConsent, defaultTrackingConsent, isTrackingConsentEnabled } =
         useTrackingConsent();
     const [processingAction, setProcessingAction] = useState<ProcessingAction>(null);
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t } = useTranslation('trackingConsent');
 
     const trackingConsentConfig = useMemo(
@@ -159,7 +158,7 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
                     </Button>
                     <CardContent className="pt-6 pr-10">
                         <div className="space-y-2">
-                            <h2 id="tracking-consent-banner-title" className="text-lg font-semibold">
+                            <h2 id="tracking-consent-banner-title" className="text-sm font-semibold">
                                 {t('title')}
                             </h2>
                             <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">

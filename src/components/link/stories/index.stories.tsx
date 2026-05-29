@@ -22,18 +22,15 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import { Link, NavLink } from '../index';
 
 const mockSite = {
-    id: 'RefArchGlobal',
-    defaultCurrency: 'GBP',
-    defaultLocale: 'en-GB',
-    supportedCurrencies: ['EUR', 'GBP'],
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'de-DE', preferredCurrency: 'EUR' },
-    ],
+    id: mockSiteObject.id,
+    defaultCurrency: mockSiteObject.defaultCurrency,
+    defaultLocale: mockSiteObject.defaultLocale,
+    supportedCurrencies: mockSiteObject.supportedCurrencies,
+    supportedLocales: mockSiteObject.supportedLocales,
 };
 
 const mockLocale =
@@ -75,7 +72,11 @@ function withProviders(Story: ComponentType, context: { args: Record<string, unk
         const inRouter = useInRouterContext();
         const content = (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <ActionLogger>
                         <Story {...context.args} />
                     </ActionLogger>

@@ -66,7 +66,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '+15551234567',
                 gender: '2',
                 birthday: '1990-05-15',
@@ -89,7 +88,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '',
             },
         });
@@ -104,13 +102,12 @@ describe('CustomerProfileForm submission', () => {
         expect(payload).not.toHaveProperty('phoneMobile');
     });
 
-    it('always includes firstName, lastName, and gender', async () => {
+    it('always includes firstName, lastName, and gender (gender coerced to number)', async () => {
         const user = userEvent.setup();
         renderForm({
             initialData: {
                 firstName: 'John',
                 lastName: 'Smith',
-                email: 'john@example.com',
                 gender: '1',
             },
         });
@@ -123,7 +120,50 @@ describe('CustomerProfileForm submission', () => {
         const payload = mockSubmit.mock.calls[0][0];
         expect(payload.firstName).toBe('John');
         expect(payload.lastName).toBe('Smith');
-        expect(payload.gender).toBe('1');
+        // Gender is coerced to a number client-side so the JSON body matches the SCAPI schema
+        // without relying on server-side per-field coercion.
+        expect(payload.gender).toBe(1);
+    });
+
+    it('submits a plain-object payload (auto-encoded as JSON by useScapiFetcher)', async () => {
+        const user = userEvent.setup();
+        renderForm({
+            initialData: {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                gender: '2',
+            },
+        });
+
+        await user.click(screen.getByRole('button', { name: /save/i }));
+
+        await waitFor(() => {
+            expect(mockSubmit).toHaveBeenCalledTimes(1);
+        });
+        // Payload is a plain object (not FormData); useScapiFetcher.submit() auto-picks
+        // JSON encoding so typed values survive the round-trip without per-call opts.
+        const payload = mockSubmit.mock.calls[0][0];
+        expect(payload).not.toBeInstanceOf(FormData);
+        expect(typeof payload).toBe('object');
+    });
+
+    it('coerces empty gender to null so the field can be cleared via JSON', async () => {
+        const user = userEvent.setup();
+        renderForm({
+            initialData: {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                gender: '',
+            },
+        });
+
+        await user.click(screen.getByRole('button', { name: /save/i }));
+
+        await waitFor(() => {
+            expect(mockSubmit).toHaveBeenCalledTimes(1);
+        });
+        const payload = mockSubmit.mock.calls[0][0];
+        expect(payload.gender).toBeNull();
     });
 
     it('includes birthday when provided', async () => {
@@ -132,7 +172,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 birthday: '1990-05-15',
             },
         });
@@ -152,7 +191,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 birthday: '',
             },
         });
@@ -169,7 +207,7 @@ describe('CustomerProfileForm submission', () => {
     it('does not submit when required fields are missing', async () => {
         const user = userEvent.setup();
         renderForm({
-            initialData: { firstName: '', lastName: '', email: '' },
+            initialData: { firstName: '', lastName: '' },
         });
 
         await user.click(screen.getByRole('button', { name: /save/i }));
@@ -209,7 +247,6 @@ describe('CustomerProfileForm submission', () => {
             data: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phoneHome: '+15551234567',
             },
         });
@@ -227,7 +264,6 @@ describe('CustomerProfileForm submission', () => {
             expect.objectContaining({
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '+15551234567',
             })
         );
@@ -275,7 +311,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
             },
             onCancel,
         });

@@ -19,6 +19,15 @@ import { action } from 'storybook/actions';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+// ---------------------------------------------------------------------------
+// FiltersButton is a tiny presentational button. Its visible state is fully
+// determined by three direct props — `isActive`, `selectedFiltersCount`, and
+// `className` — all of which Controls drives natively. The Default vs Active
+// vs Clicked variants are just different prop values and a click play
+// function; viewport reruns belong to the global toolbar, not dedicated
+// stories.
+// ---------------------------------------------------------------------------
+
 const meta: Meta<typeof FiltersButton> = {
     title: 'CATEGORY/Category Refinements/Filters Button',
     component: FiltersButton,
@@ -27,250 +36,50 @@ const meta: Meta<typeof FiltersButton> = {
         layout: 'padded',
         docs: {
             description: {
-                component: `
-A button component that toggles the filters panel.
-
-## Features
-
-- **Filter Icon**: Displays a funnel icon to indicate filtering
-- **Active State**: Uses filled/default styling when filters panel is open
-- **Selected Count Badge**: Shows the number of currently selected filters
-- **Accessible**: Proper ARIA labels and keyboard support
-- **Responsive**: Works on all screen sizes
-- **Composable**: Supports custom class names
-
-## Usage
-
-\`\`\`tsx
-import FiltersButton from '@/components/category-refinements/filters-button';
-
-function ProductListingPage() {
-  const [filtersOpen, setFiltersOpen] = useState(false);
-
-  return (
-    <FiltersButton
-      onClick={() => setFiltersOpen((prev) => !prev)}
-      isActive={filtersOpen}
-      selectedFiltersCount={2}
-    />
-  );
-}
-\`\`\`
-
-## Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| \`onClick\` | \`() => void\` | Callback when button is clicked |
-| \`isActive\` | \`boolean\` | Whether filter section is currently shown |
-| \`selectedFiltersCount\` | \`number\` | Number of selected filters to display in badge |
-| \`className\` | \`string\` | Additional CSS classes |
-
-## Behavior
-
-- **Inactive**: Uses outline variant
-- **Active**: Uses default variant
-- **Badge**: Shows count when one or more filters are selected
-- **Click**: Calls onClick handler to open filters panel
-                `,
+                component:
+                    'Button that toggles the PLP filters panel. Variant flips between outline (closed) and default (open) via `isActive`; an optional badge shows `selectedFiltersCount` when > 0.',
             },
         },
     },
     args: {
         onClick: action('filters-button-clicked'),
     },
+    argTypes: {
+        isActive: {
+            description: 'Whether the filters panel is currently open. Drives the variant (outline vs default).',
+            control: 'boolean',
+        },
+        selectedFiltersCount: {
+            description: 'Number of currently applied filters. Renders a badge when > 0.',
+            control: { type: 'number', min: 0, max: 99, step: 1 },
+        },
+        className: {
+            description: 'Additional Tailwind classes appended to the button.',
+            control: 'text',
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The default Filters Button when filters panel is closed:
-
-### Features:
-- **Outline variant**: Subtle button style
-- **Filter icon**: Clear indication of filter functionality
-- **Button text**: "Filters" label
-- **aria-pressed=false**: Indicates inactive state
-
-### Use Cases:
-- Initial page load
-- Filters panel collapsed
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Button should be present
-        const button = canvas.getByRole('button');
-        await expect(button).toBeInTheDocument();
-
-        await expect(button).toHaveAttribute('aria-pressed', 'false');
-    },
-};
-
-export const Active: Story = {
+/**
+ * Rich-but-realistic baseline — closed panel with three active filters
+ * (badge "3"). Drive `isActive`, `selectedFiltersCount`, and `className`
+ * from the Controls panel; the play function exercises the click behaviour.
+ */
+export const FullyFeatured: Story = {
     args: {
-        isActive: true,
+        isActive: false,
         selectedFiltersCount: 3,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Filters Button when filters panel is open:
-
-### Features:
-- **Default variant**: Prominent active state
-- **aria-pressed=true**: Accessible pressed state
-- **Same click behavior**: Toggles filters panel
-
-### Use Cases:
-- Filters panel expanded
-- Active filter interaction state
-                `,
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Button should be present
         const button = canvas.getByRole('button');
         await expect(button).toBeInTheDocument();
-
-        await expect(button).toHaveAttribute('aria-pressed', 'true');
+        await expect(button).toHaveAttribute('aria-pressed', 'false');
         await expect(canvas.getByText('3')).toBeInTheDocument();
-    },
-};
-
-export const Clicked: Story = {
-    args: {
-        isActive: false,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Interaction test: Clicking the filters button:
-
-### Behavior:
-- **Click event**: Triggers onClick handler
-- **Action logged**: Click is captured in Actions panel
-- **No state change**: Button remains clickable
-
-### Testing:
-- Simulates user click
-- Verifies onClick handler is called
-- Tests keyboard interaction
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Get the button
-        const button = canvas.getByRole('button');
-
-        // Click the button
         await userEvent.click(button);
-
-        // onClick should have been called (logged in Actions)
-        // Note: action logging is automatic via args.onClick
-    },
-};
-
-export const CustomClassName: Story = {
-    args: {
-        isActive: true,
-        className: 'w-full justify-center',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Filters Button with custom className:
-
-### Features:
-- **Custom styling**: Additional classes applied
-- **Full width**: Button spans container width
-- **Centered content**: Content is centered
-- **Flexible**: Can adapt to different layouts
-
-### Use Cases:
-- Custom layouts
-- Mobile-specific styling
-- Responsive designs
-                `,
-            },
-        },
-    },
-};
-
-export const Mobile: Story = {
-    args: {
-        isActive: true,
-    },
-    parameters: {
-        viewport: {
-            defaultViewport: 'mobile1',
-        },
-        docs: {
-            description: {
-                story: `
-Filters Button on mobile viewport:
-
-### Features:
-- **Responsive**: Adapts to small screens
-- **Touch friendly**: Adequate touch target size
-- **Active style visible**: Clearly shows panel-open state
-- **Icon and text**: Both remain visible
-
-### Use Cases:
-- Mobile product listing
-- Mobile search results
-- Tablet views
-                `,
-            },
-        },
-    },
-};
-
-export const Desktop: Story = {
-    args: {
-        isActive: false,
-    },
-    parameters: {
-        viewport: {
-            defaultViewport: 'desktop',
-        },
-        docs: {
-            description: {
-                story: `
-Filters Button on desktop viewport:
-
-### Features:
-- **Consistent design**: Same appearance as mobile
-- **Hover states**: Button has hover feedback
-- **Cursor pointer**: Indicates clickability
-- **Clear inactive style**: Outline variant for collapsed panel
-
-### Use Cases:
-- Desktop product listing
-- Desktop search results
-- Wide screen displays
-                `,
-            },
-        },
     },
 };

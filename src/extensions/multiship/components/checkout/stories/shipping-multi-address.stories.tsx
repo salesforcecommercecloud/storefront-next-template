@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ShippingMultiAddress from '../shipping-multi-address';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import BasketProvider from '@/providers/basket';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -174,7 +174,7 @@ This component handles the multi-address shipping step of the checkout process -
 **Dependencies:**
 - \`@/providers/basket\`: Access to current basket data (provides product items)
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/product-utils\`: Product variation display utilities
+- \`@/lib/product/product-utils\`: Product variation display utilities
                 `,
             },
         },

@@ -15,8 +15,10 @@
  */
 import { vi, expect, test, describe, afterEach, beforeEach } from 'vitest';
 import type React from 'react';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -43,35 +45,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async () => {
-    const actual = await vi.importActual('react-router-dom');
-    return {
-        ...actual,
-        useFetcher: () => ({
-            data: null,
-            state: 'idle',
-
-            submit: () => {},
-            Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
-        }),
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 
 // Suppress console.error for expected error boundary errors
 // eslint-disable-next-line no-console
@@ -121,8 +94,6 @@ vi.mock('@/config', () => ({
     useConfig: () => ({}),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -131,7 +102,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({

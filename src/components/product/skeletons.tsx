@@ -15,16 +15,15 @@
  */
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductCarouselSkeleton from '@/components/product-carousel/skeleton';
-import { getEnabledRecommendationTypes } from '@/lib/recommendations';
+import { getEnabledRecommendationTypes } from '@/lib/product/recommendations';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 /**
  * Main product section skeleton component
  * Includes mobile title, ProductView, and accordion sections
  */
 export function ProductMainSkeleton() {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     return (
         <>
             {/* Mobile Product Title - shown on mobile only */}
@@ -129,7 +128,7 @@ export function ProductRecommendationSkeleton({
     itemCount?: number;
     className?: string;
 }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const defaultItemCount = itemCount ?? config.global.skeleton.defaultItemCount;
     return <ProductCarouselSkeleton title={title} itemCount={defaultItemCount} className={className} />;
 }
@@ -157,7 +156,7 @@ export function ProductRecommendationSkeleton({
  * <ProductRecommendationsSkeleton count={3} />
  */
 export function ProductRecommendationsSkeleton({ count }: { count?: number }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const actualCount = count ?? getEnabledRecommendationTypes(config).length;
 
     return (

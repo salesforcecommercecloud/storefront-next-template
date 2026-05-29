@@ -31,7 +31,7 @@ vi.mock('@/hooks/use-autocomplete-suggestions', () => ({
     MIN_INPUT_LENGTH: 3,
 }));
 
-vi.mock('@/lib/address-suggestions', () => ({
+vi.mock('@/lib/address/address-suggestions', () => ({
     processAddressSuggestion: vi.fn(),
 }));
 

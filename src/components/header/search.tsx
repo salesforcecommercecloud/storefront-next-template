@@ -24,12 +24,10 @@ import Suggestions from '@/components/search/suggestions';
 import { useSearchSuggestions } from '@/hooks/use-search-suggestions';
 import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-suggestions';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
-import { useAnalytics } from '@/hooks/use-analytics';
 
 const RECENT_SEARCH_LIMIT = 5;
 const RECENT_SEARCH_KEY = 'recent-search-key';
@@ -38,8 +36,7 @@ const RECENT_SEARCH_MIN_LENGTH = 3;
 export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
     const navigate = useNavigate();
-    const config = useConfig<AppConfig>();
-    const { trackCommerceAgentEngagement } = useAnalytics();
+    const config = useConfig();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [query, setQuery] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -158,14 +155,13 @@ export default function SearchBar(): ReactElement {
 
     const onShopperAgentClick = useCallback(() => {
         const searchText = inputRef.current?.value?.trim() ?? query.trim();
-        void trackCommerceAgentEngagement({ surface: 'search' });
         setShowSuggestions(false);
         setQuery('');
         if (inputRef.current) {
             inputRef.current.value = '';
         }
         openShopperAgentAndSendMessage(searchText);
-    }, [query, trackCommerceAgentEngagement]);
+    }, [query]);
 
     useEffect(() => {
         shouldOpenPopover();

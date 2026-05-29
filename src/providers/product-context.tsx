@@ -15,7 +15,7 @@
  */
 
 import { createContext, useContext, type PropsWithChildren } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 /**
  * Simple context for sharing product data across components.

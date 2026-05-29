@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs } from 'react-router';
-import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { Route } from './+types/action.wishlist-remove';
+import { type ShopperCustomers } from '@/scapi';
+import { data } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { isRegisteredCustomer } from '@/lib/api/customer.server';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -39,7 +39,7 @@ type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem
  * @param productId - The product ID (fallback when itemId is not available, requires lookup)
  */
 async function removeFromWishlist(
-    context: ActionFunctionArgs['context'],
+    context: Route.ActionArgs['context'],
     itemId?: string,
     productId?: string
 ): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
@@ -50,17 +50,6 @@ async function removeFromWishlist(
             error: createActionError({
                 code: ErrorCode.REQUIRED_FIELD,
                 message: 'Either productId or itemId is required',
-            }),
-        };
-    }
-
-    // Check if user is authenticated as registered customer
-    if (!isRegisteredCustomer(context)) {
-        return {
-            success: false,
-            error: createActionError({
-                code: ErrorCode.NOT_AUTHENTICATED,
-                message: 'You must be logged in to remove items from your wishlist',
             }),
         };
     }
@@ -151,12 +140,15 @@ async function removeFromWishlist(
 /**
  * Server action to remove a product from the wishlist
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<WishlistActionResponse>>> {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {
         logger.warn('WishlistRemove: method not allowed', { method: request.method });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
@@ -181,7 +173,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Validate that at least one identifier is provided
         if (!itemId && !productId) {
             logger.warn('WishlistRemove: missing both itemId and productId');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -199,7 +191,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
             (productId && (productId.length === 0 || productId.length > 100))
         ) {
             logger.warn('WishlistRemove: invalid ID length', { itemId, productId });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -217,13 +209,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (result.success) {
             logger.info('WishlistRemove: succeeded', { itemId, productId });
-        } else {
-            logger.warn('WishlistRemove: operation returned failure', { itemId, productId, error: result.error });
+            return data(result);
         }
 
-        return result.success ? Response.json(result) : Response.json(result, { status: 500 });
+        logger.warn('WishlistRemove: operation returned failure', { itemId, productId, error: result.error });
+        return data(result, { status: 500 });
     } catch (error) {
         logger.error('WishlistRemove: failed', { error });
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

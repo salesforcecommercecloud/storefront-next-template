@@ -162,7 +162,7 @@ src/
 - 🔎 [SEO (Hreflang, Canonical URLs, and Meta Tags)](./docs/README-SEO.md)
 - 🎨 [UI and Styling](./docs/README-UI-STYLING.md)
 - 🔌 [Adapter Pattern Implementation Guide](./docs/README-ADAPTER-PATTERN-GUIDE.md)
-- 🔧 [Custom SCAPI Clients](./docs/README-CUSTOM-APIS.md)
+- 🔧 [SCAPI Client Overrides and Custom APIs](./docs/README-SCAPI.md)
 - 📖 [Story Coverage & Code Quality Enforcement](./docs/README-STORY-COVERAGE.md)
 
 ## Contributing

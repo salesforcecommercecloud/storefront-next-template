@@ -24,7 +24,7 @@ Colors and theme values are defined as CSS variables (design tokens). Use semant
 - Borders: `border-border`
 - Interactive: `bg-primary`, `text-primary-foreground`, `hover:bg-primary/90`
 
-Avoid raw color utilities (e.g. `bg-[#hex]`) so the app stays consistent with the theme and supports dark mode.
+Avoid raw color utilities (e.g. `bg-[#hex]`) so the app stays consistent with the theme.
 
 ### Responsive Design
 
@@ -111,20 +111,6 @@ function CategoryBanner({ title, image }: CategoryBannerProps) {
 
 - **Radix UI**: Use Radix primitives for accessible behavior (focus, keyboard, ARIA).
 - **Icons**: Use **Lucide React** and **React Simple Icons** for iconography.
-
----
-
-## Dark Mode
-
-Dark mode is supported via CSS variables and the `.dark` class on a parent (e.g. root). Theme variables switch automatically:
-
-```tsx
-<div className="bg-background text-foreground border-border">
-  <button className="bg-primary text-primary-foreground">Click me</button>
-</div>
-```
-
-No extra class changes are needed for dark mode when using design tokens.
 
 ---
 

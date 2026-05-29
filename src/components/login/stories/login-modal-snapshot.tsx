@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import { mockSiteObject } from '@/test-utils/config';
 
 type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
 type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
@@ -27,6 +28,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
@@ -54,40 +56,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        // Add missing createMemoryRouter
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/', search: '', hash: '', state: null } },
-        })),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
-vi.mock('@/components/toast', () => ({
-    useToast: () => ({
-        addToast: () => {},
-    }),
-}));
-
 vi.mock('@/components/link', () => ({
     Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
         const { to, children, ...rest } = props ?? {};
@@ -127,8 +95,6 @@ vi.mock('@/config', () => ({
         },
     }),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -159,7 +125,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({

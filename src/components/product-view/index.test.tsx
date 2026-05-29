@@ -18,23 +18,22 @@
 import { render, screen } from '@testing-library/react';
 import { vi, test, beforeEach } from 'vitest';
 // Commerce SDK
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './index';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import { createConfigWrapper } from '@/test-utils/config';
+import { createConfigWrapper, mockAltSiteObject } from '@/test-utils/config';
 
 // Create a wrapper with default config
 const defaultConfigWrapper = createConfigWrapper({
     app: {
         site: {
-            locale: 'en-US',
-            currency: 'USD',
+            locale: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
             features: {
                 passwordlessLogin: {
-                    enabled: false,
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/passwordless-login-landing',
                 },

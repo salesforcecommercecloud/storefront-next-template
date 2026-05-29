@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 import { useRef } from 'react';
-import { type LoaderFunctionArgs, Outlet } from 'react-router';
+import { Outlet } from 'react-router';
+import type { Route } from './+types/_app';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperProducts } from '@/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { getLogger } from '@/lib/logger.server';
-import type { AppConfig } from '@/types/config';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
+import { WishlistMergeToast } from '@/components/wishlist/wishlist-merge-toast';
 
 type LoaderData = {
     root: Promise<ShopperProducts.schemas['Category']>;
@@ -45,9 +46,9 @@ export function shouldRevalidate() {
     return false;
 }
 
-export function loader({ context }: LoaderFunctionArgs): LoaderData {
+export function loader({ context }: Route.LoaderArgs): LoaderData {
     const logger = getLogger(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const { rootCategoryId, maxDepth } = config.pages.navigation;
 
     logger.debug('AppLayout: loader starting', { rootCategoryId, maxDepth });
@@ -107,15 +108,20 @@ export default function DefaultLayout({ loaderData: { root, subs } }: { loaderDa
         refSubs.current = subs;
     }
 
+    // <WishlistMergeToast> stays at the app shell — it reads URL params and a one-time
+    // cookie set by the post-login redirect target, not wishlist state. Routes that need
+    // wishlist hooks mount their own <DeferredWishlistProvider> so the SCAPI call only
+    // fires on pages that actually render wishlist UI.
     return (
         <>
+            <WishlistMergeToast />
             <Header>
                 <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
             <main className="grow pt-8">
                 <Outlet />
             </main>
-            <Footer categories={refRoot.current} />
+            <Footer />
         </>
     );
 }

@@ -20,20 +20,18 @@ import {
     type DataStrategyResult,
     isRouteErrorResponse,
     Links,
-    type LinksFunction,
-    type LoaderFunctionArgs,
     Meta,
     type MetaDescriptor,
-    type MetaFunction,
     type MiddlewareFunction,
     Navigate,
     Outlet,
     Scripts,
     ScrollRestoration,
-    useMatches,
     useRevalidator,
     useRouteLoaderData,
 } from 'react-router';
+import type { Route } from './+types/root';
+import { routes } from '@/route-paths';
 
 // Third-party libraries
 import { createInstance, type i18n } from 'i18next';
@@ -73,8 +71,11 @@ import {
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { correlationMiddleware } from '@/middlewares/correlation.server';
+import { requestOriginMiddleware } from '@/middlewares/request-origin';
+import { getAppOrigin } from '@/lib/origin';
 import { loggingMiddleware } from '@/middlewares/logging.server';
 import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-page-resolution.server';
+import { siteUrlConfigMiddleware } from '@/middlewares/site-url-config.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
@@ -84,10 +85,9 @@ import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import { CorrelationProvider } from '@/providers/correlation';
 import { correlationContext } from '@/lib/correlation';
-import RecommendersProvider from '@/providers/recommenders';
 
 // Components
-import { ToasterTheme } from '@/components/toast';
+import { AppToaster } from '@/components/toast';
 import { TrackingConsentBanner } from '@/components/tracking-consent-banner';
 import ShopperAgent from '@/components/shopper-agent';
 
@@ -98,12 +98,9 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import type { PublicSessionData } from '@/lib/api/types';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { initI18next } from '@salesforce/storefront-next-runtime/i18n/client';
-import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
-import { initializeRegistry } from '@/lib/static-registry';
+import { PageViewTracker } from '@/analytics/page-view-tracker';
+import { initializeRegistry } from '@/lib/page-designer/static-registry';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
-
-// Adapters
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 
 // Assets
 import favicon from '/favicon.ico';
@@ -125,7 +122,7 @@ import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 // Layout Components - logo for error page
 import logo from '/images/logo.svg';
 
-export const links: LinksFunction = () => {
+export const links: Route.LinksFunction = () => {
     return [
         // Preload critical fonts
         { rel: 'preload', href: sen, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
@@ -134,17 +131,19 @@ export const links: LinksFunction = () => {
     ];
 };
 
-export const meta: MetaFunction<typeof loader> = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ loaderData }) => {
     return loaderData?.seoMeta ?? [];
 };
 
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
+    requestOriginMiddleware,
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
     ...dataStoreMiddleware,
+    siteUrlConfigMiddleware, // Must run after siteContextMiddleware (entry key uses site id)
     i18nextMiddleware,
     pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
@@ -179,7 +178,7 @@ const i18nextOnClient =
 export const loader = ({
     context,
     request,
-}: LoaderFunctionArgs): {
+}: Route.LoaderArgs): {
     // Public auth data - only non-sensitive fields, safe to serialize
     clientAuth: PublicSessionData;
     appConfig: AppConfig;
@@ -202,7 +201,7 @@ export const loader = ({
 } => {
     const session = getAuthServer(context);
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
 
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
@@ -238,7 +237,10 @@ export const loader = ({
     const seoMeta = buildSeoMetaDescriptors({
         site,
         appConfig,
-        origin: requestUrl.origin,
+        // Use the resolved public origin (custom domain on MRT) rather than
+        // requestUrl.origin (lambda-internal hostname on hybrid deployments)
+        // so canonical/hreflang URLs match what the customer is actually browsing.
+        origin: getAppOrigin(context),
         locale,
         location: { pathname: requestUrl.pathname, search: requestUrl.search },
     });
@@ -267,12 +269,10 @@ type ServerLoaderData = ReturnType<typeof loader>;
 type LoaderData = ServerLoaderData;
 
 export function Layout({ children }: PropsWithChildren) {
-    const matches = useMatches();
-    const rootMatch = matches.find((m) => m.id === 'root');
-    const appConfig = (rootMatch?.data as { appConfig?: AppConfig })?.appConfig;
+    const data = useRouteLoaderData<LoaderData>('root');
+    const appConfig = data?.appConfig;
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
-    const data = useRouteLoaderData<LoaderData>('root');
     const i18next = typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient;
     const lang = i18next?.language ?? 'en';
     const dir = i18next?.dir(lang) ?? 'ltr';
@@ -291,11 +291,6 @@ export function Layout({ children }: PropsWithChildren) {
                 {appConfig?.links?.prefetch?.map((href: string) => (
                     <link key={href} rel="prefetch" href={href} />
                 ))}
-                <style
-                    dangerouslySetInnerHTML={{
-                        __html: `@font-face{font-family:'Sen';src:url(${sen}) format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`,
-                    }}
-                />
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
@@ -309,7 +304,7 @@ export function Layout({ children }: PropsWithChildren) {
             </head>
             <body className="antialiased flex flex-col min-h-screen">
                 {children}
-                <ToasterTheme />
+                <AppToaster />
                 <ScrollRestoration />
                 <Scripts />
                 {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}
@@ -350,7 +345,7 @@ function ErrorPageContent({
     return (
         <>
             {/* Simple Header */}
-            <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+            <header className="bg-header-background text-header-foreground sticky top-0 z-50">
                 <div className="section-container">
                     <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
                         <a href={homepageUrl} className="flex-shrink-0 flex items-center">
@@ -532,7 +527,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 
     // Redirect maintenance errors before rendering.
     if (error && error.toString().includes('MAINTENANCE_ERROR')) {
-        return <Navigate to="/maintenance" replace />;
+        return <Navigate to={routes.maintenance} replace />;
     }
 
     let status: number | undefined;
@@ -641,7 +636,6 @@ export default function App({
                 [SiteProvider, { site, locale, language: i18next.language, currency }],
                 [AuthProvider, { value: clientAuth }],
                 [BasketProvider, { snapshot: basketSnapshot }],
-                [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
                 [CorrelationProvider, { value: correlationId }],
                 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
                 [StoreLocatorProvider, { selectedStoreInfo }],
@@ -686,6 +680,7 @@ export default function App({
                     locale={shopperAgentLocale}
                     currency={currency}
                     userId={clientAuth?.customerId}
+                    usid={clientAuth?.usid}
                 />
             )}
         </ComposeProviders>

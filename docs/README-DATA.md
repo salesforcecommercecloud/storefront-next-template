@@ -230,6 +230,16 @@ export default function ProductPage() {
 
 For details on how loader data integrates with the broader state model, including `useLoaderData`, `useRouteLoaderData`, and middleware context as state, see [State Management](README-STATE.md). For visual feedback during data loading, see [Loading States](README-SUSPENSE.md).
 
+### SCAPI Request Shape
+
+SCAPI endpoints expose several knobs that control response size and cacheability, such as `expand`, `select`, `limit`/`offset`, and similar query parameters. Treat these as part of the loader's contract, not as defaults to copy from another route. Two side effects are easy to overlook:
+
+**Payload size.** Every requested field crosses the network and lands in the SSR response. Over-fetching adds bytes to TTFB, inflates the streamed HTML, and increases hydration cost. Audit each loader and ask which fields the route actually renders — drop the rest.
+
+**Cache TTL.** SCAPI caches responses per unique request URL, including the full query string. Adding or removing a parameter creates a separate cache entry. More importantly, fields with shorter TTLs (for example, real-time inventory or pricing) pull the entire cached response onto their shorter schedule when included inline. Prefer fetching short-TTL data separately via a non-critical deferred loader rather than mixing it into critical, long-cacheable payloads.
+
+**Example (product search):** The `expand` parameter is typically the most common offender. `expand=variations,images` on a product with 50 color variants and 5 images each produces 250 image objects, and `expand=availability` shortens the cached response's effective TTL. Trim the `expand` list to what the PLP actually renders, and defer availability to a non-critical loader. The same reasoning applies to other SCAPI endpoints. See [expand Parameter Impact on Cache Hit Rates](https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates).
+
 ## Actions
 
 Action functions handle data mutations, such as form submissions, updates, or deletions, the counterpart to loaders. While loaders handle read operations, actions handle writes. A GET/POST/PUT/DELETE distinction is a useful mental model, though React Router routes requests by navigation intent rather than HTTP method alone.
@@ -246,16 +256,56 @@ Action functions handle data mutations, such as form submissions, updates, or de
 
 Comparable to server loaders, React Router also provides the concept of client actions. In line with our server-load everything paradigm, we recommend server actions exclusively. Server actions are functions that execute solely on the server, ensuring sensitive mutation logic, such as database writes or authentication checks, never reaches the client.
 
+#### Action Return Pattern
+
+Always return `data(payload, init?)` from `react-router` — never `Response.json(...)`. This:
+
+- Preserves the HTTP status code so CDNs, server logs, and client-side `fetcher.formMethod` checks behave correctly.
+- Keeps the payload type inferable, so consumers can use `useFetcher<typeof action>()` and get full type-safe access to `fetcher.data`.
+
+Annotate every action with an explicit return type so the contract is enforced at the action definition (not just at the caller):
+
+```typescript
+import { data } from 'react-router';
+import type { Route } from './+types/action.example';
+
+/** Response shape returned by the example action. Exported so consumers can import the type. */
+export type ExampleResponse = {
+  success: boolean;
+  error?: ActionError;
+};
+
+export async function action({
+  request,
+  context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<ExampleResponse>>> {
+  // ...
+  return data({ success: true });
+}
+```
+
+Consumers then bind the fetcher to the action:
+
+```tsx
+import type { action as exampleAction } from '@/routes/action.example';
+
+const fetcher = useFetcher<typeof exampleAction>();
+// fetcher.data is typed as ExampleResponse
+```
+
+For an action that may dispatch to one of several routes (e.g. a single fetcher submitting to add/remove/update endpoints), use a union: `useFetcher<typeof addAction | typeof removeAction>()`.
+
 #### Action Error Handling
 
 Actions return structured error objects with a semantic `code` and a human-readable `message`. Use `createActionError` from `@/lib/action-error-helpers.server` to construct these consistently:
 
 ```typescript
+import { data } from 'react-router';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 
 // Known validation error — provide code + message explicitly
-return Response.json(
+return data(
   {
     success: false,
     error: createActionError({
@@ -270,7 +320,7 @@ return Response.json(
 // If it's an SCAPI ApiError, the code is inferred from the HTTP status
 // and the message is extracted from the RFC 7807 response body.
 catch (error) {
-  return Response.json(
+  return data(
     { success: false, error: createActionError({ error }) },
     { status: 500 },
   );

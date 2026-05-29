@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import type { ShipmentDistribution } from './checkout-distribution';
 
 export const CHECKOUT_STEPS = {
@@ -66,6 +66,8 @@ export interface CheckoutContextValue {
     goToNextStep: () => void;
     goToStep: (step: CheckoutStep) => void;
     exitEditMode: () => void;
+    /** Pin shopper to `step`, overriding basket-driven auto-advance. Optional for test mocks. */
+    pinToStep?: (step: CheckoutStep) => void;
 }
 
 export const CheckoutContext = createContext<CheckoutContextValue | null>(null);

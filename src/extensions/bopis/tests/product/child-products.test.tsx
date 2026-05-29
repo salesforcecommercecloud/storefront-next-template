@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProducts from '@/components/product-view/child-products';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Mock hooks and components
 vi.mock('@/hooks/product/use-product-sets-bundles', () => ({
@@ -38,8 +38,8 @@ vi.mock('@/extensions/bopis/components/delivery-options/delivery-options', () =>
 }));
 
 vi.mock('@/components/product-view/child-product-card', () => ({
-    default: ({ childProduct, onSelectionChange, onOrderabilityChange, swatchMode }: any) => (
-        <div data-testid={`child-product-${childProduct.id}`} data-swatch-mode={swatchMode}>
+    default: ({ childProduct, onSelectionChange, onOrderabilityChange }: any) => (
+        <div data-testid={`child-product-${childProduct.id}`}>
             <div>{childProduct.name}</div>
             <button
                 onClick={() =>

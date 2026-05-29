@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useMemo, useRef } from 'react';
-import { Form, useLocation } from 'react-router';
+import { type ComponentType, type ReactElement, useMemo, useRef } from 'react';
+import { Form as RouterForm, useLocation } from 'react-router';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
 import { getLoginModeHref } from './get-login-mode-href';
+import { routes } from '@/route-paths';
 
 interface StandardLoginFormProps {
     error?: string;
@@ -30,6 +35,12 @@ interface StandardLoginFormProps {
     actionParams?: string | null;
     onCheckoutAsGuest?: () => void;
     initialEmail?: string;
+    /**
+     * Form component to render. Defaults to react-router's `Form` (route-level navigation
+     * submit). Pass `fetcher.Form` from the LoginModal so submit state is observable via
+     * the parent's fetcher (used to close the modal on success).
+     */
+    Form?: ComponentType<React.ComponentProps<typeof RouterForm>>;
 }
 
 export default function StandardLoginForm({
@@ -40,16 +51,26 @@ export default function StandardLoginForm({
     actionParams,
     onCheckoutAsGuest,
     initialEmail,
+    Form = RouterForm,
 }: StandardLoginFormProps): ReactElement {
     const formRef = useRef<HTMLFormElement>(null);
     const location = useLocation();
     const { t } = useTranslation('login');
+    // Submit to the site/locale-prefixed login route so this form works whether rendered
+    // standalone at /login or inside a modal on another page (e.g. checkout).
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+    const loginActionPath = buildUrl({
+        to: '/login',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
     const passwordlessModeHref = useMemo(() => {
         return getLoginModeHref(location.search, 'passwordless');
     }, [location.search]);
 
     return (
-        <Form method="post" className="space-y-6" ref={formRef}>
+        <Form method="post" action={loginActionPath} className="space-y-6" ref={formRef}>
             {error && (
                 <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
                     {error}
@@ -108,12 +129,12 @@ export default function StandardLoginForm({
             )}
 
             <div className="text-center space-y-2">
-                <Link to="/forgot-password" className="block text-sm text-primary hover:text-primary/80">
+                <Link to={routes.forgotPassword} className="block text-sm text-primary hover:text-primary/80">
                     {t('forgotPassword')}
                 </Link>
                 <p className="text-sm text-muted-foreground">
                     {t('noAccountQuestion')}
-                    <Link to="/signup" className="font-medium text-primary hover:underline">
+                    <Link to={routes.signup} className="font-medium text-primary hover:underline">
                         {t('signUp')}
                     </Link>
                 </p>

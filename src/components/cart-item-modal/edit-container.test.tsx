@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { variantProduct } from '@/components/__mocks__/master-variant-product';
 
@@ -32,20 +32,12 @@ interface MockFetcherState {
     data: Product | null;
     state: 'idle' | 'loading';
     success: boolean;
+    errors?: string[];
 }
 
-let fullProductFetcherState: MockFetcherState;
 let variantFetcherState: MockFetcherState;
 
-const mockUseScapiFetcher = vi.fn((_client: string, _method: string, opts: Record<string, unknown>) => {
-    const params = opts.params as { path: { id: string }; query: Record<string, unknown> };
-    const hasExpand = !!params?.query?.expand;
-    const expandValues = params?.query?.expand as string[] | undefined;
-    const isFullProductFetcher = hasExpand && expandValues && expandValues.includes('variations');
-
-    if (isFullProductFetcher) {
-        return fullProductFetcherState;
-    }
+const mockUseScapiFetcher = vi.fn((_client: string, _method: string, _opts: Record<string, unknown>) => {
     return variantFetcherState;
 });
 
@@ -53,13 +45,42 @@ vi.mock('@/hooks/use-scapi-fetcher', () => ({
     useScapiFetcher: (...args: unknown[]) => mockUseScapiFetcher(...(args as Parameters<typeof mockUseScapiFetcher>)),
 }));
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
+    ProductReviewsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useProductReviews: () => ({
+        reviewsSummary: null,
+        reviewsSummaryLoading: false,
+        reviews: [],
+        reviewsLoading: false,
+        loadReviewsIfNeeded: () => {},
+        aiSummary: '',
+        addReviewOptimistic: () => {},
+        removeReviewOptimistic: () => {},
+        expandReviews: () => {},
+        registerExpand: () => {},
+        registerOnExpanded: () => {},
+        triggerOnExpanded: () => {},
+    }),
+}));
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
 // Lazy import so the mock is installed first
 const { CartItemModalEditContainer } = await import('./edit-container');
 
 const basketProduct: Product = {
     id: '640188017041M',
+    type: { variant: true },
     name: 'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit',
     variationValues: { color: 'CHARCWL', size: '040', width: 'S' },
+    variationAttributes: [
+        { id: 'color', name: 'Color', values: [{ name: 'Charcoal', value: 'CHARCWL', orderable: true }] },
+        { id: 'size', name: 'Size', values: [{ name: '040', value: '040', orderable: true }] },
+    ],
+    variants: [
+        { productId: '640188017041M', variationValues: { color: 'CHARCWL', size: '040', width: 'S' } },
+        { productId: '640188017042M', variationValues: { color: 'CHARCWL', size: '042', width: 'S' } },
+    ],
     price: 299.99,
     currency: 'USD',
 };
@@ -92,12 +113,6 @@ function renderEditContainer(overrides: Partial<React.ComponentProps<typeof Cart
 describe('CartItemModalEditContainer', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        fullProductFetcherState = {
-            load: mockLoad,
-            data: null,
-            state: 'idle' as const,
-            success: false,
-        };
         variantFetcherState = {
             load: mockLoad,
             data: null,
@@ -106,165 +121,98 @@ describe('CartItemModalEditContainer', () => {
         };
     });
 
-    describe('full product fetcher', () => {
-        test('calls fullProductFetcher.load when modal is open and no data yet', () => {
-            renderEditContainer();
-
-            expect(mockLoad).toHaveBeenCalled();
-        });
-
-        test('does not call load when modal is closed', () => {
-            renderEditContainer({ open: false });
-
-            expect(mockLoad).not.toHaveBeenCalled();
-        });
-
-        test('does not call load when data already exists', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle' as const,
-                success: true,
-            };
-            renderEditContainer();
-
-            expect(mockLoad).not.toHaveBeenCalled();
-        });
-
-        test('configures fullProductFetcher with expand params including variations', () => {
-            renderEditContainer();
-
-            const fullProductCall = mockUseScapiFetcher.mock.calls.find((call) => {
-                const params = call[2].params as {
-                    query: { expand?: string[] };
-                };
-                return params?.query?.expand?.includes('variations');
-            });
-
-            expect(fullProductCall).toBeDefined();
-            const params = (fullProductCall as NonNullable<typeof fullProductCall>)[2].params as {
-                path: { id: string };
-                query: { expand: string[]; allImages: boolean };
-            };
-            expect(params.path.id).toBe('640188017041M');
-            expect(params.query.allImages).toBe(true);
-            expect(params.query.expand).toContain('availability');
-            expect(params.query.expand).toContain('prices');
-            expect(params.query.expand).toContain('promotions');
-        });
-    });
-
-    describe('loading state', () => {
-        test('shows loading spinner when fetcher is loading and has no data', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: null,
-                state: 'loading' as const,
-                success: false,
-            };
-            renderEditContainer();
-
-            expect(document.querySelector('.animate-spin')).toBeInTheDocument();
-            expect(screen.getByText(t('editItem:loadingProduct'))).toBeInTheDocument();
-        });
-
-        test('does not show loading when fetcher has data', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle' as const,
-                success: true,
-            };
-            renderEditContainer();
-
-            expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
-        });
-    });
-
     describe('product display', () => {
-        test('falls back to product prop when fetcher has no data yet', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: null,
-                state: 'idle' as const,
-                success: false,
-            };
+        test('renders product data directly from product prop without additional fetch', () => {
             renderEditContainer();
 
             expect(screen.getByText(basketProduct.name as string)).toBeInTheDocument();
         });
 
-        test('renders full product data once fetcher resolves', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle' as const,
-                success: true,
-            };
+        test('does not make a full product fetch with variations expand', () => {
             renderEditContainer();
 
-            expect(screen.getByText(variantProduct.name as string)).toBeInTheDocument();
+            const fullProductCall = mockUseScapiFetcher.mock.calls.find((call) => {
+                const params = call[2]?.params as { query?: { expand?: string[] } } | undefined;
+                return params?.query?.expand?.includes('variations');
+            });
+            expect(fullProductCall).toBeUndefined();
         });
     });
 
     describe('variant fetcher', () => {
         test('does not trigger variant fetch when selected variant matches productId', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle' as const,
-                success: true,
-            };
             renderEditContainer();
 
-            const variantFetcherCall = mockUseScapiFetcher.mock.calls.find((call) => {
-                const params = call[2].params as {
-                    query: { expand?: string[] };
-                };
-                const expand = params?.query?.expand;
-                return expand && !expand.includes('variations');
-            });
-
-            expect(variantFetcherCall).toBeDefined();
-            const params = (variantFetcherCall as NonNullable<typeof variantFetcherCall>)[2].params as {
+            const params = mockUseScapiFetcher.mock.calls[0][2].params as {
                 path: { id: string };
             };
             expect(params.path.id).toBe('');
+            expect(mockLoad).not.toHaveBeenCalled();
         });
 
         test('configures variant fetcher with expand params for availability, images, prices, promotions', () => {
-            fullProductFetcherState = {
+            renderEditContainer();
+
+            const params = mockUseScapiFetcher.mock.calls[0][2].params as {
+                query: { expand: string[]; allImages: boolean };
+            };
+            expect(params.query.allImages).toBe(true);
+            expect(params.query.expand).toEqual(['availability', 'images', 'prices', 'promotions']);
+        });
+
+        test('does not retry fetch when variant fetcher has errors (prevents infinite loop)', () => {
+            variantFetcherState = {
                 load: mockLoad,
-                data: variantProduct,
+                data: null,
+                state: 'idle' as const,
+                success: false,
+                errors: ['Network error'],
+            };
+            renderEditContainer({
+                product: {
+                    ...basketProduct,
+                    variationValues: { color: 'CHARCWL', size: '042', width: 'S' },
+                    variants: [
+                        { productId: '640188017041M', variationValues: { color: 'CHARCWL', size: '040', width: 'S' } },
+                        { productId: '640188017042M', variationValues: { color: 'CHARCWL', size: '042', width: 'S' } },
+                    ],
+                },
+            });
+
+            expect(mockLoad).not.toHaveBeenCalled();
+        });
+
+        test('renders variant data when fetcher resolves for a different variant', () => {
+            const variantData: Product = {
+                ...variantProduct,
+                id: '640188017042M',
+                name: 'Charcoal Suit - Size 042',
+            };
+            variantFetcherState = {
+                load: mockLoad,
+                data: variantData,
                 state: 'idle' as const,
                 success: true,
             };
-            renderEditContainer();
-
-            const variantFetcherCall = mockUseScapiFetcher.mock.calls.find((call) => {
-                const params = call[2].params as {
-                    query: { expand?: string[] };
-                };
-                const expand = params?.query?.expand;
-                return expand && !expand.includes('variations');
+            renderEditContainer({
+                product: {
+                    ...basketProduct,
+                    // variationValues point to the 042M variant, but product.id is 041M,
+                    // so needsVariantFetch = true and variant fetcher data is applied.
+                    variationValues: { color: 'CHARCWL', size: '042', width: 'S' },
+                    variants: [
+                        { productId: '640188017041M', variationValues: { color: 'CHARCWL', size: '040', width: 'S' } },
+                        { productId: '640188017042M', variationValues: { color: 'CHARCWL', size: '042', width: 'S' } },
+                    ],
+                },
             });
 
-            expect(variantFetcherCall).toBeDefined();
-            const params = (variantFetcherCall as NonNullable<typeof variantFetcherCall>)[2].params as {
-                query: { expand: string[] };
-            };
-            expect(params.query.expand).toEqual(['availability', 'images', 'prices', 'promotions']);
+            expect(screen.getByText(variantData.name as string)).toBeInTheDocument();
         });
     });
 
     describe('modal rendering', () => {
         test('renders dialog with edit title when open', () => {
-            fullProductFetcherState = {
-                load: mockLoad,
-                data: variantProduct,
-                state: 'idle' as const,
-                success: true,
-            };
             renderEditContainer();
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();

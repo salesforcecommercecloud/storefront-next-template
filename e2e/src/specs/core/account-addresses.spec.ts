@@ -53,7 +53,7 @@
 
 Feature('Account Addresses Tests').tag('@core').tag('@account').tag('@addresses');
 
-const { accountAddressesPage, loginFlow, signupFlow, storefrontPage } = inject();
+const { accountAddressesPage, apiLoginFlow, signupFlow, storefrontPage } = inject();
 import { expect } from 'chai';
 
 /**
@@ -80,7 +80,7 @@ Before(async () => {
     } else {
         // Subsequent scenarios: reset to a clean session and re-authenticate.
         await storefrontPage.clearCookies();
-        await loginFlow.executeWithCredentials(specEmail, specPassword);
+        await apiLoginFlow.execute({ email: specEmail, password: specPassword });
     }
 });
 
@@ -209,7 +209,7 @@ Scenario('User can add second address', async () => {
     accountAddressesPage.navigate();
 
     // Ensure we have exactly one address for this test
-    await accountAddressesPage.ensureMinimumAddresses(1);
+    await accountAddressesPage.ensureExactAddressCount(1);
 
     // Add second address
     const addressData = {
@@ -261,8 +261,8 @@ Scenario('User can add second address', async () => {
 Scenario('User can edit existing address', async () => {
     accountAddressesPage.navigate();
 
-    // Ensure we have at least one address to edit
-    await accountAddressesPage.ensureMinimumAddresses(1);
+    // Ensure we have exactly one address to edit
+    await accountAddressesPage.ensureExactAddressCount(1);
 
     // Click edit on first address
     accountAddressesPage.clickEditAddress(0);
@@ -314,8 +314,9 @@ Scenario('User can edit existing address', async () => {
 Scenario('User can set default address', async () => {
     accountAddressesPage.navigate();
 
-    // Ensure we have at least 2 addresses for this test
-    await accountAddressesPage.ensureMinimumAddresses(2);
+    // Ensure we have exactly 2 addresses (delete + recreate) so each scenario
+    // starts from a known state regardless of CodeceptJS chunk distribution.
+    await accountAddressesPage.ensureExactAddressCount(2);
 
     // Check current default state
     const firstIsDefault = await accountAddressesPage.isAddressDefault(0);
@@ -364,8 +365,9 @@ Scenario('User can set default address', async () => {
 Scenario('User can delete non-default address', async () => {
     accountAddressesPage.navigate();
 
-    // Ensure we have at least 2 addresses for this test
-    await accountAddressesPage.ensureMinimumAddresses(2);
+    // Ensure we have exactly 2 addresses (delete + recreate) so each scenario
+    // starts from a known state regardless of CodeceptJS chunk distribution.
+    await accountAddressesPage.ensureExactAddressCount(2);
     const initialCount = await accountAddressesPage.getAddressCount();
 
     // Find a non-default address to delete
@@ -462,7 +464,9 @@ Scenario('Deleting default address auto-promotes remaining address', async () =>
     // Verify success toast
     accountAddressesPage.validateSuccessToast();
 
-    // Verify address removed
+    // Verify address removed — waits for the card to disappear after the toast fires,
+    // since revalidate() resolves slightly after the toast renders.
+    accountAddressesPage.waitForAddressRemoved(addressNameToDelete);
     const addressExists = await accountAddressesPage.addressExistsByName(addressNameToDelete);
     expect(addressExists, 'Default address should be removed').to.be.false;
 
@@ -551,8 +555,8 @@ Scenario('User can cancel adding new address', async () => {
 Scenario('User can cancel deleting address', async () => {
     accountAddressesPage.navigate();
 
-    // Ensure we have at least one address
-    await accountAddressesPage.ensureMinimumAddresses(1);
+    // Ensure we have exactly one address so the scenario starts from a known state.
+    await accountAddressesPage.ensureExactAddressCount(1);
     const initialCount = await accountAddressesPage.getAddressCount();
 
     // Get address name to verify it persists
@@ -636,8 +640,8 @@ Scenario('User can access addresses page via direct URL', async () => {
 Scenario('Address list persists after browser refresh', async () => {
     accountAddressesPage.navigate();
 
-    // Ensure we have at least one address
-    await accountAddressesPage.ensureMinimumAddresses(1);
+    // Ensure we have exactly one address so the scenario starts from a known state.
+    await accountAddressesPage.ensureExactAddressCount(1);
     const initialCount = await accountAddressesPage.getAddressCount();
 
     // Get first address name for verification

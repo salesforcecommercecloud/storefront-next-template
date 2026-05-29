@@ -15,65 +15,11 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
-import { useEffect, useRef, type ReactElement, type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import QuantityPicker from '../quantity-picker';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logInc = action('quantity-increment');
-        const logDec = action('quantity-decrement');
-        const logChange = action('quantity-change');
-        const logBlur = action('quantity-blur');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const inc = target.closest('[data-testid="quantity-increment"]');
-            if (inc) {
-                const input = inc.closest('div')?.querySelector('input[type="number"]') as HTMLInputElement | null;
-                logInc({ value: input?.value });
-                return;
-            }
-            const dec = target.closest('[data-testid="quantity-decrement"]');
-            if (dec) {
-                const input = dec.closest('div')?.querySelector('input[type="number"]') as HTMLInputElement | null;
-                logDec({ value: input?.value });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input || input.type !== 'number') return;
-            logChange({ value: input.value });
-        };
-
-        const handleBlur = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input || input.type !== 'number') return;
-            logBlur({ value: input.value });
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('blur', handleBlur, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('blur', handleBlur, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof QuantityPicker> = {
     title: 'FORMS/QuantityPicker',
@@ -90,38 +36,15 @@ const meta: Meta<typeof QuantityPicker> = {
     },
     tags: ['autodocs', 'interaction'],
     argTypes: {
-        value: {
-            description: 'Current quantity value as string',
-            control: 'text',
-        },
-        onChange: {
-            description: 'Callback when quantity changes',
-            action: 'onChange',
-        },
-        onBlur: {
-            description: 'Callback when input loses focus',
-            action: 'onBlur',
-        },
-        min: {
-            description: 'Minimum quantity allowed',
-            control: 'number',
-        },
-        productName: {
-            description: 'Product name for accessibility',
-            control: 'text',
-        },
-        disabled: {
-            description: 'Whether the picker is disabled',
-            control: 'boolean',
-        },
+        value: { description: 'Current quantity value as string', control: 'text' },
+        onChange: { table: { disable: true } },
+        onBlur: { table: { disable: true } },
+        min: { description: 'Minimum quantity allowed', control: 'number' },
+        max: { description: 'Maximum quantity allowed (for bonus products, etc.)', control: 'number' },
+        productName: { description: 'Product name for accessibility', control: 'text' },
+        disabled: { description: 'Whether the picker is disabled', control: 'boolean' },
+        className: { description: 'Additional class names for the container', control: 'text' },
     },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
@@ -143,6 +66,17 @@ function ControlledQuantityPicker(args: Parameters<typeof QuantityPicker>[0]) {
     );
 }
 
+/**
+ * At-rest state — value=1 with default `min` and no `max`. The decrement
+ * button disables at `value === 1` (independent of `min`) — a UI
+ * convention enforced by `useQuantityPicker`.
+ *
+ * Drive every other variant from the Controls panel:
+ *   - `value` — type any number; decrement re-enables once value > 1
+ *   - `disabled` — see the dedicated `Disabled` story (snapshot-distinct)
+ *   - `productName` — appears in `aria-label` only (no visible text), confirm with screen reader
+ *   - `min` — does NOT control decrement-disabled-at-rest (hook hard-codes value === 1)
+ */
 export const Default: Story = {
     render: (args) => <ControlledQuantityPicker {...args} />,
     args: {
@@ -154,94 +88,19 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         const quantityInput = canvas.getByRole('spinbutton');
-        await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(1);
 
-        const incrementButton = canvas.getByTestId('quantity-increment');
-        await expect(incrementButton).toBeInTheDocument();
-
-        const decrementButton = canvas.getByTestId('quantity-decrement');
-        await expect(decrementButton).toBeInTheDocument();
+        // Decrement is disabled at value=1 by hook convention.
+        await expect(canvas.getByTestId('quantity-decrement')).toBeDisabled();
+        await expect(canvas.getByTestId('quantity-increment')).not.toBeDisabled();
     },
 };
 
-export const WithProductName: Story = {
-    render: (args) => <ControlledQuantityPicker {...args} />,
-    args: {
-        value: '2',
-        productName: 'Blue T-Shirt',
-        onChange: action('onChange'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const quantityInput = canvas.getByRole('spinbutton');
-        await expect(quantityInput).toBeInTheDocument();
-        await expect(quantityInput).toHaveValue(2);
-
-        const incrementButton = await canvas.findByTestId('quantity-increment', {}, { timeout: 5000 });
-        await expect(incrementButton).toBeInTheDocument();
-    },
-};
-
-export const MinimumValue: Story = {
-    render: (args) => <ControlledQuantityPicker {...args} />,
-    args: {
-        value: '0',
-        min: 0,
-        onChange: action('onChange'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const quantityInput = await canvas.findByRole('spinbutton', {}, { timeout: 5000 });
-        await expect(quantityInput).toHaveValue(0);
-
-        // Wait a bit for the hook to process and disable the button
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        const decrementButton = await canvas.findByTestId('quantity-decrement', {}, { timeout: 5000 });
-        // Verify button exists - the disabled state is handled by the hook internally
-        await expect(decrementButton).toBeInTheDocument();
-    },
-};
-
-export const MinimumValueOne: Story = {
-    render: (args) => <ControlledQuantityPicker {...args} />,
-    args: {
-        value: '1',
-        min: 1,
-        onChange: action('onChange'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const quantityInput = canvas.getByRole('spinbutton');
-        await expect(quantityInput).toHaveValue(1);
-
-        const decrementButton = canvas.getByTestId('quantity-decrement');
-        await expect(decrementButton).toBeDisabled();
-    },
-};
-
-export const HighQuantity: Story = {
-    render: (args) => <ControlledQuantityPicker {...args} />,
-    args: {
-        value: '10',
-        onChange: action('onChange'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const quantityInput = canvas.getByRole('spinbutton');
-        await expect(quantityInput).toHaveValue(10);
-    },
-};
-
+/**
+ * Fully disabled — `disabled: true` disables the input AND both +/- buttons.
+ * This is the only story whose snapshot includes `disabled=""` on the input
+ * element (the Default story disables only the decrement button).
+ */
 export const Disabled: Story = {
     render: (args) => <ControlledQuantityPicker {...args} />,
     args: {
@@ -253,17 +112,39 @@ export const Disabled: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const quantityInput = canvas.getByRole('spinbutton');
-        await expect(quantityInput).toBeDisabled();
-
-        const incrementButton = canvas.getByTestId('quantity-increment');
-        await expect(incrementButton).toBeDisabled();
-
-        const decrementButton = canvas.getByTestId('quantity-decrement');
-        await expect(decrementButton).toBeDisabled();
+        await expect(canvas.getByRole('spinbutton')).toBeDisabled();
+        await expect(canvas.getByTestId('quantity-increment')).toBeDisabled();
+        await expect(canvas.getByTestId('quantity-decrement')).toBeDisabled();
     },
 };
 
+/**
+ * Increment-disabled-at-max — `value === max` disables the increment button.
+ * None of the prior stories drove the `max` prop, so this branch had zero
+ * snapshot coverage. Closes the coverage gap.
+ */
+export const AtMaximum: Story = {
+    render: (args) => <ControlledQuantityPicker {...args} />,
+    args: {
+        value: '5',
+        max: 5,
+        onChange: action('onChange'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByRole('spinbutton')).toHaveValue(5);
+        await expect(canvas.getByTestId('quantity-increment')).toBeDisabled();
+        await expect(canvas.getByTestId('quantity-decrement')).not.toBeDisabled();
+    },
+};
+
+/**
+ * Interactive — exercises increment, decrement, and direct-input behaviors
+ * via the play function. At-rest visual is identical to any other value=5
+ * story; the value of this story is the play interactions, not the snapshot.
+ */
 export const Interactive: Story = {
     render: (args) => <ControlledQuantityPicker {...args} />,
     args: {
@@ -279,20 +160,14 @@ export const Interactive: Story = {
         await expect(quantityInput).toHaveValue(5);
 
         const incrementButton = canvas.getByTestId('quantity-increment');
-        await expect(incrementButton).not.toBeDisabled();
-
         const decrementButton = canvas.getByTestId('quantity-decrement');
-        await expect(decrementButton).not.toBeDisabled();
 
-        // Test increment
         await userEvent.click(incrementButton);
         await expect(quantityInput).toHaveValue(6);
 
-        // Test decrement
         await userEvent.click(decrementButton);
         await expect(quantityInput).toHaveValue(5);
 
-        // Test direct input
         await userEvent.clear(quantityInput);
         await userEvent.type(quantityInput, '8');
         await expect(quantityInput).toHaveValue(8);

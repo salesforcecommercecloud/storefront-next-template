@@ -250,7 +250,7 @@ describe('Hero Component', () => {
         const focalPointTestCases = [
             {
                 description: 'uses custom focal point',
-                imageUrl: { url: '/test.jpg', focal_point: { x: '30', y: '70' } },
+                imageUrl: { url: '/test.jpg', focalPoint: { x: '30', y: '70' } },
                 expectedPosition: '30% 70%',
             },
             {
@@ -260,17 +260,17 @@ describe('Hero Component', () => {
             },
             {
                 description: 'handles partial focal point (x only)',
-                imageUrl: { url: '/test.jpg', focal_point: { x: '25' } },
+                imageUrl: { url: '/test.jpg', focalPoint: { x: '25' } },
                 expectedPosition: '25% 50%',
             },
             {
                 description: 'handles partial focal point (y only)',
-                imageUrl: { url: '/test.jpg', focal_point: { y: '75' } },
+                imageUrl: { url: '/test.jpg', focalPoint: { y: '75' } },
                 expectedPosition: '50% 75%',
             },
             {
                 description: 'handles empty focal point object',
-                imageUrl: { url: '/test.jpg', focal_point: {} },
+                imageUrl: { url: '/test.jpg', focalPoint: {} },
                 expectedPosition: '50% 50%',
             },
         ];

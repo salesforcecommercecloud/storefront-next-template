@@ -65,11 +65,11 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (99+ units) ready to be shipped
+            In stock
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -83,11 +83,11 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $299.99"
+            aria-label="Current price: £299.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $299.99
+            £299.99
           </span>
           <span
             aria-atomic="true"
@@ -95,14 +95,14 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
             class="sr-only"
           >
              
-            Current price: $299.99
+            Current price: £299.99
           </span>
            
           <span
-            aria-label="List price from $500.00"
+            aria-label="List price from £500.00"
             class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
-            $500.00
+            £500.00
           </span>
           <span
             aria-atomic="true"
@@ -110,7 +110,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
             class="sr-only"
           >
              
-            List price: $500.00
+            List price: £500.00
           </span>
         </div>
         <div
@@ -123,7 +123,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
           </span>
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="default"
@@ -207,11 +207,11 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (99+ units) ready to be shipped
+            In stock
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -225,11 +225,11 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $299.99"
+            aria-label="Current price: £299.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $299.99
+            £299.99
           </span>
           <span
             aria-atomic="true"
@@ -237,14 +237,14 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
             class="sr-only"
           >
              
-            Current price: $299.99
+            Current price: £299.99
           </span>
            
           <span
-            aria-label="List price from $500.00"
+            aria-label="List price from £500.00"
             class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
-            $500.00
+            £500.00
           </span>
           <span
             aria-atomic="true"
@@ -252,7 +252,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
             class="sr-only"
           >
              
-            List price: $500.00
+            List price: £500.00
           </span>
         </div>
         <div
@@ -265,7 +265,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           </span>
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="outline"
@@ -323,11 +323,11 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (5 units) ready to be shipped
+            In stock
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -341,11 +341,11 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $19.99"
+            aria-label="Current price: £19.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $19.99
+            £19.99
           </span>
           <span
             aria-atomic="true"
@@ -353,12 +353,12 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
             class="sr-only"
           >
              
-            Current price: $19.99
+            Current price: £19.99
           </span>
            
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="default"
@@ -421,7 +421,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -435,11 +435,11 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $49.99"
+            aria-label="Current price: £49.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $49.99
+            £49.99
           </span>
           <span
             aria-atomic="true"
@@ -447,14 +447,14 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
             class="sr-only"
           >
              
-            Current price: $49.99
+            Current price: £49.99
           </span>
            
           <span
-            aria-label="List price: $99.99"
+            aria-label="List price: £99.99"
             class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
-            $99.99
+            £99.99
           </span>
           <span
             aria-atomic="true"
@@ -462,7 +462,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
             class="sr-only"
           >
              
-            List price: $99.99
+            List price: £99.99
           </span>
         </div>
         <div
@@ -475,7 +475,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
           </span>
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="default"
@@ -538,7 +538,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -552,11 +552,11 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $49.99"
+            aria-label="Current price: £49.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $49.99
+            £49.99
           </span>
           <span
             aria-atomic="true"
@@ -564,14 +564,14 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
             class="sr-only"
           >
              
-            Current price: $49.99
+            Current price: £49.99
           </span>
            
           <span
-            aria-label="List price: $99.99"
+            aria-label="List price: £99.99"
             class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
-            $99.99
+            £99.99
           </span>
           <span
             aria-atomic="true"
@@ -579,7 +579,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
             class="sr-only"
           >
              
-            List price: $99.99
+            List price: £99.99
           </span>
         </div>
         <div
@@ -592,7 +592,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
           </span>
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="default"
@@ -674,7 +674,7 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
           </p>
         </div>
         <button
-          aria-label="Remove from wishlist"
+          aria-label="Remove from wishlist."
           class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
@@ -688,11 +688,11 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
           class="items-center gap-2"
         >
           <span
-            aria-label="Current price: $299.99"
+            aria-label="Current price: £299.99"
             aria-live="polite"
             class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
           >
-            $299.99
+            £299.99
           </span>
           <span
             aria-atomic="true"
@@ -700,14 +700,14 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
             class="sr-only"
           >
              
-            Current price: $299.99
+            Current price: £299.99
           </span>
            
           <span
-            aria-label="List price from $500.00"
+            aria-label="List price from £500.00"
             class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
-            $500.00
+            £500.00
           </span>
           <span
             aria-atomic="true"
@@ -715,7 +715,7 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
             class="sr-only"
           >
              
-            List price: $500.00
+            List price: £500.00
           </span>
         </div>
         <div
@@ -728,7 +728,7 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
           </span>
         </div>
         <button
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
+          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full md:w-auto md:min-w-28"
           data-size="sm"
           data-slot="button"
           data-variant="default"

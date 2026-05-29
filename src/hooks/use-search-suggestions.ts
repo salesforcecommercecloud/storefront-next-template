@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useMemo } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useScapiFetcher } from './use-scapi-fetcher';
 
 export interface UseSearchSuggestionsOptions {

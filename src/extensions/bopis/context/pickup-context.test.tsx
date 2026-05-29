@@ -17,7 +17,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useState, type PropsWithChildren } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import PickupProvider, { usePickup } from './pickup-context';
 import { createMockBasketWithPickupItems } from '../tests/__mocks__/basket';
 

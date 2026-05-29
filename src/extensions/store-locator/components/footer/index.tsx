@@ -16,12 +16,15 @@
 import type { ReactElement } from 'react';
 import { Link } from '@/components/link';
 import { useTranslation } from 'react-i18next';
+import { routes } from '@/route-paths';
 
 export default function StoreLocatorFooter(): ReactElement {
     const { t } = useTranslation('extStoreLocator');
     return (
         <li>
-            <Link to="/store-locator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+                to={routes.storeLocator}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 {t('footer.links.storeLocator')}
             </Link>
         </li>

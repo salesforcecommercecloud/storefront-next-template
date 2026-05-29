@@ -17,7 +17,7 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import PromoCallout from './promo-callout';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 describe('PromoCallout', () => {
     const baseMockProduct: ShopperProducts.schemas['Product'] = {

@@ -23,10 +23,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+
+// Unmock useAnalytics for this specific test file (overrides global mock)
+vi.unmock('@/hooks/use-analytics');
 import { useAnalytics } from './use-analytics';
 import type { SessionData } from '@/lib/api/types';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('@/providers/auth', () => ({
     useAuth: vi.fn(),
@@ -38,9 +42,9 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     useSite: vi.fn(() => ({
-        site: { id: 'RefArchGlobal' },
-        language: 'en-GB',
-        currency: 'USD',
+        site: { id: mockSiteObject.id },
+        language: mockSiteObject.defaultLocale,
+        currency: mockSiteObject.defaultCurrency,
     })),
 }));
 
@@ -62,11 +66,11 @@ vi.mock('@/lib/adapters', () => ({
     buildConsentPreferences: vi.fn(),
 }));
 
-vi.mock('@/adapters', () => ({
+vi.mock('@/lib/adapters/engagement/register', () => ({
     initializeEngagementAdapters: vi.fn(),
 }));
 
-vi.mock('@/lib/adapters/initialize-adapters', () => ({
+vi.mock('@/lib/adapters/engagement/initialize', () => ({
     ensureAdaptersInitialized: vi.fn(),
 }));
 
@@ -75,9 +79,9 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
-import { initializeEngagementAdapters } from '@/adapters';
+import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { useTrackingConsent } from './use-tracking-consent';
 
 const mockAnalytics: EventMediator = {
@@ -123,7 +127,7 @@ const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
 const mockSearchResult: ShopperSearch.schemas['ProductSearchHit'] = {
     productId: 'test-product-id',
     productName: 'Test Product',
-    currency: 'USD',
+    currency: mockSiteObject.defaultCurrency,
     price: 29.99,
 } as ShopperSearch.schemas['ProductSearchHit'];
 
@@ -155,11 +159,11 @@ describe('useAnalytics', () => {
         // Setup default mocks
         vi.mocked(useConfig).mockReturnValue(mockConfig as any);
         vi.mocked(useSite).mockReturnValue({
-            site: { id: 'RefArchGlobal' },
-            language: 'en-GB',
-            currency: 'USD',
+            site: { id: mockSiteObject.id },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         } as any);
-        vi.mocked(useTranslation).mockReturnValue({ i18n: { language: 'en-GB' } } as any);
+        vi.mocked(useTranslation).mockReturnValue({ i18n: { language: mockSiteObject.defaultLocale } } as any);
         vi.mocked(getAllAdapters).mockReturnValue([]);
         vi.mocked(initializeEngagementAdapters).mockResolvedValue(undefined);
         vi.mocked(ensureAdaptersInitialized).mockResolvedValue(undefined);
@@ -213,7 +217,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -259,7 +263,7 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -282,7 +286,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -305,7 +309,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -328,7 +332,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -357,7 +361,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -386,7 +390,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -415,7 +419,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -442,30 +446,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
-                mockConsentPreferences
-            );
-        });
-    });
-
-    describe('trackCommerceAgentEngagement', () => {
-        it('should track commerce agent engagement with surface', async () => {
-            vi.mocked(useAuth).mockReturnValue(mockAuth);
-
-            const { result } = renderHook(() => useAnalytics());
-
-            await result.current.trackCommerceAgentEngagement({ surface: 'header' });
-
-            expect(mockAnalytics.track).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    eventType: 'commerce_agent_engagement',
-                    surface: 'header',
-                    payload: {
-                        userType: 'registered',
-                        usid: 'test-usid',
-                    },
-                }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -492,7 +473,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -518,7 +499,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -542,7 +523,7 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -605,7 +586,7 @@ describe('useAnalytics', () => {
                     eventType: 'view_page',
                     path: '/test-page',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -622,7 +603,7 @@ describe('useAnalytics', () => {
                 expect.objectContaining({
                     eventType: 'view_product',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 customPreferences
             );
         });

@@ -19,9 +19,9 @@ import {
     type RouterContextProvider,
     type ActionFunctionArgs,
 } from 'react-router';
-import { type AuthResponse, AuthTokenInvalidError } from '@salesforce/storefront-next-runtime/scapi';
+import { type AuthResponse, AuthTokenInvalidError } from '@/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
-import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
+import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/storage-map';
 import {
     authContext,
     authStorageContext,
@@ -31,6 +31,7 @@ import {
     updateStorageAndCache,
     getSLASAccessTokenClaims,
     getCustomerIdFromClaims,
+    deriveUserTypeFromClaims,
     isTrackingConsentEnabled,
     AUTH_TOKEN_INVALID_ERROR,
     COOKIE_REFRESH_TOKEN_GUEST,
@@ -40,21 +41,23 @@ import {
     COOKIE_CUSTOMER_ID,
     COOKIE_ENC_USER_ID,
     COOKIE_IDP_ACCESS_TOKEN,
+    COOKIE_ID_TOKEN,
+    COOKIE_IDP_REFRESH_TOKEN,
     COOKIE_CODE_VERIFIER,
     COOKIE_TRACKING_CONSENT,
     COOKIE_DWSID,
     COOKIE_AUTH_RECOVERY_GUARD,
 } from '@/middlewares/auth.utils';
-import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils.server';
 import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
-import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context-constants';
+import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context/constants';
 
 /**
  * Refresh access token using refresh token.
@@ -114,7 +117,7 @@ export async function loginGuestUser(
     const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const performanceName = isSlasPrivate
         ? PERFORMANCE_MARKS.authLoginGuestUserPrivate
@@ -147,12 +150,14 @@ export async function loginRegisteredUser(
     context: Readonly<RouterContextProvider>,
     email: string,
     password: string,
-    _options?: { customParameters?: Record<string, unknown> }
+    options?: { customParameters?: Record<string, unknown>; skipUsid?: boolean }
 ): Promise<AuthResponse> {
     const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const { usid } = getAuth(context);
+    // Skip the session USID when requested (e.g. after an email update where the current
+    // USID is tied to the old loginId identity). Omitting it lets SLAS create a fresh session.
+    const { usid } = options?.skipUsid ? { usid: undefined } : getAuth(context);
 
     // Get tracking consent from auth context (populated from cookies by middleware)
     // This ensures existing tracking consent preference from guest session propagates to registered user session
@@ -201,6 +206,16 @@ export async function authorizePasswordless(
         userid: string;
         callbackUri?: string;
         redirectPath?: string;
+        registerCustomer?: boolean;
+        firstName?: string;
+        lastName?: string;
+        /**
+         * When true, asks SLAS to fail the authorize call (HTTP 400) for shoppers whose
+         * email is registered but unverified, instead of the default 200 / no-OTP behavior.
+         * The storefront uses this to route unverified shoppers to standard password
+         * login up front rather than opening an OTP modal that will never receive a code.
+         */
+        strictVerify?: boolean;
     }
 ) {
     const performanceTimer = context.get(performanceTimerContext);
@@ -210,7 +225,7 @@ export async function authorizePasswordless(
     const session = getAuth(context);
     const userId = parameters.userid;
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const passwordlessCallback = appConfig.features.passwordlessLogin.callbackUri;
     const mode = appConfig.features.passwordlessLogin.mode;
 
@@ -221,7 +236,7 @@ export async function authorizePasswordless(
     } else if (passwordlessCallback) {
         baseCallbackUri = isAbsoluteURL(passwordlessCallback)
             ? passwordlessCallback
-            : `${getAppOrigin()}${passwordlessCallback}`;
+            : `${getAppOrigin(context)}${passwordlessCallback}`;
     }
 
     const finalCallbackUri =
@@ -243,6 +258,13 @@ export async function authorizePasswordless(
             usid: usid ? String(usid) : undefined,
             mode,
             ...(locale && { locale }),
+            ...(parameters.strictVerify && { strictVerify: true }),
+            ...(parameters.registerCustomer && {
+                registerCustomer: parameters.registerCustomer,
+                firstName: parameters.firstName,
+                lastName: parameters.lastName,
+                email: userId,
+            }),
         });
         logger.debug('Auth: authorizePasswordless succeeded');
         return result;
@@ -267,13 +289,13 @@ export async function getPasswordResetToken(
     performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'start');
 
     const clients = createApiClients(context);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const resetPasswordCallbackUri = appConfig.features.resetPassword.callbackUri;
     let callbackUri: string | undefined;
     if (resetPasswordCallbackUri) {
         callbackUri = isAbsoluteURL(resetPasswordCallbackUri)
             ? resetPasswordCallbackUri
-            : `${getAppOrigin()}${resetPasswordCallbackUri}`;
+            : `${getAppOrigin(context)}${resetPasswordCallbackUri}`;
     }
 
     const mode = appConfig.features.resetPassword.mode;
@@ -372,7 +394,6 @@ export async function getPasswordLessAccessToken(
     try {
         const result = await clients.auth.passwordless.exchangeToken({
             pwdlessLoginToken,
-            usid: usid ? String(usid) : undefined,
             ...(dnt !== undefined && { dnt }),
         });
         logger.debug('Auth: getPasswordLessAccessToken succeeded');
@@ -382,6 +403,81 @@ export async function getPasswordLessAccessToken(
         throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
+    }
+}
+
+/**
+ * Request OTP code for email verification.
+ * Uses the dedicated OTP endpoints (not passwordless login) to verify
+ * email ownership without creating a new authentication session.
+ */
+export async function requestOtp(
+    context: ActionFunctionArgs['context'],
+    parameters: {
+        email: string;
+    }
+) {
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authRequestOtp, 'start');
+
+    const clients = createApiClients(context);
+    const appConfig = getConfig(context);
+    const callbackUri = appConfig.features.otpRequest.callbackUri;
+
+    const mode = appConfig.features.otpRequest.mode;
+
+    const locale = getLocale(context);
+
+    const logger = getLogger(context);
+    logger.debug('Auth: requestOtp starting', { mode });
+
+    try {
+        await clients.auth.otp.request({
+            userId: parameters.email,
+            email: parameters.email,
+            mode,
+            ...(callbackUri && { callbackUri }),
+            ...(locale && { locale }),
+        });
+        logger.debug('Auth: requestOtp succeeded');
+    } catch (error) {
+        logger.error('Auth: requestOtp failed', { error });
+        throw error;
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authRequestOtp, 'end');
+    }
+}
+
+/**
+ * Verify an OTP code for email verification.
+ * This validates the code without creating a new authentication session.
+ */
+export async function verifyOtp(
+    context: ActionFunctionArgs['context'],
+    parameters: {
+        pwdActionToken: string;
+        email: string;
+    }
+) {
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authVerifyOtp, 'start');
+
+    const clients = createApiClients(context);
+
+    const logger = getLogger(context);
+    logger.debug('Auth: verifyOtp starting');
+
+    try {
+        await clients.auth.otp.verify({
+            pwdActionToken: parameters.pwdActionToken,
+            userId: parameters.email,
+        });
+        logger.debug('Auth: verifyOtp succeeded');
+    } catch (error) {
+        logger.error('Auth: verifyOtp failed', { error });
+        throw error;
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authVerifyOtp, 'end');
     }
 }
 
@@ -420,23 +516,27 @@ const retrieveAuthStorageData = async (
     }
     // Token missing or expired - proceed to refresh flow below
 
-    // If access token missing but refresh token exists, use it to get new access token
+    // If access token missing but refresh token exists, use it to get new access token.
+    // The eventual userType is derived from the JWT inside updateAuthStorageDataByTokenResponse;
+    // we don't need to know it ahead of time.
     if (typeof refreshToken === 'string' && refreshToken.length) {
         const storedUserType = storage.get('userType');
-        const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
-        logger.debug('Auth: access token expired or missing, refreshing', { userType });
+        logger.debug('Auth: access token expired or missing, refreshing', { storedUserType });
         try {
             // Use refresh token operation and update storage/cache
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'start');
             const tokenResponse = await refreshAccessToken(context, refreshToken);
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'end');
-            await updateStorageAndCache(context, storage, cache, tokenResponse, userType);
-            logger.info('Auth: token refreshed', { userType });
+            await updateStorageAndCache(context, storage, cache, tokenResponse);
+            logger.info('Auth: token refreshed', { userType: storage.get('userType') });
             return 'tokenRefreshed';
         } catch (error) {
-            // Invalid/expired refresh token: clear tokens and fall back to guest login
-            logger.warn('Auth: refresh token failed, falling back to guest login', { error, userType });
-            storage.set('error', t('errors:accessTokenRefreshFailed'));
+            // Invalid/expired refresh token: log and fall through to guest login. We do NOT
+            // record this in storage.error — only the FINAL outcome of this function should
+            // populate the error key, so a successful guest login below leaves clean state.
+            // (Previously this set storage.error here, which leaked into a successful guest
+            // login because updateAuthStorageDataByTokenResponse doesn't clear keys on success.)
+            logger.warn('Auth: refresh token failed, falling back to guest login', { error, storedUserType });
         }
     }
 
@@ -454,12 +554,17 @@ const retrieveAuthStorageData = async (
             usid: typeof usid === 'string' && usid.length ? usid : undefined,
         });
         performanceTimer?.mark(PERFORMANCE_MARKS.authGuestLogin, 'end');
-        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        await updateStorageAndCache(context, storage, cache, tokenResponse);
         logger.info('Auth: guest session created');
         return 'guestLogin';
     } catch (error) {
+        // Final fallback failed. If SLAS issued a structurally invalid token, mark with
+        // the recovery sentinel so the post-handler check routes to handleAuthTokenInvalidation.
         logger.error('Auth: guest login failed', { error });
-        storage.set('error', t('errors:guestAccessTokenFailed'));
+        storage.set(
+            'error',
+            isAuthTokenInvalidError(error) ? AUTH_TOKEN_INVALID_ERROR : t('errors:guestAccessTokenFailed')
+        );
         return 'guestLogin';
     }
 };
@@ -554,10 +659,14 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * - `cc-nx-g`: Guest user refresh token (expires after configured period, browser auto-deletes)
  * - `cc-nx`: Registered user refresh token (expires after configured period, browser auto-deletes)
  * - `cc-at`: Access token (expires after 30 min, browser auto-deletes)
- * - `usid`: User session ID (expires with refresh token)
- * - `customerId`: Customer ID (expires with refresh token)
+ * - `usid`: User session ID (expires with refresh token). Mirrors the value derived from the access token JWT
+ *   `sub` claim. sf-next reads `usid` from the JWT, not from this cookie; the cookie is kept so hybrid
+ *   storefronts can forward it to ECOM, which does not parse the access token for `usid`.
  * - `cc-idp-at`: IDP access token (for social login, expires with SLAS access token)
  * - `cc-cv`: OAuth2 PKCE code verifier (server-only httpOnly cookie, short-lived, 5 min expiry)
+ *
+ * `customerId` is NOT persisted as a cookie — it is derived per-request from the SLAS access token JWT
+ * `isb` claim (via `gcid`/`rcid`).
  *
  * User type is determined by which refresh token cookie exists (cc-nx-g = guest, cc-nx = registered).
  * Only one refresh token cookie exists at a time - a user cannot be both guest and registered.
@@ -571,6 +680,11 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * - If access token exists and not expired (checked via JWT decode) → use it
  * - If access token missing/expired but refresh token exists → refresh to get new access token
  * - If both missing → guest login
+ * - If the JWT decodes but is missing required claims (`isb` gcid/rcid, or `sub` usid) →
+ *   throw `AuthTokenInvalidError` to route through `handleAuthTokenInvalidation`, which
+ *   clears auth cookies and emits a 307 redirect with fresh state. SLAS guarantees these
+ *   claims; reaching this path indicates a critical token-integrity failure (e.g. a bug
+ *   in token issuance) rather than a normal auth lifecycle event.
  *
  * The router context is available in other middlewares, loader and action functions. Use it as root middleware,
  * to ensure the Commerce API context portion becomes available throughout the whole application.
@@ -594,10 +708,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const refreshTokenGuest = getAuthCookie(COOKIE_REFRESH_TOKEN_GUEST);
     const refreshTokenRegistered = getAuthCookie(COOKIE_REFRESH_TOKEN_REGISTERED);
     const accessToken = getAuthCookie(COOKIE_ACCESS_TOKEN);
-    const usid = getAuthCookie(COOKIE_USID);
-    const customerId = getAuthCookie(COOKIE_CUSTOMER_ID);
     const encUserId = getAuthCookie(COOKIE_ENC_USER_ID);
     const idpAccessToken = getAuthCookie(COOKIE_IDP_ACCESS_TOKEN);
+    const idToken = getAuthCookie(COOKIE_ID_TOKEN);
+    const idpRefreshToken = getAuthCookie(COOKIE_IDP_REFRESH_TOKEN);
     const codeVerifier = getAuthCookie(COOKIE_CODE_VERIFIER);
     const dwsid = getAuthCookie(COOKIE_DWSID);
     const authRecoveryGuard = getAuthCookie(COOKIE_AUTH_RECOVERY_GUARD);
@@ -610,19 +724,31 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
             ? trackingConsentCookieValue
             : undefined;
 
+    // Read the existing `usid` cookie. The cookie itself is intentionally kept (sf-next no
+    // longer reads it for its own auth flow — `usid` is derived from the access token JWT
+    // sub claim — but the value must remain available as a cookie so hybrid storefronts can
+    // forward it to ECOM, which does not parse the JWT for `usid`).
+    // The cookie value is also used as a fallback on the cold-start guest-login path when no
+    // access token is present, so SLAS can preserve session continuity.
+    const usidCookieValue = getAuthCookie(COOKIE_USID);
+
     // Track if we need to delete the tracking consent cookie due to mismatch
     let hasTrackingConsentMismatch = false;
-    // Track if customer ID from access token differs from cookie (hybrid storefront session change)
-    let hasCustomerIdMismatch = false;
 
     // Create cookie instances for serialization (Set-Cookie headers)
     const refreshTokenGuestCookie = createCookie<string>(COOKIE_REFRESH_TOKEN_GUEST, cookieConfig, context);
     const refreshTokenRegisteredCookie = createCookie<string>(COOKIE_REFRESH_TOKEN_REGISTERED, cookieConfig, context);
     const accessTokenCookie = createCookie<string>(COOKIE_ACCESS_TOKEN, cookieConfig, context);
+    // `usid` cookie is written from the JWT-derived value so hybrid storefronts can forward it to ECOM.
     const usidCookie = createCookie<string>(COOKIE_USID, cookieConfig, context);
-    const customerIdCookie = createCookie<string>(COOKIE_CUSTOMER_ID, cookieConfig, context);
+    // Deletion-only instance: sf-next no longer writes `customerId`, but the destroy path
+    // clears any lingering legacy cookie so logged-out browsers don't keep transmitting the
+    // real customer ID for up to 30/90 days. Not used in the hot path.
+    const customerIdDeletionCookie = createCookie<string>(COOKIE_CUSTOMER_ID, cookieConfig, context);
     const encUserIdCookie = createCookie<string>(COOKIE_ENC_USER_ID, cookieConfig, context);
     const idpAccessTokenCookie = createCookie<string>(COOKIE_IDP_ACCESS_TOKEN, cookieConfig, context);
+    const idTokenCookie = createCookie<string>(COOKIE_ID_TOKEN, cookieConfig, context);
+    const idpRefreshTokenCookie = createCookie<string>(COOKIE_IDP_REFRESH_TOKEN, cookieConfig, context);
     const dwsidCookie = createCookie<string>(COOKIE_DWSID, cookieConfig, context);
     const authRecoveryCookie = createCookie<string>(COOKIE_AUTH_RECOVERY_GUARD, cookieConfig, context);
     // Code verifier cookie is httpOnly for security (OAuth2 PKCE flow, server-only)
@@ -635,39 +761,36 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const shopperContextCookie = createCookie<string>(SHOPPER_CONTEXT_COOKIE_NAME_BASE, cookieConfig, context);
     const sourceCodeCookie = createCookie<string>(SOURCE_CODE_COOKIE_NAME_BASE, cookieConfig, context);
 
-    // Determine user type and refresh token from which cookie exists
-    // Only one should exist at a time (guest and registered are mutually exclusive)
-    //
-    // IMPORTANT: userType is NEVER written to cookies. It is ALWAYS derived at runtime
-    // from which refresh token cookie exists:
-    // - cc-nx exists → registered user
-    // - cc-nx-g exists → guest user
-    // - neither exists → fallback to guest
-    //
-    // userType is stored in authStorage/authCache for easy in-app access,
-    // and is set explicitly during login flows for in-memory state management.
-    let userType: 'guest' | 'registered';
-    let refreshToken: string | null;
+    // Decode access token claims once for expiry, tracking consent, customer ID, usid, and userType
+    const claims = accessToken ? getSLASAccessTokenClaims(accessToken) : null;
+    const claimsAreDecodable = claims !== null && claims.expiry !== null;
 
-    if (refreshTokenRegistered) {
-        // cc-nx exists → user is registered
+    // Determine userType and refresh token.
+    //
+    // IMPORTANT: the access-token JWT is the single source of truth for `userType`. Cookie names
+    // (`cc-nx` / `cc-nx-g`) are only consulted as a cold-start fallback when no access token has
+    // been issued yet, and as the response-side decision for which refresh-cookie to write or
+    // delete (still keyed off the JWT-derived value).
+    //
+    // The matching refresh token is selected by the JWT-derived userType; the "other"
+    // refresh-cookie, if present, is ignored on read and will be deleted on write below.
+    let userType: 'guest' | 'registered';
+    if (claimsAreDecodable) {
+        userType = deriveUserTypeFromClaims(claims);
+    } else if (refreshTokenRegistered) {
+        // Cold-start with a registered refresh-cookie but no access token
         userType = 'registered';
-        refreshToken = refreshTokenRegistered;
-    } else if (refreshTokenGuest) {
-        // cc-nx-g exists → user is guest
-        userType = 'guest';
-        refreshToken = refreshTokenGuest;
     } else {
-        // No refresh token exists - will fallback to guest login
+        // No refresh-cookie or guest cookie — will fallback to guest login
         userType = 'guest';
-        refreshToken = null;
     }
+    const refreshToken: string | null = userType === 'registered' ? refreshTokenRegistered : refreshTokenGuest;
 
     logger.debug('Auth middleware: cookies parsed', {
         userType,
+        userTypeSource: claimsAreDecodable ? 'jwt' : 'cookie',
         hasRefreshToken: !!refreshToken,
         hasAccessToken: !!accessToken,
-        hasUsid: !!usid,
     });
 
     // Reconstruct authData from individual cookies
@@ -676,8 +799,6 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const authData: Partial<AuthStorageData> = {};
     if (refreshToken) authData.refreshToken = refreshToken;
 
-    // Decode access token claims once for expiry, tracking consent, and customer ID
-    const claims = accessToken ? getSLASAccessTokenClaims(accessToken) : null;
     if (accessToken) {
         authData.accessToken = accessToken;
         if (claims?.expiry) authData.accessTokenExpiry = claims.expiry;
@@ -695,26 +816,29 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
             }
         }
     }
-    if (usid) authData.usid = usid;
-    // Derive customer ID from access token isb claim (source of truth for hybrid storefronts)
-    // Falls back to cookie value if token is absent or claim cannot be parsed
+    // Soft-populate usid/customerId from JWT claims. JWT-integrity validation (which throws
+    // AuthTokenInvalidError when claims are missing) runs later inside the try/catch around
+    // `next()` so it can be routed through handleAuthTokenInvalidation for graceful recovery.
+    // Cold-start: when there is no access token at all, fall back to the existing usid
+    // cookie value so guest-login can pass it to SLAS for session continuity.
+    if (claims?.usid) {
+        authData.usid = claims.usid;
+    } else if (usidCookieValue) {
+        authData.usid = usidCookieValue;
+    }
     if (claims) {
-        const tokenCustomerId = getCustomerIdFromClaims(claims, userType);
+        const tokenCustomerId = getCustomerIdFromClaims(claims);
         if (tokenCustomerId) {
             authData.customerId = tokenCustomerId;
-            if (tokenCustomerId !== customerId) {
-                hasCustomerIdMismatch = true;
-                logger.info('Auth middleware: customer ID mismatch detected');
-            }
-        } else if (customerId) {
-            authData.customerId = customerId;
         }
-    } else if (customerId) {
-        authData.customerId = customerId;
     }
     if (encUserId) authData.encUserId = encUserId;
     // Add IDP access token for social login (if present)
     if (idpAccessToken) authData.idpAccessToken = idpAccessToken;
+    // Add OIDC id_token (if present)
+    if (idToken) authData.idToken = idToken;
+    // Add IDP refresh token (if present)
+    if (idpRefreshToken) authData.idpRefreshToken = idpRefreshToken;
     // Add code verifier for OAuth2 PKCE flow (if present)
     if (codeVerifier) authData.codeVerifier = codeVerifier;
     // Add dwsid for hybrid storefronts (if present)
@@ -729,9 +853,15 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         Object.entries(authData) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );
 
-    // Mark storage as updated if tracking consent or customer ID mismatch was detected
+    // Mark storage as updated if tracking consent mismatch was detected
     // This ensures the response section runs and writes corrected cookies
-    if (hasTrackingConsentMismatch || hasCustomerIdMismatch) {
+    if (hasTrackingConsentMismatch) {
+        authStorage.set('isUpdated', true);
+    }
+    // Mark storage as updated whenever the `usid` cookie is missing or stale relative to
+    // the JWT, so the response section can write a fresh cookie. The cookie value is what
+    // hybrid storefronts forward to ECOM, so it must not drift from the JWT source of truth.
+    if (authData.usid && (!usidCookieValue || usidCookieValue !== authData.usid)) {
         authStorage.set('isUpdated', true);
     }
 
@@ -759,6 +889,31 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
 
     // Execute handler (loader/action/render)
     try {
+        // JWT-integrity validation: SLAS guarantees usid in `sub` and gcid/rcid in `isb`.
+        // A decoded-but-missing-claim token is a critical token-integrity failure — throw
+        // AuthTokenInvalidError so the existing recovery path below clears cookies and
+        // emits a 307 redirect with fresh auth state instead of trapping the user in a
+        // 500 loop on the malformed cookie.
+        //
+        // Only validate when the original cookie token survived (`tokenValid`). After a
+        // refresh or guest login, the local `claims` is stale — it reflects the OLD cookie
+        // — and the just-issued token has already been validated inside
+        // `updateAuthStorageDataByTokenResponse`. Re-validating with stale claims would
+        // trigger a redundant recovery cycle.
+        //
+        // When `authAction` is undefined (retrieveAuthStorageData rejected outright, rare),
+        // the integrity check is skipped; any downstream SCAPI 401 routes through the
+        // existing post-handler recovery via the storage error sentinel.
+        if (authAction === 'tokenValid' && claims) {
+            if (!claims.usid) {
+                logger.error('Auth: SLAS access token sub claim is missing the usid segment');
+                throw new AuthTokenInvalidError('SLAS access token sub claim is missing the usid segment');
+            }
+            if (!getCustomerIdFromClaims(claims)) {
+                logger.error('Auth: SLAS access token isb claim is missing the customer ID (gcid/rcid)');
+                throw new AuthTokenInvalidError('SLAS access token isb claim is missing the customer ID (gcid/rcid)');
+            }
+        }
         response = await next();
     } catch (error) {
         // Only handle auth-token invalidation; everything else should bubble.
@@ -837,9 +992,13 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.append('Set-Cookie', await refreshTokenRegisteredCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await accessTokenCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await usidCookie.serialize('', deleteCookieConfig));
-        response.headers.append('Set-Cookie', await customerIdCookie.serialize('', deleteCookieConfig));
+        // Clear any lingering legacy customerId cookie on logout/error so the browser stops
+        // transmitting the real customer ID once the session is destroyed.
+        response.headers.append('Set-Cookie', await customerIdDeletionCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await encUserIdCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await idpAccessTokenCookie.serialize('', deleteCookieConfig));
+        response.headers.append('Set-Cookie', await idTokenCookie.serialize('', deleteCookieConfig));
+        response.headers.append('Set-Cookie', await idpRefreshTokenCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await dwsidCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await codeVerifierCookie.serialize('', deleteHttpOnlyCookieConfig));
         response.headers.append('Set-Cookie', await trackingConsentCookie.serialize('', deleteCookieConfig));
@@ -917,36 +1076,21 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
             );
         }
 
-        // Set usid cookie with refresh token expiry (same as refresh token)
+        // Set usid cookie. The cookie value mirrors the JWT-derived usid so hybrid storefronts
+        // can forward it to ECOM, which does not parse the access token for usid. sf-next
+        // reads usid from the JWT, not from this cookie (except as a cold-start continuity
+        // fallback). Expiry tracks the refresh token when available; falls back to the
+        // access-token expiry on the drift-recovery path where no token refresh occurred.
         const usidValue = authStorage.get('usid');
-        if (usidValue && typeof usidValue === 'string' && refreshTokenExpiryValue) {
+        const usidCookieExpiry = refreshTokenExpiryValue ?? accessTokenExpiryValue;
+        if (usidValue && typeof usidValue === 'string' && usidCookieExpiry) {
             response.headers.append(
                 'Set-Cookie',
                 await usidCookie.serialize(
                     usidValue,
                     getCookieConfig(
                         {
-                            expires: new Date(refreshTokenExpiryValue),
-                        },
-                        context
-                    )
-                )
-            );
-        }
-
-        // Set customerId cookie with refresh token expiry (same as refresh token)
-        // Falls back to access token expiry when refresh token expiry is unavailable
-        // (e.g., when only a customer ID mismatch triggered the update, not a token refresh)
-        const customerIdValue = authStorage.get('customerId');
-        const customerIdCookieExpiry = refreshTokenExpiryValue ?? accessTokenExpiryValue;
-        if (customerIdValue && typeof customerIdValue === 'string' && customerIdCookieExpiry) {
-            response.headers.append(
-                'Set-Cookie',
-                await customerIdCookie.serialize(
-                    customerIdValue,
-                    getCookieConfig(
-                        {
-                            expires: new Date(customerIdCookieExpiry),
+                            expires: new Date(usidCookieExpiry),
                         },
                         context
                     )
@@ -982,6 +1126,42 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                     getCookieConfig(
                         {
                             expires: new Date(idpAccessTokenExpiryValue),
+                        },
+                        context
+                    )
+                )
+            );
+        }
+
+        // Set id_token cookie with access-token expiry (OIDC id_token tracks the access-token
+        // JWT exp — same rule PWA Kit uses, see process-token-response.js).
+        const idTokenValue = authStorage.get('idToken');
+        if (idTokenValue && typeof idTokenValue === 'string' && accessTokenExpiryValue) {
+            response.headers.append(
+                'Set-Cookie',
+                await idTokenCookie.serialize(
+                    idTokenValue,
+                    getCookieConfig(
+                        {
+                            expires: new Date(accessTokenExpiryValue),
+                        },
+                        context
+                    )
+                )
+            );
+        }
+
+        // Set idp_refresh_token cookie with refresh-token expiry (IDP refresh token shares the
+        // SLAS refresh-token TTL — same rule PWA Kit uses).
+        const idpRefreshTokenValue = authStorage.get('idpRefreshToken');
+        if (idpRefreshTokenValue && typeof idpRefreshTokenValue === 'string' && refreshTokenExpiryValue) {
+            response.headers.append(
+                'Set-Cookie',
+                await idpRefreshTokenCookie.serialize(
+                    idpRefreshTokenValue,
+                    getCookieConfig(
+                        {
+                            expires: new Date(refreshTokenExpiryValue),
                         },
                         context
                     )
@@ -1132,7 +1312,7 @@ export const updateAuth = (
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     if (!storage || !cache || !promiseCache) {
         throw new Error('updateAuth must be used within the Commerce API middleware');
     }
@@ -1205,7 +1385,7 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
     try {
         // Get new guest session (no usid - start completely fresh)
         const tokenResponse = await loginGuestUser(context, { usid: undefined });
-        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        await updateStorageAndCache(context, storage, cache, tokenResponse);
         promiseCache.ref = createAuthPromise(context, cache.ref);
 
         // Mark for destruction - triggers cookie deletion in response section

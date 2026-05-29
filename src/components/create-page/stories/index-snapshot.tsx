@@ -16,6 +16,7 @@
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,

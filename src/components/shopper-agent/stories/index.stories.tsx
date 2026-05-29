@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import ShopperAgent from '../index';
+import { mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
 const validConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -25,7 +26,7 @@ const validConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: 'RefArchGlobal',
+    siteId: mockSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgent> = {
@@ -60,8 +61,8 @@ type Story = StoryObj<typeof ShopperAgent>;
 export const WithValidConfig: Story = {
     args: {
         commerceAgentConfiguration: validConfig,
-        locale: 'en-US',
-        currency: 'USD',
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
     },
     parameters: {
         docs: {
@@ -75,7 +76,7 @@ export const WithValidConfig: Story = {
 export const InvalidConfig: Story = {
     args: {
         commerceAgentConfiguration: undefined,
-        locale: 'en-US',
+        locale: mockAltSiteObject.defaultLocale,
     },
     parameters: {
         docs: {
@@ -89,8 +90,8 @@ export const InvalidConfig: Story = {
 export const WithLocaleAndCurrency: Story = {
     args: {
         commerceAgentConfiguration: validConfig,
-        locale: 'en-GB',
-        currency: 'GBP',
+        locale: mockSiteObject.defaultLocale,
+        currency: mockSiteObject.defaultCurrency,
         userId: 'user-123',
     },
 };

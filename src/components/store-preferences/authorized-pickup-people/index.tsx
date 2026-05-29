@@ -217,7 +217,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
             <Card className="rounded-none shadow-none">
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <CardTitle className="text-lg-xl">
+                        <CardTitle className="text-lg">
                             {t('storePreferences.authorizedPickupPeople.heading')}
                         </CardTitle>
                         <CardDescription className="mt-1">
@@ -332,10 +332,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                 }}>
                 <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle
-                            style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
-                            {modalTitle}
-                        </DialogTitle>
+                        <DialogTitle className="text-lg">{modalTitle}</DialogTitle>
                     </DialogHeader>
 
                     <Form {...form}>
@@ -414,6 +411,9 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                         <FormControl>
                                             <div className="w-full [&_[data-slot=native-select-wrapper]]:w-full">
                                                 <NativeSelect
+                                                    aria-label={t(
+                                                        'storePreferences.authorizedPickupPeople.modal.relationship'
+                                                    )}
                                                     value={field.value}
                                                     onChange={(e) => field.onChange(e.target.value)}
                                                     onBlur={field.onBlur}

@@ -13,46 +13,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ImageNavArrows from '../index';
 
-function ImageNavArrowsWrapper({ imageCount = 5, size = 'sm' }: { imageCount?: number; size?: 'sm' | 'lg' }) {
+type SyntheticArgs = {
+    imageCount: number;
+    size: 'sm' | 'lg';
+    className: string;
+};
+
+function ImageNavArrowsWrapper({ imageCount, size, className }: SyntheticArgs) {
     const [index, setIndex] = useState(0);
     return (
         <div className="relative w-80 h-60 bg-muted flex items-center justify-center rounded-none">
             <span className="text-muted-foreground text-sm">
                 Image {index + 1} of {imageCount}
             </span>
-            <ImageNavArrows imageCount={imageCount} onIndexChange={setIndex} size={size} />
+            <ImageNavArrows
+                imageCount={imageCount}
+                onIndexChange={setIndex}
+                size={size}
+                className={className || undefined}
+            />
         </div>
     );
 }
 
-const meta: Meta<typeof ImageNavArrows> = {
+const meta: Meta<ComponentType<SyntheticArgs>> = {
     title: 'NAVIGATION/ImageNavArrows',
-    component: ImageNavArrows,
+    component: ImageNavArrows as unknown as ComponentType<SyntheticArgs>,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
     },
+    argTypes: {
+        imageCount: {
+            control: { type: 'number', min: 1, max: 20 },
+            description: 'Number of images the arrows wrap around',
+        },
+        size: {
+            control: { type: 'radio' },
+            options: ['sm', 'lg'],
+            description: '`sm` for PLP/cart (compact), `lg` for PDP (larger button + shadow)',
+        },
+        className: {
+            control: 'text',
+            description: 'Additional CSS classes merged onto both arrow buttons',
+        },
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<ComponentType<SyntheticArgs>>;
 
-export const Small: Story = {
-    render: () => <ImageNavArrowsWrapper size="sm" />,
-};
-
-export const Large: Story = {
-    render: () => <ImageNavArrowsWrapper size="lg" />,
-};
-
+/**
+ * Default — small arrow buttons (PLP/cart variant) wrapped in an 80×60
+ * harness so the absolutely-positioned arrows have something to anchor
+ * to. Drive every variant from the Controls panel:
+ *
+ *   - `size: 'lg'` — switches to PDP variant (`p-3` padding,
+ *     `size-6` chevron, `left-4`/`right-4`, `shadow-lg`)
+ *   - `imageCount` — changes the wrap-around length (used by play test
+ *     for backward-wrap from index 0 → imageCount - 1)
+ *   - `className` — pass extra Tailwind classes to override default
+ *     button styling
+ *
+ * The play test exercises forward, backward, and backward-wrap navigation.
+ */
 export const Default: Story = {
-    render: () => <ImageNavArrowsWrapper />,
+    args: {
+        imageCount: 5,
+        size: 'sm',
+        className: '',
+    },
+    render: (args) => <ImageNavArrowsWrapper {...args} />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -62,18 +99,14 @@ export const Default: Story = {
         await expect(prevButton).toBeInTheDocument();
         await expect(nextButton).toBeInTheDocument();
 
-        // Starts at image 1
         await expect(canvas.getByText('Image 1 of 5')).toBeInTheDocument();
 
-        // Click next
         await userEvent.click(nextButton);
         await expect(canvas.getByText('Image 2 of 5')).toBeInTheDocument();
 
-        // Click prev
         await userEvent.click(prevButton);
         await expect(canvas.getByText('Image 1 of 5')).toBeInTheDocument();
 
-        // Wrap around backward
         await userEvent.click(prevButton);
         await expect(canvas.getByText('Image 5 of 5')).toBeInTheDocument();
     },

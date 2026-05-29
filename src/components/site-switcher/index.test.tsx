@@ -36,17 +36,22 @@ vi.mock('react-router', async (importOriginal) => {
 
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import SiteSwitcher from './index';
+import { resourceRoutes } from '@/route-paths';
 
-const site = mockConfig.commerce.sites[0];
+const site = mockSiteObject;
 const siteWithAlias = { ...site, alias: mockConfig.siteAliasMap?.[site.id] };
 
 function renderSiteSwitcher(configOverride?: typeof mockConfig) {
     const config = configOverride ?? mockConfig;
     return render(
         <ConfigProvider config={config}>
-            <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
+            <SiteProvider
+                site={siteWithAlias}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <SiteSwitcher />
             </SiteProvider>
         </ConfigProvider>
@@ -95,15 +100,15 @@ describe('SiteSwitcher', () => {
         renderSiteSwitcher();
 
         const select = screen.getByRole('combobox', { name: /select site/i });
-        await userEvent.selectOptions(select, 'RefArch');
+        await userEvent.selectOptions(select, mockAltSiteObject.id);
 
         expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
 
         const formData = mockSubmit.mock.calls[0][0] as FormData;
         expect(formData.get('type')).toBe('site');
-        expect(JSON.parse(formData.get('payload') as string)).toEqual({ siteId: 'RefArch' });
+        expect(JSON.parse(formData.get('payload') as string)).toEqual({ siteId: mockAltSiteObject.id });
     });
 });

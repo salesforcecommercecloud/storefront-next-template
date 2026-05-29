@@ -49,8 +49,8 @@ export interface CarouselSectionProps {
     children: ReactNode;
 }
 
-const defaultLeftTitleClassName = 'text-2xl md:text-3xl font-normal text-foreground tracking-tight';
-const defaultCenterTitleClassName = 'text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight';
+const defaultLeftTitleClassName = 'text-4xl font-medium leading-none tracking-[-0.9px] text-foreground';
+const defaultCenterTitleClassName = 'text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { carouselItemImageWidths, productCarouselItemAspectRatio } from './constants';
@@ -98,7 +98,9 @@ export function CarouselSection({
             <div className="text-center">
                 {title && <h2 className={titleClassName ?? defaultCenterTitleClassName}>{title}</h2>}
                 {subtitle && (
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
+                    <p className="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto">
+                        {subtitle}
+                    </p>
                 )}
             </div>
         ) : (

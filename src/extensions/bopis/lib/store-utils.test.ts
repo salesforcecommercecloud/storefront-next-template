@@ -17,7 +17,7 @@
 import { describe, test, expect } from 'vitest';
 import { getStoreName, getPickupStoreFromMap, orderAddressFromStoreAddress, isPickupAddressSet } from './store-utils';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@/scapi';
 
 describe('store-utils', () => {
     describe('getStoreName', () => {

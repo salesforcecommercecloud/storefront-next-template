@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useEffect } from 'react';
 import { useLoaderData, useNavigation } from 'react-router';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { loader } from '@/routes/_app.account.store-preferences';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from '@/components/ui/card';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
@@ -26,11 +26,6 @@ import { useToast } from '@/components/toast';
 import ChangeStoreButton from './change-store-button';
 import StoreAddress from '@/extensions/store-locator/components/store-locator/address';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
-
-interface LoaderData {
-    preferredStore: ShopperStores.schemas['Store'] | null;
-    error: string | null;
-}
 
 /**
  * Preferred Store for Pickup section.
@@ -46,7 +41,7 @@ interface LoaderData {
  */
 export default function PreferredStore(): ReactElement {
     const { t } = useTranslation('account');
-    const loaderData = useLoaderData<LoaderData>();
+    const loaderData = useLoaderData<typeof loader>();
     const { preferredStore, error } = loaderData || { preferredStore: null, error: null };
     const { addToast } = useToast();
     const navigation = useNavigation();
@@ -65,7 +60,7 @@ export default function PreferredStore(): ReactElement {
         <Card className="rounded-none shadow-none">
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <CardTitle className="text-lg-xl">{t('storePreferences.preferredStore.heading')}</CardTitle>
+                    <CardTitle className="text-lg">{t('storePreferences.preferredStore.heading')}</CardTitle>
                     <CardDescription className="mt-1">
                         {t('storePreferences.preferredStore.description')}
                     </CardDescription>

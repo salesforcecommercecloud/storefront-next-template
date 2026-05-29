@@ -15,51 +15,60 @@
  */
 
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperBasketsV2, ShopperOrders, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperStores } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
+import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { getStoreIdsFromBasket } from '@/extensions/bopis/lib/basket-utils';
 import { getStoreIdsFromOrder } from '@/extensions/bopis/lib/order-utils';
 
 /**
  * Fetches store details for a list of store IDs.
  *
- * This function fetches the corresponding store data from the Commerce API.
+ * Wraps SCAPI's `shopperStores.getStores` with operation-context logging and
+ * normalizes any thrown error into `NormalizedApiError` for consistent downstream handling.
+ *
  * @param context - Router context
- * @param storeIds - Store IDs to fetch stores for
- * @returns Promise that resolves to a Map of store IDs to store data
+ * @param storeIds - Store IDs to fetch
+ * @returns Map of store IDs to store data (empty when input is empty or response has no data)
+ * @throws {NormalizedApiError} When the API request fails
  */
 export async function fetchStores(
     context: Readonly<RouterContextProvider>,
     storeIds: string[]
 ): Promise<Map<string, ShopperStores.schemas['Store']>> {
-    // Early return if no stores found
     if (storeIds.length === 0) {
         return new Map();
     }
 
-    // Fetch store details for all unique store IDs
+    const logger = getLogger(context);
     const clients = createApiClients(context);
-    const { data: storesData } = await clients.shopperStores.getStores({
-        params: {
-            query: {
-                ids: storeIds.join(','),
+
+    try {
+        const { data: storesData } = await clients.shopperStores.getStores({
+            params: {
+                query: {
+                    ids: storeIds.join(','),
+                },
             },
-        },
-    });
+        });
 
-    if (!storesData?.data) {
-        return new Map();
-    }
-
-    // Transform API response into a Map: storeId → store details
-    const storesMap = new Map<string, ShopperStores.schemas['Store']>();
-    storesData.data.forEach((store) => {
-        if (store.id) {
-            storesMap.set(store.id, store);
+        if (!storesData?.data) {
+            return new Map();
         }
-    });
 
-    return storesMap;
+        const storesMap = new Map<string, ShopperStores.schemas['Store']>();
+        storesData.data.forEach((store) => {
+            if (store.id) {
+                storesMap.set(store.id, store);
+            }
+        });
+
+        return storesMap;
+    } catch (error) {
+        logger.error('shopperStores.getStores failed', { storeIds });
+        throw new NormalizedApiError(error);
+    }
 }
 
 /**

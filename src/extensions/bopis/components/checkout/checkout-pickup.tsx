@@ -28,12 +28,12 @@ import {
     getDisplayVariationValues,
     getEnrichedProducts,
     convertProductsByItemIdToProductId,
-} from '@/lib/product-utils';
+} from '@/lib/product/product-utils';
 import { ProductItemVariantImage } from '@/components/product-item';
 import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 /**
  * Props for the CheckoutPickup component.
@@ -144,7 +144,7 @@ export default function CheckoutPickup({
     return (
         <Card className="rounded-2xl">
             <CardHeader className="pt-0 pb-0 flex items-center justify-between px-6">
-                <Typography variant="h4" as="h2" className="text-lg font-semibold text-foreground">
+                <Typography variant="h4" as="h2" className="text-sm font-semibold text-foreground">
                     {tBopis('checkout.pickUp.title')}
                 </Typography>
                 {!isEditing && (
@@ -165,7 +165,7 @@ export default function CheckoutPickup({
                                 <Typography
                                     variant="h5"
                                     as="h3"
-                                    className="text-lg font-semibold m-0 p-0 leading-tight mb-0"
+                                    className="text-sm font-semibold m-0 p-0 leading-tight mb-0"
                                     style={{ marginBottom: 0 }}>
                                     {tBopis('storePickup.pickupLocationTitle')}
                                 </Typography>
@@ -221,7 +221,7 @@ export default function CheckoutPickup({
                                                         <Typography
                                                             variant="h5"
                                                             as="div"
-                                                            className="font-semibold text-lg mb-2">
+                                                            className="font-semibold text-sm mb-2">
                                                             {productItem?.productName}
                                                         </Typography>
                                                         <div className="space-y-1">
@@ -240,11 +240,11 @@ export default function CheckoutPickup({
                                                     <Typography
                                                         variant="h5"
                                                         as="div"
-                                                        className="font-semibold text-lg ml-4 whitespace-nowrap">
+                                                        className="font-semibold text-sm ml-4 whitespace-nowrap">
                                                         <CurrentPrice
                                                             price={currentPrice}
                                                             currency={currency}
-                                                            className="text-foreground text-lg font-semibold"
+                                                            className="text-foreground text-sm font-semibold"
                                                         />
                                                     </Typography>
                                                 </div>

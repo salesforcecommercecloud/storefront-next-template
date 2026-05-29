@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useMemo, useCallback, useRef, type ReactElement } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { useState, useEffect, useMemo, useCallback, type ReactElement } from 'react';
+import type { ShopperProducts } from '@/scapi';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useScapiFetcher, type ScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useToast } from '@/components/toast';
 import ProductViewProvider, { useProductView } from '@/providers/product-view';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from '@/components/product-view/product-info';
-import { useBonusProductData } from './hooks';
+import { computeInitialVariationValues } from '@/lib/product/initial-variation-values';
+import { resourceRoutes } from '@/route-paths';
 
 export interface BonusDiscountSlot {
     id: string;
@@ -45,25 +46,19 @@ export interface BonusProductModalProps {
     maxQuantity: number;
 }
 
-/**
- * Maximum height for the bonus product modal content area on desktop
- * This prevents the modal from becoming too tall on large screens
- */
 const BONUS_MODAL_CONTENT_MAX_HEIGHT = 600;
 
 /**
- * BonusProductModal - Modal for selecting bonus products
- *
- * This component provides:
- * - Full product details with images, description, and variant selection
- * - Automatic variant availability (greyed out unavailable options)
- * - Responsive 2-column layout (mobile: single column, desktop: two columns)
- * - Add to cart functionality with quantity picker
- * - Close functionality (X button, outside click, ESC key)
- *
- * @param props - Component props
- * @returns JSX element with bonus product modal
+ * `DialogContent w-full lg:max-w-4xl` (~848) with `lg:grid-cols-2 lg:gap-8` → gallery is the full inner column
+ * below `lg` and ~408 wide at `lg+`. Tight fit would be 410/232; we deliberately round `lg` main up to 420
+ * (cart-modal, child-card) and `md` thumb up to 240 (PDP) so a session that hops between surfaces shares DIS
+ * cache entries instead of fetching three near-identical variants. ~3% over-supply, no visible difference.
  */
+const GALLERY_WIDTHS = {
+    main: { base: '100vw', lg: 420 },
+    thumbnail: { base: 144, sm: 176, md: 240, lg: 96 },
+} as const;
+
 export function BonusProductModal({
     open,
     onOpenChange,
@@ -74,27 +69,13 @@ export function BonusProductModal({
     bonusDiscountSlots,
     maxQuantity: _maxQuantity,
 }: BonusProductModalProps): ReactElement {
-    // === STATE ===
-    const [currentProduct, setCurrentProduct] = useState<ShopperProducts.schemas['Product'] | null>(null);
-    const [variationValues, setVariationValues] = useState<Record<string, string>>({});
-    // Track if the original productId was a variant (not a master)
-    // When true, we should lock to that variant and hide variant selection
-    const [isLockedToVariant, setIsLockedToVariant] = useState(false);
-
-    // === HOOKS ===
     const { t } = useTranslation();
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
 
-    // Track if user has made any manual attribute changes
-    const hasUserChangedAttributesRef = useRef(false);
-
-    // Track if we're currently adding to cart to prevent toast firing on every render
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [variationValues, setVariationValues] = useState<Record<string, string>>({});
 
-    // === DATA FETCHING (Initial) ===
-    // Note: After merge, API structure changed to params.path and params.query
-    // Reference: components/cart-item-edit-modal/index.tsx uses same pattern
     const fetcher = useScapiFetcher('shopperProducts', 'getProduct', {
         params: {
             path: { id: productId },
@@ -104,63 +85,60 @@ export function BonusProductModal({
         },
     });
 
-    // === DATA LOADING & PROCESSING ===
-    // Use composite hook to manage product data loading, processing, and state resets
-    useBonusProductData({
-        open,
-        productId,
-        fetcher: fetcher as ScapiFetcher<ShopperProducts.schemas['Product']>,
-        currentProduct,
-        setIsLockedToVariant,
-        setCurrentProduct,
-        setVariationValues,
-        hasUserChangedAttributesRef,
-    });
+    // Auto-load when the modal opens and we don't yet have data. Gated on `!fetcher.errors`
+    // to avoid hammering SCAPI on a sticky error — at the cost that a transient failure won't
+    // auto-retry on reopen (user must click the Retry button). Per-open-session retry is
+    // tracked as a follow-up.
+    useEffect(() => {
+        if (open && fetcher.state === 'idle' && !fetcher.success && !fetcher.errors) {
+            void fetcher.load();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, fetcher.state, fetcher.success, fetcher.errors]);
 
-    // === TOAST NOTIFICATIONS ===
-    // Check isAddingToCart flag first to prevent toast fatigue
+    // Derive the current product from fetcher.data. useScapiFetcher keys the fetcher on the
+    // encoded productId, so when productId changes mid-session the fetcher resets and this
+    // becomes null until the new fetch resolves — no manual stale-state tracking needed.
+    const currentProduct: ShopperProducts.schemas['Product'] | null = fetcher.data ?? null;
+    const isLockedToVariant = Boolean(currentProduct?.type?.variant);
+
+    // Seed variationValues whenever a new product loads (productId switch or first open). The
+    // user can mutate variationValues via swatch clicks afterward, so this can't be derived.
+    // Note: stale selections from a previous open session may leak into the next reopen for
+    // the same productId — tracked as a follow-up.
+    useEffect(() => {
+        if (currentProduct) {
+            setVariationValues(computeInitialVariationValues(currentProduct));
+        } else {
+            setVariationValues({});
+        }
+    }, [currentProduct?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Close on success; show error toast on failure. Success toast is intentionally suppressed —
+    // the cart updates in the background and the modal closing is the user-visible confirmation.
     useEffect(() => {
         if (!isAddingToCart) {
-            // Prevent toast fatigue - only show toast when we're actively adding to cart
             return;
         }
 
-        // Only process if we have data from the fetcher and it's idle (not submitting)
         if (addToCartFetcher.state === 'idle' && addToCartFetcher.data) {
-            // Handle success
             if (addToCartFetcher.data.success && addToCartFetcher.data.basket) {
                 setIsAddingToCart(false);
-                // Show success toast with product name
-                const message = t('product:addedToCart', {
-                    productName: currentProduct?.name || productName || 'bonus product',
-                });
-                addToast(message, 'success');
-
-                // Close modal after successful add
                 onOpenChange(false);
-            }
-            // Handle error
-            else if (addToCartFetcher.data.success === false) {
+            } else if (addToCartFetcher.data.success === false) {
                 setIsAddingToCart(false);
-                // Show error toast with error details
                 const errorMessage = t('product:failedToAddToCart', {
                     error: addToCartFetcher.data.error?.message || 'Unknown error',
                 });
                 addToast(errorMessage, 'error');
-                // Note: Modal stays open on error so user can retry
             }
         }
-        //As addToast, onOpenChange are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAddingToCart, addToCartFetcher.state, addToCartFetcher.data, currentProduct?.name, productName]);
+    }, [isAddingToCart, addToCartFetcher.state, addToCartFetcher.data]);
 
-    // === VARIANT LOGIC ===
-    // Filter variants where ALL selected attributes match
-    // Returns variant only if exactly 1 match (meaning all attributes selected)
     const matchingVariant = useMemo(() => {
         if (!currentProduct?.variants) return undefined;
 
-        // Filter variants where ALL currently selected attributes match
         const potentialVariants = currentProduct.variants.filter(
             (variant: { variationValues?: Record<string, string> }) => {
                 return (
@@ -170,23 +148,15 @@ export function BonusProductModal({
             }
         );
 
-        // If exactly 1 variant matches, all attributes must be selected
-        // If 0 matches: invalid combination
-        // If multiple matches: not all attributes selected yet
         return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
     }, [currentProduct?.variants, variationValues]);
 
-    // === COUNT CALCULATIONS ===
-    // Find the specific slot for this bonusDiscountLineItemId (not just the first one)
     const currentSlot = bonusDiscountSlots.find((slot) => slot.id === bonusDiscountLineItemId);
     const alreadySelectedCount = currentSlot?.bonusProductsSelected || 0;
     const totalAllowedCount = currentSlot?.maxBonusItems || 0;
     const remainingCapacity = Math.max(0, totalAllowedCount - alreadySelectedCount);
 
-    // === HANDLERS ===
     const handleAttributeChange = useCallback((attributeId: string, value: string) => {
-        hasUserChangedAttributesRef.current = true;
-
         setVariationValues((prev) => {
             if (prev[attributeId] === value) {
                 return prev;
@@ -197,48 +167,38 @@ export function BonusProductModal({
 
     const handleAddToCart = useCallback(
         (selectedQuantity: number) => {
-            // Guard: Don't submit if product not loaded
             if (!currentProduct?.id) {
                 return;
             }
 
-            // Determine which product ID to use:
-            // - If currentProduct is a variant, use its ID
-            // - If currentProduct is a master, use matchingVariant's ID (if we found one)
-            // - Otherwise use currentProduct.id
             const productIdToAdd = currentProduct.type?.variant
                 ? currentProduct.id
                 : matchingVariant?.productId || currentProduct.id;
 
             if (!currentSlot?.id) {
-                addToast('No available bonus discount slot', 'error');
+                addToast(t('cart:bonusProducts.noSlotError'), 'error');
                 return;
             }
 
-            // Build array with single bonus item for the current slot
             const bonusItems = [
                 {
-                    productId: productIdToAdd, // Use variant ID, not master ID
+                    productId: productIdToAdd,
                     quantity: selectedQuantity,
                     bonusDiscountLineItemId: currentSlot.id,
                     promotionId,
                 },
             ];
 
-            // Create FormData for server action
             const formData = new FormData();
             formData.append('bonusItems', JSON.stringify(bonusItems));
 
-            // Set flag to indicate we're adding to cart (for toast effect)
             setIsAddingToCart(true);
 
-            // Submit to server action
             void addToCartFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
         },
-        // currentSlot.id is derived from bonusDiscountSlots[0], so bonusDiscountSlots dependency is sufficient
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [
             currentProduct?.id,
@@ -248,19 +208,16 @@ export function BonusProductModal({
             addToCartFetcher,
             addToast,
             matchingVariant,
+            t,
         ]
     );
 
-    // === IMAGE PREPARATION ===
     const safeProduct = currentProduct || ({} as ShopperProducts.schemas['Product']);
-    // In controlled mode, use our variationValues state directly instead of URL-based hook
     const { galleryImages } = useProductImages({
         product: safeProduct,
         selectedAttributes: variationValues,
     });
 
-    // === INLINE HELPER COMPONENT ===
-    // Helper component that uses ProductView context for button rendering
     const AddToCartButton = ({ className }: { className?: string }) => {
         const { quantity, canAddToCart, isMasterOrVariantProduct } = useProductView();
 
@@ -278,6 +235,8 @@ export function BonusProductModal({
             </Button>
         );
     };
+    const isLoading = !currentProduct && fetcher.state !== 'idle';
+    const fetcherErrored = !currentProduct && fetcher.state === 'idle' && !fetcher.success && fetcher.errors != null;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -287,25 +246,27 @@ export function BonusProductModal({
                 aria-describedby={undefined}>
                 <DialogHeader className="shrink-0">
                     <DialogTitle>
-                        {currentProduct?.name || productName} ({alreadySelectedCount} of {totalAllowedCount} selected)
+                        {currentProduct?.name || productName}
+                        {t('cart:bonusProducts.selectionCount', {
+                            selected: alreadySelectedCount,
+                            max: totalAllowedCount,
+                        })}
                     </DialogTitle>
                 </DialogHeader>
 
-                {fetcher.state === 'loading' && !currentProduct ? (
+                {isLoading ? (
                     <div className="flex items-center justify-center p-8">
                         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
                     </div>
-                ) : !currentProduct && fetcher.state === 'idle' && fetcher.data != null && !fetcher.success ? (
+                ) : fetcherErrored ? (
                     <div className="flex flex-col items-center justify-center p-8 gap-4">
-                        <p className="text-destructive text-center">
-                            Failed to load product details. Please try again.
-                        </p>
+                        <p className="text-destructive text-center">{t('cart:bonusProducts.loadError')}</p>
                         <Button
                             onClick={() => {
                                 void fetcher.load();
                             }}
                             variant="outline">
-                            Retry
+                            {t('cart:bonusProducts.retry')}
                         </Button>
                     </div>
                 ) : currentProduct ? (
@@ -323,6 +284,7 @@ export function BonusProductModal({
                                         images={galleryImages}
                                         eager={false}
                                         productName={currentProduct.name}
+                                        widths={GALLERY_WIDTHS}
                                     />
                                 </div>
                                 <div className="lg:order-2">
@@ -337,7 +299,7 @@ export function BonusProductModal({
                                             hideVariantSelection={isLockedToVariant}
                                         />
                                         <div className="text-destructive text-sm mt-2">
-                                            Select up to {remainingCapacity}
+                                            {t('cart:bonusProducts.selectUpTo', { count: remainingCapacity })}
                                         </div>
                                     </div>
                                 </div>
@@ -356,7 +318,7 @@ export function BonusProductModal({
                                 variant="outline"
                                 className="w-full bg-muted hover:bg-muted/80"
                                 onClick={() => onOpenChange(false)}>
-                                Back to Cart
+                                {t('cart:bonusProducts.backToCart')}
                             </Button>
                         </div>
                     </ProductViewProvider>

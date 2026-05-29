@@ -4,15 +4,23 @@ Storefront template for Salesforce Commerce Cloud built with React Router v7, Re
 
 This file is the single source of truth for AI coding agents (Claude Code, Cursor, Codex, etc.) working in this package. `CLAUDE.md` is a symlink to this file.
 
+> **Changesets**: any change in this package needs a changeset. Run `pnpm changeset` from the repo root, pick `template-retail-rsc-app` (and `@salesforce/storefront-next-{dev,runtime}` if applicable), and commit the generated `.changeset/<id>.md`. See [`../../CONTRIBUTING.md#changesets`](../../CONTRIBUTING.md#changesets).
+
 ## Project Structure
 
 - `./src/` — Application source code
   - `./src/routes/` — React Router file-based routes
   - `./src/components/` — React components (`./src/components/ui/` for Radix + Tailwind primitives)
-  - `./src/lib/` — Shared utilities, hooks, business logic (adapters, adapter registry, decorators)
   - `./src/hooks/`, `./src/providers/` — React hooks and context providers
+  - `./src/analytics/` — Analytics tracking components (e.g. `PageViewTracker`)
+  - `./src/middlewares/` — React Router server middlewares
   - `./src/extensions/` — Optional feature extensions
   - `./src/locales/` — i18n translation files
+  - `./src/lib/` — Shared utilities, business logic, and framework plumbing. Domain-first organization:
+    - Commerce domains (each a self-contained folder): `address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`
+    - Framework: `adapters/` (engagement, product-content, customer-preferences — each with its own store, types, mock/impl), `decorators/` (Page Designer), `page-designer/` (registry + loader), `api/` (SCAPI wrappers)
+    - Root-level files are cross-cutting only: `logger.server.ts`, `correlation.ts`, `currency.ts`, `date-utils.ts`, `url.ts`, `cookie-utils.server.ts`, etc.
+    - **Rule**: a new commerce concept gets its own folder. Cross-domain utilities (no commerce knowledge) go at the `lib/` root.
   - `./src/types/config.ts` — Template-specific config types
 - `./config.server.ts` — Configuration defaults
 - `./.storybook/` — Storybook configuration
@@ -31,39 +39,77 @@ pnpm storybook                   # Storybook at http://localhost:6006
 pnpm build                       # Production build
 pnpm preview                     # Preview production build
 pnpm push                        # Deploy to Commerce Cloud Managed Runtime
-pnpm generate:cartridge          # Extract Page Designer metadata
+pnpm cartridge:generate          # Extract Page Designer metadata
 
 # Quality
 pnpm typecheck
 pnpm lint                        # Strict: --max-warnings 0 (CI enforces)
 pnpm lint:fix
-pnpm bundlesize:test             # Verify bundle size limits
+pnpm bundlesize                  # Verify bundle size limits
 pnpm lighthouse:ci
 
-# Tests — prefer :agent variants for condensed output
-pnpm test:agent                  # Unit tests (summary only)
-pnpm test                        # Unit tests (verbose, with coverage)
-pnpm test:watch
+# Tests
+pnpm test                        # Unit tests
+pnpm test:watch                  # Unit tests in watch mode
 pnpm test src/components/foo     # Single file/dir
 
-pnpm test-storybook:interaction:agent
-pnpm test-storybook:a11y:agent
-pnpm test-storybook:snapshot:agent
+pnpm storybook:test --type=snapshot     # Snapshot tests
+pnpm storybook:test --type=interaction  # Interaction tests
+pnpm storybook:test --type=a11y         # A11y tests
 
 # UITargets
-pnpm --filter template-retail-rsc-app dev:ui-targets        # Visual overlay showing targets
-pnpm --filter template-retail-rsc-app smoke-test:generate   # Sync target-config.json (additive)
+pnpm dev:ui-targets        # Visual overlay showing targets
+pnpm smoke-test:generate   # Sync target-config.json (additive)
 ```
 
-### Agent Command Summary
+### Less common command variants
 
-| Command | Purpose | Output |
-|---------|---------|--------|
-| `pnpm test:agent` | Unit tests | Last 30 lines |
-| `pnpm test:agent:coverage` | Unit tests + coverage | Last 40 lines |
-| `pnpm test-storybook:snapshot:agent` | Snapshot tests | Last 30 lines |
-| `pnpm test-storybook:interaction:agent` | Interaction tests | Last 20 lines (PASS/FAIL only) |
-| `pnpm test-storybook:a11y:agent` | A11y tests | Last 20 lines (violations only) |
+Most of these are direct CLI passthroughs. Pass extra flags after the script
+name and pnpm forwards them to the underlying command.
+
+**Tests with extra flags** (forwarded to vitest):
+```bash
+pnpm test --coverage         # Coverage report
+pnpm test --ui               # Vitest UI
+pnpm test --reporter=verbose # Verbose output
+```
+
+**Lint variants** (extra eslint scans not covered by `pnpm lint`):
+```bash
+node scripts/check-typescript-only.js                                                  # No .js files in src/
+cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint src --rule 'no-restricted-classnames: error' --cache  # Color rule scan
+```
+
+**Storybook test variants:**
+```bash
+pnpm storybook:test --type=snapshot --update      # Refresh snapshot fixtures
+pnpm storybook:test --type=snapshot --coverage    # Snapshot tests + coverage (auto-generates story tests)
+pnpm storybook:test --type=interaction --static   # Build & serve static bundle, then test (CI mode)
+pnpm storybook:test --type=a11y --static          # Same, for a11y
+```
+
+**Bundle size with treemap:**
+```bash
+cross-env BUNDLES_SIZE_ANALYZE=true pnpm build    # Interactive treemap (build/client-bundle-size.html)
+```
+
+**Cartridge deploy with clean wipe:**
+```bash
+pnpm cartridge:deploy -- --delete                 # Delete old cartridge files first
+```
+
+**E2E variants** (run inside `e2e/` subpackage):
+```bash
+pnpm --filter ./e2e e2e:headless          # HEADLESS=true
+pnpm --filter ./e2e e2e:verbose
+pnpm --filter ./e2e e2e:debug             # DEBUG_E2E=true + --verbose
+pnpm --filter ./e2e report                # Open Allure report
+pnpm --filter ./e2e a11y:headless
+pnpm --filter ./e2e a11y:report           # Generate consolidated a11y report
+pnpm --filter ./e2e a11y:update-baseline  # Rewrite a11y baseline
+```
+
+You can also forward `--grep` directly: `pnpm e2e --grep "@checkout"`.
 
 ## Performance & Data Rules
 
@@ -79,7 +125,7 @@ These rules take priority when designing routes, components, and state. Apply th
 
 ### Rendering & Visual Stability
 
-6. **One `<Suspense>` boundary per async operation.** Never place multiple `use()` calls or `<Await>` components inside a single `<Suspense>` boundary — each deferred Promise gets its own boundary and its own skeleton. See [Suspense Boundary Granularity](./docs/README-SUSPENSE.md#suspense-boundary-granularity) for examples and anti-patterns.
+6. **One `<Suspense>` boundary per async operation, with stable promise references.** Never place multiple `use()` calls or `<Await>` components inside a single `<Suspense>` boundary — each deferred Promise gets its own boundary and its own skeleton. Never compose loader promises in the component (`Promise.all`, `.then()`, wrappers) — Suspense tracks promises by identity, and an in-render composition produces a new reference each render and re-suspends forever. Compose in the loader instead. See [Suspense Boundary Granularity](./docs/README-SUSPENSE.md#suspense-boundary-granularity) and [Promise Identity](./docs/README-SUSPENSE.md#promise-identity) for examples and anti-patterns.
 7. **Skeleton screens for known layouts, spinners for indeterminate operations.** If the shape of the resolved content is known, use a skeleton. Spinners are only for global or unknown-layout loading states.
 8. **Above the fold: avoid `fallback={null}` without reserving space.** Rendering nothing and then injecting content causes CLS. If no visual fallback is desired, the container must maintain explicit dimensions (`minHeight`, aspect ratio).
 9. **Below the fold: prefer `fallback={null}` or a simple placeholder.** Users don't perceive layout shift for content they can't see, and complex skeletons add hydration cost without visible benefit.
@@ -103,13 +149,19 @@ These rules take priority when designing routes, components, and state. Apply th
 
 ### Best Practices
 
-18. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
+18. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-PERFORMANCE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
 19. **Self-host web fonts.** Use WOFF2 variable fonts, preload in `<head>`, inline the `@font-face` declaration, and set `font-display: swap` or `optional`. Never load fonts from third-party CDNs (cache partitioning, GDPR).
 20. **Never load third-party scripts synchronously.** Always use `async` or `defer`. Lazy-load interaction-driven widgets (chat, social) on scroll or click, not on page load.
-21. **Monitor bundle size.** Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize:analyze` before adding large dependencies.
+21. **Monitor bundle size.** Run `pnpm bundlesize` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize --analyze` before adding large dependencies.
 22. **Configure resource hints via `config.server.ts`.** Use `preconnect` for origins contacted on every page (e.g., image CDN), `dns-prefetch` for optional origins. Don't preconnect to origins that aren't used on every page.
 
 ## Code Conventions
+
+### `.env.default` is required-only — do not add optional vars
+
+`.env.default` lists the variables a contributor must set to boot the app or run `pnpm push`. Optional config (feature toggles, callback URIs, log levels, hybrid proxy, Marketing Cloud, Turnstile, etc.) lives in `config.server.ts` defaults and is documented in [docs/README-CONFIG.md](./docs/README-CONFIG.md) — not duplicated here.
+
+**Rule:** Do not add a new variable to `.env.default` unless the app cannot start (or `pnpm push` cannot deploy) without it. If a user asks you to add an optional variable, push back: confirm explicitly that they understand it's optional and still want it inline. Default to declining and pointing them at `config.server.ts` + README-CONFIG.md instead.
 
 ### Copyright Header (required)
 
@@ -157,7 +209,7 @@ import { Link } from '@/components/link';
 
 ### Lazy loading for overlays (modals, drawers, dialogs)
 
-Overlay components hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern, anti-patterns, and rationale.
+Overlay components hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-PERFORMANCE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern, anti-patterns, and rationale.
 
 ### Styling
 
@@ -185,21 +237,22 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) — Loading states and Suspense patterns
 - [docs/README-STATE.md](./docs/README-STATE.md) — State management: server state, URL state, optimistic UI
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter pattern for data fetching (Einstein, Active Data, custom)
-- [docs/README-CUSTOM-APIS.md](./docs/README-CUSTOM-APIS.md) — Custom SCAPI clients
+- [docs/README-SCAPI.md](./docs/README-SCAPI.md) — SCAPI client overrides and custom APIs
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system (including `PUBLIC__` prefix behavior)
 - [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
+- [docs/README-EMAIL-VERIFICATION.md](./docs/README-EMAIL-VERIFICATION.md) — Email verification: OTP flows, passwordless registration/login, account details badge, Change Email
+- [docs/README-TURNSTILE.md](./docs/README-TURNSTILE.md) — Cloudflare Turnstile bot protection (BFF verification, three-tier health, fail-open)
 - [docs/README-I18N.md](./docs/README-I18N.md) — Internationalization
 - [docs/README-MULTI-SITE.md](./docs/README-MULTI-SITE.md) — Site context and locale URL routing
-- [docs/README-ENGAGEMENT-ANALYTICS.md](./docs/README-ENGAGEMENT-ANALYTICS.md) — Einstein / Active Data event mapping
 - [docs/README-PAGE-DESIGNER.md](./docs/README-PAGE-DESIGNER.md) — Page Designer component development (decorators, metadata)
 
 **UI & frontend:**
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — Tailwind, shadcn, design tokens
+- [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance entry point: web fonts, third-party scripts, bundles, client-side transform anti-patterns; links to all other performance guides
 - [docs/README-IMAGES.md](./docs/README-IMAGES.md) — DIS integration, `<DynamicImage>`, alt text
 - [docs/README-SEO.md](./docs/README-SEO.md) — Page titles, meta tags, canonical URLs
-- [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Web fonts, third-party scripts, bundles
-- [docs/README-PERFORMANCE-METRICS.md](./docs/README-PERFORMANCE-METRICS.md) — Performance monitoring
+- [docs/README-PERFORMANCE-METRICS.md](./docs/README-PERFORMANCE-METRICS.md) — Performance monitoring (Server-Timing, timeline visualization)
 
 **Testing & quality:**
 - [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns

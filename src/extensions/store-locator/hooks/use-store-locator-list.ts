@@ -15,21 +15,15 @@
  */
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useFetcher } from 'react-router';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import { resourceRoutes } from '@/route-paths';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
+import type {
+    loader as searchStoresLoader,
+    SearchStoresResult,
+} from '@/extensions/store-locator/routes/resource.stores';
 
-/**
- * Result of searchStores API
- * @property success - Whether the search was successful
- * @property stores - Result of searchStores API
- * @property error - Error message if the search was not successful
- */
-export interface SearchStoresResult {
-    success: boolean;
-    stores?: ShopperStores.schemas['StoreResult'];
-    error?: string;
-}
+export type { SearchStoresResult };
 
 /**
  * Hook to fetch and manage store locator list.
@@ -52,7 +46,7 @@ export function useStoreLocatorList() {
     const shouldSearch = useStoreLocator((s) => s.shouldSearch);
     const setShouldSearch = useStoreLocator((s) => s.setShouldSearch);
 
-    const fetcher = useFetcher<SearchStoresResult>();
+    const fetcher = useFetcher<typeof searchStoresLoader>();
     const storeFetcher = useFetcher();
     const [page, setPage] = useState<number>(1);
     const [hasSearched, setHasSearched] = useState<boolean>(false);
@@ -90,7 +84,7 @@ export function useStoreLocatorList() {
         if (canFetch) {
             setHasSearched(true);
             isSearchingRef.current = true;
-            void fetcher.load(`/resource/stores?${params.toString()}`);
+            void fetcher.load(`${resourceRoutes.stores}?${params.toString()}`);
             setShouldSearch(false);
         }
         setPage(1);
@@ -128,7 +122,7 @@ export function useStoreLocatorList() {
             // Submit to server action for cookie persistence
             const formData = new FormData();
             formData.set('storeInfo', info ? JSON.stringify(info) : '');
-            void storeFetcher.submit(formData, { method: 'POST', action: '/action/set-selected-store' });
+            void storeFetcher.submit(formData, { method: 'POST', action: resourceRoutes.setSelectedStore });
         },
         [setSelectedStoreInfoRaw, storeFetcher]
     );

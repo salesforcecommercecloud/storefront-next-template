@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { convertProductToProductSearchHit } from '@/lib/product-conversion';
+import { convertProductToProductSearchHit } from '@/lib/product/product-conversion';
 import { fetchProductById } from '@/lib/api/products.server';
-import { getLogger } from '@/lib/logger.server';
 
 const dataLoader = async (args: { componentData: unknown; context: LoaderFunctionArgs['context'] }) => {
     const { componentData, context: routeContext } = args;
@@ -29,25 +28,14 @@ const dataLoader = async (args: { componentData: unknown; context: LoaderFunctio
     }
 
     const currency = (routeContext.get(siteContext) as SiteContext).currency;
-    const logger = getLogger(routeContext);
 
-    try {
-        const product = await fetchProductById(routeContext, productId, {
-            allImages: true,
-            perPricebook: true,
-            ...(currency ? { currency } : {}),
-        });
+    const product = await fetchProductById(routeContext, productId, {
+        allImages: true,
+        perPricebook: true,
+        ...(currency ? { currency } : {}),
+    });
 
-        return product ? convertProductToProductSearchHit(product) : null;
-    } catch (error) {
-        // Page Designer context: gracefully degrade to "Select a product" for 404s
-        // Let other errors (auth, network) propagate for visibility
-        if (error instanceof ApiError && error.status === 404) {
-            logger.info('Product not found in catalog (Page Designer)', { productId });
-            return null;
-        }
-        throw error;
-    }
+    return product ? convertProductToProductSearchHit(product) : null;
 };
 
 export const loader = {

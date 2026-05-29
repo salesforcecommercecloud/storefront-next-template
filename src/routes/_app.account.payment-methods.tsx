@@ -15,7 +15,7 @@
  */
 import { type ReactElement, Suspense } from 'react';
 import { useOutletContext, Await } from 'react-router';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { AccountPaymentMethodsSkeleton, PaymentMethods } from '@/components/payment-methods';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';

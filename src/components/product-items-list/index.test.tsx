@@ -20,21 +20,15 @@ import { render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 // Components
 import ProductItemsList from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig } from '@/test-utils/config';
 
-const defaultMockSite = {
-    id: 'RefArch',
-    defaultLocale: 'en-US',
-    defaultCurrency: 'USD',
-    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-    supportedCurrencies: ['USD'],
-};
+const defaultMockSite = mockAltSiteObject;
 const mockLocale =
     defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
     defaultMockSite.supportedLocales[0];
@@ -46,7 +40,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/cart',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={mockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>

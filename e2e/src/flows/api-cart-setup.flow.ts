@@ -17,6 +17,8 @@
 const { I, checkoutPage, addToCartFlow } = inject();
 import { getScapiConfig, createCartViaApi, type ApiCartResult } from '../utils/scapi-helper';
 import { getStorefrontOrigin } from '../utils/cookie-utils';
+import { buildCookieDefaults, getSfccCookieNames } from '../utils/api-login-utils';
+import { getSiteId } from '../utils/site-id';
 import { TEST_VARIANT_PRODUCTS } from '../test-data/checkout.data';
 import type { ProductInfo } from '../types/product.types';
 
@@ -40,6 +42,16 @@ class ApiCartSetupFlow {
      * Set up a cart and navigate to checkout.
      * Tries the fast API path for guest sessions, falls back to UI flow for
      * registered shoppers (API creates a guest session that would clobber auth cookies).
+     *
+     * TODO: drop the registered-shopper UI fallback. With apiLoginFlow available
+     * (src/flows/api-login.flow.ts), registered carts can use the API path by passing the
+     * registered tokens to createBasket() instead of creating a fresh guest session.
+     * Bundle with the loginFlow → apiLoginFlow migration TODO in login.flow.ts.
+     *
+     * TODO: extract buildCookieDefaults() to api-login-utils.ts so the inline cookie
+     * construction at injectSessionCookies() below shares the domain/path/secure/sameSite
+     * logic with buildRegisteredSessionCookies(). Same shape, different cookie names
+     * (cc-nx-g_ for guest vs cc-nx_ for registered).
      */
     async executeAndNavigateToCheckout(
         categoryUrl: string,
@@ -69,8 +81,8 @@ class ApiCartSetupFlow {
      * only set after login. If present, API cart setup would clobber it.
      */
     private async hasRegisteredSession(): Promise<boolean> {
-        const siteId = process.env.SITE_ID || 'RefArch';
-        const cookieName = `cc-nx_${siteId}`;
+        const siteId = getSiteId();
+        const cookieName = getSfccCookieNames(siteId).registeredRefresh;
         return await (I.usePlaywrightTo('check for registered session', async ({ page }) => {
             const cookies = await page.context().cookies();
             return cookies.some((c: { name: string; value: string }) => c.name === cookieName && c.value.length > 0);
@@ -104,9 +116,8 @@ class ApiCartSetupFlow {
     }
 
     private async injectSessionCookies(siteId: string, result: ApiCartResult): Promise<void> {
-        const origin = getStorefrontOrigin();
-        const url = new URL(origin);
-        const domain = url.hostname;
+        const cookieDefaults = buildCookieDefaults(getStorefrontOrigin());
+        const names = getSfccCookieNames(siteId);
 
         const basketSnapshot = JSON.stringify({
             basketId: result.basket.basketId,
@@ -114,45 +125,15 @@ class ApiCartSetupFlow {
             uniqueProductCount: result.basket.uniqueProductCount,
         });
 
-        const cookieDefaults = {
-            domain,
-            path: '/',
-            secure: url.protocol === 'https:',
-            sameSite: 'Lax' as const,
-        };
-
         await (I.usePlaywrightTo('inject SCAPI session cookies', async ({ page }) => {
+            // customerId is derived per-request from the SLAS access token JWT `isb` claim, so
+            // it is not injected. `usid` IS injected because hybrid storefronts forward it to
+            // ECOM (and the storefront's auth middleware writes it on the response anyway).
             await page.context().addCookies([
-                {
-                    ...cookieDefaults,
-                    name: `cc-at_${siteId}`,
-                    value: result.tokens.accessToken,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `cc-nx-g_${siteId}`,
-                    value: result.tokens.refreshToken,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `usid_${siteId}`,
-                    value: result.tokens.usid,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `customerId_${siteId}`,
-                    value: result.tokens.customerId,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: '__sfdc_basket',
-                    value: basketSnapshot,
-                    httpOnly: false,
-                },
+                { ...cookieDefaults, name: names.accessToken, value: result.tokens.accessToken, httpOnly: true },
+                { ...cookieDefaults, name: names.guestRefresh, value: result.tokens.refreshToken, httpOnly: true },
+                { ...cookieDefaults, name: names.usid, value: result.tokens.usid, httpOnly: true },
+                { ...cookieDefaults, name: names.basket, value: basketSnapshot, httpOnly: false },
             ]);
         }) as unknown as Promise<void>);
     }

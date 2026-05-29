@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import { type ReactElement, useMemo, useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { StarRating } from '@/components/product-ratings/star-rating';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
+import { useProductReviews } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import { cn } from '@/lib/utils';
 
 const StarRatingDistributionModalContent = lazy(() =>

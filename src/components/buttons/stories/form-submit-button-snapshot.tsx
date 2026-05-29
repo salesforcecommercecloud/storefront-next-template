@@ -13,83 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, expect, test, describe, afterEach } from 'vitest';
-
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-
-const fetcherMock = {
-    data: null,
-    state: 'idle' as const,
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle' as const,
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    // Add missing Form component
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-    // Add missing createMemoryRouter
-    createMemoryRouter: vi.fn().mockImplementation(() => ({
-        navigate: vi.fn(),
-        state: { location: { pathname: '/', search: '', hash: '', state: null } },
-    })),
-    // Add missing RouterProvider
-    RouterProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle' as const,
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        // Add missing createMemoryRouter
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/', search: '', hash: '', state: null } },
-        })),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
-
+import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 
 import * as FormSubmitButtonStories from './form-submit-button.stories';
 import { render, cleanup } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+
+// Stories use Form / useFetcher and must run inside a real data router.
+// composeStories does not apply the Storybook global decorators when invoked
+// directly from vitest, so each story is wrapped in its own memory router.
 
 const composed = composeStories(FormSubmitButtonStories);
 
@@ -105,11 +38,19 @@ describe('FormSubmitButton stories snapshot', () => {
                     {
                         path: '/',
                         element: <Story />,
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        path: '/submit',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        path: '/update-settings',
+                        action: () => ({ success: true }),
                     },
                 ],
                 { initialEntries: ['/'] }
             );
-
             const { container } = render(<RouterProvider router={router} />);
             expect(container.firstChild).toMatchSnapshot();
         });

@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useRef, useCallback, useEffect, useState, useContext, lazy, Suspense, type ReactNode } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState, lazy, Suspense, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFetcher, useResolvedPath, useRevalidator } from 'react-router';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { NativeSelect } from '@/components/ui/native-select';
+import { FormInput, FormNativeSelect } from '@/components/form-fields';
 import { Typography } from '@/components/typography';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
-import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout-schemas';
+import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout/schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getContactInfoFromCustomer } from '@/lib/customer-profile-utils';
-import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
+import { getContactInfoFromCustomer } from '@/lib/customer/profile-utils';
+import { getCommonPhoneCountryCodes } from '@/lib/address/country-codes';
 import type { CheckoutActionData } from '../types';
-import type { AuthorizePasswordlessEmailResponse } from '@/routes/action.authorize-passwordless-email';
+import type { action as authorizePasswordlessEmailAction } from '@/routes/action.authorize-passwordless-email';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import {
@@ -39,13 +38,13 @@ import {
     stripCountryCode,
     formatPhoneDisplay,
     extractCountryCode,
-} from '@/lib/phone-utils';
+} from '@/lib/address/phone-utils';
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
-import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import { resourceRoutes } from '@/route-paths';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 const LoginModal = lazy(() => import('@/components/login/login-modal'));
@@ -61,6 +60,8 @@ interface ContactInfoProps {
     suppressRegisteredEmailLoginHints?: boolean;
     /** When set, kept in sync so checkout does not advance from contact while OTP modal is open or authorize in flight. */
     otpFlowActiveRef?: OtpFlowActiveRef;
+    /** Initial OTP sending state — used in Storybook to show the spinner in the email field without triggering fetcher logic */
+    defaultOtpSending?: boolean;
     // Step state managed by container
     isCompleted: boolean;
     isEditing: boolean;
@@ -75,6 +76,7 @@ export default function ContactInfo({
     onPasswordlessOtpVerified,
     suppressRegisteredEmailLoginHints = false,
     otpFlowActiveRef,
+    defaultOtpSending = false,
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
@@ -84,14 +86,14 @@ export default function ContactInfo({
     const customerProfile = useCustomerProfile();
     const { shipmentDistribution, exitEditMode } = useCheckoutContext();
     const { t } = useTranslation('checkout');
-    const appConfig = useContext(ConfigContext);
+    const appConfig = useConfig();
 
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
 
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
-    const authorizePasswordlessEmailPath = useResolvedPath('/action/authorize-passwordless-email').pathname;
+    const authorizePasswordlessEmailPath = useResolvedPath(resourceRoutes.authorizePasswordlessEmail).pathname;
     const revalidator = useRevalidator();
-    const passwordlessEmailFetcher = useFetcher<AuthorizePasswordlessEmailResponse>({
+    const passwordlessEmailFetcher = useFetcher<typeof authorizePasswordlessEmailAction>({
         key: 'contact-authorize-passwordless-email',
     });
     const lastEmailSentRef = useRef<string | null>(null);
@@ -101,23 +103,34 @@ export default function ContactInfo({
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [turnstileBypassed, setTurnstileBypassed] = useState(false);
     const turnstileResetRef = useRef<(() => void) | null>(null);
     const turnstileExecuteRef = useRef<(() => void) | null>(null);
     const tokenConsumedRef = useRef(false);
+    // Error message shown when server-side Turnstile verification rejects the request.
+    // Generic copy by design - we never tell the shopper *why* (bot detection, replay, etc.)
+    // to avoid leaking detection signals to attackers. See README-TURNSTILE.md.
+    const [verificationError, setVerificationError] = useState<string | null>(null);
+    // Cap auto-retries on consecutive verification failures so a misconfigured key or a
+    // genuinely-blocked client doesn't loop forever. After N failures, we still show the
+    // error but stop resetting the widget; shopper must refresh to try again.
+    const verificationFailureCountRef = useRef(0);
+    const MAX_VERIFICATION_RETRIES = 3;
 
-    const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
+    const turnstileEnabled = isTurnstileEnabled(appConfig);
+    const turnstileMode = getTurnstileMode(appConfig);
     const turnstileSiteKey = useMemo(() => {
-        if (!appConfig || !turnstileEnabled) return null;
+        if (!turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            return getTurnstileSiteKey(appConfig as AppConfig, baseUrl);
+            return getTurnstileSiteKey(appConfig, baseUrl);
         }
         return null;
     }, [appConfig, turnstileEnabled]);
 
     const [showTurnstile, setShowTurnstile] = useState(false);
 
-    const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken);
+    const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken && !turnstileBypassed);
 
     const resetTurnstile = useCallback(() => {
         setTurnstileToken(null);
@@ -127,9 +140,6 @@ export default function ContactInfo({
     const handleTurnstileSuccess = useCallback((token: string) => {
         tokenConsumedRef.current = false;
         setTurnstileToken(token);
-        if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('turnstileVerified', '1');
-        }
     }, []);
 
     const handleTurnstileError = useCallback(() => {
@@ -139,6 +149,31 @@ export default function ContactInfo({
     const handleTurnstileExpire = useCallback(() => {
         setTurnstileToken(null);
     }, []);
+
+    // Interactive challenge timeout: Cloudflare's widget will auto-refresh (refresh-timeout
+    // 'auto'); we just clear our local token so the form stays in a "needs verification"
+    // state and tell the shopper their challenge was refreshed. Soft message — no escalation.
+    const handleTurnstileTimeout = useCallback(() => {
+        setTurnstileToken(null);
+        setVerificationError(t('contactInfo.verificationRefreshed'));
+    }, [t]);
+
+    const handleTurnstileBypass = useCallback(() => {
+        setTurnstileBypassed(true);
+    }, []);
+
+    // Widget-side retry exhaustion (3 consecutive non-infrastructure errors). The widget
+    // could not produce a token, so no place-order request will fire and the server will
+    // never send a 403. Surface the same generic verification-error message that WI-10
+    // shows for server-side rejection so the shopper isn't silently stuck. We do not
+    // auto-reset here - the widget already exhausted its own retry cap; further resets
+    // would just loop. The error clears when the shopper focuses the email field again,
+    // which also remounts the widget via showTurnstile and gives them a fresh try.
+    const handleTurnstileRetryExhausted = useCallback(() => {
+        setVerificationError(t('contactInfo.verificationFailed'));
+        // Clear any pending submission so the form doesn't try to re-trigger the widget.
+        pendingEmailRef.current = null;
+    }, [t]);
 
     const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
@@ -186,7 +221,11 @@ export default function ContactInfo({
         if (turnstileEnabled && !showTurnstile) {
             setShowTurnstile(true);
         }
-    }, [turnstileEnabled, showTurnstile]);
+        // Clear any prior verification error when the shopper engages with the field again.
+        if (verificationError) {
+            setVerificationError(null);
+        }
+    }, [turnstileEnabled, showTurnstile, verificationError]);
 
     const handleEmailBlur = useCallback(
         (e: React.FocusEvent<HTMLInputElement>, fieldOnBlur: (e: React.FocusEvent<HTMLInputElement>) => void) => {
@@ -203,7 +242,7 @@ export default function ContactInfo({
             if (lastEmailSentRef.current === normalized) return;
             if (passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading') return;
 
-            if (turnstileEnabled && (!turnstileToken || tokenConsumedRef.current)) {
+            if (turnstileEnabled && !turnstileBypassed && (!turnstileToken || tokenConsumedRef.current)) {
                 pendingEmailRef.current = raw;
                 if (tokenConsumedRef.current) {
                     resetTurnstile();
@@ -216,6 +255,7 @@ export default function ContactInfo({
             lastEmailSentRef.current = normalized;
             const formData = new FormData();
             formData.append('email', raw);
+            formData.append('strictVerify', 'true');
             if (turnstileToken) {
                 formData.append('turnstileToken', turnstileToken);
                 tokenConsumedRef.current = true;
@@ -234,6 +274,7 @@ export default function ContactInfo({
             passwordlessEmailFetcher,
             authorizePasswordlessEmailPath,
             turnstileToken,
+            turnstileBypassed,
             turnstileEnabled,
             showTurnstile,
             resetTurnstile,
@@ -241,10 +282,29 @@ export default function ContactInfo({
     );
 
     useEffect(() => {
-        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled) {
+        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled && !turnstileBypassed) {
             turnstileExecuteRef.current?.();
         }
-    }, [turnstileToken, turnstileEnabled]);
+    }, [turnstileToken, turnstileEnabled, turnstileBypassed]);
+
+    useEffect(() => {
+        if (!turnstileBypassed || !pendingEmailRef.current) return;
+        const raw = pendingEmailRef.current;
+        const normalized = raw.toLowerCase();
+        if (lastEmailSentRef.current === normalized) return;
+        lastEmailSentRef.current = normalized;
+        pendingEmailRef.current = null;
+
+        const formData = new FormData();
+        formData.append('email', raw);
+        formData.append('strictVerify', 'true');
+        void passwordlessEmailFetcher.submit(formData, {
+            method: 'POST',
+            action: authorizePasswordlessEmailPath,
+        });
+        if (otpFlowActiveRef) otpFlowActiveRef.current = true;
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef is a ref
+    }, [turnstileBypassed, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
 
     useEffect(() => {
         if (!turnstileToken || !pendingEmailRef.current || tokenConsumedRef.current) return;
@@ -256,6 +316,7 @@ export default function ContactInfo({
 
         const formData = new FormData();
         formData.append('email', raw);
+        formData.append('strictVerify', 'true');
         formData.append('turnstileToken', turnstileToken);
         tokenConsumedRef.current = true;
         void passwordlessEmailFetcher.submit(formData, {
@@ -283,6 +344,33 @@ export default function ContactInfo({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to requiresLogin flag
     }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.requiresLogin]);
+
+    // Server-side Turnstile rejection (403 NOT_AUTHORIZED) handling.
+    // Without this the shopper is silently stuck on the contact step with no feedback.
+    // Industry guidance (Cloudflare, Stripe, Shopify): show a generic retry message,
+    // reset the widget so a fresh token can be generated, and cap auto-retries so a
+    // misconfigured key cannot loop forever.
+    useEffect(() => {
+        const { state, data } = passwordlessEmailFetcher;
+        if (state !== 'idle' || data?.success !== false) return;
+        if (data.error?.code !== 'NOT_AUTHORIZED') return;
+
+        verificationFailureCountRef.current += 1;
+        setVerificationError(t('contactInfo.verificationFailed'));
+
+        if (verificationFailureCountRef.current < MAX_VERIFICATION_RETRIES) {
+            // Allow the same email to retry by clearing the dedupe ref, and reset the
+            // widget so the next blur produces a fresh token.
+            lastEmailSentRef.current = null;
+            tokenConsumedRef.current = false;
+            resetTurnstile();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to verification rejection
+    }, [
+        passwordlessEmailFetcher.state,
+        passwordlessEmailFetcher.data?.success,
+        passwordlessEmailFetcher.data?.error?.code,
+    ]);
 
     const handleOtpSuccess = useCallback(
         () => {
@@ -325,6 +413,7 @@ export default function ContactInfo({
         lastEmailSentRef.current = null;
         const fd = new FormData();
         fd.append('email', email);
+        fd.append('strictVerify', 'true');
         if (turnstileToken) {
             fd.append('turnstileToken', turnstileToken);
         }
@@ -342,7 +431,7 @@ export default function ContactInfo({
     ]);
 
     /**
-     * Checkout only: close OTP without calling verify-otp — shopper stays a guest (no SLAS session from OTP).
+     * Checkout only: close OTP without calling verify-passwordless-otp — shopper stays a guest (no SLAS session from OTP).
      * Parent unblocks contact step and hides place-order create-account checkbox for this session.
      */
     const handleCheckoutAsGuestFromOtp = useCallback(() => {
@@ -362,11 +451,13 @@ export default function ContactInfo({
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('contactInfo.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('contactInfo.title')}</span>
     );
 
     const isSendingOtp =
-        passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading';
+        defaultOtpSending ||
+        passwordlessEmailFetcher.state === 'submitting' ||
+        passwordlessEmailFetcher.state === 'loading';
 
     // Keep parent ref in sync so checkout does not advance to shipping while OTP/login modal is open or authorize in flight
     useEffect(
@@ -397,7 +488,7 @@ export default function ContactInfo({
                     <Form {...form}>
                         <form
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
-                            className="flex flex-col gap-4 pt-2"
+                            className="flex flex-col gap-4 pt-2 pb-2"
                             noValidate>
                             <FormField
                                 control={form.control}
@@ -406,19 +497,17 @@ export default function ContactInfo({
                                     <FormItem>
                                         <FormLabel>{t('contactInfo.emailLabel')}*</FormLabel>
                                         <div className="relative">
-                                            <FormControl>
-                                                <Input
-                                                    type="email"
-                                                    placeholder={t('contactInfo.emailPlaceholder')}
-                                                    autoComplete="email"
-                                                    autoFocus={isEditing}
-                                                    disabled={isSendingOtp}
-                                                    className="pr-12"
-                                                    {...field}
-                                                    onFocus={handleEmailFocus}
-                                                    onBlur={(e) => handleEmailBlur(e, field.onBlur)}
-                                                />
-                                            </FormControl>
+                                            <FormInput
+                                                type="email"
+                                                placeholder={t('contactInfo.emailPlaceholder')}
+                                                autoComplete="email"
+                                                autoFocus={isEditing}
+                                                disabled={isSendingOtp}
+                                                className="pr-12"
+                                                {...field}
+                                                onFocus={handleEmailFocus}
+                                                onBlur={(e) => handleEmailBlur(e, field.onBlur)}
+                                            />
                                             {isSendingOtp && (
                                                 <div
                                                     className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
@@ -438,11 +527,23 @@ export default function ContactInfo({
                                     onSuccess={handleTurnstileSuccess}
                                     onError={handleTurnstileError}
                                     onExpire={handleTurnstileExpire}
+                                    onTimeout={handleTurnstileTimeout}
+                                    onBypass={handleTurnstileBypass}
+                                    onRetryExhausted={handleTurnstileRetryExhausted}
                                     enabled={turnstileEnabled}
-                                    mode="non-interactive"
+                                    mode={turnstileMode}
                                     resetRef={turnstileResetRef}
                                     executeRef={turnstileExecuteRef}
                                 />
+                            )}
+
+                            {verificationError && (
+                                <div
+                                    role="alert"
+                                    className="text-destructive text-sm"
+                                    data-testid="contact-info-verification-error">
+                                    {verificationError}
+                                </div>
                             )}
 
                             <div className="flex items-start gap-2">
@@ -450,16 +551,16 @@ export default function ContactInfo({
                                     control={form.control}
                                     name="countryCode"
                                     render={({ field }) => (
-                                        <FormItem className="w-20">
+                                        <FormItem className="w-20 [&_[data-slot=native-select-wrapper]]:w-full">
                                             <FormLabel>{t('contactInfo.countryCodeLabel')}</FormLabel>
-                                            <FormControl>
-                                                <NativeSelect
-                                                    aria-label={t('contactInfo.countryCodeLabel')}
-                                                    value={field.value}
-                                                    onChange={(e) => field.onChange(e.target.value)}>
-                                                    {countryCodeOptions}
-                                                </NativeSelect>
-                                            </FormControl>
+                                            <FormNativeSelect
+                                                aria-label={t('contactInfo.countryCodeLabel')}
+                                                value={field.value}
+                                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                                                    field.onChange(e.target.value)
+                                                }>
+                                                {countryCodeOptions}
+                                            </FormNativeSelect>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -470,36 +571,38 @@ export default function ContactInfo({
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
                                             <FormLabel>{t('contactInfo.phoneLabel')}*</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="tel"
-                                                    inputMode="numeric"
-                                                    placeholder={t('contactInfo.phonePlaceholder')}
-                                                    autoComplete="tel-national"
-                                                    maxLength={14}
-                                                    {...field}
-                                                    onChange={(e) => {
-                                                        field.onChange(stripNonDigits(e.target.value).slice(0, 10));
-                                                    }}
-                                                    onBlur={(e) => {
-                                                        field.onBlur();
-                                                        field.onChange(formatPhoneInput(e.target.value));
-                                                    }}
-                                                    onFocus={(e) => {
-                                                        const digits = stripNonDigits(e.target.value);
-                                                        if (digits !== e.target.value) field.onChange(digits);
-                                                    }}
-                                                />
-                                            </FormControl>
+                                            <FormInput
+                                                type="tel"
+                                                inputMode="numeric"
+                                                placeholder={t('contactInfo.phonePlaceholder')}
+                                                autoComplete="tel-national"
+                                                maxLength={14}
+                                                {...field}
+                                                onChange={(e) => {
+                                                    field.onChange(stripNonDigits(e.target.value).slice(0, 10));
+                                                }}
+                                                onBlur={(e) => {
+                                                    field.onBlur();
+                                                    field.onChange(formatPhoneInput(e.target.value));
+                                                }}
+                                                onFocus={(e) => {
+                                                    const digits = stripNonDigits(e.target.value);
+                                                    if (digits !== e.target.value) field.onChange(digits);
+                                                }}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             </div>
 
-                            <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
-                                {nextStepButtonLabel}
-                            </Button>
+                            <div
+                                data-checkout-mobile-bar
+                                className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
+                                <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
+                                    {nextStepButtonLabel}
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </ToggleCardEdit>

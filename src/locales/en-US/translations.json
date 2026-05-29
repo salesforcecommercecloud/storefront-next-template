@@ -18,6 +18,9 @@
         "noImageAvailable": "No image available",
         "productGeneric": "Product",
         "noProductsFound": "No products found",
+        "productGrid": {
+            "loadFailed": "Unable to load additional products."
+        },
         "productCarousel": "Product Carousel",
         "productImageAlt": "Product Image",
         "suggestionImageAlt": "Suggestion Image",
@@ -32,7 +35,7 @@
     "search": {
         "results": "Search Results for",
         "shopperAgent": {
-            "title": "Shop with your Shopper Agent",
+            "title": "Ask Shopping Agent",
             "description": "I can help you find the perfect piece for your space. Shop with me."
         },
         "suggestions": {
@@ -89,6 +92,7 @@
         "cartTitle": "My Cart",
         "checkout": "Checkout",
         "continueShopping": "Continue Shopping",
+        "wishlist": "Wishlist",
         "openMenu": "Open menu",
         "closeMenu": "Close menu",
         "mobileNavigation": "Mobile navigation menu",
@@ -123,7 +127,7 @@
         "noAccountQuestion": "Don't have an account? ",
         "signUp": "Sign up",
         "signingIn": "Signing in...",
-        "sendLoginLink": "Send Login Link",
+        "sendLoginLink": "Continue",
         "sendingLoginLink": "Sending login link...",
         "signIn": "Sign In",
         "socialOrContinueWith": "Or continue with",
@@ -142,6 +146,7 @@
     "resetPassword": {
         "title": "Reset Password",
         "subtitle": "Enter your email to receive instructions on how to reset your password",
+        "enterNewPassword": "Enter your new password below",
         "checkEmailTitle": "Check Your Email",
         "checkEmailDescription": "You will receive an email at {{email}} with a link to reset your password shortly.",
         "backToSignIn": "Back to Sign In",
@@ -186,7 +191,11 @@
             "passwordPlaceholder": "Create a secure password",
             "confirmPasswordLabel": "Confirm Password",
             "confirmPasswordPlaceholder": "Confirm your password",
-            "createAccountButton": "Create Account"
+            "createAccountButton": "Create Account",
+            "continueButton": "Continue",
+            "orSeparator": "or",
+            "createAccountWithPassword": "Create account with password",
+            "continueWithoutPassword": "Continue without password"
         },
         "passwordRequirements": {
             "title": "Password Requirements:",
@@ -231,7 +240,12 @@
             "badRequest": "You entered invalid information. Check your information and try again.",
             "forbidden": "Access denied. You don't have permission to perform this action.",
             "timeout": "Request timeout. Try again.",
-            "unexpectedError": "An unexpected error occurred."
+            "unexpectedError": "An unexpected error occurred.",
+            "paymentFailed": "Payment failed. Check your payment information and try again.",
+            "paymentInformationRequired": "Payment information is required to complete your order.",
+            "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
+            "shippingAddressRequired": "Shipping address is required to continue.",
+            "billingAddressRequired": "Billing address is required to complete your order."
         },
         "validation": {
             "required": "This field is required.",
@@ -252,7 +266,11 @@
             "shippingMethodRequired": "Please select a shipping method to continue.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
             "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
-            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart."
+            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart.",
+            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
+            "noActiveBasket": "No active basket found. Refresh the page and try again.",
+            "basketCalculationFailed": "Failed to calculate order total. Try again.",
+            "promoCodeInvalid": "Invalid promo code. Check and try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -287,7 +305,7 @@
         }
     },
     "quantitySelector": {
-        "quantity": "Quantity:",
+        "quantity": "Quantity",
         "decreaseQuantity": "Decrease quantity",
         "increaseQuantity": "Increase quantity",
         "decreaseQuantityForProduct": "Decrement Quantity for {{productName}}",
@@ -307,6 +325,8 @@
             "description": "View and manage items in your shopping cart"
         },
         "delivery": {
+            "heading_one": "Delivery - {{deliveryCount}} out of {{count}} item",
+            "heading_other": "Delivery - {{deliveryCount}} out of {{count}} items",
             "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
         },
         "itemCount_one": "Cart (1 item)",
@@ -323,6 +343,8 @@
             "showOrderSummary": "Show order summary",
             "mobileHeading_one": "Estimated Total (1 item)",
             "mobileHeading_other": "Estimated Total ({{count}} items)",
+            "mobileHeadingTotal_one": "Total (1 item)",
+            "mobileHeadingTotal_other": "Total ({{count}} items)",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
             "shippingPromotionApplied": "(Promotion applied)",
@@ -368,11 +390,16 @@
         },
         "checkout": {
             "continueToCheckout": "Continue to Checkout",
-            "secure": "Secure"
+            "secure": "Secure",
+            "proceedToCheckout": "Proceed to Checkout"
         },
         "attributes": {
             "quantity": "Qty:",
             "promotions": "Promotions:"
+        },
+        "lineItem": {
+            "giftLabel": "This is a gift.",
+            "giftLearnMore": "Learn more."
         },
         "product": {
             "defaultName": "Product Name"
@@ -395,7 +422,22 @@
             "selectBonusProducts": "Select bonus products in cart",
             "addedToCart": "Bonus product added to cart",
             "failedToAdd": "Failed to add bonus product: {{error}}",
-            "missingRequiredInfo": "Missing required information"
+            "missingRequiredInfo": "Missing required information",
+            "defaultTitle": "Bonus Products Available",
+            "selectionCount": " ({{selected}} of {{max}} selected)",
+            "freeBadge": "Free",
+            "noSlotError": "No available bonus discount slot",
+            "loadError": "Failed to load product details. Please try again.",
+            "retry": "Retry",
+            "selectUpTo": "Select up to {{count}}",
+            "backToCart": "Back to Cart"
+        },
+        "inventory": {
+            "blockMessage": "Some items exceed available stock. Please adjust quantities or remove items to continue."
+        },
+        "loadError": {
+            "message": "We couldn't load your cart. Please try again.",
+            "retry": "Retry"
         }
     },
     "checkout": {
@@ -419,7 +461,9 @@
             "saving": "Saving...",
             "lookupFallbackMessage": "Customer lookup failed. Continuing as guest.",
             "saveError": "Failed to save contact information",
-            "sessionExpired": "Session expired. Sign in again."
+            "sessionExpired": "Session expired. Sign in again.",
+            "verificationFailed": "We couldn't verify your information. Please try again.",
+            "verificationRefreshed": "Verification timed out. We've refreshed it - please try again."
         },
         "addressModal": {
             "title": "Add New Address",
@@ -432,7 +476,6 @@
         },
         "shippingAddress": {
             "title": "Shipping Address",
-            "changeLabel": "Edit",
             "selectSavedAddress": "Select a saved address",
             "viewAllLink": "View all",
             "viewAllMore": "({{count}} more)",
@@ -452,7 +495,8 @@
             "failed": "Failed to save shipping address",
             "confirmed": "Shipping address confirmed",
             "notProvided": "Shipping address not provided yet",
-            "completePreviousSteps": "Complete previous steps to continue"
+            "completePreviousSteps": "Complete previous steps to continue",
+            "changeLabel": "Edit"
         },
         "addressForm": {
             "firstNameLabel": "First Name",
@@ -523,6 +567,13 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
+            "billingFirstNameRequired": "First name is required",
+            "billingLastNameRequired": "Last name is required",
+            "billingAddress1Required": "Address line 1 is required",
+            "billingCityRequired": "City is required",
+            "billingPostalCodeRequired": "Zip code is required",
+            "billingStateRequired": "State is required",
+            "billingCountryRequired": "Country is required",
             "useDifferentBilling": "Use a different billing address",
             "useDifferentBillingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as shipping address",
@@ -653,6 +704,20 @@
                 "subtitle": "Stay up to date on product drops and exclusive offers.",
                 "placeholder": "Email address",
                 "cta": "Join"
+            },
+            "postOrderRegistration": {
+                "title": "Create an account for a faster checkout next time",
+                "subtitle": "Save your details and track your orders by creating an account with your email.",
+                "emailLabel": "Email",
+                "passwordLabel": "Password",
+                "passwordPlaceholder": "Create a password",
+                "confirmPasswordLabel": "Confirm Password",
+                "confirmPasswordPlaceholder": "Confirm your password",
+                "passwordMismatch": "Passwords do not match",
+                "createAccountButton": "Create Account",
+                "creating": "Creating Account...",
+                "successTitle": "Account Created!",
+                "successDescription": "Your account has been created with {{email}}. You're now logged in and can track your orders."
             },
             "summaryTitle": "Summary",
             "emptyItemsFallback": "Your items are being prepared.",
@@ -826,6 +891,8 @@
             "itemNotFound": "Item not found in wishlist",
             "mustLoginToAdd": "You must be logged in to add items to your wishlist.",
             "mustLoginToRemove": "You must be logged in to remove items from your wishlist.",
+            "loadErrorMessage": "We couldn't load your wishlist. Please try again.",
+            "loadErrorRetry": "Try again",
             "sortBy": "Sort by",
             "sort": {
                 "recentlyAdded": "Recently Added",
@@ -840,7 +907,12 @@
                 "outOfStock": "Out of Stock",
                 "onSale": "On Sale"
             },
-            "noFilterResults": "No items match your filter."
+            "noFilterResults": "No items match your filter.",
+            "guestEmptySignInPrompt": "Sign in to see saved items from your account.",
+            "guestKeepItemsBanner": "Sign in to keep all your wishlist items.",
+            "guestKeepItemsBannerCta": "Sign in",
+            "mergeSuccess": "Your saved items were added to your account wishlist.",
+            "mergePartial": "Some saved items could not be added because they are no longer available."
         },
         "orders": {
             "empty": "You haven't placed an order yet. Once you place an order the details will show up here.",
@@ -895,6 +967,7 @@
             "reviewSubmitted": "Review submitted",
             "emptyItemsFallback": "No items.",
             "productPlaceholderInitial": "Item",
+            "productImageLinkFallback": "View product details",
             "quantityLabel": "Qty: {{count}}",
             "trackingNumber": "Tracking Number",
             "shippingAddress": "Shipping Address",
@@ -1028,10 +1101,34 @@
             "validation": {
                 "firstNameRequired": "First name is required.",
                 "lastNameRequired": "Last name is required.",
-                "emailRequired": "Email is required.",
-                "emailInvalid": "Enter a valid email address.",
                 "phoneInvalid": "Enter a valid phone number.",
                 "birthdayFuture": "Date of birth cannot be in the future."
+            }
+        },
+        "email": {
+            "title": "Email Address",
+            "description": "Manage your email address",
+            "changeEmail": "Change email",
+            "verifyEmail": "Verify Email",
+            "currentPassword": "Password",
+            "currentPasswordPlaceholder": "Enter your password",
+            "newEmail": "New Email Address",
+            "newEmailPlaceholder": "Enter your new email address",
+            "saveButton": "Save",
+            "saving": "Saving...",
+            "cancelButton": "Cancel",
+            "successMessage": "Email address updated successfully.",
+            "errorMessage": "Failed to update email address. Try again.",
+            "autoLoginFailed": "Email updated successfully, but automatic login failed. Please log in again.",
+            "otpSendFailed": "Failed to send verification code. Please try again.",
+            "otpVerified": "Verification successful.",
+            "invalidOtp": "Invalid verification code. Please try again.",
+            "verified": "Verified",
+            "unverified": "Unverified",
+            "validation": {
+                "passwordRequired": "Password is required.",
+                "emailRequired": "Email is required",
+                "emailInvalid": "Enter a valid email address"
             }
         },
         "password": {
@@ -1040,7 +1137,11 @@
             "edit": "Edit",
             "password": "Password",
             "hiddenPassword": "••••••••",
+            "notProvided": "Not provided",
             "changePassword": "Change password",
+            "resetPassword": "Reset password",
+            "resetPasswordToast": "You will receive an email at {{email}} with a link to reset your password shortly.",
+            "resetPasswordFailed": "Failed to send password reset email. Please try again.",
             "currentPassword": "Current Password",
             "currentPasswordPlaceholder": "Enter your current password",
             "newPassword": "New Password",
@@ -1051,6 +1152,7 @@
             "cancelButton": "Cancel",
             "successMessage": "Password was updated.",
             "errorMessage": "Failed to update password. Try again.",
+            "autoLoginFailed": "Password updated successfully, but automatic login failed. Please log in again.",
             "validation": {
                 "currentPasswordRequired": "Current password is required.",
                 "newPasswordRequired": "New password is required.",
@@ -1066,38 +1168,6 @@
                 "hasNumber": "At least one number",
                 "hasSpecial": "At least one special character"
             }
-        },
-        "interests": {
-            "title": "Your Interests",
-            "description": "Add your design interests to get personalized content, recommendations & offers",
-            "selectedLabel": "Your selected interests",
-            "noneSelected": "No interests selected",
-            "noneInCategory": "None selected",
-            "addMore": "Add more",
-            "addInterestsTitle": "Add Your Interests",
-            "dialogTitle": "Select Your Interests",
-            "dialogDescription": "Choose from the categories below to personalize your experience",
-            "selectCategory": "Select {{category}}",
-            "selectCategoryDescription": "Choose the options that interest you",
-            "successMessage": "Your interests were updated.",
-            "errorMessage": "Failed to update interests. Try again."
-        },
-        "interestsPreferences": {
-            "title": "Interests & Preferences",
-            "description": "Add your design interests and manage your shopping preferences",
-            "successMessage": "Your interests and preferences were updated.",
-            "errorMessage": "Failed to update. Try again."
-        },
-        "preferences": {
-            "title": "Your Preferences",
-            "description": "Manage your shopping preferences and newsletter subscription",
-            "noneSelected": "None selected",
-            "addMore": "Add more",
-            "dialogTitle": "Select Options",
-            "selectCategory": "Select {{category}}",
-            "selectCategoryDescription": "Choose the options that apply to you",
-            "successMessage": "Your preferences were updated.",
-            "errorMessage": "Failed to update preferences. Try again."
         },
         "common": {
             "save": "Save",
@@ -1355,20 +1425,10 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Theme mode switcher",
-        "lightTheme": "Light",
-        "darkTheme": "Dark",
-        "themeFamily": "Theme",
-        "themeMode": "Mode",
-        "themeFamilyAriaLabel": "Theme family switcher",
-        "marketStreet": "Market Street",
-        "foundations": "Foundations"
-    },
     "miniCart": {
         "noImage": "No image",
         "productAltFallback": "Product",
-        "quantityLabel": "Quantity:",
+        "quantityLabel": "Quantity",
         "quantityAriaLabel": "Quantity",
         "customQuantityAriaLabel": "Custom quantity",
         "customOption": "Custom...",
@@ -1379,7 +1439,9 @@
         "loading": "Loading...",
         "viewCart": "View Cart",
         "saved": "Saved {{amount}}",
-        "free": "Free"
+        "free": "Free",
+        "closeAriaLabel": "Close",
+        "each": "each"
     },
     "trackingConsent": {
         "title": "Tracking Consent",
@@ -1393,7 +1455,21 @@
         "locales": {
             "en-GB": "English (UK)",
             "en-US": "English (US)",
-            "it-IT": "Italian (Italy)"
+            "da-DK": "Dansk (Danmark)",
+            "de-DE": "Deutsch (Deutschland)",
+            "es-ES": "Español (España)",
+            "fi-FI": "Suomi (Suomi)",
+            "fr-FR": "Français (France)",
+            "it-IT": "Italiano (Italia)",
+            "ja-JP": "日本語 (日本)",
+            "ko-KR": "한국어 (대한민국)",
+            "nb-NO": "Norsk bokmål (Norge)",
+            "nl-NL": "Nederlands (Nederland)",
+            "pl-PL": "Polski (Polska)",
+            "pt-PT": "Português (Portugal)",
+            "sv-SE": "Svenska (Sverige)",
+            "zh-CN": "中文 (简体)",
+            "zh-TW": "中文 (繁體)"
         },
         "validation": {
             "unsupportedLocale": "Locale not supported",
@@ -1411,7 +1487,10 @@
             "KRW": "Korean Won (₩)",
             "BRL": "Brazilian Real (R$)",
             "CNY": "Chinese Yuan (¥)",
-            "TWD": "Taiwan Dollar (NT$)"
+            "TWD": "Taiwan Dollar (NT$)",
+            "DKK": "Danish Krone (kr)",
+            "PLN": "Polish Zloty (zł)",
+            "SEK": "Swedish Krona (kr)"
         },
         "validation": {
             "unsupportedCurrency": "Currency not supported",
@@ -1439,19 +1518,6 @@
         "sectionHeading": "Estimated Delivery",
         "shippingOptionsHeading": "Shipping Options & Rates",
         "free": "Free"
-    },
-    "returnsAndWarranty": {
-        "learnMore": "View Policies",
-        "returnConditions": "Return Conditions:",
-        "howToReturn": "How to Return:",
-        "note": "Note:",
-        "whatsCovered": "What's Covered:",
-        "whatsNotCovered": "What's Not Covered:",
-        "warrantyClaims": "Warranty Claims:",
-        "exchangeProcess": "Exchange Process:",
-        "needHelp": "Need Help?",
-        "contactAt": "Contact us at",
-        "orCall": "or call"
     },
     "writeReview": {
         "validation": {
@@ -1510,6 +1576,22 @@
         "tryAgain": "Try Again"
     },
     "routeError": {
+        "403": {
+            "title": "Access restricted",
+            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+            "secondaryMessage": "In the meantime, feel free to browse our collection."
+        },
+        "404": {
+            "title": "Page not found",
+            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
+            "details": "The requested page could not be found."
+        },
+        "500": {
+            "title": "Something went wrong",
+            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
+        },
         "defaultTitle": "Something went wrong",
         "defaultDescription": "An error occurred",
         "defaultDetails": "An unexpected error occurred.",
@@ -1521,22 +1603,6 @@
         "allRightsReserved": "All rights reserved.",
         "recommendations": {
             "title": "You might also like"
-        },
-        "404": {
-            "title": "Page not found",
-            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
-            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
-            "details": "The requested page could not be found."
-        },
-        "403": {
-            "title": "Access restricted",
-            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
-            "secondaryMessage": "In the meantime, feel free to browse our collection."
-        },
-        "500": {
-            "title": "Something went wrong",
-            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
-            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
         }
     }
 }

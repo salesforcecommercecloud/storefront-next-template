@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { ShareButton } from './share-button';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { createConfigWrapper } from '@/test-utils/config';
 
 // Mock useToast
@@ -76,7 +76,6 @@ describe('ShareButton', () => {
         app: {
             features: {
                 passwordlessLogin: {
-                    enabled: false,
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/passwordless-login-landing',
                 },
@@ -340,7 +339,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },
@@ -376,7 +374,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },
@@ -488,7 +485,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },

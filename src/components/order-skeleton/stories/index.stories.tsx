@@ -15,24 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import OrderSkeleton from '../index';
-import { expect } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logRender = action('order-skeleton-render');
-        logRender({});
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof OrderSkeleton> = {
     title: 'SKELETON/OrderSkeleton',
@@ -42,28 +24,14 @@ const meta: Meta<typeof OrderSkeleton> = {
         docs: {
             description: {
                 component:
-                    'Skeleton component for order confirmation pages. Provides loading placeholders for order summary, shipping details, payment details, and action buttons.',
+                    'Loading placeholder for /order-confirmation/$orderNo and /account/orders/$orderNo. Mirrors the order summary, shipping, payment, and action-button layout so the page reserves dimensions while order data resolves.',
             },
         },
     },
-    tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
+    tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof OrderSkeleton>;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {},
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
-    },
-};
+export const Default: Story = {};

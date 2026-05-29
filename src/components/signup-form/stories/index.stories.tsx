@@ -14,266 +14,101 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import SignupForm from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-
-function SignupFormStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logInput = action('signup-form-input');
-        const logSubmit = action('signup-form-submit');
-
-        const handleChange = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            if (target instanceof HTMLInputElement) {
-                logInput({ field: target.name || target.id, value: target.value });
-            }
-        };
-
-        const handleSubmit = (event: SubmitEvent) => {
-            const form = event.target;
-            if (!(form instanceof HTMLFormElement) || !root.contains(form)) return;
-            event.preventDefault();
-            logSubmit({});
-        };
-
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('submit', handleSubmit, true);
-
-        return () => {
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('submit', handleSubmit, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+import SignupForm from '../index';
 
 const meta: Meta<typeof SignupForm> = {
-    title: 'ACCOUNT/Signup Form',
+    title: 'AUTHENTICATION/Signup Form',
     component: SignupForm,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-Signup Form component for creating new user accounts.
-
-### Features:
-- First name and last name fields
-- Email field
-- Password and confirm password fields
-- Password strength requirements
-- Form validation
-- Error message display
-                `,
+                component:
+                    'New-account form. Renders a destructive error banner when `error` is supplied. With `isPasswordless`, password fields are collapsed behind a "Create account with password" toggle and the form submits as passwordless by default.',
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <SignupFormStoryHarness>
-                <div className="p-8 max-w-md">
-                    <form>
-                        <Story />
-                    </form>
-                </div>
-            </SignupFormStoryHarness>
-        ),
-    ],
     argTypes: {
         error: {
-            description: 'Optional error message to display',
             control: 'text',
+            description: 'Server-side registration error rendered above the form.',
+        },
+        isPasswordless: {
+            control: 'boolean',
+            description: 'When true, password fields are hidden behind a toggle so the form can submit passwordless.',
         },
     },
+    args: {
+        isPasswordless: false,
+    },
+    decorators: [
+        (Story) => (
+            <div className="p-8 max-w-md">
+                <form>
+                    <Story />
+                </form>
+            </div>
+        ),
+    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof SignupForm>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => <SignupForm />,
-    parameters: {
-        docs: {
-            story: `
-Default signup form.
-
-### Features:
-- First name and last name fields
-- Email field
-- Password fields with requirements
-- Submit button
-            `,
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const { t } = getTranslation();
 
-        // Check for first name input
-        const firstNameInput = await canvas.findByPlaceholderText(
-            t('signup:form.firstNamePlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await expect(firstNameInput).toBeInTheDocument();
-
-        // Check for email input
-        const emailInput = await canvas.findByPlaceholderText(t('signup:form.emailPlaceholder'), {}, { timeout: 5000 });
-        await expect(emailInput).toBeInTheDocument();
-
-        // Check for password input
-        const passwordInput = await canvas.findByPlaceholderText(
-            t('signup:form.passwordPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await expect(passwordInput).toBeInTheDocument();
-
-        // Check for submit button
-        const submitButton = await canvas.findByRole('button', { name: /create account/i }, { timeout: 5000 });
-        await expect(submitButton).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/first name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/last name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/^email/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/^password/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/confirm password/i)).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /create account/i })).toBeInTheDocument();
     },
 };
 
 export const WithError: Story = {
-    render: () => (
-        <SignupForm error="Email address is already registered. Please use a different email or try logging in." />
-    ),
-    parameters: {
-        docs: {
-            story: `
-Signup form with error message.
-
-### Features:
-- Error message display
-- All form fields
-- Submit button
-            `,
-        },
+    args: {
+        error: 'Email address is already registered. Please use a different email or try logging in.',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const { t } = getTranslation();
 
-        // Check for error message
-        const errorMessage = await canvas.findByText(/email address is already registered/i, {}, { timeout: 5000 });
-        await expect(errorMessage).toBeInTheDocument();
-
-        // Check for email input
-        const emailInput = await canvas.findByPlaceholderText(t('signup:form.emailPlaceholder'), {}, { timeout: 5000 });
-        await expect(emailInput).toBeInTheDocument();
+        await expect(canvas.getByText(/email address is already registered/i)).toBeInTheDocument();
     },
 };
 
-export const Interactive: Story = {
-    render: () => <SignupForm />,
-    parameters: {
-        docs: {
-            story: `
-Interactive signup form for testing user interactions.
-
-### Features:
-- Form field interactions
-- Password validation
-- Form submission
-            `,
-        },
+export const PasswordlessMode: Story = {
+    args: {
+        isPasswordless: true,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const { t } = getTranslation();
 
-        // Find and interact with first name input
-        const firstNameInput = await canvas.findByPlaceholderText(
-            t('signup:form.firstNamePlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(firstNameInput, 'Jane');
-        await expect(firstNameInput).toHaveValue('Jane');
-
-        // Find and interact with last name input
-        const lastNameInput = await canvas.findByPlaceholderText(
-            t('signup:form.lastNamePlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(lastNameInput, 'Smith');
-        await expect(lastNameInput).toHaveValue('Smith');
-
-        // Find and interact with email input
-        const emailInput = await canvas.findByPlaceholderText(t('signup:form.emailPlaceholder'), {}, { timeout: 5000 });
-        await userEvent.type(emailInput, 'jane.smith@example.com');
-        await expect(emailInput).toHaveValue('jane.smith@example.com');
-
-        // Find and interact with password input
-        const passwordInput = await canvas.findByPlaceholderText(
-            t('signup:form.passwordPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(passwordInput, 'SecurePass123!');
-        await expect(passwordInput).toHaveValue('SecurePass123!');
-
-        // Find and interact with confirm password input
-        const confirmPasswordInput = await canvas.findByPlaceholderText(
-            t('signup:form.confirmPasswordPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(confirmPasswordInput, 'SecurePass123!');
-        await expect(confirmPasswordInput).toHaveValue('SecurePass123!');
+        await expect(canvas.queryByLabelText(/^password/i)).toBeNull();
+        await expect(canvas.queryByLabelText(/confirm password/i)).toBeNull();
+        await expect(canvas.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /create account with password/i })).toBeInTheDocument();
     },
 };
 
-/**
- * Confirm password mismatch - triggers error state on confirm password input
- */
 export const ConfirmPasswordMismatch: Story = {
-    render: () => <SignupForm />,
-    parameters: {
-        docs: {
-            story: `
-Confirm password mismatch - typing different value in confirm password triggers error state.
-            `,
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const { t } = getTranslation();
 
-        const passwordInput = await canvas.findByPlaceholderText(
-            t('signup:form.passwordPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(passwordInput, 'SecurePass123!');
+        await userEvent.type(canvas.getByLabelText(/^password/i), 'SecurePass123!');
+        await userEvent.type(canvas.getByLabelText(/confirm password/i), 'DifferentPass456!');
 
-        const confirmPasswordInput = await canvas.findByPlaceholderText(
-            t('signup:form.confirmPasswordPlaceholder'),
-            {},
-            { timeout: 5000 }
-        );
-        await userEvent.type(confirmPasswordInput, 'DifferentPass456!');
-
-        await expect(confirmPasswordInput).toHaveAttribute('aria-invalid', 'true');
-        const errorMessage = await canvas.findByText(t('signup:passwordsDoNotMatch'), {}, { timeout: 5000 });
-        await expect(errorMessage).toBeInTheDocument();
+        const confirmInput = canvas.getByLabelText(/confirm password/i);
+        await expect(confirmInput).toHaveAttribute('aria-invalid', 'true');
+        await expect(canvas.getByText(/passwords don't match/i)).toBeInTheDocument();
     },
 };

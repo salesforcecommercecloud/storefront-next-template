@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useCallback, useMemo, useRef } from 'react';
-import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
+import { redirect, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.login';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
+import { routes } from '@/route-paths';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
+import { LoginGuestWishlistBanner } from '@/components/login/login-guest-wishlist-banner';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 // services
 import {
@@ -43,9 +48,15 @@ import {
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { authorizeIDP } from '@/lib/api/auth/social-login.server';
 import { mergeBasket } from '@/lib/api/basket.server';
-import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    mergeWishlist,
+    type WishlistMergeResult,
+} from '@/lib/api/wishlist.server';
+import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLogger } from '@/lib/logger.server';
-import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 
 type LoginActionResponse = {
     success: boolean;
@@ -67,14 +78,16 @@ type LoginLoaderData = {
     showOTPForm?: boolean;
     otpLength?: number;
     pageUrl: string;
+    /** Number of items in the guest wishlist (0 if guest has none, no list, or SCAPI failed). */
+    guestWishlistCount: number;
 };
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
     const url = new URL(request.url);
     const pageUrl = buildCanonicalUrl(url.origin, url.pathname, url.search);
-    const returnUrl = url.searchParams.get('returnUrl');
+    const returnUrl = getSafeReturnUrl(url.searchParams.get('returnUrl'));
 
     // If user is already logged in as registered user, redirect to returnUrl or home
     const { accessToken, accessTokenExpiry, userType, customerId } = session;
@@ -86,7 +99,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         customerId
     ) {
         logger.debug('Login: already authenticated, redirecting');
-        return redirect(returnUrl || '/');
+        return redirect(buildUrlFromContext(returnUrl || routes.home, context));
     }
 
     const passwordlessSent = url.searchParams.get('passwordless') === 'sent';
@@ -100,24 +113,25 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const actionParams = url.searchParams.get('actionParams');
     const error = url.searchParams.get('error');
 
-    // Get runtime config to determine if passwordless login is enabled
-    const config = getConfig<AppConfig>(context);
-    const isSlasPrivate = config.commerce.api.privateKeyEnabled;
-    const isPasswordlessLoginEnabled = config.features.passwordlessLogin.enabled && isSlasPrivate;
+    const config = getConfig(context);
+    // To enable passwordless login, the "Enable Email Verification" site preference under "Storefront Login Preferences" must be enabled.
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const isPasswordlessLoginEnabled = Boolean(emailVerificationEnabled);
     const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
     const mode = url.searchParams.get('mode') || (isPasswordlessLoginEnabled ? 'passwordless' : 'password');
 
     // Auto-verify OTP token if both email and token are provided in URL
     if (email && token) {
+        // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+        const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
+
         try {
             const tokenResponse = await getPasswordLessAccessToken(context, token);
 
-            // Update session with auth data
+            // Update session with auth data. userType, customerId, usid, and the refresh-token
+            // expiry cap all derive from the access-token JWT inside updateAuth — no follow-up
+            // call is needed.
             updateAuthServer(context, tokenResponse);
-            updateAuthServer(context, (prevSession) => ({
-                ...prevSession,
-                userType: 'registered',
-            }));
 
             // Merge guest basket with registered user basket
             try {
@@ -126,8 +140,22 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
                 logger.error('Login: basket merge failed during passwordless login', { error: basketError });
             }
 
+            let wishlistMergeResult: WishlistMergeResult | null = null;
+            if (guestWishlistSnapshot) {
+                try {
+                    wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                } catch (wishlistError) {
+                    logger.error('Login: wishlist merge failed during passwordless login', { error: wishlistError });
+                }
+            }
+
             logger.info('Login: passwordless verification succeeded');
-            return redirect(returnUrl || '/');
+            const target = buildUrlFromContext(returnUrl || routes.home, context);
+            if (wishlistMergeResult) {
+                const { url: redirectUrl, setCookie } = appendWishlistMergeFlag(context, target, wishlistMergeResult);
+                return redirect(redirectUrl, { headers: { 'Set-Cookie': setCookie } });
+            }
+            return redirect(target);
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
             logger.warn('Login: passwordless auto-verification failed');
@@ -147,9 +175,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
                 actionParams,
                 otpLength: config.auth.otpLength,
                 pageUrl,
+                guestWishlistCount: guestWishlistSnapshot?.items.length ?? 0,
             };
         }
     }
+
+    // Drives the guest-saved-items banner above the form. Helper gates on guest userType
+    // and swallows SCAPI errors — a missing snapshot must not block sign-in.
+    const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
 
     return {
         error,
@@ -164,6 +197,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         actionParams,
         otpLength: config.auth.otpLength,
         pageUrl,
+        guestWishlistCount: guestWishlistSnapshot?.items.length ?? 0,
     };
 }
 
@@ -177,9 +211,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  * - `LoginActionResponse` — errors or intermediate states (e.g., OTP form). This data is
  *   serialized and delivered to the component via `useActionData()` for rendering.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse | Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const { t } = getTranslation(context);
     const genericError = t('errors:genericTryAgain');
 
@@ -191,6 +225,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const loginMode = formData.get('loginMode')?.toString();
         const provider = formData.get('provider')?.toString();
         const redirectPath = formData.get('redirectPath')?.toString();
+        const skipUsid = formData.get('skipUsid') === 'true';
         const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
 
         if (loginMode === 'social') {
@@ -201,7 +236,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const socialCallback = config.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
                 ? socialCallback
-                : `${getAppOrigin()}${buildUrlFromContext(socialCallback, context)}`;
+                : `${getAppOrigin(context)}${buildUrlFromContext(socialCallback, context)}`;
             const finalRedirectURI = redirectPath
                 ? `${socialLoginRedirectURI}?redirectUrl=${redirectPath}`
                 : socialLoginRedirectURI;
@@ -236,12 +271,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
             const url = new URL(request.url);
-            const returnUrl = url.searchParams.get('returnUrl');
+            const returnUrl = getSafeReturnUrl(url.searchParams.get('returnUrl'));
             const pendingAction = url.searchParams.get('action');
             const actionParams = url.searchParams.get('actionParams');
 
             // Construct redirectPath with all params encoded
-            let finalRedirectPath = redirectPath || returnUrl || '/';
+            let finalRedirectPath = redirectPath || returnUrl || routes.home;
             if (returnUrl && (pendingAction || actionParams)) {
                 const redirectParams = new URLSearchParams();
                 if (pendingAction) {
@@ -282,7 +317,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             if (!email || !password) {
                 return { success: false, error: genericError };
             }
-            const result = await loginRegisteredUser(context, { email, password });
+            // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+            const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
+            const result = await loginRegisteredUser(context, { email, password }, { skipUsid });
             if (!result.success) {
                 logger.warn('Login: standard login failed');
                 return { success: false, error: genericError };
@@ -299,12 +336,30 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 logger.error('Login: basket merge failed', { error });
             }
 
+            let wishlistMergeResult: WishlistMergeResult | null = null;
+            if (guestWishlistSnapshot) {
+                try {
+                    wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                } catch (wishlistError) {
+                    logger.error('Login: wishlist merge failed', { error: wishlistError });
+                }
+            }
+
+            // Helper to prepare redirect with wishlist merge cookie
+            const prepareRedirect = (target: string) => {
+                if (wishlistMergeResult) {
+                    const { url, setCookie } = appendWishlistMergeFlag(context, target, wishlistMergeResult);
+                    return redirect(url, { headers: { 'Set-Cookie': setCookie } });
+                }
+                return redirect(target);
+            };
+
             // Login successful - redirect to returnUrl if provided, otherwise home
             // Try to get returnUrl from formData first (in case it was submitted as hidden input)
             // Otherwise fall back to URL query params
             const returnUrlFromForm = formData.get('returnUrl')?.toString()?.trim();
             const returnUrlFromUrl = new URL(request.url).searchParams.get('returnUrl');
-            const returnUrl = returnUrlFromForm || returnUrlFromUrl;
+            const returnUrl = getSafeReturnUrl(returnUrlFromForm || returnUrlFromUrl);
 
             // Get action and actionParams to preserve in redirect URL
             const actionFromForm = formData.get('action')?.toString();
@@ -314,22 +369,27 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const pendingAction = actionFromForm || actionFromUrl;
             const actionParams = actionParamsFromForm || actionParamsFromUrl;
 
-            // Redirect to returnUrl (with preserved action params) or home
+            // Redirect to returnUrl (with preserved action params) or home.
+            // `returnUrl` is guaranteed relative by `getSafeReturnUrl` above, so we mutate
+            // its query string in place rather than constructing a `URL` object — that
+            // keeps the redirect target relative end-to-end and removes any temptation
+            // for a future refactor to forward an absolute URL past the open-redirect
+            // guard.
             if (returnUrl) {
                 if (pendingAction || actionParams) {
-                    const returnUrlObj = new URL(returnUrl, getAppOrigin());
-                    if (pendingAction) {
-                        returnUrlObj.searchParams.set('action', pendingAction);
-                    }
-                    if (actionParams) {
-                        returnUrlObj.searchParams.set('actionParams', actionParams);
-                    }
-                    return redirect(returnUrlObj.pathname + returnUrlObj.search);
+                    const [pathAndQuery, fragment] = returnUrl.split('#');
+                    const [pathname, existingQuery] = pathAndQuery.split('?');
+                    const params = new URLSearchParams(existingQuery);
+                    if (pendingAction) params.set('action', pendingAction);
+                    if (actionParams) params.set('actionParams', actionParams);
+                    const queryString = params.toString();
+                    const target = pathname + (queryString ? `?${queryString}` : '') + (fragment ? `#${fragment}` : '');
+                    return prepareRedirect(buildUrlFromContext(target, context));
                 }
-                return redirect(returnUrl);
+                return prepareRedirect(buildUrlFromContext(returnUrl, context));
             }
 
-            return redirect('/');
+            return prepareRedirect(buildUrlFromContext(routes.home, context));
         }
     } catch {
         return { success: false, error: genericError };
@@ -339,7 +399,8 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');
     const actionData = useActionData<typeof action>();
-    const config = useConfig<AppConfig>();
+    const navigate = useNavigate();
+    const config = useConfig();
 
     const {
         error: loaderError,
@@ -354,13 +415,14 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         showOTPForm,
         otpLength,
         pageUrl,
+        guestWishlistCount,
     } = loaderData;
 
-    // Turnstile for OTP resend — the PasswordlessLoginForm has its own widget for the
-    // initial submit, but once the OTP modal opens the resend needs a fresh token.
     const [resendTurnstileToken, setResendTurnstileToken] = useState<string | null>(null);
     const resendTurnstileResetRef = useRef<(() => void) | null>(null);
+
     const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileMode = config ? getTurnstileMode(config) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
@@ -379,7 +441,6 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     const handleResendTurnstileExpire = useCallback(() => {
         setResendTurnstileToken(null);
     }, []);
-
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
     const error = actionData?.error || loaderError || undefined;
 
@@ -398,7 +459,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                             <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
                             <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
                             <Link
-                                to="/login"
+                                to={routes.login}
                                 className="inline-flex items-center text-sm text-primary hover:text-primary/80">
                                 {t('backToLogin')}
                             </Link>
@@ -447,6 +508,8 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
+                    <LoginGuestWishlistBanner count={guestWishlistCount} />
+
                     <Card className="p-8 rounded-none shadow-none">
                         {renderForm()}
                         {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
@@ -462,6 +525,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     onError={handleResendTurnstileError}
                     onExpire={handleResendTurnstileExpire}
                     enabled={turnstileEnabled}
+                    mode={turnstileMode}
                     resetRef={resendTurnstileResetRef}
                 />
             )}
@@ -482,12 +546,18 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     window.location.reload();
                 }}
                 email={otpEmail || ''}
-                onSuccess={() => {
-                    // Redirect to return URL or home after successful login
-                    window.location.href = returnUrl || '/';
+                onSuccess={(_tokenResponse, meta) => {
+                    // Redirect to return URL or home after successful login.
+                    // Forward the wishlist merge flag so the destination route can render a toast.
+                    const target = returnUrl || routes.home;
+                    if (meta?.wishlistMerge) {
+                        const separator = target.includes('?') ? '&' : '?';
+                        void navigate(`${target}${separator}wishlistMerge=${meta.wishlistMerge}`);
+                    } else {
+                        void navigate(target);
+                    }
                 }}
                 onResendCode={async () => {
-                    // Resend the OTP code
                     const formData = new FormData();
                     formData.append('email', otpEmail || '');
                     formData.append('loginMode', 'passwordless');
@@ -501,7 +571,6 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                         method: 'POST',
                         body: formData,
                     });
-                    // Token is single-use — reset for the next resend
                     if (turnstileEnabled) {
                         setResendTurnstileToken(null);
                         resendTurnstileResetRef.current?.();

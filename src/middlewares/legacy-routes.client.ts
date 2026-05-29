@@ -27,7 +27,8 @@ import type { AppConfig } from '@/types/config';
  *
  * Configuration:
  * Set `site.hybrid.legacyRoutes` in your config to define which routes should trigger redirects.
- * Supports both exact paths and parameterized routes using React Router syntax.
+ * Supports exact paths, single-segment named params (`:name`), and multi-segment wildcards
+ * (`*`) — the latter two follow React Router-style syntax.
  *
  * Example:
  * ```
@@ -35,14 +36,21 @@ import type { AppConfig } from '@/types/config';
  *   hybrid: {
  *     enabled: true,
  *     legacyRoutes: [
- *       '/checkout',              // Exact match
- *       '/account/orders',        // Exact match
- *       '/product/:id',           // Matches /product/123, /product/abc, etc.
- *       '/category/:categoryId/item/:itemId' // Matches /category/shoes/item/123, etc.
+ *       '/checkout',                          // Exact match
+ *       '/account/orders',                    // Exact match
+ *       '/product/:id',                       // Single segment: /product/123, /product/abc
+ *       '/category/:categoryId/item/:itemId', // Multiple single segments
+ *       '/categoryLv1/*',                     // Splat: /categoryLv1/shoes, /categoryLv1/shoes/running
+ *       '/category/:cat/*',                   // :param + splat combined
+ *       '/files/*-thumb'                      // '*' may appear anywhere, not only trailing
  *     ]
  *   }
  * }
  * ```
+ *
+ * Note: `/categoryLv1/*` does NOT match the bare `/categoryLv1` (no trailing slash). If you
+ * need both, list `/categoryLv1` as a separate exact entry. The bare pattern `'*'` matches any
+ * path (catch-all).
  *
  * Flow:
  * 1. User clicks <Link to="/checkout">
@@ -56,31 +64,34 @@ import type { AppConfig } from '@/types/config';
 const regexCache = new Map<string, RegExp>();
 
 /**
- * Converts a route pattern with parameters (e.g., '/product/:id') into a RegExp.
- * Supports React Router style parameterized routes.
+ * Converts a route pattern with parameters and/or wildcards into a RegExp.
  *
- * @param pattern - Route pattern like '/product/:id' or '/category/:cat/item/:id'
+ * Supports:
+ * - React Router style named params: ':id' matches a single path segment ([^/]+)
+ * - Splat wildcard: '*' matches any path content, including '/' (.*)
+ *
+ * @param pattern - Route pattern like '/product/:id', '/categoryLv1/*', or '/category/:cat/*'
  * @returns RegExp that matches the pattern
  */
 function routePatternToRegex(pattern: string): RegExp {
-    const escaped = pattern.replace(/[.+*?^${}()|[\]\\]/g, '\\$&');
-
-    const regexPattern = escaped.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, '([^/]+)');
-
-    return new RegExp(`^${regexPattern}$`);
+    // Escape regex specials except '*', which is treated as a wildcard below
+    const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    const withParams = escaped.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, '([^/]+)');
+    const withWildcards = withParams.replace(/\*/g, '.*');
+    return new RegExp(`^${withWildcards}$`);
 }
 
 /**
  * Checks if a pathname matches a route pattern.
- * Supports both exact matches and parameterized routes.
+ * Supports exact matches, parameterized routes, and wildcard splats.
  *
  * @param pathname - The pathname to check (e.g., '/product/123')
- * @param pattern - The route pattern (e.g., '/product/:id' or '/checkout')
+ * @param pattern - The route pattern (e.g., '/product/:id', '/categoryLv1/*', or '/checkout')
  * @returns true if the pathname matches the pattern
  */
 export function matchesRoutePattern(pathname: string, pattern: string): boolean {
-    // If pattern has no parameters, do exact match
-    if (!pattern.includes(':')) {
+    // If pattern has no params or wildcards, do a fast exact-string match
+    if (!pattern.includes(':') && !pattern.includes('*')) {
         return pathname === pattern;
     }
 
@@ -137,17 +148,23 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
     //   your URL strategy (e.g. '/:siteId/:localeId' → '/:localeId') requires only one
     //   update — the legacyRoutes list stays untouched.
     const urlPrefix = config?.url?.prefix ?? '';
-    const strippedPathname = stripPathPrefix(pathname, urlPrefix);
-
+    const strippedPathname = stripPathPrefix({ pathname, prefix: urlPrefix }) || '/';
     const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(strippedPathname, legacyRoute));
 
     if (isLegacyRoute) {
+        // Navigate to the stripped pathname so the legacy backend (or local hybrid proxy)
+        // can apply its own site/locale prefix without doubling up on storefront-next's.
+        // Without this, '/global/en-GB/cart' would be handed to the proxy, which prepends
+        // its own SFRA prefix and produces '/s/{siteId}/{locale}/global/en-GB/cart' — a 404.
+        const legacyUrl = new URL(strippedPathname, url.origin);
+        legacyUrl.search = url.search;
+        legacyUrl.hash = url.hash;
         // Add redirected=1 to prevent infinite loops
-        url.searchParams.set('redirected', '1');
+        legacyUrl.searchParams.set('redirected', '1');
 
         // Force a full page navigation to hit the server/CDN
         // The CDN routing rules or server middleware will handle routing to the legacy backend
-        window.location.href = url.toString();
+        window.location.href = legacyUrl.toString();
 
         // Suspend indefinitely while the browser navigates away.
         // Returning an empty object would cause React Router to error with

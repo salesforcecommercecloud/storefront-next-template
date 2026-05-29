@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import { useSearchParams } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { useNavigation, useSearchParams } from 'react-router';
+import type { ShopperProducts } from '@/scapi';
 
 interface UseSelectedVariationsParams {
     product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
+    /**
+     * Optional override that takes precedence over URL search params. When provided, this hook
+     * uses these values as the per-attribute selections instead of reading from `useSearchParams`.
+     * Defaults (representedProduct → first orderable variant → single-value attribute) still
+     * apply for any attribute the override doesn't supply.
+     *
+     * Use this in modal contexts where swatch selections must be ephemeral and not pollute the
+     * page URL or trigger route revalidation (e.g. cart-edit / quick-add modals containing
+     * bundle/set children).
+     */
+    selectionsOverride?: Record<string, string>;
 }
 
 /**
- * Hook to get currently selected variation values from URL parameters with fallback to product defaults.
+ * Hook to get currently selected variation values, with fallback to product defaults.
+ *
+ * Selection sources are consulted in priority order:
+ *   1. `selectionsOverride` (modal contexts where selections must not touch the URL)
+ *   2. The destination URL of an in-flight navigation (`useNavigation().location`) — yields
+ *      optimistic readings while a swatch click's nav is settling, so consumers see the
+ *      user's choice on the next paint
+ *   3. The canonical URL search params (`useSearchParams`)
+ *   4. Product defaults (`variationValues` → fallback variant → single-value attributes)
  *
  * @param params - Configuration object
  * @param params.product - Product containing variation attributes and optional default variationValues
@@ -58,38 +77,93 @@ interface UseSelectedVariationsParams {
  * const selections = useSelectedVariations({ product: childProduct, isChildProduct: true });
  * // Returns: { color: 'RED', size: 'L' }
  * // Note: Extracts and decodes nested parameters for individual products within bundles/sets
+ *
+ * @example
+ * // URL: /?color=NAVY (canonical), navigation in flight to /?color=RED
+ * const selections = useSelectedVariations({ product });
+ * // Returns: { color: 'RED' }
+ * // Note: While the click navigation is pending, the destination's params are preferred so
+ * // the swatch's `selected` flag reflects the user's choice immediately.
  */
-export const useSelectedVariations = ({ product, isChildProduct = false }: UseSelectedVariationsParams) => {
+export const useSelectedVariations = ({
+    product,
+    isChildProduct = false,
+    selectionsOverride,
+}: UseSelectedVariationsParams) => {
     const [searchParams] = useSearchParams();
+    const navigation = useNavigation();
 
     return useMemo(() => {
         if (!product?.variationAttributes) return {};
 
-        let params: URLSearchParams;
+        // Optimistic swatch activation: while a navigation triggered by clicking a swatch is in
+        // flight, prefer the destination URL's params over the canonical URL so the clicked
+        // swatch reflects as selected on the next paint instead of waiting for the loader chain
+        // (color/size click → pid sync → SCAPI roundtrip) to settle. Same pattern the PLP uses
+        // for refines — see docs/README-STATE.md "Via useNavigation()" and the precedent in
+        // category-refinements/index.tsx. `useNavigation()` is global — it reflects any in-flight
+        // navigation, not just swatch clicks. Acceptable trade-off: a cross-page nav (e.g. PDP→PDP
+        // via a related-product link) unmounts this hook before the brief deselection paints.
+        const pendingSearchParams = navigation.location ? new URLSearchParams(navigation.location.search) : undefined;
+        const effectiveSearchParams = pendingSearchParams ?? searchParams;
 
-        if (isChildProduct) {
-            // For child products (individual products within bundles/sets): params are nested like ?childProductId=color%3DRED%26size%3DL
-            const productParamsString = searchParams.get(product.id) || '';
-            params = new URLSearchParams(productParamsString);
-        } else {
-            // For regular products: use global URL params directly like ?color=RED&size=L
-            params = searchParams;
-        }
+        // Source for current selections: caller-provided override (modal contexts) or
+        // pending-nav-aware URL params (PDP).
+        const getSelected = (attributeId: string): string | undefined => {
+            if (selectionsOverride) {
+                return selectionsOverride[attributeId];
+            }
+            if (isChildProduct) {
+                // For child products (individual products within bundles/sets): params are nested
+                // like ?childProductId=color%3DRED%26size%3DL
+                const productParamsString = effectiveSearchParams.get(product.id) || '';
+                return new URLSearchParams(productParamsString).get(attributeId) || undefined;
+            }
+            return effectiveSearchParams.get(attributeId) || undefined;
+        };
 
-        // Build object of currently selected variation values from URL parameters with fallback to defaults
-        // URL parameters and the product's default variationValues (for variant products)
+        // For master products that lack their own variationValues (e.g. set/bundle children),
+        // fall back to a merchant-configured variant when SCAPI provides one via representedProduct.
+        // representedProduct isn't in the typed Product schema (only ShopperSearch hits) but the
+        // schema is open so SCAPI may include it. Read defensively via the open extension.
+        const representedProductId = (product as { representedProduct?: { id?: string } }).representedProduct?.id;
+        const representedVariant =
+            !product.variationValues && representedProductId
+                ? product.variants?.find((v) => v.productId === representedProductId)
+                : undefined;
+
+        // For child products in sets/bundles where merchants didn't pre-configure defaults
+        // (no variationValues, no representedProduct), pick the first orderable variant's
+        // variationValues as a coherent default — this guarantees auto-selected attributes
+        // are mutually compatible (avoids selecting a color+size combo that isn't orderable).
+        const firstOrderableChildVariant =
+            isChildProduct && !product.variationValues && !representedVariant
+                ? (product.variants?.find((v) => v.orderable) ?? product.variants?.[0])
+                : undefined;
+
+        const fallbackVariant = representedVariant ?? firstOrderableChildVariant;
+
+        // Build object of currently selected variation values from the override/URL with fallback to defaults
+        // (the product's default variationValues for variant products, then variant fallbacks).
         const result = product?.variationAttributes?.reduce(
             (selections, attribute) => {
-                // First priority: Get the value from URL params for this specific variation attribute
-                // For example: if attribute.id is 'color', look for ?color=NAVYWL in URL
-                const urlValue = params.get(attribute.id);
+                // First priority: caller override (modal) or URL param (PDP) for this attribute
+                const explicitValue = getSelected(attribute.id);
 
-                // Second priority: Fall back to product's default variationValues (for variant products)
-                // For example: product.variationValues = { color: 'CHARCWL', size: '036', width: 'S' }
-                const defaultValue = product.variationValues?.[attribute.id];
+                // Second priority: product's default variationValues (for variant products)
+                // Third priority: a fallback variant's values (representedProduct hint or, for child
+                //   products without merchant defaults, the first orderable variant — keeps the
+                //   selected (color, size, ...) tuple internally consistent)
+                // Fourth priority: when an attribute has only ONE possible value, auto-select it
+                const onlyValue =
+                    attribute.values && attribute.values.length === 1 ? attribute.values[0]?.value : undefined;
+                const defaultValue =
+                    product.variationValues?.[attribute.id] ??
+                    fallbackVariant?.variationValues?.[attribute.id] ??
+                    onlyValue;
 
-                // Use URL value if available, otherwise use default, otherwise skip this attribute
-                const value = urlValue || defaultValue;
+                // Use explicit value if available, otherwise use default, otherwise skip this attribute
+                const value = explicitValue || defaultValue;
 
                 // This keeps the returned object clean - no undefined/null values
                 return value ? { ...selections, [attribute.id]: value } : selections;
@@ -98,5 +172,5 @@ export const useSelectedVariations = ({ product, isChildProduct = false }: UseSe
         );
 
         return result;
-    }, [product, searchParams, isChildProduct]);
+    }, [product, searchParams, navigation.location, isChildProduct, selectionsOverride]);
 };

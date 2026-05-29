@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ShippingMultiOptions from '../shipping-multi-options';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -248,7 +248,7 @@ This component handles the shipping method selection step for multi-address chec
 - \`@/hooks/checkout/use-customer-profile\`: Access customer profile for auto-selection
 - \`@/providers/basket\`: Access to current basket and shipment data
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/customer-profile-utils\`: Default shipping method selection utilities
+- \`@/lib/customer/profile-utils\`: Default shipping method selection utilities
                 `,
             },
         },

@@ -6,8 +6,8 @@ This package uses Vitest for unit tests, running under Vite.
 
 - **Run all workspace tests**: `pnpm -r test`
 - **Run only app tests**: `pnpm --filter template-retail-rsc-app test`
-- **Open Vitest UI**: `pnpm --filter template-retail-rsc-app test:ui`
-- **Coverage report**: `pnpm --filter template-retail-rsc-app coverage`
+- **Open Vitest UI**: `pnpm --filter template-retail-rsc-app test --ui`
+- **Coverage report**: `pnpm --filter template-retail-rsc-app test --coverage`
 
 ## Test layout
 

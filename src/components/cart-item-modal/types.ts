@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { Dialog } from '@/components/ui/dialog';
 
 export interface CartItemModalProps extends Omit<React.ComponentProps<typeof Dialog>, 'onOpenChange'> {

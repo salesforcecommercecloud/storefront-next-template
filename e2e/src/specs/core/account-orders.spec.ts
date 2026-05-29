@@ -35,7 +35,7 @@
 
 Feature('Account Orders Tests').tag('@core').tag('@account').tag('@orders');
 
-const { orderListPage, orderDetailsPage, loginFlow, storefrontPage } = inject();
+const { orderListPage, orderDetailsPage, apiLoginFlow, storefrontPage } = inject();
 import { expect } from 'chai';
 import { buildSitePath } from '../../utils/url-utils';
 
@@ -74,7 +74,7 @@ Before(async () => {
         await storefrontPage.clearCookies();
         storefrontPage.navigate();
         await storefrontPage.waitForSessionCookies('guest', siteId, 30);
-        await loginFlow.executeWithCredentials(testUserEmail, testUserPassword);
+        await apiLoginFlow.execute({ email: testUserEmail, password: testUserPassword });
     };
 
     try {

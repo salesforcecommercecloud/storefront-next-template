@@ -2,19 +2,17 @@
 
 exports[`PromoCallout Snapshots > Default snapshot 1`] = `
 <div>
-  <div>
+  <div
+    class="p-4 border border-dashed"
+  >
     <div
-      class="p-4 border border-dashed"
+      class="items-center gap-2"
     >
-      <div
-        class="items-center gap-2"
+      <span
+        class="line-clamp-2 text-[inherit] font-medium"
       >
-        <span
-          class="line-clamp-2 text-[inherit] font-medium"
-        >
-          Buy one get one 50% off
-        </span>
-      </div>
+        Buy one get one 50% off
+      </span>
     </div>
   </div>
 </div>
@@ -22,22 +20,20 @@ exports[`PromoCallout Snapshots > Default snapshot 1`] = `
 
 exports[`PromoCallout Snapshots > HtmlContent snapshot 1`] = `
 <div>
-  <div>
+  <div
+    class="p-4 border border-dashed"
+  >
     <div
-      class="p-4 border border-dashed"
+      class="items-center gap-2"
     >
-      <div
-        class="items-center gap-2"
+      <span
+        class="line-clamp-2 text-[inherit] font-medium"
       >
-        <span
-          class="line-clamp-2 text-[inherit] font-medium"
-        >
-          <strong>
-            Flash Sale!
-          </strong>
-           20% off
-        </span>
-      </div>
+        <strong>
+          Flash Sale!
+        </strong>
+         20% off
+      </span>
     </div>
   </div>
 </div>

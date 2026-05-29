@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useEffect } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
@@ -26,7 +25,7 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Mock fetcher for Storybook
 const mockFetcher = {
-    state: 'idle',
+    state: 'idle' as const,
     data: undefined,
     formData: undefined,
     formMethod: undefined,
@@ -39,389 +38,159 @@ const mockFetcher = {
     ),
 };
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logType = action('promo-fields-input');
-        const logTypeValue = action('promo-fields-input-value');
-        const logApply = action('promo-fields-apply');
-
-        const isInsideHarness = (element: Element) => root.contains(element);
-
-        const deriveLabel = (element: HTMLElement): string => {
-            const ariaLabel = element.getAttribute('aria-label')?.trim();
-            if (ariaLabel) {
-                return ariaLabel;
-            }
-
-            if (element instanceof HTMLInputElement) {
-                const placeholder = element.placeholder?.trim();
-                if (placeholder) {
-                    return placeholder;
-                }
-            }
-
-            const text = element.textContent?.replace(/\s+/g, ' ').trim();
-            if (text) {
-                return text;
-            }
-
-            const title = element.getAttribute('title')?.trim();
-            if (title) {
-                return title;
-            }
-
-            const testId = element.getAttribute('data-testid')?.trim();
-            return testId ?? '';
-        };
-
-        const findInteractiveElement = (start: Element | null): HTMLElement | null => {
-            if (!start) {
-                return null;
-            }
-
-            const selectors = [
-                'button',
-                'a',
-                '[role="button"]',
-                'input',
-                'textarea',
-                'select',
-                '[data-testid]',
-                '[tabindex]',
-                'label',
-            ].join(', ');
-
-            const match = start.closest(selectors);
-            if (match instanceof HTMLElement) {
-                return match;
-            }
-
-            if (start instanceof HTMLElement) {
-                return start;
-            }
-
-            return start.parentElement ? findInteractiveElement(start.parentElement) : null;
-        };
-
-        const handleChange = (event: Event) => {
-            const target = event.target;
-            if (!(target instanceof HTMLInputElement) || !isInsideHarness(target)) {
-                return;
-            }
-
-            const label = deriveLabel(target);
-            if (!label) {
-                return;
-            }
-
-            logType({ label });
-
-            const value = target.value ?? '';
-            logTypeValue({ label: value });
-        };
-
-        const handleSubmit = (event: SubmitEvent) => {
-            const form = event.target;
-            if (!(form instanceof HTMLFormElement) || !isInsideHarness(form)) {
-                return;
-            }
-
-            event.preventDefault();
-            event.stopImmediatePropagation?.();
-
-            const submitter = (event.submitter as Element | null) ?? form.querySelector('[type="submit"]');
-            const interactive = submitter ? findInteractiveElement(submitter) : null;
-            const label = interactive ? deriveLabel(interactive) : 'Apply';
-
-            if (label) {
-                logApply({ label });
-            }
-        };
-
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('submit', handleSubmit, true);
-
-        return () => {
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('submit', handleSubmit, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+interface FieldsHarnessArgs {
+    initialValue?: string;
+    fetcherState?: 'idle' | 'submitting';
+    triggerValidation?: boolean;
 }
 
-const meta: Meta<typeof PromoCodeFields> = {
-    component: PromoCodeFields,
-    title: 'CART/PromoCodeFields',
+function FieldsHarness({ initialValue = '', fetcherState = 'idle', triggerValidation = false }: FieldsHarnessArgs) {
+    const { t } = getTranslation();
+    const promoCodeFormSchema = createPromoCodeFormSchema(t);
+    const form = useForm({
+        resolver: zodResolver(promoCodeFormSchema),
+        defaultValues: { code: initialValue },
+    });
+    // `form.trigger()` schedules state updates; calling it during render produces
+    // "Cannot update a component while rendering" warnings. Run in an effect.
+    useEffect(() => {
+        if (triggerValidation) {
+            void form.trigger();
+        }
+    }, [triggerValidation, form]);
+    const fetcher = { ...mockFetcher, state: fetcherState };
+    return (
+        <Form {...form}>
+            <PromoCodeFields form={form} applyFetcher={fetcher as unknown as never} />
+        </Form>
+    );
+}
+
+const meta: Meta<typeof FieldsHarness> = {
+    component: FieldsHarness,
+    title: 'CART/Promo Code Fields',
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-### PromoCodeFields Component
+\`<PromoCodeFields>\` is the input + submit-button row mounted inside the \`<PromoCodeForm>\` accordion. Stories cover the three real component states:
 
-This component renders the form fields for entering and applying promo codes. It provides the input field and submit button for the promo code form.
+| Story | Description |
+|-------|-------------|
+| **Default** | Empty input, idle fetcher, button enabled |
+| **LoadingState** | \`applyFetcher.state === 'submitting'\` — button is disabled and the spinner renders |
+| **WithValidationError** | Zod schema rejects single-character input; the field displays an inline error |
 
-**Key Features:**
-- **Form Fields**: Input field for entering promo codes with proper labeling
-- **Submit Button**: Button to apply the promo code with loading states
-- **Form Integration**: Integrates with React Hook Form for validation and state management
-- **Fetcher Integration**: Uses React Router fetcher for handling form submissions
-- **Loading States**: Shows loading state on the submit button during submission
-- **Validation**: Displays form validation messages
-
-**Dependencies:**
-- \`react-hook-form\`: Form state management
-- \`react-router\`: Fetcher for form submissions
-- \`@/components/ui/form\`: Form components
-- \`@/components/ui/button\`: Button component
-- \`@/components/ui/input\`: Input component
-- \`@/lib/fetcher-states\`: Fetcher state management
-
-**Props:**
-- \`form\`: React Hook Form instance for managing form state and validation
-- \`applyFetcher\`: React Router fetcher for handling promo code application requests
+The differentiating prop \`initialValue\` is exposed as a control rather than spawning an extra story per value (Pattern 10).
                 `,
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType) => {
-            return (
-                <ActionLogger>
-                    <div className="max-w-md mx-auto p-6">
-                        <Story />
-                    </div>
-                </ActionLogger>
-            );
-        },
-    ],
     argTypes: {
-        form: {
-            description: 'React Hook Form instance for managing form state and validation',
+        initialValue: {
+            control: 'text',
+            description:
+                'Initial value seeded into the form. Drives the "with-initial-value" / "long-code" variants via the controls panel.',
         },
-        applyFetcher: {
-            description: 'React Router fetcher for handling promo code application requests',
+        fetcherState: {
+            control: 'select',
+            options: ['idle', 'submitting'],
+            description: 'State of the apply fetcher — `submitting` disables the apply button.',
+        },
+        triggerValidation: {
+            control: 'boolean',
+            description: 'When true, triggers Zod validation on mount (used by `WithValidationError`).',
         },
     },
+    args: {
+        initialValue: '',
+        fetcherState: 'idle',
+        triggerValidation: false,
+    },
+    decorators: [
+        (Story: React.ComponentType) => (
+            <div className="max-w-md mx-auto p-6">
+                <Story />
+            </div>
+        ),
+    ],
 };
 
 type Story = StoryObj<typeof meta>;
 
-// Wrapper components for each story
-const DefaultWrapper = () => {
-    const { t } = getTranslation();
-    const promoCodeFormSchema = createPromoCodeFormSchema(t);
-    const form = useForm({
-        resolver: zodResolver(promoCodeFormSchema),
-        defaultValues: { code: '' },
-    });
-    return (
-        <Form {...form}>
-            <PromoCodeFields form={form} applyFetcher={mockFetcher as unknown as never} />
-        </Form>
-    );
-};
-
-const WithInitialValueWrapper = () => {
-    const { t } = getTranslation();
-    const promoCodeFormSchema = createPromoCodeFormSchema(t);
-    const form = useForm({
-        resolver: zodResolver(promoCodeFormSchema),
-        defaultValues: { code: 'SAVE10' },
-    });
-    return (
-        <Form {...form}>
-            <PromoCodeFields form={form} applyFetcher={mockFetcher as unknown as never} />
-        </Form>
-    );
-};
-
-const LoadingStateWrapper = () => {
-    const { t } = getTranslation();
-    const promoCodeFormSchema = createPromoCodeFormSchema(t);
-    const form = useForm({
-        resolver: zodResolver(promoCodeFormSchema),
-        defaultValues: { code: '' },
-    });
-    const loadingFetcher = { ...mockFetcher, state: 'submitting' };
-    return (
-        <Form {...form}>
-            <PromoCodeFields form={form} applyFetcher={loadingFetcher as unknown as never} />
-        </Form>
-    );
-};
-
-const WithValidationErrorWrapper = () => {
-    const { t } = getTranslation();
-    const promoCodeFormSchema = createPromoCodeFormSchema(t);
-    const form = useForm({
-        resolver: zodResolver(promoCodeFormSchema),
-        defaultValues: { code: 'A' },
-    });
-    void form.trigger();
-    return (
-        <Form {...form}>
-            <PromoCodeFields form={form} applyFetcher={mockFetcher as unknown as never} />
-        </Form>
-    );
-};
-
-const WithLongPromoCodeWrapper = () => {
-    const { t } = getTranslation();
-    const promoCodeFormSchema = createPromoCodeFormSchema(t);
-    const form = useForm({
-        resolver: zodResolver(promoCodeFormSchema),
-        defaultValues: { code: 'SUMMER2024SAVE20PERCENT' },
-    });
-    return (
-        <Form {...form}>
-            <PromoCodeFields form={form} applyFetcher={mockFetcher as unknown as never} />
-        </Form>
-    );
-};
-
 export const Default: Story = {
-    render: () => <DefaultWrapper />,
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Test that input field is present
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
-        // Test that apply button is present
         const button = await canvas.findByRole('button', { name: /apply|submit/i });
         await expect(button).toBeInTheDocument();
         await expect(button).not.toBeDisabled();
 
-        // Test that input starts empty
         await expect(input).toHaveValue('');
-    },
-};
 
-export const WithInitialValue: Story = {
-    render: () => <WithInitialValueWrapper />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form fields with an initial promo code value pre-filled.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test that input field is present with initial value
-        const input = await canvas.findByDisplayValue('SAVE10');
-        await expect(input).toBeInTheDocument();
-
-        // Test that apply button is present
-        const button = await canvas.findByRole('button', { name: /apply|submit/i });
-        await expect(button).toBeInTheDocument();
-        await expect(button).not.toBeDisabled();
-
-        // Test that we can change the value
-        await userEvent.clear(input);
-        await userEvent.type(input, 'NEWCODE');
-        await expect(input).toHaveValue('NEWCODE');
+        // Smoke-test typing — also covers the previous "long code" scenario via the control.
+        await userEvent.type(input, 'CUSTOM20');
+        await expect(input).toHaveValue('CUSTOM20');
     },
 };
 
 export const LoadingState: Story = {
-    render: () => <LoadingStateWrapper />,
+    args: {
+        fetcherState: 'submitting',
+    },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form fields in a loading state with the submit button disabled.',
+                story: 'Submit fetcher is in flight — apply button is disabled and the input remains editable.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Test that input field is present
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
-        // Test that apply button is present but disabled in loading state
         const button = await canvas.findByRole('button', { name: /apply|submit|loading/i });
         await expect(button).toBeInTheDocument();
-        await expect(button).toBeDisabled(); // Should be disabled when loading
-
-        // Test that input is enabled (component doesn't disable input during loading, only the button)
+        await expect(button).toBeDisabled();
         await expect(input).not.toBeDisabled();
     },
 };
 
 export const WithValidationError: Story = {
-    render: () => <WithValidationErrorWrapper />,
+    args: {
+        initialValue: 'A',
+        triggerValidation: true,
+    },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form fields with a validation error for an invalid promo code.',
+                story: 'Single-character input violates the Zod minimum-length rule; validation runs on mount and the field shows the inline error.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
+        const { t } = getTranslation();
         await waitForStorybookReady(canvasElement);
 
-        // Test that input field is present with invalid value
         const input = await canvas.findByDisplayValue('A');
         await expect(input).toBeInTheDocument();
 
-        // Test that apply button is present but may be disabled due to validation
         const button = await canvas.findByRole('button', { name: /apply|submit/i });
         await expect(button).toBeInTheDocument();
 
-        // Test that we can type a valid code to clear the error
-        await userEvent.clear(input);
-        await userEvent.type(input, 'VALIDCODE');
-        await expect(input).toHaveValue('VALIDCODE');
-    },
-};
-
-export const WithLongPromoCode: Story = {
-    render: () => <WithLongPromoCodeWrapper />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form fields with a longer promo code to test input field behavior.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test that input field is present with long promo code
-        const input = await canvas.findByDisplayValue('SUMMER2024SAVE20PERCENT');
-        await expect(input).toBeInTheDocument();
-
-        // Test that apply button is present
-        const button = await canvas.findByRole('button', { name: /apply|submit/i });
-        await expect(button).toBeInTheDocument();
-        await expect(button).not.toBeDisabled();
-
-        // Test that we can edit the long code
-        await userEvent.clear(input);
-        await userEvent.type(input, 'SHORT');
-        await expect(input).toHaveValue('SHORT');
+        // Validation message is rendered after the deferred trigger; wait for it.
+        const errorMessage = await canvas.findByText(t('cart:promoCode.validation.minLength'));
+        await expect(errorMessage).toBeInTheDocument();
     },
 };
 

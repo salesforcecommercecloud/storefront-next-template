@@ -18,7 +18,7 @@ import { useOutletContext, Await, useRevalidator } from 'react-router';
 
 // Third-party libraries
 import { Plus } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // UI components
 import { Card, CardContent } from '@/components/ui/card';
@@ -145,8 +145,7 @@ function AccountAddressesContent({
             void setDefaultAddressFetcher.submit({
                 ...settingDefaultAddress,
                 preferred: true,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [settingDefaultAddress]);
@@ -207,9 +206,7 @@ function AccountAddressesContent({
                 <CardContent className="px-6 py-3">
                     <div className="flex items-start justify-between">
                         <div>
-                            <h1
-                                className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                                tabIndex={0}>
+                            <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                                 {t('navigation.addresses')}
                             </h1>
                             <p className="text-sm text-muted-foreground">{t('addresses.subtitle')}</p>
@@ -227,7 +224,7 @@ function AccountAddressesContent({
                 <Card className="p-8 text-center rounded-none shadow-none">
                     <div className="flex flex-col items-center gap-4">
                         <div className="text-muted-foreground">
-                            <p className="text-lg font-medium">{t('addresses.noSavedAddresses')}</p>
+                            <p className="text-sm font-medium">{t('addresses.noSavedAddresses')}</p>
                             <p className="text-sm mt-1">{t('addresses.empty')}</p>
                         </div>
                     </div>

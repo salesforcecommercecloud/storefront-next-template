@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import { type LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.account.store-preferences';
 import StorePreferences from '@/components/store-preferences';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ import { getLogger } from '@/lib/logger.server';
  * When the store-locator extension is installed, this loader reads the
  * selectedStoreInfo cookie and fetches full store details from SCAPI.
  */
-export async function loader({ context }: LoaderFunctionArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
 

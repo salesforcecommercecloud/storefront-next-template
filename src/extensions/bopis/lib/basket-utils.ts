@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@/scapi';
 import type { PickupItemInfo } from '@/extensions/bopis/context/pickup-context';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import { isPickupShippingMethod } from '@/extensions/bopis/lib/pickup-shipping-method-utils';

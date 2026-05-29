@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_PRODUCT_CONTENT */
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content-data-types';
+import type { ReturnsAndWarrantyData } from '@/extensions/product-content/lib/api/product-content.server';
 
 /**
  * Renders returns & warranty modal content.
- * Receives the adapter data directly from ProductContentAdapter.getReturnsAndWarranty().
  * Layout: Returns Policy, Warranty, Exchanges, Need Help.
  */
 export function ReturnsAndWarrantyModalContent({
@@ -28,7 +28,7 @@ export function ReturnsAndWarrantyModalContent({
 }: {
     returnsAndWarrantyData: ReturnsAndWarrantyData;
 }): ReactElement {
-    const { t } = useTranslation('returnsAndWarranty');
+    const { t } = useTranslation('extProductContent');
     const { returnsPolicy, warranty, exchanges, needHelp } = returnsAndWarrantyData;
 
     return (
@@ -45,7 +45,7 @@ export function ReturnsAndWarrantyModalContent({
                     {returnsPolicy.conditions.length > 0 && (
                         <div className="rounded-none bg-muted p-4 space-y-2">
                             <Typography as="p" className="font-medium text-foreground">
-                                {t('returnConditions')}
+                                {t('returnsAndWarranty.returnConditions')}
                             </Typography>
                             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                                 {returnsPolicy.conditions.map((condition) => (
@@ -61,7 +61,7 @@ export function ReturnsAndWarrantyModalContent({
                     {returnsPolicy.howToReturn.length > 0 && (
                         <div>
                             <Typography as="p" className="mb-2 font-medium text-foreground">
-                                {t('howToReturn')}
+                                {t('returnsAndWarranty.howToReturn')}
                             </Typography>
                             <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
                                 {returnsPolicy.howToReturn.map((step) => (
@@ -76,7 +76,7 @@ export function ReturnsAndWarrantyModalContent({
                     )}
                     {returnsPolicy.note && (
                         <Typography as="p" variant="muted" className="text-xs">
-                            <span className="font-medium">{t('note')}</span> {returnsPolicy.note}
+                            <span className="font-medium">{t('returnsAndWarranty.note')}</span> {returnsPolicy.note}
                         </Typography>
                     )}
                 </div>
@@ -94,7 +94,7 @@ export function ReturnsAndWarrantyModalContent({
                     {warranty.whatsCovered.length > 0 && (
                         <div className="rounded-none bg-muted p-4 space-y-2">
                             <Typography as="p" className="font-medium text-foreground">
-                                {t('whatsCovered')}
+                                {t('returnsAndWarranty.whatsCovered')}
                             </Typography>
                             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                                 {warranty.whatsCovered.map((item) => (
@@ -110,7 +110,7 @@ export function ReturnsAndWarrantyModalContent({
                     {warranty.whatsNotCovered.length > 0 && (
                         <div>
                             <Typography as="p" className="mb-2 font-medium text-foreground">
-                                {t('whatsNotCovered')}
+                                {t('returnsAndWarranty.whatsNotCovered')}
                             </Typography>
                             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                                 {warranty.whatsNotCovered.map((item) => (
@@ -125,7 +125,7 @@ export function ReturnsAndWarrantyModalContent({
                     )}
                     <div>
                         <Typography as="p" className="mb-2 font-medium text-foreground">
-                            {t('warrantyClaims')}
+                            {t('returnsAndWarranty.warrantyClaims')}
                         </Typography>
                         <Typography as="p" className="text-sm leading-relaxed">
                             {warranty.claimsProcess}
@@ -144,7 +144,8 @@ export function ReturnsAndWarrantyModalContent({
                         {exchanges.intro}
                     </Typography>
                     <Typography as="p" className="text-sm leading-relaxed">
-                        <span className="font-medium text-foreground">{t('exchangeProcess')}</span> {exchanges.process}
+                        <span className="font-medium text-foreground">{t('returnsAndWarranty.exchangeProcess')}</span>{' '}
+                        {exchanges.process}
                     </Typography>
                 </div>
             </div>
@@ -153,14 +154,14 @@ export function ReturnsAndWarrantyModalContent({
             {needHelp && (
                 <div className="rounded-none border border-primary/20 bg-primary/5 p-4">
                     <Typography as="p" className="mb-2 text-sm font-medium text-foreground">
-                        {t('needHelp')}
+                        {t('returnsAndWarranty.needHelp')}
                     </Typography>
                     <Typography as="p" className="text-sm text-foreground">
-                        {needHelp.intro} {t('contactAt')}{' '}
+                        {needHelp.intro} {t('returnsAndWarranty.contactAt')}{' '}
                         <a href={`mailto:${needHelp.email}`} className="text-primary hover:underline">
                             {needHelp.email}
                         </a>{' '}
-                        {t('orCall')}{' '}
+                        {t('returnsAndWarranty.orCall')}{' '}
                         <a
                             href={`tel:${needHelp.phone.replace(/[^+\d]/g, '')}`}
                             className="text-primary hover:underline">

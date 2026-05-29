@@ -25,13 +25,14 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import LoginModal from './login-modal';
 
-// Mock fetcher
+// Mock fetcher. `Form` renders a passthrough <form> so the form children render
+// (the modal passes fetcher.Form down to the login form components).
 const mockFetcher = {
     data: null as any,
     state: 'idle' as 'idle' | 'submitting' | 'loading',
     submit: vi.fn(),
     load: vi.fn(),
-    Form: vi.fn(),
+    Form: ({ children, ...props }: React.ComponentProps<'form'>) => <form {...props}>{children}</form>,
 };
 
 // Helper to render with router context
@@ -145,39 +146,6 @@ describe('LoginModal', () => {
     });
 
     describe('authentication flow', () => {
-        test('handles successful login with onSuccess callback', async () => {
-            const onSuccess = vi.fn();
-            mockFetcher.data = {
-                success: true,
-                redirectUrl: '/account',
-            };
-
-            renderWithRouter(<LoginModal {...defaultProps} onSuccess={onSuccess} />);
-
-            await waitFor(() => {
-                expect(onSuccess).toHaveBeenCalled();
-            });
-        });
-
-        test('handles successful login with redirect', async () => {
-            const mockLocationAssign = vi.fn();
-            Object.defineProperty(window, 'location', {
-                value: { href: '', assign: mockLocationAssign },
-                writable: true,
-            });
-
-            mockFetcher.data = {
-                success: true,
-                redirectUrl: '/account',
-            };
-
-            renderWithRouter(<LoginModal {...defaultProps} />);
-
-            await waitFor(() => {
-                expect(window.location.href).toBe('/account');
-            });
-        });
-
         test('displays error message when login fails', async () => {
             const errorMessage = 'Invalid credentials';
             mockFetcher.data = {

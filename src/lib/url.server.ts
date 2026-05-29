@@ -17,7 +17,6 @@ import type { RouterContextProvider } from 'react-router';
 import { buildUrl, siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 /**
  * Server-side counterpart of the client-side `useCurrentSiteAndLocaleRef` + `buildUrl` pattern.
@@ -44,7 +43,7 @@ import type { AppConfig } from '@/types/config';
  * @returns The prefixed URL (e.g., '/global/en-GB/login')
  */
 export function buildUrlFromContext(to: string, context: Readonly<RouterContextProvider>): string {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const siteCtx = context.get(siteContext);
     if (!siteCtx) return to;
 

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, type LoaderFunctionArgs, redirect, useLoaderData, useParams } from 'react-router';
+import { Await, redirect, useLoaderData, useParams } from 'react-router';
+import type { Route } from './+types/_app.account.orders.$orderNo';
 import { Link } from '@/components/link';
+import { routes } from '@/route-paths';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -30,13 +32,16 @@ import { Typography } from '@/components/typography';
 import { ChevronLeft } from 'lucide-react';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
 import OrderSkeleton from '@/components/order-skeleton';
-import ProductContentProvider from '@/providers/product-content';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { getWriteReviewForm, type WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+import { WriteReviewFormProvider } from '@/extensions/ratings-reviews/context/write-review-form-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 type OrderDetailsLoaderData = {
     order: ShopperOrders.schemas['Order'];
@@ -45,23 +50,30 @@ type OrderDetailsLoaderData = {
 
 type OrderDetailsPageLoaderData = {
     orderData: Promise<OrderDetailsLoaderData>;
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    writeReviewForm: Promise<WriteReviewFormData>;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 };
 
 /** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
-export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
+export function loader({ context, params }: Route.LoaderArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
     logger.debug('OrderDetail: loader starting', { orderNo });
 
     if (!orderNo) {
         logger.warn('OrderDetail: missing orderNo param, redirecting to order list');
-        throw redirect(buildUrlFromContext('/account/orders', context));
+        throw redirect(buildUrlFromContext(routes.accountOrders, context));
     }
 
     const { orderDataPromise } = fetchOrderWithProducts(context, orderNo);
 
     return {
         orderData: orderDataPromise,
+        // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+        // Form config for per-line "Rate & Review" — one config per order is sufficient.
+        writeReviewForm: getWriteReviewForm(orderNo),
+        // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     };
 }
 
@@ -78,7 +90,7 @@ function OrderNotFoundCard() {
                     {t('orders.orderNotFoundDescription')}
                 </Typography>
                 <Button asChild>
-                    <Link to="/account/orders">{t('orders.backToOrderHistory')}</Link>
+                    <Link to={routes.accountOrders}>{t('orders.backToOrderHistory')}</Link>
                 </Button>
             </CardContent>
         </Card>
@@ -99,22 +111,22 @@ export function ErrorBoundary() {
 export default function OrderDetailsPage(): ReactElement {
     const { t } = useTranslation('account');
     const { orderNo } = useParams();
-    const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
+    const loaderData = useLoaderData<typeof loader>();
 
-    return (
+    let content: ReactElement = (
         <div className="w-full section-container pt-0 pb-8">
             <SeoMeta title={t('meta.orderDetailsTitle', { defaultValue: 'Order Details' })} noIndex />
             <Breadcrumb className="mb-5">
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/account">{t('myAccount')}</Link>
+                            <Link to={routes.account}>{t('myAccount')}</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/account/orders">{t('navigation.orderHistory')}</Link>
+                            <Link to={routes.accountOrders}>{t('navigation.orderHistory')}</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
@@ -124,7 +136,7 @@ export default function OrderDetailsPage(): ReactElement {
                 </BreadcrumbList>
             </Breadcrumb>
             <Link
-                to="/account/orders"
+                to={routes.accountOrders}
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
                 <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
                 {t('orders.backToOrderHistory')}
@@ -137,13 +149,17 @@ export default function OrderDetailsPage(): ReactElement {
                             <OrderNotFoundCard />
                         </div>
                     }>
-                    {(data) => (
-                        <ProductContentProvider>
-                            <OrderDetails order={data.order} productsById={data.productsById} />
-                        </ProductContentProvider>
-                    )}
+                    {(data) => <OrderDetails order={data.order} productsById={data.productsById} />}
                 </Await>
             </Suspense>
         </div>
     );
+
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    content = (
+        <WriteReviewFormProvider writeReviewFormPromise={loaderData.writeReviewForm}>{content}</WriteReviewFormProvider>
+    );
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
+    return content;
 }

@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 // React Router
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.cart-pickup-store-update';
+import { data } from 'react-router';
 
 // Middlewares
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 
 // Utils
 import { createApiClients } from '@/lib/api-clients.server';
-import { createBasketSuccessResponse } from '@/routes/types/action-responses';
+import { createBasketSuccessResponse, type BasketActionResponse } from '@/routes/types/action-responses';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
-import { isStoreOutOfStock } from '@/lib/inventory-utils';
+import { isStoreOutOfStock } from '@/lib/product/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
-import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
+import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/cart/basket-schemas';
 
 /**
  * Server action for changing the pickup store for all pickup items in the basket.
@@ -60,9 +61,12 @@ import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/l
  * @throws Error if no basket is found in the session
  * @throws Error if any items are out of stock at the selected store
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<BasketActionResponse>>> {
     if (request.method !== 'PATCH') {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
@@ -76,7 +80,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const basketId = basket?.basketId ?? basketResource.snapshot?.basketId;
 
     if (!basketId) {
-        return Response.json(
+        return data(
             { success: false, error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }) },
             { status: 404 }
         );
@@ -94,7 +98,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const validationResult = pickupStoreUpdateSchema.safeParse(rawData);
 
         if (!validationResult.success) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -111,7 +115,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         const clients = createApiClients(context);
         if (!basket) {
-            return Response.json(
+            return data(
                 { success: false, error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }) },
                 { status: 404 }
             );
@@ -121,7 +125,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Validate that there's an existing pickup store before allowing change
         const pickupShipment = getPickupShipment(basket);
         if (!pickupShipment?.shipmentId || !pickupShipment?.c_fromStoreId) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -135,7 +139,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         originalStoreId = pickupShipment.c_fromStoreId as string;
         pickupShipmentId = pickupShipment.shipmentId;
 
-        // TODO: Need to verify inventory check for bundle support W-20159731
         // Get pickup items from the current basket that belong to the original store
         // Since a basket has a single store pickup shipment, get items for that store
         const currentPickupItems = getPickupProductItemsForStore(basket, originalStoreId);
@@ -166,8 +169,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             if (productsArray.length > 0) {
                 const productsMap = new Map(productsArray.map((product) => [product.id, product]));
 
-                // TODO: Need to verify inventory check for bundle support W-20159731
-                // Validate each pickup item's inventory
+                // Validate each pickup item's inventory.
                 // isStoreOutOfStock handles all product types:
                 // - Regular items: checks product's own inventory
                 // - Product sets: automatically checks all setProducts
@@ -193,7 +195,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (outOfStockItems.length > 0) {
                     // Use store name from form data, fall back to storeId if not provided
                     const displayStoreName = storeName || storeId;
-                    return Response.json(
+                    return data(
                         {
                             success: false,
                             error: createActionError({
@@ -247,7 +249,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
-        return Response.json(createBasketSuccessResponse(updatedBasket));
+        return data(createBasketSuccessResponse(updatedBasket));
     } catch (error) {
         // Rollback shipment update if it was already updated
         if (shipmentUpdated && originalStoreId && pickupShipmentId) {
@@ -259,6 +261,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
         }
 
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

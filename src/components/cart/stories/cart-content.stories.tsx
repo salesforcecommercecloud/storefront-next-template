@@ -16,9 +16,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { action } from 'storybook/actions';
+import type { ReactElement, ReactNode } from 'react';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 import { Info, Truck, Heart, Check, MapPin } from 'lucide-react';
@@ -26,6 +25,7 @@ import { Info, Truck, Heart, Check, MapPin } from 'lucide-react';
 import CartContent from '../cart-content';
 import ProductItemsList from '@/components/product-items-list';
 import OrderSummary from '@/components/order-summary';
+import { CartInventoryErrorBanner } from '../cart-inventory-error-banner';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
 import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +39,7 @@ import {
     BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -46,159 +47,13 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
-import { isStandardProduct, isBonusProduct, type EnrichedProductItem } from '@/lib/product-utils';
-import emptyBasket from '@/components/__mocks__/empty-basket';
+import { isStandardProduct, isBonusProduct, type EnrichedProductItem } from '@/lib/product/product-utils';
+import { basketWithBonusOpportunityAllSlotsFilled, basketWithGift, basketWithPromoError } from '@/components/__mocks__';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import { mockStandardProductOrderable } from '@/components/__mocks__/standard-product';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-        const { t } = getTranslation();
-
-        const logRemove = action('remove-item');
-        const logEdit = action('edit-item');
-        const logQuantity = action('change-quantity');
-        const logApplyPromo = action('apply-promo');
-        const logCheckout = action('checkout');
-        const logQtyIncrement = action('quantity-increment');
-        const logQtyDecrement = action('quantity-decrement');
-        const logRemoveDialogConfirm = action('remove-item-confirm');
-        const logRemoveDialogCancel = action('remove-item-cancel');
-        const logEmptyContinue = action('empty-continue-shopping');
-        const logPromoToggle = action('order-promo-toggle');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const removeEl = target.closest('[data-testid^="remove-item-"]');
-            if (removeEl) {
-                const testId = removeEl.getAttribute('data-testid') || '';
-                const itemId = testId.replace('remove-item-', '');
-                logRemove({ itemId, testId });
-            }
-
-            const promoToggle = target.closest('a, button');
-            const promoLabel = (promoToggle as HTMLElement | null)?.textContent?.trim() || '';
-            if (promoToggle && /do you have a promo code\?/i.test(promoLabel)) {
-                logPromoToggle({ label: promoLabel });
-            }
-
-            const editEl = target.closest('[data-testid^="edit-item-"]');
-            if (editEl) {
-                const testId = editEl.getAttribute('data-testid') || '';
-                const itemId = testId.replace('edit-item-', '');
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                logEdit({ itemId, testId });
-            }
-
-            const decBtn = target.closest('[data-testid="quantity-decrement"]');
-            if (decBtn) {
-                const container = decBtn.closest('div');
-                const input = container?.querySelector('input[type="number"]');
-                const payload: Record<string, unknown> = { testId: 'quantity-decrement' };
-                if (input instanceof HTMLInputElement) {
-                    payload.value = String((Number(input.value) || 0) - 1);
-                }
-                logQtyDecrement(payload);
-            }
-
-            const incBtn = target.closest('[data-testid="quantity-increment"]');
-            if (incBtn) {
-                const container = incBtn.closest('div');
-                const input = container?.querySelector('input[type="number"]');
-                const payload: Record<string, unknown> = { testId: 'quantity-increment' };
-                if (input instanceof HTMLInputElement) {
-                    payload.value = String((Number(input.value) || 0) + 1);
-                }
-                logQtyIncrement(payload);
-            }
-
-            const checkoutLink = target.closest('a[href="/checkout"]');
-            if (checkoutLink) {
-                event.preventDefault();
-                const href = checkoutLink.getAttribute('href');
-                logCheckout({ href });
-            }
-
-            const emptyCartRoot = target.closest('[data-testid="sf-cart-empty"]');
-            if (emptyCartRoot) {
-                const continueLink = target.closest('a[href="/"]');
-                if (continueLink) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    logEmptyContinue({ href: '/' });
-                }
-            }
-        };
-
-        const handleGlobalClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const dialogContainer = target.closest('[role="alertdialog"]');
-            if (!dialogContainer) return;
-
-            const button = target.closest('button');
-            const label = button?.textContent?.trim() || '';
-            const confirmText = t('removeItem:confirmAction');
-            const cancelText = t('removeItem:cancelButton');
-
-            if (label === confirmText) {
-                event.stopImmediatePropagation();
-                logRemoveDialogConfirm({ label });
-                return;
-            }
-
-            if (label === cancelText) {
-                logRemoveDialogCancel({ label });
-            }
-        };
-
-        const handleSubmit = (event: Event) => {
-            const form = event.target as HTMLFormElement | null;
-            if (!form) return;
-            if (form.matches('form[data-testid="promo-code-form"]')) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                const input = form.querySelector('input[name="code"], input');
-                const code = input instanceof HTMLInputElement ? input.value : '';
-                logApplyPromo({ code });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input) return;
-            if (input.type === 'number') {
-                logQuantity({ value: input.value });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('submit', handleSubmit, true);
-        root.addEventListener('change', handleChange, true);
-        document.addEventListener('click', handleGlobalClick, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('submit', handleSubmit, true);
-            root.removeEventListener('change', handleChange, true);
-            document.removeEventListener('click', handleGlobalClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
 const meta: Meta<typeof CartContent> = {
-    title: 'CART/CartContent',
+    title: 'CART/Cart Content',
     component: CartContent,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -206,197 +61,38 @@ const meta: Meta<typeof CartContent> = {
         docs: {
             description: {
                 component: `
-The CartContent component displays the shopping cart with items or an empty state. It orchestrates multiple sub-components using a composed layout to provide a complete cart experience.
+\`<CartContent>\` orchestrates the cart route — items list, order summary, bonus carousels, BOPIS pickup grouping, and the inventory-error CTA gate. The empty state delegates to \`<CartEmpty>\`.
 
-## Features
+Rather than mounting \`<CartContent>\` directly (it pulls in \`useBasketUpdater\` / \`useCartInventoryValidation\` / \`usePickup\` hooks that need a route loader to drive), most stories render an inline composition that mirrors the production layout — \`ProductItemsList\` + \`OrderSummary\` + a \`<Breadcrumb>\` shell + the same secondary/delivery action render-props the component uses internally. This lets us cover layout regressions without a route harness while still loading real fixtures.
 
-- **Conditional Rendering**: Shows empty cart state when no items, full cart when items exist
-- **Responsive Layout**: Desktop grid (66% items, 33% summary) with stacked mobile layout
-- **Component Composition**: Composes Breadcrumb, ProductItemsList, OrderSummary, and action render props
-- **Data Integration**: Accepts basket, product mappings, promotion mappings, and bonus product data
-- **Delivery / Pickup Fulfillment**: Supports delivery and pickup badges with dropdown selectors per item (BOPIS extension)
-- **Item Actions**: Gift checkbox, Edit, Remove, and Add to Wishlist action row per product item via \`secondaryActions\` render prop
-- **Delivery Actions**: Delivery/Pickup badge with dropdown menu per product item via \`deliveryActions\` render prop
-- **Bonus Products**: Carousel and modal for bonus product selection tied to promotions
-- **Mobile Optimization**: Stacked layout — OrderSummary appears first (non-collapsible), then product cards; inline quantity picker with label; touch-friendly action rows
-- **Accessibility**: Semantic structure, ARIA labels, and test identifiers throughout
-
-## Layout Behavior
-
-- **Desktop**: Grid layout with product items on left (66%) and sticky OrderSummary on right (33%). Each product card shows image, name, attributes, delivery badge, price, quantity picker, and action row (gift checkbox + Edit/Remove/Add to Wishlist on one line)
-- **Mobile**: Stacked layout — OrderSummary at top (non-collapsible), then product cards below. Each card shows image + name + delivery badge, then price, "each" unit price (if qty > 1), inline quantity picker, then stacked gift checkbox and action links
-- **Empty State**: Shows CartEmpty component when basket has no items
-- **Pickup + Delivery Split**: When BOPIS is active, pickup items are grouped in a separate card with store info and "Change Store" button; delivery items appear in their own card with a "Delivery (X of Y items)" header
-
-## Product Item Layout (ProductItem component)
-
-Each cart item uses a flex-based layout (not grid):
-- **Image**: Linked product thumbnail (96px mobile, 112px desktop) with rounded corners
-- **Details column**: Product name (line-clamped), variation attributes, promotions, mobile price/quantity, and action row
-- **Desktop right column**: Delivery badge, price (with "each" breakdown), and quantity picker aligned right
-- **Mobile**: Price, unit price, and quantity picker render inline below attributes; delivery badge appears next to product name
-
-## Integration
-
-This component integrates with:
-- **Breadcrumb** — Home > Cart navigation at the top
-- **ProductItemsList** — Renders cart items with \`secondaryActions\` and \`deliveryActions\` render props
-- **OrderSummary** — Displays subtotal, shipping, tax, promotions, promo code form, and checkout CTA
-- **CartEmpty** — Empty cart state with continue shopping and sign-in buttons
-- **RemoveItemButtonWithConfirmation** — Remove item with confirmation dialog
-- **CartItemEditButton** — Edit item variants (hidden for standard and bonus products)
-- **CartQuantityPicker** — Quantity selector with stock level limits
-- **CartPickup** (BOPIS extension) — Store info card for pickup items
-- **CartDeliveryOption** (BOPIS extension) — Delivery/pickup fulfillment selector per item
-
-## Story Variants
+## Stories
 
 | Story | Description |
 |-------|-------------|
-| EmptyCart | Empty basket — shows CartEmpty component |
-| CartWithItems | Single item with OrderSummary (shipping progress bar config) |
-| CartWithPromotions | 2 items with qualified promotion, delivery badges, gift checkbox, action row |
-| MobileLayout | Mobile viewport — OrderSummary first, then product card (stacked) |
-| LargeOrder | 4 items with scrolling behavior |
-| HighQuantityItem | Single item with quantity 10 — shows "each" price breakdown |
-| MissingProductImage | Graceful fallback when product image data is missing |
-| LongProductNames | Verifies text wrapping / line-clamp with very long names |
-| CartWithPickupDelivery | 1 pickup + 2 delivery items in separate cards with store info |
+| **CartWithItems** | Single item with order summary |
+| **CartWithPromotions** | 2 items with line-level promotions and full action row |
+| **MobileLayout** | Mobile viewport showcase — gift, bonus, and pickup card composed inline; \`showInventoryError\` control toggles the error banner |
+| **WithBonusProducts** | Bonus opportunity with all slots filled — bonus line items rendered with disabled quantity picker |
+| **WithGiftLine** | Line item flagged as gift — gift checkbox pre-checked |
+| **WithErrorBanner** | Cart-wide inventory error banner above the checkout CTA |
+| **CartWithPickupDelivery** | Mixed BOPIS + delivery cards |
                 `,
             },
         },
     },
-    argTypes: {
-        basket: {
-            description: 'Shopping basket data containing items, totals, and pricing information',
-            control: 'object',
-            table: {
-                type: { summary: 'ShopperBasketsV2.schemas["Basket"] | undefined' },
-            },
-        },
-        productsByItemId: {
-            description: 'Mapping of item IDs to product details for enhanced display',
-            control: 'object',
-            table: {
-                type: { summary: 'Record<string, ShopperProducts.schemas["Product"]>' },
-            },
-        },
-        promotions: {
-            description: 'Mapping of promotion IDs to promotion details',
-            control: 'object',
-            table: {
-                type: { summary: 'Record<string, ShopperPromotionsTypes.Promotion>' },
-            },
-        },
-    },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
+    // No meta-level argTypes — every story below uses a custom `render` that
+    // ignores `args`, so exposing `basket` / `productsByItemId` / `promotions`
+    // as controls produced no canvas effect (Pattern 5). Story-local controls
+    // (e.g. MobileLayout's `showInventoryError`) live on the individual stories.
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const EmptyCart: Story = {
-    args: {
-        basket: emptyBasket,
-        productsByItemId: {},
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Empty cart state when basket has no product items. Shows:
-- CartEmpty component with empty cart message
-- Continue shopping button
-- Sign in button for guest users
+// ---------------------------------------------------------------------------
+// Shared render helpers (extracted from per-story duplication)
+// ---------------------------------------------------------------------------
 
-This is the default state when a user has no items in their cart.
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Wait for and verify empty cart state is shown
-        const emptyCartContainer = canvasElement.querySelector('[data-testid="sf-cart-empty"]');
-        await expect(emptyCartContainer).toBeInTheDocument();
-
-        // Verify continue shopping button exists (using text since Button asChild with Link may not expose role correctly)
-        const continueShoppingButton = await canvas.findByText(t('cart:empty.continueShopping'), {}, { timeout: 5000 });
-        await expect(continueShoppingButton).toBeInTheDocument();
-    },
-};
-
-// Single item for CartWithItems (matches DesktopWithShippingProgressBar spend-to-unlock totals)
-const cartWithItemsBasketItems = [
-    {
-        itemId: 'item-1',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 42,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 42,
-    },
-] as ShopperBasketsV2.schemas['ProductItem'][];
-
-const cartWithItemsProductMap: Record<string, ShopperProducts.schemas['Product']> = {
-    'item-1': mockStandardProductOrderable.product,
-};
-
-const cartWithItemsBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
-    productItems: cartWithItemsBasketItems,
-    productSubTotal: 42,
-    productTotal: 42,
-    shippingTotal: 5.99,
-    taxTotal: 3.36,
-    orderTotal: 51.35,
-};
-
-// Two items for CartWithPromotions (matches DesktopWithItems qualified promotion totals)
-const cartWithPromotionsBasketItems = [
-    {
-        itemId: 'promo-item-1',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 45,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 45,
-    },
-    {
-        itemId: 'promo-item-2',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 30,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 30,
-    },
-] as ShopperBasketsV2.schemas['ProductItem'][];
-
-const cartWithPromotionsProductMap: Record<string, ShopperProducts.schemas['Product']> = {
-    'promo-item-1': mockStandardProductOrderable.product,
-    'promo-item-2': mockStandardProductOrderable.product,
-};
-
-const cartWithPromotionsBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
-    productItems: cartWithPromotionsBasketItems,
-    productSubTotal: 75,
-    productTotal: 75,
-    shippingTotal: 0,
-    taxTotal: 6,
-    orderTotal: 81,
-};
-
-// Cart secondary actions matching CartContent's pattern
 const cartSecondaryActions = (product: EnrichedProductItem) => {
     if (!product.itemId) return undefined;
     const isBonusProd = isBonusProduct(product);
@@ -404,12 +100,6 @@ const cartSecondaryActions = (product: EnrichedProductItem) => {
     const shouldShowEditButton = !isStandardProd && !isBonusProd;
     return (
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3">
-            <div className="flex items-center gap-2">
-                <Checkbox id={`gift-${product.itemId}`} />
-                <Label htmlFor={`gift-${product.itemId}`} className="text-sm text-muted-foreground cursor-pointer">
-                    This is a gift.
-                </Label>
-            </div>
             <div className="flex items-center gap-3 flex-nowrap">
                 {shouldShowEditButton && <CartItemEditButton product={product} className="px-0" />}
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="px-0" />
@@ -424,7 +114,31 @@ const cartSecondaryActions = (product: EnrichedProductItem) => {
     );
 };
 
-// Pickup actions dropdown — "Pick Up in Store" selected
+function CartLineItemGift(product: EnrichedProductItem): ReactElement | undefined {
+    if (!product.itemId || isBonusProduct(product)) {
+        return undefined;
+    }
+    const { t } = getTranslation();
+    const fieldId = `cart-gift-${product.itemId}`;
+    const defaultChecked = (product as { gift?: boolean }).gift === true;
+    return (
+        <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 md:justify-end">
+            <Checkbox id={fieldId} defaultChecked={defaultChecked} />
+            <div className="flex flex-wrap items-center gap-1">
+                <Label htmlFor={fieldId} className="text-sm text-muted-foreground cursor-pointer font-normal">
+                    {t('cart:lineItem.giftLabel')}
+                </Label>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-sm text-muted-foreground font-normal shrink-0 p-0 h-auto shadow-none">
+                    {t('cart:lineItem.giftLearnMore')}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 const cartPickupActions = (_product: EnrichedProductItem) => (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -449,7 +163,6 @@ const cartPickupActions = (_product: EnrichedProductItem) => (
     </DropdownMenu>
 );
 
-// Delivery actions dropdown — "Ship to Address" selected
 const cartDeliveryActions = (_product: EnrichedProductItem) => (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -474,25 +187,18 @@ const cartDeliveryActions = (_product: EnrichedProductItem) => (
     </DropdownMenu>
 );
 
-export const CartWithItems: Story = {
-    args: {
-        basket: cartWithItemsBasket,
-        productsByItemId: cartWithItemsProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems config). Shows:
-- Cart title with item count
-- Product items list reusing the same data as the ProductItemsList Default story
-- Order summary with promo code form and checkout action
-- Remove and edit buttons for each item
-                `,
-            },
-        },
-    },
-    render: () => (
+function CartShell({
+    basket,
+    productsByItemId,
+    items,
+    leadingBanner,
+}: {
+    basket: ShopperBasketsV2.schemas['Basket'];
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+    items: ShopperBasketsV2.schemas['ProductItem'][];
+    leadingBanner?: ReactNode;
+}): ReactElement {
+    return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
             <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
@@ -506,16 +212,16 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
+                {leadingBanner}
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
                         <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
                                     <div className="text-sm font-semibold">
-                                        Delivery - {cartWithItemsBasketItems.length} out of{' '}
-                                        {cartWithItemsBasketItems.length} items
+                                        Delivery - {items.length} out of {items.length}{' '}
+                                        {items.length === 1 ? 'item' : 'items'}
                                     </div>
                                     <div className="text-sm text-muted-foreground">
                                         478 Artisan Way, Somerville, MA 02145
@@ -523,19 +229,20 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                                 </div>
                             </div>
                             <ProductItemsList
-                                productItems={cartWithItemsBasketItems}
-                                productsByItemId={cartWithItemsProductMap}
+                                productItems={items}
+                                productsByItemId={productsByItemId}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemExtra={CartLineItemGift}
                             />
                         </div>
                     </div>
                     <div className="hidden md:block md:order-1 lg:order-2">
                         <OrderSummary
-                            basket={cartWithItemsBasket}
+                            basket={basket}
                             showCartItems={false}
                             isEstimate={true}
-                            productsByItemId={cartWithItemsProductMap}
+                            productsByItemId={productsByItemId}
                             showPromoCodeForm={true}
                             showCheckoutAction={true}
                         />
@@ -543,28 +250,139 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                 </div>
             </div>
         </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Fixture builders
+// ---------------------------------------------------------------------------
+
+const makeBasket = (overrides: Partial<ShopperBasketsV2.schemas['Basket']>): ShopperBasketsV2.schemas['Basket'] => ({
+    ...basketWithOneItem,
+    ...overrides,
+});
+
+const cartWithItemsBasketItems = [
+    {
+        itemId: 'item-1',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 1,
+        price: 42,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 42,
+    },
+] as ShopperBasketsV2.schemas['ProductItem'][];
+
+const cartWithItemsProductMap: Record<string, ShopperProducts.schemas['Product']> = {
+    'item-1': mockStandardProductOrderable.product,
+};
+
+const cartWithItemsBasket = makeBasket({
+    productItems: cartWithItemsBasketItems,
+    productSubTotal: 42,
+    productTotal: 42,
+    shippingTotal: 5.99,
+    taxTotal: 3.36,
+    orderTotal: 51.35,
+});
+
+// ---------------------------------------------------------------------------
+// Stories
+// ---------------------------------------------------------------------------
+
+// Empty-cart state is covered by `cart-empty.stories.tsx` directly — no need
+// for a redundant story here that mounts `<CartContent basket={emptyBasket}>`
+// just to delegate to the same `<CartEmpty>` component.
+
+export const CartWithItems: Story = {
+    args: {
+        basket: cartWithItemsBasket,
+        productsByItemId: cartWithItemsProductMap,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Single item — composed `ProductItemsList` + `OrderSummary` matching the production layout.',
+            },
+        },
+    },
+    render: () => (
+        <CartShell
+            basket={cartWithItemsBasket}
+            productsByItemId={cartWithItemsProductMap}
+            items={cartWithItemsBasketItems}
+        />
     ),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for and verify cart container is rendered
         const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
         await expect(cartContainer).toBeInTheDocument();
 
-        // Verify empty cart is not shown
         const emptyCart = canvasElement.querySelector('[data-testid="sf-cart-empty"]');
         await expect(emptyCart).not.toBeInTheDocument();
 
-        // Verify cart title is present
-        const cartTitle = await canvas.findByText(/cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        // Assert on the breadcrumb's active-page indicator specifically — the
+        // previous `/cart/i` regex matched any text containing "cart" (close
+        // button label, empty-cart container, etc.), making the assertion
+        // permissive (Pattern 6).
+        const cartCrumb = await canvas.findByText('Cart', { selector: '[aria-current="page"]' });
+        await expect(cartCrumb).toBeInTheDocument();
 
-        // Verify product item is rendered
         const productItems = canvasElement.querySelectorAll('[data-testid^="sf-product-item-"]');
         await expect(productItems.length).toBeGreaterThanOrEqual(1);
     },
 };
+
+const cartWithPromotionsBasketItems = [
+    {
+        itemId: 'promo-item-1',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 1,
+        price: 45,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 40,
+        priceAdjustments: [
+            {
+                priceAdjustmentId: 'promo-item-1-adj',
+                itemText: '$5 Off Tops',
+                price: -5,
+                promotionId: 'promo-tops-5-off',
+            },
+        ],
+    },
+    {
+        itemId: 'promo-item-2',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 1,
+        price: 30,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 27,
+        priceAdjustments: [
+            {
+                priceAdjustmentId: 'promo-item-2-adj',
+                itemText: '10% Off Accessories',
+                price: -3,
+                promotionId: 'promo-accessories-10-off',
+            },
+        ],
+    },
+] as ShopperBasketsV2.schemas['ProductItem'][];
+
+const cartWithPromotionsProductMap: Record<string, ShopperProducts.schemas['Product']> = {
+    'promo-item-1': mockStandardProductOrderable.product,
+    'promo-item-2': mockStandardProductOrderable.product,
+};
+
+const cartWithPromotionsBasket = makeBasket({
+    productItems: cartWithPromotionsBasketItems,
+    productSubTotal: 75,
+    productTotal: 67,
+    shippingTotal: 0,
+    taxTotal: 5.36,
+    orderTotal: 72.36,
+});
 
 export const CartWithPromotions: Story = {
     args: {
@@ -574,109 +392,119 @@ export const CartWithPromotions: Story = {
     parameters: {
         docs: {
             description: {
-                story: `
-Cart with 2 items and a qualified promotion. Shows:
-- Cart title with total item count
-- Delivery header with address
-- Product items list with 2 items and delivery badges
-- Order summary with totals and checkout action
-- Gift checkbox, Edit, Remove, and Add to Wishlist actions per item
-                `,
+                story: '2 items each carrying a line-level `priceAdjustment` (`$5 Off Tops`, `10% Off Accessories`). Verifies the promo callout renders on each line and the order summary shows the discounted total.',
             },
         },
     },
     render: () => (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="section-container">
-                <Breadcrumb className="mb-6 mt-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Cart</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
-                    <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            {/* Delivery header */}
-                            <div className="flex items-start gap-2 mb-4">
-                                <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-sm font-semibold">
-                                        Delivery - {cartWithPromotionsBasketItems.length} out of{' '}
-                                        {cartWithPromotionsBasketItems.length} items
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        478 Artisan Way, Somerville, MA 02145
-                                    </div>
-                                </div>
-                            </div>
-                            <ProductItemsList
-                                productItems={cartWithPromotionsBasketItems}
-                                productsByItemId={cartWithPromotionsProductMap}
-                                secondaryActions={cartSecondaryActions}
-                                deliveryActions={cartDeliveryActions}
-                            />
-                        </div>
-                    </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
-                        <OrderSummary
-                            basket={cartWithPromotionsBasket}
-                            showCartItems={false}
-                            isEstimate={true}
-                            productsByItemId={cartWithPromotionsProductMap}
-                            showPromoCodeForm={true}
-                            showCheckoutAction={true}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <CartShell
+            basket={cartWithPromotionsBasket}
+            productsByItemId={cartWithPromotionsProductMap}
+            items={cartWithPromotionsBasketItems}
+        />
     ),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for and verify cart container is rendered
         const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
         await expect(cartContainer).toBeInTheDocument();
 
-        // Verify cart title shows item count
-        const cartTitle = await canvas.findByText(/cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        // Assert on the breadcrumb's active-page indicator specifically — the
+        // previous `/cart/i` regex matched any text containing "cart" (close
+        // button label, empty-cart container, etc.), making the assertion
+        // permissive (Pattern 6).
+        const cartCrumb = await canvas.findByText('Cart', { selector: '[aria-current="page"]' });
+        await expect(cartCrumb).toBeInTheDocument();
 
-        // Verify 2 product items are rendered
         const productItems = canvasElement.querySelectorAll('[data-testid^="sf-product-item-"]');
         await expect(productItems.length).toBeGreaterThanOrEqual(2);
+
+        // Both line-level promotion callouts should render.
+        await expect(canvas.findByText('$5 Off Tops')).resolves.toBeInTheDocument();
+        await expect(canvas.findByText('10% Off Accessories')).resolves.toBeInTheDocument();
     },
 };
 
-export const MobileLayout: Story = {
-    args: {
-        basket: cartWithItemsBasket,
-        productsByItemId: cartWithItemsProductMap,
+// Mobile showcase fixture — combines a delivery item, a gift-flagged item, a
+// bonus product, and a pickup item so the mobile layout exercises every
+// feature row simultaneously (gift checkbox pre-checked, bonus line free,
+// pickup card with "Change Store", inventory error banner above the CTA).
+const mobileShowcaseItems = [
+    {
+        itemId: 'mobile-delivery-1',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 1,
+        price: 42,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 42,
+        gift: false,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Cart layout optimized for mobile devices. Shows:
-- Breadcrumb navigation (Home > Cart)
-- Stacked layout with product card on top, order summary below (not collapsible)
-- Delivery header, delivery badge, and action row
-- Mobile-optimized spacing and touch targets
-                `,
-            },
+    {
+        itemId: 'mobile-gift-1',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 2,
+        price: 38,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 76,
+        gift: true,
+    },
+    {
+        itemId: 'mobile-bonus-1',
+        productId: 'bonus-tie-mobile',
+        productName: 'Free Silk Tie (Bonus)',
+        bonusProductLineItem: true,
+        bonusDiscountLineItemId: 'bdli-mobile',
+        quantity: 1,
+        price: 0,
+        priceAfterItemDiscount: 0,
+    },
+    {
+        itemId: 'mobile-pickup-1',
+        productId: mockStandardProductOrderable.product.id,
+        quantity: 1,
+        price: 30,
+        productName: mockStandardProductOrderable.product.name,
+        priceAfterItemDiscount: 30,
+        gift: false,
+    },
+] as ShopperBasketsV2.schemas['ProductItem'][];
+
+const mobileShowcaseProductMap: Record<string, ShopperProducts.schemas['Product']> = {
+    'mobile-delivery-1': mockStandardProductOrderable.product,
+    'mobile-gift-1': mockStandardProductOrderable.product,
+    'mobile-bonus-1': {
+        ...mockStandardProductOrderable.product,
+        id: 'bonus-tie-mobile',
+        name: 'Free Silk Tie (Bonus)',
+    },
+    'mobile-pickup-1': mockStandardProductOrderable.product,
+};
+
+const mobileShowcaseDeliveryItems = mobileShowcaseItems.slice(0, 3);
+const mobileShowcasePickupItems = mobileShowcaseItems.slice(3);
+
+const mobileShowcaseBasket = makeBasket({
+    productItems: mobileShowcaseItems,
+    bonusDiscountLineItems: [
+        {
+            id: 'bdli-mobile',
+            promotionId: 'promo-mobile-bonus-tie',
+            maxBonusItems: 1,
+            bonusProducts: [{ productId: 'bonus-tie-mobile', productName: 'Free Silk Tie (Bonus)' }],
         },
-    },
-    globals: {
-        viewport: 'mobile2',
-    },
-    render: () => (
+    ],
+    productSubTotal: 148,
+    productTotal: 148,
+    shippingTotal: 0,
+    taxTotal: 11.84,
+    orderTotal: 159.84,
+});
+
+// MobileShowcase is its own component so the story can carry a story-local
+// `showInventoryError` control without polluting the meta's typed args.
+function MobileShowcase({ showInventoryError = false }: { showInventoryError?: boolean }): ReactElement {
+    return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
             <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
@@ -690,23 +518,65 @@ Cart layout optimized for mobile devices. Shows:
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-                <div className="space-y-4">
+                {showInventoryError && (
+                    <CartInventoryErrorBanner
+                        issues={[
+                            {
+                                itemId: 'mobile-pickup-1',
+                                productId: mockStandardProductOrderable.product.id ?? 'product',
+                                productName: mockStandardProductOrderable.product.name ?? 'Product',
+                                requestedQuantity: 1,
+                                availableStock: 0,
+                                isPickup: true,
+                            },
+                        ]}
+                        id="mobile-cart-inventory-error"
+                        className="mb-4"
+                    />
+                )}
+                <div className="space-y-3">
                     <OrderSummary
-                        basket={cartWithItemsBasket}
+                        basket={mobileShowcaseBasket}
                         showCartItems={false}
                         isEstimate={true}
-                        productsByItemId={cartWithItemsProductMap}
+                        productsByItemId={mobileShowcaseProductMap}
                         showPromoCodeForm={true}
                         showCheckoutAction={true}
                     />
                     <div className="p-3 border border-border rounded-none">
-                        {/* Delivery header */}
+                        <div className="flex items-start justify-between gap-2 mb-4">
+                            <div className="flex items-start gap-2">
+                                <MapPin className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <div className="text-sm font-semibold">
+                                        Pickup in <span className="font-bold">Dorchester</span> -{' '}
+                                        {mobileShowcasePickupItems.length} out of {mobileShowcaseItems.length} items
+                                        available
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        26 District Avenue, Dorchester, MA 02125
+                                    </div>
+                                </div>
+                            </div>
+                            <Button variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0">
+                                Change Store
+                            </Button>
+                        </div>
+                        <ProductItemsList
+                            productItems={mobileShowcasePickupItems}
+                            productsByItemId={mobileShowcaseProductMap}
+                            secondaryActions={cartSecondaryActions}
+                            deliveryActions={cartPickupActions}
+                            lineItemExtra={CartLineItemGift}
+                        />
+                    </div>
+                    <div className="p-3 border border-border rounded-none">
                         <div className="flex items-start gap-2 mb-4">
                             <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    Delivery - {cartWithItemsBasketItems.length} out of{' '}
-                                    {cartWithItemsBasketItems.length} items
+                                    Delivery - {mobileShowcaseDeliveryItems.length} out of {mobileShowcaseItems.length}{' '}
+                                    items
                                 </div>
                                 <div className="text-sm text-muted-foreground">
                                     478 Artisan Way, Somerville, MA 02145
@@ -714,150 +584,103 @@ Cart layout optimized for mobile devices. Shows:
                             </div>
                         </div>
                         <ProductItemsList
-                            productItems={cartWithItemsBasketItems}
-                            productsByItemId={cartWithItemsProductMap}
+                            productItems={mobileShowcaseDeliveryItems}
+                            productsByItemId={mobileShowcaseProductMap}
                             secondaryActions={cartSecondaryActions}
                             deliveryActions={cartDeliveryActions}
+                            lineItemExtra={CartLineItemGift}
                         />
                     </div>
                 </div>
             </div>
         </div>
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
+    );
+}
 
-        const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
-        await expect(cartContainer).toBeInTheDocument();
-
-        // Verify breadcrumb is present
-        const breadcrumb = canvasElement.querySelector('[aria-label="breadcrumb"]');
-        await expect(breadcrumb).toBeInTheDocument();
-    },
-};
-
-// Large order mock data (4 items)
-const largeOrderBasketItems = [
-    {
-        itemId: 'large-item-1',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 2,
-        price: 45,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 90,
-    },
-    {
-        itemId: 'large-item-2',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 30,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 30,
-    },
-    {
-        itemId: 'large-item-3',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 3,
-        price: 25,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 75,
-    },
-    {
-        itemId: 'large-item-4',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 60,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 60,
-    },
-] as ShopperBasketsV2.schemas['ProductItem'][];
-
-const largeOrderProductMap: Record<string, ShopperProducts.schemas['Product']> = {
-    'large-item-1': mockStandardProductOrderable.product,
-    'large-item-2': mockStandardProductOrderable.product,
-    'large-item-3': mockStandardProductOrderable.product,
-    'large-item-4': mockStandardProductOrderable.product,
-};
-
-const largeOrderBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
-    productItems: largeOrderBasketItems,
-    productSubTotal: 255,
-    productTotal: 255,
-    shippingTotal: 0,
-    taxTotal: 20.4,
-    orderTotal: 275.4,
-};
-
-export const LargeOrder: Story = {
+export const MobileLayout: StoryObj<typeof MobileShowcase> = {
     args: {
-        basket: largeOrderBasket,
-        productsByItemId: largeOrderProductMap,
+        showInventoryError: false,
+    },
+    argTypes: {
+        showInventoryError: {
+            control: 'boolean',
+            description:
+                'Toggle the cart-wide inventory error banner above the order summary. Off by default; flip on via the controls panel to review the error layout in mobile.',
+        },
     },
     parameters: {
         docs: {
             description: {
-                story: `
-Cart with 4 items. Demonstrates:
-- Scrolling behavior with many items
-- Delivery header, delivery badges, and action rows for each item
-- Order summary with totals
-- Order summary with totals for a large order
-                `,
+                story: 'Mobile viewport showcase — composed inline with the full cart feature set on screen at once: delivery items (one flagged as a gift, gift checkbox pre-checked), a bonus line item at price 0 with disabled quantity picker, and a separate pickup card with "Change Store". The inventory error banner is hidden by default; flip the `showInventoryError` control to render it above the order summary. Use this story when reviewing whether the mobile stack still holds together as features are added.',
             },
         },
     },
-    render: () => (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="section-container">
-                <Breadcrumb className="mb-6 mt-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Cart</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
-                    <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            <div className="flex items-start gap-2 mb-4">
-                                <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-sm font-semibold">
-                                        Delivery - {largeOrderBasketItems.length} out of {largeOrderBasketItems.length}{' '}
-                                        items
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        478 Artisan Way, Somerville, MA 02145
-                                    </div>
-                                </div>
-                            </div>
-                            <ProductItemsList
-                                productItems={largeOrderBasketItems}
-                                productsByItemId={largeOrderProductMap}
-                                secondaryActions={cartSecondaryActions}
-                                deliveryActions={cartDeliveryActions}
-                            />
-                        </div>
-                    </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
-                        <OrderSummary
-                            basket={largeOrderBasket}
-                            showCartItems={false}
-                            isEstimate={true}
-                            productsByItemId={largeOrderProductMap}
-                            showPromoCodeForm={true}
-                            showCheckoutAction={true}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    ),
+    globals: {
+        viewport: 'mobile2',
+    },
+    render: (args) => <MobileShowcase {...args} />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
+
+        const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
+        await expect(cartContainer).toBeInTheDocument();
+
+        const breadcrumb = canvasElement.querySelector('[aria-label="breadcrumb"]');
+        await expect(breadcrumb).toBeInTheDocument();
+
+        // Pickup card affordance.
+        await expect(canvas.findByRole('button', { name: /change store/i })).resolves.toBeInTheDocument();
+
+        // Gift checkbox surfaces for non-bonus delivery lines (one is pre-checked).
+        const giftCheckboxes = await canvas.findAllByLabelText(t('cart:lineItem.giftLabel'));
+        await expect(giftCheckboxes.length).toBeGreaterThanOrEqual(2);
+        const checked = giftCheckboxes.filter(
+            (c) => (c as HTMLInputElement).checked || c.getAttribute('aria-checked') === 'true'
+        );
+        await expect(checked.length).toBeGreaterThanOrEqual(1);
+
+        // Bonus line renders without a gift checkbox (CartLineItemGift returns
+        // undefined for bonus items) — confirms bonus rows are styled differently.
+        const allItems = canvasElement.querySelectorAll('[data-testid^="sf-product-item-"]');
+        await expect(allItems.length).toBeGreaterThanOrEqual(4);
+
+        // With the default `showInventoryError: false`, the alert banner must
+        // not appear. (`WithErrorBanner` covers the visible state.)
+        await expect(canvas.queryByRole('alert')).not.toBeInTheDocument();
+    },
+};
+
+const bonusBasket = basketWithBonusOpportunityAllSlotsFilled;
+const bonusItems = bonusBasket.productItems ?? [];
+const bonusProductMap: Record<string, ShopperProducts.schemas['Product']> = bonusItems.reduce(
+    (acc, item) => {
+        if (item.itemId) {
+            acc[item.itemId] = {
+                ...mockStandardProductOrderable.product,
+                id: item.productId ?? mockStandardProductOrderable.product.id,
+                name: item.productName ?? mockStandardProductOrderable.product.name,
+            };
+        }
+        return acc;
+    },
+    {} as Record<string, ShopperProducts.schemas['Product']>
+);
+
+export const WithBonusProducts: Story = {
+    args: {
+        basket: bonusBasket,
+        productsByItemId: bonusProductMap,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Cart with a bonus opportunity and all slots filled — bonus line items render alongside the qualifying product. Uses `basketWithBonusOpportunityAllSlotsFilled` from `__mocks__`.',
+            },
+        },
+    },
+    render: () => <CartShell basket={bonusBasket} productsByItemId={bonusProductMap} items={bonusItems} />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -865,311 +688,116 @@ Cart with 4 items. Demonstrates:
         const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
         await expect(cartContainer).toBeInTheDocument();
 
-        const cartTitle = await canvas.findByText(/cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        // Assert on the breadcrumb's active-page indicator specifically — the
+        // previous `/cart/i` regex matched any text containing "cart" (close
+        // button label, empty-cart container, etc.), making the assertion
+        // permissive (Pattern 6).
+        const cartCrumb = await canvas.findByText('Cart', { selector: '[aria-current="page"]' });
+        await expect(cartCrumb).toBeInTheDocument();
 
-        // Verify 4 product items are rendered
         const productItems = canvasElement.querySelectorAll('[data-testid^="sf-product-item-"]');
-        await expect(productItems.length).toBeGreaterThanOrEqual(4);
+        await expect(productItems.length).toBeGreaterThanOrEqual(2);
     },
 };
 
-// High quantity item mock data
-const highQtyBasketItems = [
-    {
-        itemId: 'hq-item-1',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 10,
-        price: 42,
-        productName: mockStandardProductOrderable.product.name,
-        priceAfterItemDiscount: 420,
+const giftItems = basketWithGift.productItems ?? [];
+const giftProductMap: Record<string, ShopperProducts.schemas['Product']> = giftItems.reduce(
+    (acc, item) => {
+        if (item.itemId) {
+            acc[item.itemId] = {
+                ...mockStandardProductOrderable.product,
+                id: item.productId ?? mockStandardProductOrderable.product.id,
+                name: item.productName ?? mockStandardProductOrderable.product.name,
+            };
+        }
+        return acc;
     },
-] as ShopperBasketsV2.schemas['ProductItem'][];
+    {} as Record<string, ShopperProducts.schemas['Product']>
+);
 
-const highQtyProductMap: Record<string, ShopperProducts.schemas['Product']> = {
-    'hq-item-1': mockStandardProductOrderable.product,
-};
-
-const highQtyBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
-    productItems: highQtyBasketItems,
-    productSubTotal: 420,
-    productTotal: 420,
-    shippingTotal: 0,
-    taxTotal: 33.6,
-    orderTotal: 453.6,
-};
-
-export const HighQuantityItem: Story = {
+export const WithGiftLine: Story = {
     args: {
-        basket: highQtyBasket,
-        productsByItemId: highQtyProductMap,
+        basket: basketWithGift,
+        productsByItemId: giftProductMap,
     },
     parameters: {
         docs: {
             description: {
-                story: `
-Cart with a single item having high quantity (10). Shows:
-- "each" price breakdown for quantity > 1
-- Quantity picker with high value
-- Delivery header, delivery badge, and action row
-
-This demonstrates how the component handles items with high quantities.
-                `,
+                story: 'Line item flagged as a gift. The `CartLineItemGift` render-prop reads `productItem.gift` and renders the gift checkbox pre-checked. Backed by the new `basketWithGift` fixture.',
             },
         },
     },
-    render: () => (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="section-container">
-                <Breadcrumb className="mb-6 mt-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Cart</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
-                    <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            <div className="flex items-start gap-2 mb-4">
-                                <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-sm font-semibold">
-                                        Delivery - {highQtyBasketItems.length} out of {highQtyBasketItems.length} items
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        478 Artisan Way, Somerville, MA 02145
-                                    </div>
-                                </div>
-                            </div>
-                            <ProductItemsList
-                                productItems={highQtyBasketItems}
-                                productsByItemId={highQtyProductMap}
-                                secondaryActions={cartSecondaryActions}
-                                deliveryActions={cartDeliveryActions}
-                            />
-                        </div>
-                    </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
-                        <OrderSummary
-                            basket={highQtyBasket}
-                            showCartItems={false}
-                            isEstimate={true}
-                            productsByItemId={highQtyProductMap}
-                            showPromoCodeForm={true}
-                            showCheckoutAction={true}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    ),
+    render: () => <CartShell basket={basketWithGift} productsByItemId={giftProductMap} items={giftItems} />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const { t } = getTranslation();
 
-        const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
-        await expect(cartContainer).toBeInTheDocument();
+        const giftCheckbox = await canvas.findByLabelText(t('cart:lineItem.giftLabel'));
+        await expect(giftCheckbox).toBeChecked();
     },
 };
 
-export const MissingProductImage: Story = {
+const promoErrorItems = basketWithPromoError.productItems ?? [];
+const promoErrorProductMap: Record<string, ShopperProducts.schemas['Product']> = promoErrorItems.reduce(
+    (acc, item) => {
+        if (item.itemId) {
+            acc[item.itemId] = {
+                ...mockStandardProductOrderable.product,
+                id: item.productId ?? mockStandardProductOrderable.product.id,
+                name: item.productName ?? mockStandardProductOrderable.product.name,
+            };
+        }
+        return acc;
+    },
+    {} as Record<string, ShopperProducts.schemas['Product']>
+);
+
+export const WithErrorBanner: Story = {
     args: {
-        basket: cartWithItemsBasket,
-        productsByItemId: {},
+        basket: basketWithPromoError,
+        productsByItemId: promoErrorProductMap,
     },
     parameters: {
         docs: {
             description: {
-                story: `
-Cart with missing product image data. Shows:
-- Graceful handling of missing product details
-- Fallback behavior when productsByItemId is empty
-- Delivery header, delivery badges, and action row still render
-- Component still renders correctly with the composed layout
-
-This demonstrates the component's resilience to missing data.
-                `,
+                story: 'Cart-wide inventory error banner above the order summary. Production renders this above the checkout CTA when `useCartInventoryValidation` flags items exceeding stock; the story asserts the banner shape using the `<CartInventoryErrorBanner>` directly. Promo-error fixture also includes an applied + invalid coupon to exercise the order-summary discount line.',
             },
         },
     },
     render: () => (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="section-container">
-                <Breadcrumb className="mb-6 mt-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Cart</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
-                    <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            {/* Delivery header */}
-                            <div className="flex items-start gap-2 mb-4">
-                                <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-sm font-semibold">
-                                        Delivery - {cartWithItemsBasketItems.length} out of{' '}
-                                        {cartWithItemsBasketItems.length} items
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        478 Artisan Way, Somerville, MA 02145
-                                    </div>
-                                </div>
-                            </div>
-                            <ProductItemsList
-                                productItems={cartWithItemsBasketItems}
-                                productsByItemId={{}}
-                                secondaryActions={cartSecondaryActions}
-                                deliveryActions={cartDeliveryActions}
-                            />
-                        </div>
-                    </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
-                        <OrderSummary
-                            basket={cartWithItemsBasket}
-                            showCartItems={false}
-                            isEstimate={true}
-                            productsByItemId={{}}
-                            showPromoCodeForm={true}
-                            showCheckoutAction={true}
-                        />
-                    </div>
+        <CartShell
+            basket={basketWithPromoError}
+            productsByItemId={promoErrorProductMap}
+            items={promoErrorItems}
+            leadingBanner={
+                <div className="mb-4">
+                    <CartInventoryErrorBanner
+                        issues={[
+                            {
+                                itemId: 'promo-error-line-1',
+                                productId: '029407331227M',
+                                productName: 'Solid Silk Tie',
+                                requestedQuantity: 2,
+                                availableStock: 1,
+                                isPickup: false,
+                            },
+                        ]}
+                        id="cart-inventory-error-story"
+                    />
                 </div>
-            </div>
-        </div>
+            }
+        />
     ),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
 
-        // Wait for and verify cart container is rendered even without product details
-        const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
-        await expect(cartContainer).toBeInTheDocument();
+        const banner = await canvas.findByRole('alert');
+        await expect(banner).toBeInTheDocument();
     },
 };
 
-// Long product name mock data
-const longNameBasketItems = [
-    {
-        itemId: 'long-item-1',
-        productId: mockStandardProductOrderable.product.id,
-        quantity: 1,
-        price: 42,
-        productName: 'Very Long Product Name That Should Wrap Properly In The Cart Display Area',
-        priceAfterItemDiscount: 42,
-    },
-] as ShopperBasketsV2.schemas['ProductItem'][];
-
-const longNameProductMap: Record<string, ShopperProducts.schemas['Product']> = {
-    'long-item-1': {
-        ...mockStandardProductOrderable.product,
-        name: 'Very Long Product Name That Should Wrap Properly In The Cart Display Area',
-    },
-};
-
-const longNameBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
-    productItems: longNameBasketItems,
-    productSubTotal: 42,
-    productTotal: 42,
-    shippingTotal: 5.99,
-    taxTotal: 3.36,
-    orderTotal: 51.35,
-};
-
-export const LongProductNames: Story = {
-    args: {
-        basket: longNameBasket,
-        productsByItemId: longNameProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Cart with items having very long product names. Shows:
-- Text wrapping / line-clamp behavior
-- Layout stability with long names
-- Delivery header, delivery badge, and action row still render correctly
-
-This verifies the component handles long product names gracefully.
-                `,
-            },
-        },
-    },
-    render: () => (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="section-container">
-                <Breadcrumb className="mb-6 mt-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Cart</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-                <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
-                    <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
-                            <div className="flex items-start gap-2 mb-4">
-                                <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-sm font-semibold">
-                                        Delivery - {longNameBasketItems.length} out of {longNameBasketItems.length}{' '}
-                                        items
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        478 Artisan Way, Somerville, MA 02145
-                                    </div>
-                                </div>
-                            </div>
-                            <ProductItemsList
-                                productItems={longNameBasketItems}
-                                productsByItemId={longNameProductMap}
-                                secondaryActions={cartSecondaryActions}
-                                deliveryActions={cartDeliveryActions}
-                            />
-                        </div>
-                    </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
-                        <OrderSummary
-                            basket={longNameBasket}
-                            showCartItems={false}
-                            isEstimate={true}
-                            productsByItemId={longNameProductMap}
-                            showPromoCodeForm={true}
-                            showCheckoutAction={true}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
-        await expect(cartContainer).toBeInTheDocument();
-
-        // Verify long product name is displayed
-        const hasLongName = canvasElement.textContent?.toLowerCase().includes('very long product name');
-        await expect(hasLongName).toBe(true);
-    },
-};
-
-// Mixed pickup/delivery mock data (3 items: 1 pickup, 2 delivery)
 const pickupDeliveryBasketItems = [
     {
         itemId: 'pd-item-1',
@@ -1203,17 +831,15 @@ const pickupDeliveryProductMap: Record<string, ShopperProducts.schemas['Product'
     'pd-item-3': mockStandardProductOrderable.product,
 };
 
-const pickupDeliveryBasket: ShopperBasketsV2.schemas['Basket'] = {
-    ...basketWithOneItem,
+const pickupDeliveryBasket = makeBasket({
     productItems: pickupDeliveryBasketItems,
     productSubTotal: 140,
     productTotal: 140,
     shippingTotal: 0,
     taxTotal: 11.2,
     orderTotal: 151.2,
-};
+});
 
-// Split items by fulfillment type
 const pickupItems = [pickupDeliveryBasketItems[0]] as ShopperBasketsV2.schemas['ProductItem'][];
 const deliveryItems = pickupDeliveryBasketItems.slice(1);
 
@@ -1225,13 +851,7 @@ export const CartWithPickupDelivery: Story = {
     parameters: {
         docs: {
             description: {
-                story: `
-Cart with 3 items mixing pickup and delivery fulfillment. Shows:
-- 1 item with "Pick Up in Store" selected (MapPin badge)
-- 2 items with "Ship to Address" / Delivery selected (Truck badge)
-- Each item's delivery badge opens a dropdown to switch fulfillment
-- Breadcrumb, delivery header, action rows, and OrderSummary
-                `,
+                story: 'Mixed BOPIS + delivery — 1 pickup item with store info card, 2 delivery items with shipping info card. Each line item exposes the fulfillment dropdown.',
             },
         },
     },
@@ -1251,7 +871,6 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1 space-y-3">
-                        {/* Pickup card */}
                         <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start justify-between gap-2 mb-4">
                                 <div className="flex items-start gap-2">
@@ -1259,7 +878,8 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                     <div>
                                         <div className="text-sm font-semibold">
                                             Pickup in <span className="font-bold">Dorchester</span> -{' '}
-                                            {pickupItems.length} out of {pickupItems.length} items available
+                                            {pickupItems.length} out of {pickupDeliveryBasketItems.length}{' '}
+                                            {pickupDeliveryBasketItems.length === 1 ? 'item' : 'items'} available
                                         </div>
                                         <div className="text-sm text-muted-foreground">
                                             26 District Avenue, Dorchester, MA 02125
@@ -1275,16 +895,16 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                 productsByItemId={pickupDeliveryProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartPickupActions}
+                                lineItemExtra={CartLineItemGift}
                             />
                         </div>
-                        {/* Delivery card */}
                         <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
                                     <div className="text-sm font-semibold">
                                         Delivery - {deliveryItems.length} out of {pickupDeliveryBasketItems.length}{' '}
-                                        items
+                                        {pickupDeliveryBasketItems.length === 1 ? 'item' : 'items'}
                                     </div>
                                     <div className="text-sm text-muted-foreground">
                                         478 Artisan Way, Somerville, MA 02145
@@ -1296,6 +916,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                 productsByItemId={pickupDeliveryProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemExtra={CartLineItemGift}
                             />
                         </div>
                     </div>
@@ -1320,10 +941,13 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
         const cartContainer = canvasElement.querySelector('[data-testid="sf-cart-container"]');
         await expect(cartContainer).toBeInTheDocument();
 
-        const cartTitle = await canvas.findByText(/cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        // Assert on the breadcrumb's active-page indicator specifically — the
+        // previous `/cart/i` regex matched any text containing "cart" (close
+        // button label, empty-cart container, etc.), making the assertion
+        // permissive (Pattern 6).
+        const cartCrumb = await canvas.findByText('Cart', { selector: '[aria-current="page"]' });
+        await expect(cartCrumb).toBeInTheDocument();
 
-        // Verify 3 product items are rendered
         const productItems = canvasElement.querySelectorAll('[data-testid^="sf-product-item-"]');
         await expect(productItems.length).toBeGreaterThanOrEqual(3);
     },

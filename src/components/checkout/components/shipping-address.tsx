@@ -16,13 +16,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { toast } from 'sonner';
+import type { ShopperCustomers } from '@/scapi';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { useAuth } from '@/providers/auth';
-import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout-schemas';
+import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout/schemas';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
@@ -30,17 +31,17 @@ import {
     getShippingAddressFromCustomer,
     getAddressBookFromCustomer,
     type AddressBookItem,
-} from '@/lib/customer-profile-utils';
+} from '@/lib/customer/profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import SavedAddressesList from './saved-addresses-list';
 import AddressModal from './address-modal';
 import type { CheckoutActionData } from '../types';
-import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address-utils';
+import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address/address-utils';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { DEFAULT_COUNTRY_CODE } from '@/components/customer-address-form/constants';
-import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
+import { stripCountryCode, extractCountryCode } from '@/lib/address/phone-utils';
 
 interface ShippingAddressProps {
     onSubmit: (formData: FormData) => void;
@@ -73,10 +74,24 @@ export default function ShippingAddress({
     const auth = useAuth();
     const customerId = auth?.customerId;
     const { t } = useTranslation('checkout');
+    const { t: tErrors } = useTranslation('errors');
     // @sfdc-extension-line SFDC_EXT_MULTISHIP
     const { t: tMultiship } = useTranslation('extMultiship');
 
     const shippingAddress = cart?.shipments?.[0]?.shippingAddress;
+
+    // Show the shopper the address they typed so they can modify it
+    const attemptedAddress = (actionData?.data as { address?: Partial<ShippingAddressData> } | undefined)?.address;
+    const basketAddressDiffersFromAttempted = Boolean(
+        actionData?.success &&
+            attemptedAddress &&
+            shippingAddress &&
+            (attemptedAddress.address1 !== shippingAddress.address1 ||
+                attemptedAddress.postalCode !== shippingAddress.postalCode ||
+                attemptedAddress.stateCode !== shippingAddress.stateCode ||
+                attemptedAddress.city !== shippingAddress.city)
+    );
+    const formSourceAddress = basketAddressDiffersFromAttempted ? attemptedAddress : undefined;
 
     // Get auto-populated shipping address from customer profile
     const customerShippingAddress = getShippingAddressFromCustomer(customerProfile);
@@ -84,8 +99,9 @@ export default function ShippingAddress({
     // Get phone from contact info (prioritize this for auto-population)
     const contactInfoPhone = cart?.customerInfo?.phone;
 
-    // Phone priority: saved shipping phone > contact info phone > customer profile phone
-    const prioritizedPhoneNumber = (shippingAddress?.phone ||
+    // Phone priority: attempted (from last no-methods submit) > saved shipping > contact > profile
+    const prioritizedPhoneNumber = (formSourceAddress?.phone ||
+        shippingAddress?.phone ||
         contactInfoPhone ||
         customerShippingAddress.phone ||
         '') as string;
@@ -93,14 +109,27 @@ export default function ShippingAddress({
     const form = useForm<ShippingAddressData>({
         resolver: zodResolver(schema),
         defaultValues: {
-            firstName: shippingAddress?.firstName || customerShippingAddress.firstName || '',
-            lastName: shippingAddress?.lastName || customerShippingAddress.lastName || '',
-            address1: shippingAddress?.address1 || customerShippingAddress.address1 || '',
-            address2: shippingAddress?.address2 || customerShippingAddress.address2 || '',
-            city: shippingAddress?.city || customerShippingAddress.city || '',
-            stateCode: shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
-            postalCode: shippingAddress?.postalCode || customerShippingAddress.postalCode || '',
-            countryCode: shippingAddress?.countryCode || customerShippingAddress.countryCode || DEFAULT_COUNTRY_CODE,
+            firstName:
+                formSourceAddress?.firstName || shippingAddress?.firstName || customerShippingAddress.firstName || '',
+            lastName:
+                formSourceAddress?.lastName || shippingAddress?.lastName || customerShippingAddress.lastName || '',
+            address1:
+                formSourceAddress?.address1 || shippingAddress?.address1 || customerShippingAddress.address1 || '',
+            address2:
+                formSourceAddress?.address2 || shippingAddress?.address2 || customerShippingAddress.address2 || '',
+            city: formSourceAddress?.city || shippingAddress?.city || customerShippingAddress.city || '',
+            stateCode:
+                formSourceAddress?.stateCode || shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
+            postalCode:
+                formSourceAddress?.postalCode ||
+                shippingAddress?.postalCode ||
+                customerShippingAddress.postalCode ||
+                '',
+            countryCode:
+                formSourceAddress?.countryCode ||
+                shippingAddress?.countryCode ||
+                customerShippingAddress.countryCode ||
+                DEFAULT_COUNTRY_CODE,
             phoneCountryCode: extractCountryCode(prioritizedPhoneNumber),
             phone: stripCountryCode(prioritizedPhoneNumber),
         },
@@ -152,10 +181,10 @@ export default function ShippingAddress({
     };
 
     const handleUpdateError = () => {
+        // Clear the in-flight marker so subsequent close/save calls aren't blocked, but
+        // keep `editingAddress` so the modal stays in edit mode and the user can retry.
         pendingEditAddressRef.current = null;
-        setEditingAddress(null);
-        // Keep modal open on error so user can retry
-        // TODO: Add error alert to the user
+        toast.error(tErrors('checkout.addressValidationFailed'));
     };
 
     useScapiFetcherEffect(updateAddressFetcher, {
@@ -232,36 +261,36 @@ export default function ShippingAddress({
 
     const stepTitle =
         hasSavedAddresses && isEditing ? (
-            <div className="flex items-center justify-between w-full">
-                <span className="text-xl font-bold tracking-tight text-card-foreground">
+            <div className="flex items-center justify-between w-full gap-4">
+                <span className="text-2xl font-bold tracking-tight text-card-foreground">
                     {t('shippingAddress.title')}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-36 font-medium text-secondary-foreground sm:w-auto"
+                        onClick={() => setAddressModalOpen(true)}
+                        aria-label={t('shippingAddress.addNewAddressButton')}>
+                        {t('shippingAddress.addNewAddressButton')}
+                    </Button>
                     {/* @sfdc-extension-block-start SFDC_EXT_MULTISHIP */}
                     {enableMultiAddress && (
                         <Button
                             type="button"
                             variant="link"
                             size="sm"
-                            className="cursor-pointer text-xs font-normal leading-normal h-auto"
+                            className="h-auto w-36 cursor-pointer justify-start whitespace-normal px-0 text-left text-xs font-medium leading-normal sm:w-auto sm:justify-center"
                             onClick={handleToggleShippingAddressMode}>
                             {tMultiship('checkout.deliverToMultipleAddresses')}
                         </Button>
                     )}
                     {/* @sfdc-extension-block-end SFDC_EXT_MULTISHIP */}
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="font-medium text-secondary-foreground"
-                        onClick={() => setAddressModalOpen(true)}
-                        aria-label={t('shippingAddress.addNewAddressButton')}>
-                        {t('shippingAddress.addNewAddressButton')}
-                    </Button>
                 </div>
             </div>
         ) : (
-            <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingAddress.title')}</span>
+            <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingAddress.title')}</span>
         );
 
     return (
@@ -285,26 +314,30 @@ export default function ShippingAddress({
             isLoading={isLoading}>
             <ToggleCardEdit>
                 {hasSavedAddresses ? (
-                    <div className="flex flex-col gap-4 pt-2">
+                    <div className="flex flex-col gap-4 pt-2 pb-2">
                         <SavedAddressesList
                             addresses={savedAddresses}
                             value={effectiveSelectedId}
                             onValueChange={setSelectedAddressId}
                             onEditAddress={handleEditAddress}
                         />
-                        <Button
-                            type="button"
-                            disabled={isLoading}
-                            className="w-full"
-                            onClick={handleSavedAddressSubmit}>
-                            {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
-                        </Button>
+                        <div
+                            data-checkout-mobile-bar
+                            className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
+                            <Button
+                                type="button"
+                                disabled={isLoading}
+                                className="w-full"
+                                onClick={handleSavedAddressSubmit}>
+                                {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                            </Button>
+                        </div>
                     </div>
                 ) : (
                     <Form {...form}>
                         <form
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
-                            className="flex flex-col gap-4 pt-2">
+                            className="flex flex-col gap-4 pt-2 pb-2">
                             <AddressFormFields
                                 form={form}
                                 showPhone={false}
@@ -313,9 +346,13 @@ export default function ShippingAddress({
                                 autoFocusField="firstName"
                                 countryCode={DEFAULT_COUNTRY_CODE}
                             />
-                            <Button type="submit" disabled={isLoading} className="w-full">
-                                {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
-                            </Button>
+                            <div
+                                data-checkout-mobile-bar
+                                className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
+                                <Button type="submit" disabled={isLoading} className="w-full">
+                                    {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 )}

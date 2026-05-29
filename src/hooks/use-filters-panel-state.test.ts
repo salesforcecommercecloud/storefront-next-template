@@ -29,6 +29,7 @@ import {
 } from './use-filters-panel-state';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLocation: vi.fn(),
 }));
 

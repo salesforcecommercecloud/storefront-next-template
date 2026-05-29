@@ -11,6 +11,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Sweater"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -32,10 +33,10 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/RefArchGlobal/en-GB/product/701643108633M"
               title="Sweater"
@@ -46,7 +47,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         </div>
         <div>
           <div
-            class="text-xs text-muted-foreground space-y-1 mb-1"
+            class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
           >
             <div>
               Size
@@ -106,7 +107,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
           </span>
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"
@@ -140,6 +141,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Product One"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/prod-1"
@@ -159,10 +161,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/"
               title="Product One"
@@ -203,7 +205,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
            
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"
@@ -222,6 +224,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Product Two"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/prod-2"
@@ -241,10 +244,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/"
               title="Product Two"
@@ -285,7 +288,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
            
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"

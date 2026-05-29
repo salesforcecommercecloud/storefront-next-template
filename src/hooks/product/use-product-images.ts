@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { GalleryImage } from '@/components/image-gallery';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { isDynamicImageSource, toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 interface UseProductImagesProps {
     product: ShopperProducts.schemas['Product'];
@@ -77,7 +76,7 @@ export function useProductImages({
     selectedAttributes,
     viewType = 'large',
 }: UseProductImagesProps): UseProductImagesReturn {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Get images filtered by selected attributes
     const filteredImages = useMemo(() => {
@@ -96,19 +95,27 @@ export function useProductImages({
         return imageGroup?.images || getDefaultImages(product.imageGroups, viewType);
     }, [product.imageGroups, selectedAttributes, viewType]);
 
-    // Transform Commerce SDK images to GalleryImage format
+    // Transform Commerce SDK images to GalleryImage format. We restrict the gallery to assets DIS can actually
+    // process as a source image — anything else (videos, 3D models, unknown blobs SFCC merchants sometimes attach
+    // to `image_groups`) cannot be served through the `<picture>`/`<DynamicImage>` pipeline and is dropped here so
+    // downstream code never needs to special-case it.
     const galleryImages: GalleryImage[] = useMemo(() => {
         if (!filteredImages || filteredImages.length === 0) {
             return [];
         }
 
-        return filteredImages.map((image: ShopperProducts.schemas['Image']) => {
+        return filteredImages.flatMap((image: ShopperProducts.schemas['Image']): GalleryImage[] => {
+            if (!isDynamicImageSource(image.disBaseLink ?? image.link)) {
+                return [];
+            }
             const optimizedImageUrl = toImageUrl({ image, config }) || '';
-            return {
-                src: optimizedImageUrl,
-                alt: image.alt || product.name || '',
-                thumbSrc: optimizedImageUrl,
-            };
+            return [
+                {
+                    src: optimizedImageUrl,
+                    alt: image.alt || product.name || '',
+                    thumbSrc: optimizedImageUrl,
+                },
+            ];
         });
     }, [filteredImages, product.name, config]);
 

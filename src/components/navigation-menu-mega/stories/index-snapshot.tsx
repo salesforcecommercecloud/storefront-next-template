@@ -13,101 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, expect, test, describe, afterEach } from 'vitest';
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import { composeStories } from '@storybook/react-vite';
+import { cleanup, render } from '@testing-library/react';
 
-type LinkProps =
-    | (AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string; href?: string; children?: ReactNode })
-    | null;
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => ({
-        data: null,
-        state: 'idle',
-        submit: vi.fn(),
-    }),
-    useFetchers: () => [],
-    useNavigate: () => vi.fn(),
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    useInRouterContext: () => false,
-    createMemoryRouter: vi.fn().mockImplementation(() => ({
-        navigate: vi.fn(),
-        state: { location: { pathname: '/', search: '', hash: '', state: null } },
-    })),
-    RouterProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Suspense: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Await: ({
-        resolve: _resolve,
-        children,
-    }: {
-        resolve: Promise<unknown>;
-        children: (data: unknown) => React.ReactNode;
-    }) => {
-        return <>{children([])}</>;
-    },
-    NavLink: ({
-        to,
-        children,
-        className,
-        ...rest
-    }: LinkProps & { className?: string | ((props: { isActive: boolean }) => string) }) => {
-        const {
-            to: toProp,
-            href,
-            children: linkChildren,
-            ...linkRest
-        } = (rest ?? {}) as AnchorHTMLAttributes<HTMLAnchorElement> & {
-            to?: string;
-            href?: string;
-            children?: ReactNode;
-        };
-        const hrefValue = to ?? toProp ?? href ?? '#';
-        const resolvedClassName =
-            typeof className === 'function' ? className({ isActive: hrefValue === '/' }) : className;
-        return (
-            <a href={hrefValue} className={resolvedClassName} {...linkRest}>
-                {linkChildren ?? children}
-            </a>
-        );
-    },
-    Link: (props: LinkProps) => {
-        const { to, href, children, ...rest } = (props ?? {}) as AnchorHTMLAttributes<HTMLAnchorElement> & {
-            to?: string;
-            href?: string;
-            children?: ReactNode;
-        };
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-
-vi.mock('@salesforce/storefront-next-runtime/config', async () => {
-    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
+// Synthesize the resolved value for `<Await>` so the snapshot captures the
+// empty-state baseline (hamburger + empty mobile drawer) instead of the
+// suspended fallback. Everything else from `react-router` flows through.
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
     return {
         ...actual,
-        useConfig: () => ({
-            commerce: {
-                api: {
-                    organizationId: 'test-org',
-                },
-            },
-        }),
+        Await: ({ children }: { resolve: Promise<unknown>; children: (data: unknown) => ReactNode }) =>
+            children([]),
     };
 });
 
-import { composeStories } from '@storybook/react-vite';
+// The site-aware `useNavigate` wrapper depends on `useConfig` and a router
+// context, neither of which the snapshot harness mounts. Stub it the same way
+// `index.test.tsx` does.
+vi.mock('@/hooks/use-navigate', () => ({
+    useNavigate: () => vi.fn(),
+}));
 
 import * as MegaMenuStories from './index.stories';
-import { render, cleanup } from '@testing-library/react';
 
 const composed = composeStories(MegaMenuStories);
 

@@ -16,6 +16,8 @@
 
 const { I, storefrontPage, loginPage, signupFlow } = inject();
 import { credentialStore } from '../utils/credential-store';
+import { getSfccCookieNames } from '../utils/api-login-utils';
+import { getSiteId } from '../utils/site-id';
 import type { LoginData, LoginFlowOptions } from '../types/auth.types';
 
 /**
@@ -34,6 +36,12 @@ import type { LoginData, LoginFlowOptions } from '../types/auth.types';
  *
  * This ensures login tests always have valid credentials without
  * manually managing test accounts across test specs.
+ *
+ * TODO: migrate non-UI-testing callers to apiLoginFlow (src/flows/api-login.flow.ts) to skip
+ * the UI form-fill on every test. Bigger runtime win on post-merge @core. Caveats: the
+ * 3 specs that test the login UI itself must keep using this flow; the storefront's auth
+ * middleware clears cc-nx-g on UI form submit but not on direct cookie injection, so any
+ * spec that depends on that behavior needs to opt out. Track separately from infra changes.
  */
 class LoginFlow {
     /**
@@ -95,8 +103,9 @@ class LoginFlow {
                 loginData = await this.ensureCredentialsExist();
             }
 
-            // Navigate to login page
-            loginPage.navigate();
+            // Navigate to login page with password mode to force standard login form
+            // (passwordless login is enabled by default when features.passwordlessLogin.enabled = true)
+            loginPage.navigate({ mode: 'password' });
 
             // Handle tracking consent first so it does not block the login form
             await storefrontPage.handleTrackingConsent(acceptTracking);
@@ -131,7 +140,7 @@ class LoginFlow {
                 }
             }) as unknown as Promise<void>);
 
-            const siteId = process.env.SITE_ID || 'RefArchGlobal';
+            const siteId = getSiteId();
             await storefrontPage.waitForSessionCookies('registered', siteId, 30);
 
             // Return login data for test validation
@@ -189,13 +198,12 @@ class LoginFlow {
      * This resets the session to guest state
      */
     async logout(): Promise<void> {
-        const siteId = process.env.SITE_ID || 'RefArchGlobal';
+        const siteId = getSiteId();
+        const names = getSfccCookieNames(siteId);
 
-        // Clear all SFCC authentication cookies
-        I.clearCookie(`cc-at_${siteId}`); // Access token
-        I.clearCookie(`cc-nx_${siteId}`); // Authenticated refresh token
-        I.clearCookie(`usid_${siteId}`); // User session ID
-        I.clearCookie(`customerId_${siteId}`); // Customer ID
+        I.clearCookie(names.accessToken);
+        I.clearCookie(names.registeredRefresh);
+        I.clearCookie(names.usid);
 
         // Reload the page so the storefront's auth middleware runs and issues a new guest session
         I.refreshPage();

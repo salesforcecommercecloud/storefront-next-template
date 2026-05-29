@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PasswordRequirement } from '@/components/password-requirements';
@@ -21,7 +22,8 @@ import { type SignupFormProps } from './types';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 
-export function SignupForm({ error }: SignupFormProps) {
+export function SignupForm({ error, isPasswordless = false }: SignupFormProps) {
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
     const {
         password,
         confirmPassword,
@@ -31,6 +33,11 @@ export function SignupForm({ error }: SignupFormProps) {
         isFormValid,
     } = usePasswordValidation();
     const { t } = useTranslation('signup');
+
+    // Shows password fields if passwordless is disabled or the user has clicked the "Create account with password" button
+    const showPasswordFields = !isPasswordless || showPasswordForm;
+    // Only password fields are checked for validity. When passwordless, form is always valid.
+    const submitDisabled = showPasswordFields && !isFormValid;
 
     return (
         <>
@@ -87,44 +94,56 @@ export function SignupForm({ error }: SignupFormProps) {
                     />
                 </div>
 
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                        {t('form.passwordLabel')}
-                    </label>
-                    <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="new-password"
-                        required
-                        value={password}
-                        onChange={handlePasswordChange}
-                        className="mt-1"
-                        placeholder={t('form.passwordPlaceholder')}
-                    />
-                    <PasswordRequirement password={password} />
-                </div>
+                {showPasswordFields && (
+                    <>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                                {t('form.passwordLabel')}
+                            </label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                value={password}
+                                onChange={handlePasswordChange}
+                                className="mt-1"
+                                placeholder={t('form.passwordPlaceholder')}
+                            />
+                            <PasswordRequirement password={password} />
+                        </div>
 
-                <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
-                        {t('form.confirmPasswordLabel')}
-                    </label>
-                    <Input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        autoComplete="new-password"
-                        required
-                        value={confirmPassword}
-                        onChange={handleConfirmPasswordChange}
-                        className={`mt-1`}
-                        aria-invalid={showPasswordMismatch && confirmPassword ? true : undefined}
-                        placeholder={t('form.confirmPasswordPlaceholder')}
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
+                                {t('form.confirmPasswordLabel')}
+                            </label>
+                            <Input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
+                                className="mt-1"
+                                aria-invalid={showPasswordMismatch && confirmPassword ? true : undefined}
+                                placeholder={t('form.confirmPasswordPlaceholder')}
+                            />
+                            {showPasswordMismatch && confirmPassword && (
+                                <p className="mt-1 text-sm text-destructive">{t('passwordsDoNotMatch')}</p>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {isPasswordless && (
+                    <input
+                        type="hidden"
+                        name="registrationMode"
+                        value={showPasswordForm ? 'password' : 'passwordless'}
                     />
-                    {showPasswordMismatch && confirmPassword && (
-                        <p className="mt-1 text-sm text-destructive">{t('passwordsDoNotMatch')}</p>
-                    )}
-                </div>
+                )}
 
                 <UITarget targetId="sfcc.userRegistration.consent.marketing" />
                 <UITarget targetId="sfcc.userRegistration.consent.tos" />
@@ -135,12 +154,35 @@ export function SignupForm({ error }: SignupFormProps) {
                 <div>
                     <Button
                         type="submit"
-                        disabled={!isFormValid}
+                        disabled={submitDisabled}
                         className="w-full"
-                        variant={isFormValid ? 'default' : 'secondary'}>
-                        {t('form.createAccountButton')}
+                        variant={submitDisabled ? 'secondary' : 'default'}>
+                        {showPasswordFields ? t('form.createAccountButton') : t('form.continueButton')}
                     </Button>
                 </div>
+
+                {isPasswordless && (
+                    <div className="space-y-3">
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-border/60" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-background px-2 text-muted-foreground">
+                                    {t('form.orSeparator')}
+                                </span>
+                            </div>
+                        </div>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => setShowPasswordForm(!showPasswordForm)}>
+                            {showPasswordForm ? t('form.continueWithoutPassword') : t('form.createAccountWithPassword')}
+                        </Button>
+                    </div>
+                )}
             </div>
         </>
     );

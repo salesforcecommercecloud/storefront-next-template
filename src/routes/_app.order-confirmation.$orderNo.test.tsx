@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
-import type { ShopperOrders, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders, ShopperStores } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import OrderConfirmationPage, { loader, ErrorBoundary } from './_app.order-confirmation.$orderNo';
@@ -41,6 +41,14 @@ vi.mock('@/lib/logger.server', () => ({
 
 vi.mock('@/providers/basket', () => ({
     useBasketReset: () => vi.fn(),
+}));
+
+vi.mock('@/lib/api/customer.server', () => ({
+    isRegisteredCustomer: vi.fn(() => false),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/data-store', () => ({
+    getLoginPreferences: vi.fn(() => ({ emailVerificationEnabled: false })),
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -139,6 +147,7 @@ function renderRoute(order: ShopperOrders.schemas['Order']) {
                     productsById: {},
                     storesByStoreId: new Map(),
                 }),
+                showPostOrderRegistration: false,
             }),
         },
     ]);

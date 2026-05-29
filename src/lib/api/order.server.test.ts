@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { ShopperCustomers, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperOrders, ShopperProducts } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchOrderWithProducts, transformOrderForList, fetchCustomerOrders } from './order.server';

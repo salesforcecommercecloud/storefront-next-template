@@ -123,7 +123,7 @@ describe('<AccountNavItem />', () => {
 
             const button = screen.getByRole('button', { name: 'Log Out' });
             expect(button).toHaveClass('w-full', 'px-3', 'py-2', 'text-left');
-            expect(button).toHaveClass('text-foreground');
+            expect(button).toHaveClass('text-sidebar-foreground');
         });
 
         test('logout button uses default POST method when method is not specified', () => {
@@ -156,7 +156,7 @@ describe('<AccountNavItem />', () => {
             render(createTestWrapper(<AccountNavItem item={logoutItem} />));
 
             const button = screen.getByRole('button', { name: 'Log Out' });
-            expect(button).toHaveClass('hover:text-foreground', 'hover:bg-muted/30');
+            expect(button).toHaveClass('hover:text-sidebar-foreground', 'hover:bg-sidebar-accent');
         });
     });
 });

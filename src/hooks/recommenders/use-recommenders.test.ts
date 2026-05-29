@@ -15,232 +15,143 @@
  */
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useRecommenders, type RecommendersAdapter, type Recommendation, type Product } from './use-recommenders';
-
-// Mock fetch globally
-global.fetch = vi.fn();
+import { useRecommenders, type Recommendation, type Product } from './use-recommenders';
+import { resourceRoutes } from '@/route-paths';
+import { mockAltSiteObject } from '@/test-utils/config';
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
     const actual = await importOriginal<object>();
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });
 
-// Mock the useRecommendersAdapter hook
-vi.mock('@/providers/recommenders', () => ({
-    useRecommendersAdapter: vi.fn(),
-}));
+const buildResponse = (body: Recommendation, ok = true): Response =>
+    ({
+        ok,
+        json: () => Promise.resolve(body),
+    }) as unknown as Response;
 
-// Mock the auth provider
-vi.mock('@/providers/auth', () => ({
-    useAuth: vi.fn().mockReturnValue({
-        usid: 'test-usid-123',
-        userType: 'guest',
-        customerId: null,
-    }),
-}));
+describe('useRecommenders (rewired to /resource/recommendations)', () => {
+    let mockFetch: ReturnType<typeof vi.fn<typeof fetch>>;
 
-describe('useRecommenders', () => {
-    let mockAdapter: RecommendersAdapter;
-    let mockFetch: ReturnType<typeof vi.fn>;
-
-    const mockRecommendation: Recommendation = {
-        recoUUID: 'test-uuid-123',
-        recommenderName: 'test-recommender',
-        displayMessage: 'Test recommendations',
-        recs: [
-            {
-                id: 'product-1',
-                productId: 'product-1',
-                image_url: 'https://example.com/product1.jpg',
-                product_name: 'Test Product 1',
-            },
-            {
-                id: 'product-2',
-                productId: 'product-2',
-                image_url: 'https://example.com/product2.jpg',
-                product_name: 'Test Product 2',
-            },
-        ],
-    };
-
-    const mockProductDetails = {
-        data: [
-            {
-                id: 'product-1',
-                name: 'Test Product 1',
-                price: 99.99,
-            },
-            {
-                id: 'product-2',
-                name: 'Test Product 2',
-                price: 149.99,
-            },
-        ],
-    };
-
-    beforeEach(async () => {
+    beforeEach(() => {
         vi.clearAllMocks();
-
-        mockFetch = global.fetch as ReturnType<typeof vi.fn>;
-        mockFetch.mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve(mockProductDetails),
-        } as Response);
-
-        mockAdapter = {
-            getRecommenders: vi.fn().mockResolvedValue({ recommenders: [] }),
-            getRecommendations: vi.fn().mockResolvedValue(mockRecommendation),
-            getZoneRecommendations: vi.fn().mockResolvedValue(mockRecommendation),
-        };
-
-        // Mock the useRecommendersAdapter hook to return our mock adapter
-        const { useRecommendersAdapter } = await import('@/providers/recommenders');
-        vi.mocked(useRecommendersAdapter).mockReturnValue(mockAdapter);
+        mockFetch = vi
+            .fn<typeof fetch>()
+            .mockResolvedValue(buildResponse({ recs: [{ productId: 'p-1' }] } as Recommendation));
+        vi.stubGlobal('fetch', mockFetch);
     });
 
     afterEach(() => {
-        vi.clearAllMocks();
+        vi.unstubAllGlobals();
     });
 
     describe('initialization', () => {
-        it('should initialize with default state', () => {
+        it('exposes default state', () => {
             const { result } = renderHook(() => useRecommenders(true));
-
             expect(result.current.isLoading).toBe(false);
             expect(result.current.isEnabled).toBe(true);
             expect(result.current.recommendations).toEqual({});
+            expect(result.current.error).toBeNull();
         });
 
-        it('should respect isEnabled flag', () => {
+        it('respects isEnabled = false', async () => {
             const { result } = renderHook(() => useRecommenders(false));
-
             expect(result.current.isEnabled).toBe(false);
-        });
-    });
-
-    describe('getRecommenders', () => {
-        it('should call adapter getRecommenders when enabled', async () => {
-            const { result } = renderHook(() => useRecommenders(true));
-
             await act(async () => {
-                await result.current.getRecommenders();
+                await result.current.getRecommendations('home');
             });
-
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommenders).toHaveBeenCalledTimes(1);
-        });
-
-        it('should return empty object when disabled', async () => {
-            const { result } = renderHook(() => useRecommenders(false));
-
-            const recommenders = await act(async () => {
-                return await result.current.getRecommenders();
-            });
-
-            expect(recommenders).toEqual({});
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommenders).not.toHaveBeenCalled();
+            expect(mockFetch).not.toHaveBeenCalled();
         });
     });
 
     describe('getRecommendations', () => {
-        it('should fetch and enrich recommendations', async () => {
+        it('GETs /resource/recommendations with the wire format encoded as query params', async () => {
             const { result } = renderHook(() => useRecommenders(true));
 
             await act(async () => {
-                await result.current.getRecommendations('test-recommender');
+                await result.current.getRecommendations('home-new-arrivals');
             });
 
-            // Now passes user parameters (cookieId) even when args is undefined
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', undefined, {
-                cookieId: 'test-usid-123',
+            expect(mockFetch).toHaveBeenCalledTimes(1);
+            const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+            const parsed = new URL(url, 'http://localhost');
+            expect(parsed.pathname).toBe(resourceRoutes.recommendations);
+            expect((init?.method ?? 'GET').toUpperCase()).toBe('GET');
+            expect(parsed.searchParams.get('recommenderName')).toBe('home-new-arrivals');
+            // Hook does NOT include cookieId/userId/clientIp/clientUserAgent — server stamps them.
+            expect(parsed.searchParams.get('cookieId')).toBeNull();
+            expect(parsed.searchParams.get('userId')).toBeNull();
+            expect(parsed.searchParams.get('clientIp')).toBeNull();
+        });
+
+        it('encodes products and args as JSON query params', async () => {
+            const { result } = renderHook(() => useRecommenders(true));
+            const products: Product[] = [{ id: 'sku-1' }, { id: 'sku-2' }];
+            const args = { limit: 8, anchor: 'sku-1' };
+
+            await act(async () => {
+                await result.current.getRecommendations('home', products, args);
             });
-            // Fetch now uses encoded resource URL format with GET method (no second argument)
-            expect(mockFetch).toHaveBeenCalledWith(expect.stringMatching(/^\/resource\/api\/client\/.+$/));
+
+            const [url] = mockFetch.mock.calls[0] as [string];
+            const parsed = new URL(url, 'http://localhost');
+            expect(JSON.parse(parsed.searchParams.get('products') ?? 'null')).toEqual(products);
+            expect(JSON.parse(parsed.searchParams.get('args') ?? 'null')).toEqual(args);
+            // currency is sourced from site context
+            expect(parsed.searchParams.get('currency')).toBe(mockAltSiteObject.defaultCurrency);
+        });
+
+        it('omits products and args params when not provided', async () => {
+            const { result } = renderHook(() => useRecommenders(true));
+
+            await act(async () => {
+                await result.current.getRecommendations('home');
+            });
+
+            const [url] = mockFetch.mock.calls[0] as [string];
+            const parsed = new URL(url, 'http://localhost');
+            expect(parsed.searchParams.get('products')).toBeNull();
+            expect(parsed.searchParams.get('args')).toBeNull();
+        });
+
+        it('stores response and stamps recommenderName onto recommendations', async () => {
+            mockFetch.mockResolvedValueOnce(buildResponse({ recs: [{ productId: 'p-1' }] } as Recommendation));
+
+            const { result } = renderHook(() => useRecommenders(true));
+            await act(async () => {
+                await result.current.getRecommendations('home');
+            });
 
             await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-                expect(result.current.recommendations).toHaveProperty('recs');
-                expect(result.current.recommendations.recommenderName).toBe('test-recommender');
+                expect(result.current.recommendations.recommenderName).toBe('home');
+                expect(result.current.recommendations.recs).toHaveLength(1);
             });
         });
 
-        it('should set loading state during fetch', async () => {
-            const { result } = renderHook(() => useRecommenders(true));
-
-            act(() => {
-                void result.current.getRecommendations('test-recommender');
-            });
-
-            expect(result.current.isLoading).toBe(true);
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-            });
-        });
-
-        it('should pass products and args to adapter', async () => {
-            const { result } = renderHook(() => useRecommenders(true));
-
-            const products: Product[] = [{ id: 'prod-1', price: 50 }];
-            const args = { limit: 5 };
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender', products, args);
-            });
-
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommendations).toHaveBeenCalledWith('test-recommender', products, {
-                ...args,
-                cookieId: 'test-usid-123',
-            });
-        });
-
-        it('should not fetch when disabled', async () => {
-            const { result } = renderHook(() => useRecommenders(false));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getRecommendations).not.toHaveBeenCalled();
-            expect(result.current.isLoading).toBe(false);
-        });
-
-        it('should handle empty recommendations', async () => {
-            mockAdapter.getRecommendations = vi.fn().mockResolvedValue({ recs: [] });
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            expect(mockFetch).not.toHaveBeenCalled();
-            await waitFor(() => {
-                expect(result.current.recommendations).toEqual({
-                    recs: [],
-                    recommenderName: 'test-recommender',
+        it('sets loading state during fetch', async () => {
+            let resolveFetch: ((value: Response) => void) | undefined;
+            mockFetch.mockImplementationOnce(() => {
+                return new Promise<Response>((resolve) => {
+                    resolveFetch = resolve;
                 });
             });
-        });
-
-        it('should handle fetch errors gracefully', async () => {
-            mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
             const { result } = renderHook(() => useRecommenders(true));
+            act(() => {
+                void result.current.getRecommendations('home');
+            });
+            expect(result.current.isLoading).toBe(true);
 
             await act(async () => {
-                await result.current.getRecommendations('test-recommender');
+                resolveFetch?.(buildResponse({ recs: [] }));
+                await Promise.resolve();
             });
 
             await waitFor(() => {
@@ -248,317 +159,107 @@ describe('useRecommenders', () => {
             });
         });
 
-        it('should cancel previous request when new request is made', async () => {
+        it('aborts the previous request on consecutive calls', async () => {
+            const signals: AbortSignal[] = [];
+            mockFetch.mockImplementation((_url, init?: RequestInit) => {
+                return new Promise<Response>((resolve, reject) => {
+                    if (init?.signal) {
+                        signals.push(init.signal);
+                        init.signal.addEventListener('abort', () => {
+                            reject(new DOMException('aborted', 'AbortError'));
+                        });
+                    }
+                    // Resolve only the second call's promise
+                    if (signals.length === 2) {
+                        resolve(buildResponse({ recs: [{ productId: 'p-2' }] } as Recommendation));
+                    }
+                });
+            });
+
             const { result } = renderHook(() => useRecommenders(true));
 
-            // Start first request
-            act(() => {
-                void result.current.getRecommendations('recommender-1');
-            });
-
-            // Start second request immediately
             await act(async () => {
-                await result.current.getRecommendations('recommender-2');
+                void result.current.getRecommendations('first');
+                await result.current.getRecommendations('second');
             });
 
-            // Only second request should complete
-            await waitFor(() => {
-                expect(result.current.recommendations.recommenderName).toBe('recommender-2');
+            expect(signals).toHaveLength(2);
+            expect(signals[0]?.aborted).toBe(true);
+            expect(signals[1]?.aborted).toBe(false);
+        });
+
+        it('aborts the in-flight request on unmount', () => {
+            let signal: AbortSignal | undefined;
+            mockFetch.mockImplementation((_url, init?: RequestInit) => {
+                return new Promise<Response>((_resolve, reject) => {
+                    signal = init?.signal ?? undefined;
+                    init?.signal?.addEventListener('abort', () => {
+                        reject(new DOMException('aborted', 'AbortError'));
+                    });
+                });
             });
+
+            const { result, unmount } = renderHook(() => useRecommenders(true));
+            act(() => {
+                void result.current.getRecommendations('home');
+            });
+            unmount();
+            expect(signal?.aborted).toBe(true);
+        });
+
+        it('sets error on non-OK responses', async () => {
+            mockFetch.mockResolvedValueOnce(buildResponse({} as Recommendation, false));
+            const { result } = renderHook(() => useRecommenders(true));
+            await act(async () => {
+                await result.current.getRecommendations('home');
+            });
+            await waitFor(() => {
+                expect(result.current.error).toBeTruthy();
+                expect(result.current.isLoading).toBe(false);
+            });
+        });
+
+        it('sets error on fetch rejection', async () => {
+            mockFetch.mockRejectedValueOnce(new Error('Network error'));
+            const { result } = renderHook(() => useRecommenders(true));
+            await act(async () => {
+                await result.current.getRecommendations('home');
+            });
+            await waitFor(() => {
+                expect(result.current.error).toBeTruthy();
+                expect(result.current.isLoading).toBe(false);
+            });
+        });
+
+        it('does NOT set error on AbortError', async () => {
+            mockFetch.mockRejectedValueOnce(new DOMException('aborted', 'AbortError'));
+            const { result } = renderHook(() => useRecommenders(true));
+            await act(async () => {
+                await result.current.getRecommendations('home');
+            });
+            expect(result.current.error).toBeNull();
         });
     });
 
     describe('getZoneRecommendations', () => {
-        it('should fetch zone recommendations', async () => {
+        it('sends type=zone as a query param', async () => {
             const { result } = renderHook(() => useRecommenders(true));
-
             await act(async () => {
-                await result.current.getZoneRecommendations('test-zone');
+                await result.current.getZoneRecommendations('home-zone');
             });
 
-            // Now passes user parameters (cookieId) even when args is undefined
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', undefined, {
-                cookieId: 'test-usid-123',
-            });
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-                expect(result.current.recommendations).toHaveProperty('recs');
-            });
+            const [url] = mockFetch.mock.calls[0] as [string];
+            const parsed = new URL(url, 'http://localhost');
+            expect(parsed.searchParams.get('recommenderName')).toBe('home-zone');
+            expect(parsed.searchParams.get('type')).toBe('zone');
         });
 
-        it('should pass products and args to adapter', async () => {
-            const { result } = renderHook(() => useRecommenders(true));
-
-            const products: Product[] = [{ id: 'prod-1', price: 50 }];
-            const args = { limit: 10 };
-
-            await act(async () => {
-                await result.current.getZoneRecommendations('test-zone', products, args);
-            });
-
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getZoneRecommendations).toHaveBeenCalledWith('test-zone', products, {
-                ...args,
-                cookieId: 'test-usid-123',
-            });
-        });
-
-        it('should not fetch when disabled', async () => {
+        it('does not call fetch when disabled', async () => {
             const { result } = renderHook(() => useRecommenders(false));
-
             await act(async () => {
-                await result.current.getZoneRecommendations('test-zone');
+                await result.current.getZoneRecommendations('home-zone');
             });
-
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            expect(mockAdapter.getZoneRecommendations).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('cleanup', () => {
-        it('should abort pending requests on unmount', async () => {
-            const { result, unmount } = renderHook(() => useRecommenders(true));
-
-            // Start a request
-            act(() => {
-                void result.current.getRecommendations('test-recommender');
-            });
-
-            // Unmount before request completes
-            unmount();
-
-            // Wait a bit to ensure cleanup happened
-            await new Promise((resolve) => setTimeout(resolve, 100));
-
-            // No errors should occur from the aborted request
-            expect(result.current.isLoading).toBe(true); // State snapshot before unmount
-        });
-    });
-
-    describe('product enrichment', () => {
-        it('should filter out unavailable products', async () => {
-            // Mock Einstein returning 2 products
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockResolvedValue({
-                recoUUID: 'test-uuid',
-                recommenderName: 'test-recommender',
-                recs: [
-                    { id: 'product-1', productId: 'product-1', image_url: 'img1.jpg', product_name: 'Product 1' },
-                    { id: 'product-2', productId: 'product-2', image_url: 'img2.jpg', product_name: 'Product 2' },
-                ],
-            });
-
-            // But fetch only returns product-1 from SCAPI (product-2 will be filtered out)
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        data: { data: [{ id: 'product-1', name: 'Test Product 1', price: 99.99 }] },
-                    }),
-            } as Response);
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-                // Should only have product-1 since product-2 wasn't found in SCAPI response
-                expect(result.current.recommendations.recs).toHaveLength(1);
-                expect(result.current.recommendations.recs?.[0]?.id).toBe('product-1');
-            });
-        });
-
-        it('should merge product details with recommendations', async () => {
-            // Mock Einstein returning product with Einstein metadata
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockResolvedValue({
-                recoUUID: 'test-uuid',
-                recommenderName: 'test-recommender',
-                recs: [
-                    {
-                        id: 'product-1',
-                        productId: 'product-1',
-                        image_url: 'einstein-img.jpg',
-                        product_name: 'Einstein Product Name',
-                    },
-                ],
-            });
-
-            // Mock SCAPI product details
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        data: {
-                            data: [
-                                {
-                                    id: 'product-1',
-                                    name: 'SCAPI Product Name',
-                                    price: 99.99,
-                                    currency: 'USD',
-                                },
-                            ],
-                        },
-                    }),
-            } as Response);
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-                const recs = result.current.recommendations.recs;
-                expect(recs).toBeDefined();
-                expect(recs).toHaveLength(1);
-                const firstRec = recs?.[0];
-                expect(firstRec).toBeDefined();
-                // Should have Einstein data preserved
-                expect(firstRec?.image_url).toBe('einstein-img.jpg');
-                expect(firstRec?.product_name).toBe('Einstein Product Name');
-                // Should have SCAPI data merged
-                expect(firstRec?.id).toBe('product-1');
-                expect(firstRec?.productId).toBe('product-1');
-            });
-        });
-    });
-
-    describe('Silent Error Handling', () => {
-        beforeEach(() => {
-            vi.clearAllMocks();
-        });
-
-        it('should set error state when getRecommendations fails', async () => {
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockRejectedValue(new Error('API Error'));
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            await waitFor(() => {
-                expect(result.current.error).toBeTruthy();
-                expect(result.current.isLoading).toBe(false);
-            });
-        });
-
-        it('should set error state when getZoneRecommendations fails', async () => {
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getZoneRecommendations).mockRejectedValue(new Error('API Error'));
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getZoneRecommendations('test-zone');
-            });
-
-            await waitFor(() => {
-                expect(result.current.error).toBeTruthy();
-                expect(result.current.isLoading).toBe(false);
-            });
-        });
-
-        it('should handle network errors in product fetch gracefully', async () => {
-            // Mock Einstein returning recommendations
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockResolvedValue({
-                recs: [{ id: 'product-1', productId: 'product-1', image_url: 'img.jpg', product_name: 'Product 1' }],
-            });
-
-            // But product fetch fails
-            mockFetch.mockRejectedValue(new Error('Network error'));
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            // Product fetch errors are handled gracefully - recommendations are returned unenriched
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-                // When fetch fails, original recommendations are returned (not enriched with SCAPI data)
-                expect(result.current.recommendations.recs).toHaveLength(1);
-                expect(result.current.recommendations.recs?.[0]?.id).toBe('product-1');
-                // Einstein metadata should still be present
-                expect(result.current.recommendations.recs?.[0]?.image_url).toBe('img.jpg');
-            });
-        });
-
-        it('should handle non-OK response in product fetch', async () => {
-            mockFetch.mockResolvedValue({
-                ok: false,
-                status: 500,
-            } as Response);
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            // Should complete without crashing
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-            });
-        });
-
-        it('should recover from errors on subsequent calls', async () => {
-            // First call fails
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockRejectedValueOnce(new Error('First error'));
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            await waitFor(() => {
-                expect(result.current.error).toBeTruthy();
-            });
-
-            // Second call succeeds
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockResolvedValueOnce({
-                recs: [{ id: 'product-1', productId: 'product-1' }],
-            });
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            await waitFor(() => {
-                expect(result.current.error).toBeNull();
-                expect(result.current.recommendations).toBeTruthy();
-            });
-        });
-
-        it('should handle malformed response data', async () => {
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            vi.mocked(mockAdapter.getRecommendations).mockResolvedValue({
-                recs: null as any, // Malformed data
-            });
-
-            const { result } = renderHook(() => useRecommenders(true));
-
-            await act(async () => {
-                await result.current.getRecommendations('test-recommender');
-            });
-
-            // Should not crash
-            await waitFor(() => {
-                expect(result.current.isLoading).toBe(false);
-            });
+            expect(mockFetch).not.toHaveBeenCalled();
         });
     });
 });

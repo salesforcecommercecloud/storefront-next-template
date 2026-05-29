@@ -84,7 +84,7 @@ describe('action.update-tracking-consent', () => {
         it('should successfully update tracking consent to Accepted', async () => {
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
-            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
+            const response = await action(createActionArgs(TrackingConsent.Accepted));
 
             expect(mockIsTrackingConsentEnabled).toHaveBeenCalledWith(mockContextProvider);
             expect(mockGetAuth).toHaveBeenCalledWith(mockContextProvider);
@@ -110,7 +110,7 @@ describe('action.update-tracking-consent', () => {
             mockGetAuth.mockReturnValue({ userType: 'registered', refreshToken: 'test-refresh-token' } as never);
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
-            const response = (await action(createActionArgs(TrackingConsent.Declined))) as Response;
+            const response = await action(createActionArgs(TrackingConsent.Declined));
 
             expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, 'test-refresh-token', {
                 trackingConsent: TrackingConsent.Declined,
@@ -133,7 +133,7 @@ describe('action.update-tracking-consent', () => {
         it('should return structured error when tracking consent feature is disabled', async () => {
             mockIsTrackingConsentEnabled.mockReturnValue(false);
 
-            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
+            const response = await action(createActionArgs(TrackingConsent.Accepted));
 
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(400);
@@ -146,7 +146,7 @@ describe('action.update-tracking-consent', () => {
         });
 
         it('should return structured error when trackingConsent value is invalid', async () => {
-            const response = (await action(createActionArgs('invalid-value'))) as Response;
+            const response = await action(createActionArgs('invalid-value'));
 
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(400);
@@ -161,7 +161,7 @@ describe('action.update-tracking-consent', () => {
         it('should update tracking consent without refresh when no refresh token', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' } as never); // No refreshToken
 
-            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
+            const response = await action(createActionArgs(TrackingConsent.Accepted));
 
             expect(mockRefreshAccessToken).not.toHaveBeenCalled();
             expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
@@ -192,7 +192,7 @@ describe('action.update-tracking-consent', () => {
             const mockError = new Error('Token refresh failed');
             mockRefreshAccessToken.mockRejectedValue(mockError);
 
-            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
+            const response = await action(createActionArgs(TrackingConsent.Accepted));
 
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(200);

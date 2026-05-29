@@ -33,18 +33,18 @@ exports[`CheckoutErrorBoundary stories snapshot > ComponentError story renders a
       />
     </svg>
     <div
-      class="col-start-2 line-clamp-1 min-h-4 tracking-tight text-xl font-bold"
+      class="col-start-2 line-clamp-1 min-h-4 tracking-tight text-2xl font-bold"
       data-slot="alert-title"
     >
       Component temporarily unavailable
     </div>
     <div
-      class="text-muted-foreground col-start-2 grid justify-items-start gap-1 [&_p]:leading-relaxed text-xl font-bold"
+      class="text-muted-foreground col-start-2 grid justify-items-start gap-1 [&_p]:leading-relaxed text-2xl font-bold"
       data-slot="alert-description"
     >
       This section couldn't load properly. You can continue with checkout or try refreshing the page.
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 ml-2 h-auto p-0 font-bold"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 ml-2 h-auto p-0 font-bold"
         data-size="sm"
         data-slot="button"
         data-variant="link"
@@ -89,13 +89,13 @@ exports[`CheckoutErrorBoundary stories snapshot > ComponentErrorWithoutRetry sto
       />
     </svg>
     <div
-      class="col-start-2 line-clamp-1 min-h-4 tracking-tight text-xl font-bold"
+      class="col-start-2 line-clamp-1 min-h-4 tracking-tight text-2xl font-bold"
       data-slot="alert-title"
     >
       Component temporarily unavailable
     </div>
     <div
-      class="text-muted-foreground col-start-2 grid justify-items-start gap-1 [&_p]:leading-relaxed text-xl font-bold"
+      class="text-muted-foreground col-start-2 grid justify-items-start gap-1 [&_p]:leading-relaxed text-2xl font-bold"
       data-slot="alert-description"
     >
       This section couldn't load properly. You can continue with checkout or try refreshing the page.
@@ -140,7 +140,7 @@ exports[`CheckoutErrorBoundary stories snapshot > Default story renders and matc
         />
       </svg>
       <h2
-        class="tracking-tight text-left mb-2 text-xl font-bold text-destructive"
+        class="tracking-tight text-left mb-2 text-2xl font-bold text-destructive"
       >
         Checkout Temporarily Unavailable
       </h2>
@@ -153,7 +153,7 @@ exports[`CheckoutErrorBoundary stories snapshot > Default story renders and matc
         class="flex gap-3"
       >
         <button
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -187,7 +187,7 @@ exports[`CheckoutErrorBoundary stories snapshot > Default story renders and matc
           Try Again
         </button>
         <button
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3"
           data-size="default"
           data-slot="button"
           data-variant="outline"
@@ -208,7 +208,7 @@ exports[`CheckoutErrorBoundary stories snapshot > NoError story renders and matc
     class="p-4 border rounded"
   >
     <h2
-      class="text-lg font-semibold"
+      class="text-sm font-semibold"
     >
       Checkout Form
     </h2>
@@ -229,7 +229,7 @@ exports[`CheckoutErrorBoundary stories snapshot > WithCustomFallback story rende
     class="p-4 border border-destructive rounded"
   >
     <h2
-      class="text-xl font-bold text-destructive"
+      class="text-2xl font-bold text-destructive"
     >
       Custom Error Message
     </h2>

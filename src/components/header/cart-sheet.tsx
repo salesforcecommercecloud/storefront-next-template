@@ -17,34 +17,44 @@ import {
     type PropsWithChildren,
     type ReactElement,
     useEffect,
+    useLayoutEffect,
     useMemo,
     useCallback,
     useRef,
     useState,
     memo,
 } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
+import { useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import MiniCartItem from '@/components/cart/mini-cart-item';
 import SelectBonusProductsCard from '@/components/cart/select-bonus-products-card';
 import { formatCurrency } from '@/lib/currency';
-import { useBasketWithProducts, type BasketItemWithProduct } from '@/hooks/use-basket-with-products';
-import { useBasketWithPromotions } from '@/hooks/use-basket-with-promotions';
-import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/bonus-product-utils';
+import { useMiniCartData, type BasketItemWithProduct } from '@/hooks/use-mini-cart-data';
+import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/cart/bonus-product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';
+import type { action as cartItemRemoveAction } from '@/routes/action.cart-item-remove';
 import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
+import { routes } from '@/route-paths';
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -66,7 +76,7 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup?: boolean;
 }) {
-    const fetcher = useFetcher<BasketActionResponse>();
+    const fetcher = useFetcher<typeof cartItemRemoveAction>();
     const { addToast } = useToast();
     const { t } = useTranslation('removeItem');
     const updateBasket = useBasketUpdater();
@@ -126,19 +136,18 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
 const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => void }): ReactElement {
     const { t, i18n } = useTranslation('header');
     const { t: tMiniCart } = useTranslation('miniCart');
-    const basket = useBasket();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const navigate = useNavigate();
     const { currency } = useSite();
     const titleId = 'mini-cart-title';
     const [pendingRemoveItemIds, setPendingRemoveItemIds] = useState<Set<string>>(new Set());
     const [optimisticallyRemovedItemIds, setOptimisticallyRemovedItemIds] = useState<Set<string>>(new Set());
 
-    // Fetch full product details (images, variations, etc.) for basket items
-    const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
-
-    // Fetch promotion data for basket products
-    const { productsWithPromotions } = useBasketWithPromotions(basket);
+    // Fetch the basket together with full product details (images, variations, promotions) for its items.
+    // Intentionally NOT reading basket from useBasket() (BasketContext) — the cart sheet needs basket and productsById
+    // from the SAME SCAPI call, which the consolidated /resource/basket-products loader provides in one round-trip.
+    // See use-mini-cart-data.ts header for the full rationale.
+    const { basket, productItems: enrichedProductItems, productsById, isLoading } = useMiniCartData();
 
     // Build bonus promotion map with remaining capacity
     const promotionMap = useMemo(() => {
@@ -153,15 +162,15 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
         if (!basket) {
             return new Map();
         }
-        return getAttachedBonusPromotions(basket, productsWithPromotions, promotionMap);
-    }, [basket, productsWithPromotions, promotionMap]);
+        return getAttachedBonusPromotions(basket, productsById, promotionMap);
+    }, [basket, productsById, promotionMap]);
 
     /**
      * Handle bonus product selection button click
      * Navigates to the full cart page
      */
     const handleSelectBonusProducts = useCallback(() => {
-        void navigate('/cart');
+        void navigate(routes.cart);
     }, [navigate]);
 
     const handleRemoveStart = useCallback((itemId: string) => {
@@ -211,7 +220,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
 
     return (
         <SheetContent
-            className="w-full sm:max-w-lg flex flex-col p-0"
+            className="mini-cart-flyout w-full sm:max-w-lg flex flex-col p-0"
             data-testid="mini-cart-flyout"
             onOpenAutoFocus={(event) => {
                 event.preventDefault();
@@ -220,12 +229,16 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     titleElement?.focus();
                 }
             }}>
+            <SheetClose className="ring-offset-background focus:ring-ring rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none absolute top-4 right-4">
+                <XIcon className="size-6" strokeWidth={1.5} />
+                <span className="sr-only">{tMiniCart('closeAriaLabel')}</span>
+            </SheetClose>
             {/* Header */}
             <SheetHeader className="px-6 pt-6 pb-4 space-y-0">
                 <SheetTitle
                     id={titleId}
                     tabIndex={-1}
-                    className="text-3xl font-bold leading-none tracking-[-0.75px] font-sans text-foreground focus:outline-none">
+                    className="text-3xl font-bold leading-10 tracking-[-0.75px] font-sans text-card-foreground focus:outline-none">
                     {t('cartTitle')}
                     {totalItems > 0 && ` (${totalItems})`}
                 </SheetTitle>
@@ -233,7 +246,11 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-                {basket && basket.productItems && basket.productItems.length > 0 ? (
+                {!basket && isLoading ? (
+                    <div className="flex items-center justify-center py-8 px-6">
+                        <p className="text-sm text-muted-foreground">{tMiniCart('loading')}</p>
+                    </div>
+                ) : basket && basket.productItems && basket.productItems.length > 0 ? (
                     <>
                         {/* Top Divider */}
                         <Separator className="bg-muted-foreground/10" />
@@ -290,7 +307,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     </>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center px-6">
-                        <p className="text-lg text-muted-foreground">{tMiniCart('emptyCart')}</p>
+                        <p className="text-sm text-muted-foreground">{tMiniCart('emptyCart')}</p>
                     </div>
                 )}
             </div>
@@ -301,10 +318,10 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     {isCartUpdating && <p className="text-xs text-muted-foreground">{tMiniCart('loading')}</p>}
                     <Button
                         asChild
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 text-primary-foreground font-sans rounded-none shadow-2xs"
                         size="lg">
                         <Link
-                            to="/checkout"
+                            to={routes.checkout}
                             aria-disabled={isCartUpdating}
                             className={isCartUpdating ? 'pointer-events-none opacity-60' : undefined}
                             onClick={(e) => {
@@ -335,9 +352,9 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-normal rounded-none"
+                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-semibold leading-5 text-foreground rounded-none"
                             size="lg">
-                            <Link to="/cart" onClick={onClose}>
+                            <Link to={routes.cart} onClick={onClose}>
                                 {tMiniCart('viewCart')}
                             </Link>
                         </Button>
@@ -379,6 +396,18 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
  */
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
     const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+    const { pathname } = useLocation();
+    const prevPathnameRef = useRef(pathname);
+
+    // Close the mini cart when the user navigates to a different page.
+    // useLayoutEffect fires synchronously before child useEffects, preventing
+    // CartSheetPanel's fetcher hooks from dispatching redundant requests.
+    useLayoutEffect(() => {
+        if (prevPathnameRef.current !== pathname) {
+            prevPathnameRef.current = pathname;
+            setMiniCartOpen(false);
+        }
+    }, [pathname, setMiniCartOpen]);
 
     return (
         <Sheet open={miniCartOpen} onOpenChange={setMiniCartOpen}>

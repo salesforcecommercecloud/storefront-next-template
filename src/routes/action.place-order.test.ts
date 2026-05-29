@@ -19,9 +19,10 @@ import { getBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { resourceRoutes } from '@/route-paths';
 import type { ActionFunctionArgs } from 'react-router';
 import {
-    savePaymentMethodToCustomer,
+    savePaymentMethodToCustomerViaOrder,
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
     updateCustomerContactInfo,
@@ -29,7 +30,7 @@ import {
 } from '@/lib/api/customer.server';
 import { getBasketCurrency, calculateBasket } from '@/lib/api/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 
 vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
@@ -56,7 +57,7 @@ vi.mock('@/extensions/multiship/lib/api/basket.server', () => ({
 vi.mock('@/lib/api-clients.server');
 vi.mock('@/lib/api/basket.server');
 vi.mock('@/lib/api/customer.server');
-vi.mock('@/lib/customer-profile-utils');
+vi.mock('@/lib/customer/profile-utils');
 vi.mock('@/lib/error-handler');
 vi.mock('@/lib/url.server', () => ({
     buildUrlFromContext: vi.fn((to: string) => to),
@@ -85,12 +86,12 @@ describe('action.place-order action', () => {
     test('returns noActiveBasket when basket is missing', async () => {
         vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
         const response = await action({
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -110,12 +111,12 @@ describe('action.place-order action', () => {
             },
         } as any);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
         const response = await action({
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
@@ -145,12 +146,12 @@ describe('action.place-order action', () => {
             },
         } as any);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
         const response = await action({
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -177,12 +178,12 @@ describe('action.place-order action', () => {
             },
         } as any);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
         const response = await action({
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
@@ -191,7 +192,7 @@ describe('action.place-order action', () => {
         expect(body.error).toEqual(expect.objectContaining({ message: 'Shipping address is required' }));
     });
 
-    test('calls savePaymentMethodToCustomer when savePaymentToProfile is true and customer is logged in', async () => {
+    test('calls savePaymentMethodToCustomerViaOrder when savePaymentToProfile is true and customer is logged in', async () => {
         const basketWithPayment = {
             basketId: 'b1',
             customerInfo: { email: 'test@example.com' },
@@ -239,9 +240,9 @@ describe('action.place-order action', () => {
                 }),
             },
         } as any);
-        vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+        vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
             shouldCreateAccount: 'false',
             savePaymentToProfile: 'true',
         });
@@ -249,14 +250,14 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(302);
-        expect(vi.mocked(savePaymentMethodToCustomer)).toHaveBeenCalledWith(
+        expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).toHaveBeenCalledWith(
             mockContext,
-            'cust-1',
+            'O-1',
             expect.objectContaining({
                 paymentMethodId: 'CREDIT_CARD',
                 paymentCard: expect.objectContaining({
@@ -332,12 +333,12 @@ describe('action.place-order action', () => {
                 }),
             },
         } as any);
-        vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+        vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
         vi.mocked(saveShippingAddressToCustomer).mockResolvedValue(true);
         vi.mocked(saveBillingAddressToCustomer).mockResolvedValue(true);
         vi.mocked(updateCustomerContactInfo).mockResolvedValue(true);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
             shouldCreateAccount: 'true',
             checkoutRegistrationIntent: 'true',
             savePaymentToProfile: 'false',
@@ -347,18 +348,17 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(302);
 
-        expect(vi.mocked(savePaymentMethodToCustomer)).toHaveBeenCalledWith(
+        expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).toHaveBeenCalledWith(
             mockContext,
-            'new-cust-1',
+            'O-2',
             expect.objectContaining({
                 paymentMethodId: 'CREDIT_CARD',
-                default: true,
                 paymentCard: expect.objectContaining({
                     cardType: 'Mastercard',
                     holder: 'Jane Doe',
@@ -442,12 +442,12 @@ describe('action.place-order action', () => {
             addresses: [],
             paymentInstruments: [],
         } as any);
-        vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+        vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
         vi.mocked(saveShippingAddressToCustomer).mockResolvedValue(true);
         vi.mocked(saveBillingAddressToCustomer).mockResolvedValue(true);
         vi.mocked(updateCustomerContactInfo).mockResolvedValue(true);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
             shouldCreateAccount: 'false',
             savePaymentToProfile: 'false',
         });
@@ -455,19 +455,18 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(302);
 
         // Payment SHOULD be saved (empty profile triggers isNewlyRegisteredWithEmptyProfile)
-        expect(vi.mocked(savePaymentMethodToCustomer)).toHaveBeenCalledWith(
+        expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).toHaveBeenCalledWith(
             mockContext,
-            'new-otp-cust',
+            'O-3',
             expect.objectContaining({
                 paymentMethodId: 'CREDIT_CARD',
-                default: true,
             })
         );
 
@@ -525,7 +524,7 @@ describe('action.place-order action', () => {
             paymentInstruments: [],
         } as any);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
             shouldCreateAccount: 'false',
             savePaymentToProfile: 'false',
         });
@@ -533,7 +532,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: '/action/place-order',
+            unstable_pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         // Should not save addresses or phone for an existing registered shopper
@@ -542,7 +541,7 @@ describe('action.place-order action', () => {
         expect(vi.mocked(updateCustomerContactInfo)).not.toHaveBeenCalled();
     });
 
-    test('does not call savePaymentMethodToCustomer when savePaymentToProfile is false', async () => {
+    test('does not call savePaymentMethodToCustomerViaOrder when savePaymentToProfile is false', async () => {
         const basketWithPayment = {
             basketId: 'b1',
             customerInfo: { email: 'test@example.com' },
@@ -575,15 +574,15 @@ describe('action.place-order action', () => {
                 }),
             },
         } as any);
-        vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+        vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
 
-        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
             shouldCreateAccount: 'false',
             savePaymentToProfile: 'false',
         });
         await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
 
-        expect(savePaymentMethodToCustomer).not.toHaveBeenCalled();
+        expect(savePaymentMethodToCustomerViaOrder).not.toHaveBeenCalled();
     });
 
     describe('retryProfileSave behavior', () => {
@@ -652,10 +651,10 @@ describe('action.place-order action', () => {
 
             const paymentResults = overrides?.savePaymentResult;
             if (Array.isArray(paymentResults)) {
-                const mock = vi.mocked(savePaymentMethodToCustomer);
+                const mock = vi.mocked(savePaymentMethodToCustomerViaOrder);
                 paymentResults.forEach((r) => mock.mockResolvedValueOnce(r));
             } else {
-                vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(paymentResults ?? true);
+                vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(paymentResults ?? true);
             }
 
             const phoneResults = overrides?.savePhoneResult;
@@ -672,7 +671,7 @@ describe('action.place-order action', () => {
                 saveShippingResult: [false, true],
             });
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -680,7 +679,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -692,7 +691,7 @@ describe('action.place-order action', () => {
                 savePhoneResult: [false, true],
             });
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -700,7 +699,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -712,7 +711,7 @@ describe('action.place-order action', () => {
                 savePaymentResult: [false, true],
             });
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -720,11 +719,11 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
-            expect(vi.mocked(savePaymentMethodToCustomer)).toHaveBeenCalledTimes(2);
+            expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).toHaveBeenCalledTimes(2);
         });
 
         test('completes order even when profile save fails after retry', async () => {
@@ -734,7 +733,7 @@ describe('action.place-order action', () => {
                 savePaymentResult: [false, false],
             });
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -742,7 +741,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             // Order still succeeds even when all profile saves fail
@@ -756,7 +755,7 @@ describe('action.place-order action', () => {
                 savePaymentResult: true,
             });
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -764,11 +763,11 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledTimes(1);
-            expect(vi.mocked(savePaymentMethodToCustomer)).toHaveBeenCalledTimes(1);
+            expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).toHaveBeenCalledTimes(1);
             expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledTimes(1);
         });
     });
@@ -824,7 +823,7 @@ describe('action.place-order action', () => {
                     }),
                 },
             } as any);
-            vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+            vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
             vi.mocked(saveShippingAddressToCustomer).mockResolvedValue(true);
             vi.mocked(updateCustomerContactInfo).mockResolvedValue(true);
         }
@@ -844,7 +843,7 @@ describe('action.place-order action', () => {
                 } as any,
             ]);
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -852,7 +851,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -874,7 +873,7 @@ describe('action.place-order action', () => {
                 } as any,
             ]);
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
             });
@@ -882,11 +881,11 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
-            expect(vi.mocked(savePaymentMethodToCustomer)).not.toHaveBeenCalled();
+            expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).not.toHaveBeenCalled();
         });
 
         test('skips phone save when profile phone matches contact phone', async () => {
@@ -897,7 +896,7 @@ describe('action.place-order action', () => {
                 paymentInstruments: [],
             } as any);
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
                 contactPhone: '+1 5559990000',
@@ -906,7 +905,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -975,7 +974,7 @@ describe('action.place-order action', () => {
             } as any);
 
             // shouldCreateAccount=true but checkoutRegistrationIntent is missing/false
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'false',
                 savePaymentToProfile: 'false',
@@ -984,12 +983,12 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
             // No registration saves should fire without the intent flag
-            expect(vi.mocked(savePaymentMethodToCustomer)).not.toHaveBeenCalled();
+            expect(vi.mocked(savePaymentMethodToCustomerViaOrder)).not.toHaveBeenCalled();
             expect(vi.mocked(saveShippingAddressToCustomer)).not.toHaveBeenCalled();
             expect(vi.mocked(saveBillingAddressToCustomer)).not.toHaveBeenCalled();
             expect(vi.mocked(updateCustomerContactInfo)).not.toHaveBeenCalled();
@@ -1053,11 +1052,11 @@ describe('action.place-order action', () => {
                     }),
                 },
             } as any);
-            vi.mocked(savePaymentMethodToCustomer).mockResolvedValue(true);
+            vi.mocked(savePaymentMethodToCustomerViaOrder).mockResolvedValue(true);
             vi.mocked(saveShippingAddressToCustomer).mockResolvedValue(true);
             vi.mocked(updateCustomerContactInfo).mockResolvedValue(true);
 
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
                 shouldCreateAccount: 'true',
                 checkoutRegistrationIntent: 'true',
                 contactPhone: '+1 8885551234',
@@ -1066,7 +1065,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: '/action/place-order',
+                unstable_pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             // Phone from formData should be used, not the billing address phone

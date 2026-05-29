@@ -28,6 +28,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createCookie: (name: string) => ({
         name,
         parse: () => null,
@@ -54,30 +55,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props;
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/hooks/use-promo-code-actions', () => ({
     usePromoCodeActions: () => ({
         removePromoCode: () => {},
@@ -89,6 +66,9 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: () => {},
     }),
+}));
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
+    useSite: () => ({ currency: 'USD' }),
 }));
 
 import { composeStories } from '@storybook/react-vite';

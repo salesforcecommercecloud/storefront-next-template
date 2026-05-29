@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ErrorCode, type ActionError } from '@/lib/error-codes';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { getErrorMessage } from '@/lib/utils';
 
 export type { ActionError } from '@/lib/error-codes';

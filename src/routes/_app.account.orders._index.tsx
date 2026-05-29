@@ -16,7 +16,9 @@
 
 import { type ReactElement, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Await, useLoaderData, type LoaderFunctionArgs, redirect } from 'react-router';
+import { Await, useLoaderData, redirect } from 'react-router';
+import { routes, routeHref } from '@/route-paths';
+import type { Route } from './+types/_app.account.orders._index';
 import { useNavigate } from '@/hooks/use-navigate';
 import { OrderListHeader, OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import {
@@ -41,7 +43,7 @@ type OrderListLoaderData = {
  * Loader fetches all customer orders via SCAPI getCustomerOrders endpoint.
  * Returns a deferred promise for streaming/suspense support.
  */
-export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
+export function loader({ context, request }: Route.LoaderArgs): OrderListLoaderData {
     const logger = getLogger(context);
     logger.debug('OrderList: loader starting');
 
@@ -87,11 +89,11 @@ function OrderListError(): ReactElement {
 export default function OrderListPage(): ReactElement {
     const { t } = useTranslation('account');
     const navigate = useNavigate();
-    const loaderData = useLoaderData<OrderListLoaderData>();
+    const loaderData = useLoaderData<typeof loader>();
 
     const handleViewDetails = (orderNo: string) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
-        navigate(`/account/orders/${orderNo}`);
+        navigate(routeHref(routes.accountOrderDetail, { orderNo }));
     };
 
     return (

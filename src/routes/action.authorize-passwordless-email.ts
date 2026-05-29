@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.authorize-passwordless-email';
+import { data } from 'react-router';
 import { authorizePasswordless } from '@/middlewares/auth.server';
-import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { createActionError } from '@/lib/action-error-helpers.server';
-import { ErrorCode } from '@/lib/error-codes';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
+import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
+import { redactEmailForLog } from '@/lib/turnstile/log-redact.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
-import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
+import { ApiError } from '@/scapi';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
-    error?: { code: string; message: string };
+    error?: ActionError;
     email?: string;
     requiresLogin?: boolean;
 };
@@ -38,11 +40,14 @@ export type AuthorizePasswordlessEmailResponse = {
  * Called when the shopper tabs or clicks out of the email field at checkout contact step.
  * Uses passwordless authorize with mode from config (email); does not register a customer.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<AuthorizePasswordlessEmailResponse>>> {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
@@ -54,9 +59,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const formData = await request.formData();
     const email = formData.get('email')?.toString()?.trim();
     const turnstileToken = formData.get('turnstileToken')?.toString();
+    // Caller-controlled: checkout sets 'true'; My Account reauth omits it.
+    const strictVerify = formData.get('strictVerify')?.toString() === 'true';
 
     if (!email) {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
@@ -65,7 +72,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         );
     }
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
 
     const allowed = await enforceTurnstile({
         request,
@@ -76,7 +83,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         email,
     });
     if (!allowed) {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
@@ -88,45 +95,94 @@ export async function action({ request, context }: ActionFunctionArgs) {
         );
     }
 
+    // The cc-tv cookie attests that this client cleared the Turnstile gate. We set it
+    // here, immediately after enforceTurnstile returned true, so every response path
+    // below carries it — success, 400, 404, 5xx, generic 500. The cookie's job is to
+    // record "Turnstile passed" so other Turnstile-protected endpoints (e.g.
+    // /initiate-checkout-registration) can skip a fresh challenge within the 30-minute
+    // window. SCAPI's later verdict is about the email/account, not about whether the
+    // client is a bot — conditioning the cookie on SCAPI success would force a fresh
+    // challenge on legitimate shoppers for events (typed unrecognized email, transient
+    // SLAS blip) that have nothing to do with bot detection.
+    const tvCookie = createCookie<string>(
+        COOKIE_TURNSTILE_VERIFIED,
+        getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+        context
+    );
+    const setCookieHeader = await tvCookie.serialize('1');
+    const headers = { 'Set-Cookie': setCookieHeader };
+
+    // Passwordless login (via SLAS /passwordless/login) requires the email-verification
+    // site pref. When the pref is disabled, the storefront has nothing to gain from calling
+    // SLAS, so route directly to the standard login modal. Override via
+    // features.passwordlessLogin.skipWhenEmailVerificationDisabled=false.
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const skipWhenDisabled = appConfig.features.passwordlessLogin.skipWhenEmailVerificationDisabled ?? true;
+    if (skipWhenDisabled && !emailVerificationEnabled) {
+        logger.info('AuthorizePasswordlessEmail: email verification disabled, skipping SLAS', {
+            email: redactEmailForLog(email),
+        });
+        return data({ success: false, requiresLogin: true, email }, { headers });
+    }
+
     try {
-        await authorizePasswordless(context, { userid: email });
+        await authorizePasswordless(context, { userid: email, strictVerify });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
 
-        const tvCookie = createCookie<string>(
-            COOKIE_TURNSTILE_VERIFIED,
-            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
-            context
-        );
-        const setCookieHeader = await tvCookie.serialize('1');
-
-        return Response.json({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
+        return data({ success: true, email }, { headers });
     } catch (error) {
-        if (error instanceof ApiError && error.status === 400) {
-            const errorMessage = extractErrorMessage(error);
-            if (/email not verified/i.test(errorMessage)) {
-                logger.info('AuthorizePasswordlessEmail: email not verified, requires standard login', { email });
-                return Response.json({ success: false, requiresLogin: true, email });
+        // SLAS response routing:
+        //   400 "email not verified" -> re-issue without strict_verify so SLAS dispatches the OTP;
+        //                               /passwordless/token will then verify and sign in atomically.
+        //                               Per SLAS contract, this status is only returned when the
+        //                               email verification site pref is enabled.
+        //   400 (other) | 5xx        -> standard login modal
+        //   403 | 404                -> continue as guest
+        //   other                    -> generic error
+        if (error instanceof ApiError) {
+            if (error.status === 400 && /email not verified/i.test(extractErrorMessage(error))) {
+                try {
+                    await authorizePasswordless(context, { userid: email, strictVerify: false });
+                    logger.info('AuthorizePasswordlessEmail: OTP sent (verify-email recovery)');
+                    return data({ success: true, email }, { headers });
+                } catch (recoveryError) {
+                    const recoveryMessage = recoveryError instanceof Error ? recoveryError.message : 'unknown error';
+                    const recoveryStatus = recoveryError instanceof ApiError ? recoveryError.status : undefined;
+                    logger.error('AuthorizePasswordlessEmail: verify-email recovery dispatch failed', {
+                        email: redactEmailForLog(email),
+                        recoveryStatus,
+                        recoveryMessage,
+                    });
+                    return data({ success: false, requiresLogin: true, email }, { headers });
+                }
             }
 
-            logger.error('AuthorizePasswordlessEmail: bad request', { email, error: errorMessage });
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
-                },
-                { status: 400 }
-            );
+            if (error.status === 400 || error.status >= 500) {
+                logger.warn('AuthorizePasswordlessEmail: SLAS rejected, falling back to standard login', {
+                    email: redactEmailForLog(email),
+                    status: error.status,
+                });
+                return data({ success: false, requiresLogin: true, email }, { headers });
+            }
+
+            if (error.status === 403 || error.status === 404) {
+                logger.debug('AuthorizePasswordlessEmail: SLAS will not authorize, proceed as guest', {
+                    email: redactEmailForLog(email),
+                    status: error.status,
+                });
+                return data({ success: false, email }, { headers });
+            }
         }
 
         logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
             },
-            { status: 500 }
+            { status: 500, headers }
         );
     }
 }

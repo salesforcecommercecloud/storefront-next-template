@@ -43,33 +43,31 @@ vi.mock('react-router', async (importOriginal) => {
     return {
         ...actual,
         useFetcher: () => currentFetcher,
+        useLocation: () => ({ pathname: '/' }),
     };
 });
 
 vi.mock('@/providers/basket', () => ({
-    useBasket: () => ({
-        basketId: 'basket-1',
-        productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
-        orderTotal: 12.5,
-        productTotal: 12.5,
-    }),
     useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => mockUpdateBasket,
 }));
 
-vi.mock('@/hooks/use-basket-with-products', () => ({
-    useBasketWithProducts: () => ({
+vi.mock('@/hooks/use-mini-cart-data', () => ({
+    useMiniCartData: () => ({
+        basket: {
+            basketId: 'basket-1',
+            productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
+            orderTotal: 12.5,
+            productTotal: 12.5,
+        },
         productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
+        productsById: {},
         isLoading: false,
         error: null,
     }),
 }));
 
-vi.mock('@/hooks/use-basket-with-promotions', () => ({
-    useBasketWithPromotions: () => ({ productsWithPromotions: {} }),
-}));
-
-vi.mock('@/lib/bonus-product-utils', () => ({
+vi.mock('@/lib/cart/bonus-product-utils', () => ({
     buildBonusPromotionMap: () => new Map(),
     getAttachedBonusPromotions: () => new Map(),
 }));
@@ -115,6 +113,9 @@ vi.mock('@/components/ui/sheet', () => ({
     SheetHeader: ({ children }: PropsWithChildren) => <div>{children}</div>,
     SheetTitle: ({ children }: PropsWithChildren) => <h2>{children}</h2>,
     SheetFooter: ({ children }: PropsWithChildren) => <div>{children}</div>,
+    SheetClose: ({ children, ...props }: PropsWithChildren<Record<string, unknown>>) => (
+        <button {...props}>{children}</button>
+    ),
 }));
 
 vi.mock('@/components/ui/button', () => ({

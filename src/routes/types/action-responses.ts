@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { ActionError } from '@/lib/error-codes';
 
 // Generic response types for actions

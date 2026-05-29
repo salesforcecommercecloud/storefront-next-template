@@ -26,6 +26,7 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import type { ShopperCustomers } from '@/scapi';
 
 // components
 import { Button } from '@/components/ui/button';
@@ -38,10 +39,10 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 
 //lib
 import { FETCHER_STATES } from '@/lib/fetcher-states';
-import { generateAddressId } from '@/lib/address-id-utils';
+import { generateAddressId } from '@/lib/address/address-id-utils';
 
 //types
-import { createCustomerAddressFormSchema, type CustomerAddressFormData } from './index';
+import { createCustomerAddressFormSchema, type CustomerAddressFormData, type CustomerAddressFormInput } from './index';
 import { type CustomerAddressFormProps } from './types';
 
 /**
@@ -95,8 +96,7 @@ export const CustomerAddressForm = ({
     const { t } = useTranslation('account');
     const schema = useMemo(() => createCustomerAddressFormSchema(t), [t]);
 
-    const form = useForm<CustomerAddressFormData>({
-        // @ts-expect-error - zodResolver type mismatch with zod version
+    const form = useForm<CustomerAddressFormInput, unknown, CustomerAddressFormData>({
         resolver: zodResolver(schema),
         defaultValues: {
             firstName: initialData?.firstName || '',
@@ -191,7 +191,7 @@ export const CustomerAddressForm = ({
 
         // Prepare address data in the format expected by Commerce SDK
         // Only include optional fields if they have values to prevent "undefined" string serialization
-        const addressData: Record<string, string | boolean> = {
+        const addressData: ShopperCustomers.schemas['CustomerAddress'] = {
             addressId,
             firstName: data.firstName,
             lastName: data.lastName,
@@ -214,9 +214,10 @@ export const CustomerAddressForm = ({
             addressData.stateCode = data.stateCode;
         }
 
-        // Submit the update request - response will be handled by parent component's fetcher effect
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        void updateFetcher.submit(addressData as any);
+        // Plain-object payloads are submitted as JSON by useScapiFetcher's auto-detect,
+        // so typed values (e.g., `preferred` as boolean) survive the round-trip without
+        // server-side per-field coercion. Response is handled by the parent's fetcher effect.
+        void updateFetcher.submit(addressData);
     });
 
     /**

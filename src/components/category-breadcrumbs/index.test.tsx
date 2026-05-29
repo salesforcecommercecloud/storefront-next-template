@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import CategoryBreadcrumbs from './index';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const createTestWrapper = (component: React.ReactElement) => {
     const router = createMemoryRouter(

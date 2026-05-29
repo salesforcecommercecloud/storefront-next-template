@@ -20,11 +20,19 @@
  * and never expose internal routing URLs (AWS Lambda, CDN origins, etc.).
  */
 
+import { resolveRequestOrigin } from '@/lib/origin';
+
 /**
  * Get the public origin (scheme + host) from a request, respecting proxy headers.
  *
  * In serverless/proxied environments (AWS Lambda, Managed Runtime, CDN), the request.url
  * contains internal routing URLs. The actual public URL is available through forwarding headers.
+ *
+ * Delegates to `resolveRequestOrigin` so the auth and schema-URL paths share one parser
+ * — same comma-split, leading-empty handling, and exact-match localhost detection.
+ * Falls back to `request.url.origin` (which may be an internal URL on serverless) when
+ * no headers are available, preserving JSON-LD's prior behavior of always returning a
+ * non-null string.
  *
  * @param request - The incoming HTTP request
  * @returns The public origin (e.g., "https://example.com"), or falls back to request.url origin
@@ -37,24 +45,9 @@
  * ```
  */
 export function getPublicOrigin(request: Request): string {
-    // Check forwarding headers first (most common in proxied environments)
-    const forwardedHost = request.headers.get('x-forwarded-host');
-    const forwardedProto = request.headers.get('x-forwarded-proto');
+    const resolved = resolveRequestOrigin(request);
+    if (resolved) return resolved;
 
-    if (forwardedHost) {
-        const protocol = forwardedProto || 'https';
-        return `${protocol}://${forwardedHost}`;
-    }
-
-    // Fallback to Host header
-    const host = request.headers.get('host');
-    if (host) {
-        // Determine protocol from x-forwarded-proto or assume https
-        const protocol = forwardedProto || 'https';
-        return `${protocol}://${host}`;
-    }
-
-    // Last resort: use request.url origin (may be internal URL in serverless environments)
     try {
         return new URL(request.url).origin;
     } catch {

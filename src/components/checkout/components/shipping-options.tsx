@@ -16,9 +16,8 @@
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Typography } from '@/components/typography';
 import type { CheckoutActionData } from '../types';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
@@ -61,7 +60,7 @@ export default function ShippingOptions({
     } = useShippingOptions({ onSubmit, isLoading, actionData, shippingMethods, isEditing });
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
     );
 
     return (
@@ -76,74 +75,61 @@ export default function ShippingOptions({
             showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
-                <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                    <div className="flex flex-col gap-4">
-                        {availableShippingMethods.length > 0 ? (
-                            <RadioGroup
-                                name="shippingMethodId"
-                                defaultValue={selectedMethod?.id || defaultShippingMethodId || ''}
-                                required
-                                aria-label={t('shippingOptions.title')}
-                                className="flex flex-col gap-4">
-                                {availableShippingMethods.map((method) => (
-                                    <label
-                                        key={method.id}
-                                        htmlFor={method.id}
-                                        className="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground">
-                                        <div className="flex items-center gap-2">
-                                            <RadioGroupItem
-                                                value={method.id}
-                                                id={method.id}
-                                                className="shrink-0"
-                                                autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
-                                            />
-                                            <span className="flex-1 text-sm font-medium leading-none">
-                                                {method.description || method.name}
+                <form method="post" className="flex flex-col gap-4 pt-2 pb-2" onSubmit={handleSubmit}>
+                    <RadioGroup
+                        name="shippingMethodId"
+                        defaultValue={selectedMethod?.id || defaultShippingMethodId || ''}
+                        required
+                        aria-label={t('shippingOptions.title')}
+                        className="flex flex-col gap-4">
+                        {availableShippingMethods.map((method) => (
+                            <label
+                                key={method.id}
+                                htmlFor={method.id}
+                                className="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground">
+                                <div className="flex items-center gap-2">
+                                    <RadioGroupItem
+                                        value={method.id}
+                                        id={method.id}
+                                        className="shrink-0"
+                                        autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
+                                    />
+                                    <span className="flex-1 text-sm font-medium leading-none">
+                                        {method.description || method.name}
+                                    </span>
+                                    <span className="flex shrink-0 items-center gap-1.5">
+                                        {method.shippingPromotions?.length && method.price > 0 ? (
+                                            <>
+                                                <span className="text-sm text-muted-foreground line-through">
+                                                    {formatCurrency(method.price, i18n.language, currency)}
+                                                </span>
+                                                <span className="text-sm font-semibold leading-none">
+                                                    {getDiscountedPrice(method.price) === 0
+                                                        ? t('shippingOptions.free')
+                                                        : formatCurrency(
+                                                              getDiscountedPrice(method.price),
+                                                              i18n.language,
+                                                              currency
+                                                          )}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span className="text-sm font-semibold leading-none">
+                                                {method.price === 0
+                                                    ? t('shippingOptions.free')
+                                                    : formatCurrency(method.price, i18n.language, currency)}
                                             </span>
-                                            <span className="flex shrink-0 items-center gap-1.5">
-                                                {method.shippingPromotions?.length && method.price > 0 ? (
-                                                    <>
-                                                        <span className="text-sm text-muted-foreground line-through">
-                                                            {formatCurrency(method.price, i18n.language, currency)}
-                                                        </span>
-                                                        <span className="text-sm font-semibold leading-none">
-                                                            {getDiscountedPrice(method.price) === 0
-                                                                ? t('shippingOptions.free')
-                                                                : formatCurrency(
-                                                                      getDiscountedPrice(method.price),
-                                                                      i18n.language,
-                                                                      currency
-                                                                  )}
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    <span className="text-sm font-semibold leading-none">
-                                                        {method.price === 0
-                                                            ? t('shippingOptions.free')
-                                                            : formatCurrency(method.price, i18n.language, currency)}
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        <span className="pl-6 text-sm text-foreground">{method.name}</span>
-                                    </label>
-                                ))}
-                            </RadioGroup>
-                        ) : (
-                            <div className="flex justify-center rounded-none border-2 border-dashed border-muted p-8">
-                                <div className="space-y-2 text-center">
-                                    <Typography variant="p" className="text-muted-foreground">
-                                        {t('shippingOptions.noMethodsAvailable')}
-                                    </Typography>
-                                    <Typography variant="small" className="text-muted-foreground">
-                                        {t('shippingOptions.noMethodsAvailableHelp')}
-                                    </Typography>
+                                        )}
+                                    </span>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                                <span className="pl-6 text-sm text-foreground">{method.name}</span>
+                            </label>
+                        ))}
+                    </RadioGroup>
 
-                    <div className="w-full pt-2">
+                    <div
+                        data-checkout-mobile-bar
+                        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
                         <Button
                             type="submit"
                             disabled={isLoading || availableShippingMethods.length === 0}

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
+import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
 import type { Config } from '@/types/config';
 import { generateCategorySchema } from './category-schema';
 
@@ -40,7 +39,7 @@ describe('generateCategorySchema', () => {
     } as ShopperSearch.schemas['ProductSearchResult'];
 
     const validPageUrl = 'https://example.com/category/test-category-123';
-    const defaultCurrency = 'USD';
+    const defaultCurrency = mockAltSiteObject.defaultCurrency;
 
     it('should generate a valid CollectionPage schema with required fields', () => {
         const schema = generateCategorySchema({
@@ -138,14 +137,14 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     image: { link: 'https://example.com/image1.jpg' },
                 },
                 {
                     productId: 'product-2',
                     productName: 'Product 2',
                     price: 39.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 2,
@@ -178,7 +177,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.url).toBe('https://example.com/product/product-1');
         expect(items[0].item.image).toBe('https://example.com/image1.jpg');
         expect(items[0].item.offers?.price).toBe('29.99');
-        expect(items[0].item.offers?.priceCurrency).toBe('USD');
+        expect(items[0].item.offers?.priceCurrency).toBe(mockAltSiteObject.defaultCurrency);
     });
 
     it('should cap schema items at 24 products', () => {
@@ -186,7 +185,7 @@ describe('generateCategorySchema', () => {
             productId: `product-${i}`,
             productName: `Product ${i}`,
             price: 10 + i,
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
         })) as ShopperSearch.schemas['ProductSearchHit'][];
 
         const searchResultWithManyProducts: ShopperSearch.schemas['ProductSearchResult'] = {
@@ -221,7 +220,7 @@ describe('generateCategorySchema', () => {
                 {
                     productName: 'Product Without ID',
                     price: 19.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 1,
@@ -254,7 +253,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 1,
@@ -285,7 +284,7 @@ describe('generateCategorySchema', () => {
                 {
                     productId: 'product-1',
                     productName: 'Product 1',
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 1,
@@ -317,7 +316,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     orderable: true,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
@@ -350,7 +349,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 1,
@@ -369,10 +368,10 @@ describe('generateCategorySchema', () => {
             searchResult: searchResultWithUnknownOrderable,
             pageUrl: validPageUrl,
             defaultCurrency,
-            config: createAppConfig({
-                ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
-            }),
+            config: {
+                ...mockBuildConfig.app,
+                search: { ...mockBuildConfig.app.search, products: { refine: { orderableOnly: true } } },
+            } as Config['app'],
         });
 
         const items = schema.mainEntity?.itemListElement || [];
@@ -386,7 +385,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 59.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     productPromotions: [{ promotionalPrice: 39.99 }],
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
@@ -419,7 +418,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     productPromotions: [{ promotionalPrice: 49.99 }],
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
@@ -453,7 +452,7 @@ describe('generateCategorySchema', () => {
                     productName: 'Product 1',
                     hitType: 'master',
                     price: 99.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     variants: [{ price: 89.99 }, { price: 79.99 }],
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
@@ -487,7 +486,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
             total: 1,
@@ -583,7 +582,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     image: { disBaseLink: 'https://example.com/dis-image1.jpg' },
                 },
             ] as ShopperSearch.schemas['ProductSearchHit'][],
@@ -616,7 +615,7 @@ describe('generateCategorySchema', () => {
                     productId: 'product-1',
                     productName: 'Product 1',
                     price: 29.99,
-                    currency: 'USD',
+                    currency: mockAltSiteObject.defaultCurrency,
                     image: {
                         link: 'https://example.com/image1.jpg',
                         disBaseLink: 'https://example.com/dis-image1.jpg',

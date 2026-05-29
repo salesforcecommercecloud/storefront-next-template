@@ -114,13 +114,13 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
         },
         ref
     ) => {
-        // Normalize imageUrl to handle both string and Image object
-        const imageData = typeof imageUrl === 'string' ? { url: imageUrl } : imageUrl;
-        const imageSrc = imageData?.url;
+        const imageObj = typeof imageUrl === 'string' ? { url: imageUrl } : imageUrl;
+        const imageSrc = imageObj?.url;
+        const focalPoint = imageObj?.focalPoint;
 
-        // Calculate focal point for object-position (defaults to center)
-        const focalX = imageData?.focal_point?.x ? `${imageData.focal_point.x}%` : '50%';
-        const focalY = imageData?.focal_point?.y ? `${imageData.focal_point.y}%` : '50%';
+        // Calculate focal point for object-position (defaults to center).
+        const focalX = focalPoint?.x != null ? `${focalPoint.x}%` : '50%';
+        const focalY = focalPoint?.y != null ? `${focalPoint.y}%` : '50%';
         const objectPosition = `${focalX} ${focalY}`;
 
         return (
@@ -158,19 +158,25 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
                                                     cardDescriptionClassName
                                                 )}>
                                                 {description && (
-                                                    <p className="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line">
+                                                    <p className="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line">
                                                         {description}
                                                     </p>
                                                 )}
                                                 {title && (
-                                                    <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4">
+                                                    <h3 className="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4">
                                                         {title}
                                                     </h3>
                                                 )}
                                             </div>
                                         )}
                                         {buttonText && buttonLink && (
-                                            <Button asChild variant="default" className={cn('w-fit', buttonClassName)}>
+                                            <Button
+                                                asChild
+                                                variant="default"
+                                                className={cn(
+                                                    'w-fit text-sm font-medium leading-5 text-primary-foreground',
+                                                    buttonClassName
+                                                )}>
                                                 <Link to={buttonLink}>{buttonText}</Link>
                                             </Button>
                                         )}

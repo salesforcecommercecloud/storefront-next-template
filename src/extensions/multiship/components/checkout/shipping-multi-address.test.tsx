@@ -20,23 +20,21 @@ import userEvent from '@testing-library/user-event';
 import ShippingMultiAddress from './shipping-multi-address';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
-import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
+import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@/scapi';
 
-const defaultMockSite = {
-    id: 'RefArch',
-    defaultLocale: 'en-US',
-    defaultCurrency: 'USD',
-    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-    supportedCurrencies: ['USD'],
-};
+const defaultMockSite = mockAltSiteObject;
 const defaultMockLocale =
     defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
     defaultMockSite.supportedLocales[0];
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <ConfigProvider config={mockConfig}>
-        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+        <SiteProvider
+            site={defaultMockSite}
+            locale={defaultMockLocale}
+            language={mockAltSiteObject.defaultLocale}
+            currency={mockAltSiteObject.defaultCurrency}>
             {children}
         </SiteProvider>
     </ConfigProvider>
@@ -90,7 +88,11 @@ describe('ShippingMultiAddress', () => {
         setProductItemAddresses = vi.fn();
 
         // Default mock: empty basket
-        useBasket.mockReturnValue({ basketId: 'test-basket', currency: 'USD', productItems: [] });
+        useBasket.mockReturnValue({
+            basketId: 'test-basket',
+            currency: mockAltSiteObject.defaultCurrency,
+            productItems: [],
+        });
         useCustomerProfile.mockReturnValue({
             addresses: [],
             paymentInstruments: [],
@@ -135,7 +137,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -191,7 +193,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -215,7 +217,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: propProductItems,
         });
 
@@ -246,7 +248,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: propProductItems,
         });
 
@@ -270,7 +272,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -295,7 +297,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -354,7 +356,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -423,7 +425,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -497,7 +499,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -527,7 +529,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -561,7 +563,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -611,7 +613,7 @@ describe('ShippingMultiAddress', () => {
     });
 
     describe('Add Address to Products', () => {
-        test('renders "Add New Address" button for each product item', () => {
+        test('renders a single "Add New Address" button in the header', () => {
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
                 {
                     itemId: 'item-1',
@@ -631,17 +633,17 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            const addAddressButton = screen.getAllByText('+ Add New Address');
-            expect(addAddressButton).toHaveLength(2);
+            // One "Add New Address" button in the header, not one per item
+            expect(screen.getByRole('button', { name: 'Add new address' })).toBeInTheDocument();
         });
 
-        test('opens AddressModal when "Add New Address" button is clicked', async () => {
+        test('opens AddressModal when "Add New Address" header button is clicked', async () => {
             const user = userEvent.setup();
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
                 {
@@ -662,14 +664,13 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            const addAddressButton = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButton[0]);
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // Dialog should be open
             expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
@@ -677,7 +678,7 @@ describe('ShippingMultiAddress', () => {
             expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
         });
 
-        test('assigns new address to the product item when saved', async () => {
+        test('new address appears in all item dropdowns after saving from header', async () => {
             const user = userEvent.setup();
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
                 {
@@ -698,7 +699,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -710,9 +711,8 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            // Open dialog
-            const addAddressButton = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButton[0]);
+            // Open dialog from header
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // Fill out the form
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Home');
@@ -724,92 +724,21 @@ describe('ShippingMultiAddress', () => {
             await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
             await user.type(screen.getByRole('textbox', { name: /phone/i }), '2065551234');
 
-            // Submit the form
-            const saveButton = screen.getByRole('button', { name: 'Save' });
-            await user.click(saveButton);
+            await user.click(screen.getByRole('button', { name: 'Save' }));
 
-            // Wait for dialog to close
             await waitFor(() => {
-                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+                expect(screen.queryByRole('heading', { name: 'Add New Address' })).not.toBeInTheDocument();
             });
 
-            // Check that the address is now selected for the item
-            const select = screen.getByTestId('delivery-address-select-item-1');
-            const options = within(select).getAllByRole('option');
-
-            // Should have the new address in the dropdown
-            const newAddressOption = options.find((opt) => opt.textContent?.includes('Jane Doe'));
-            expect(newAddressOption).toBeTruthy();
-        });
-
-        test('assigns new address to multiple unassigned items when one item is selected', async () => {
-            const user = userEvent.setup();
-            const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
-                {
-                    itemId: 'item-1',
-                    productId: 'product-1',
-                    productName: 'Product One',
-                    quantity: 1,
-                    price: 29.99,
-                },
-                {
-                    itemId: 'item-2',
-                    productId: 'product-2',
-                    productName: 'Product Two',
-                    quantity: 1,
-                    price: 39.99,
-                },
-            ];
-
-            useBasket.mockReturnValue({
-                basketId: 'test-basket',
-                currency: 'USD',
-                productItems: mockProductItems,
-            });
-
-            useCustomerProfile.mockReturnValue({
-                customer: { customerId: 'test-customer-id' },
-                addresses: [],
-                paymentInstruments: [],
-            });
-
-            render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
-
-            // Open dialog for item-1
-            const addAddressButtons = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButtons[0]);
-
-            // Fill out and save the form
-            await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Work');
-            await user.type(screen.getByPlaceholderText(/first name/i), 'John');
-            await user.type(screen.getByPlaceholderText(/last name/i), 'Smith');
-            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Test Ave');
-            await user.type(screen.getByPlaceholderText(/city/i), 'Portland');
-            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'OR');
-            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '97201');
-            await user.type(screen.getByRole('textbox', { name: /phone/i }), '5035551234');
-
-            const saveButton = screen.getByRole('button', { name: 'Save' });
-            await user.click(saveButton);
-
-            // Wait for dialog to close
-            await waitFor(() => {
-                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
-            });
-
-            // Both items should have the new address selected
+            // New address should appear in both item dropdowns as a selectable option
             const select1 = screen.getByTestId('delivery-address-select-item-1');
             const select2 = screen.getByTestId('delivery-address-select-item-2');
 
-            // Both selects should have the new address
             const options1 = within(select1).getAllByRole('option');
             const options2 = within(select2).getAllByRole('option');
 
-            const hasNewAddress1 = options1.some((opt) => opt.textContent?.includes('John Smith'));
-            const hasNewAddress2 = options2.some((opt) => opt.textContent?.includes('John Smith'));
-
-            expect(hasNewAddress1).toBe(true);
-            expect(hasNewAddress2).toBe(true);
+            expect(options1.some((opt) => opt.textContent?.includes('Jane Doe'))).toBe(true);
+            expect(options2.some((opt) => opt.textContent?.includes('Jane Doe'))).toBe(true);
         });
 
         test('allows selecting the newly added address from dropdown after saving', async () => {
@@ -833,7 +762,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -845,9 +774,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            // Add address for item-1
-            const addAddressButtons = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButtons[0]);
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Shared');
             await user.type(screen.getByPlaceholderText(/first name/i), 'Shared');
@@ -858,14 +785,13 @@ describe('ShippingMultiAddress', () => {
             await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '02101');
             await user.type(screen.getByRole('textbox', { name: /phone/i }), '6175551234');
 
-            const saveButton = screen.getByRole('button', { name: 'Save' });
-            await user.click(saveButton);
+            await user.click(screen.getByRole('button', { name: 'Save' }));
 
             await waitFor(() => {
-                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+                expect(screen.queryByRole('heading', { name: 'Add New Address' })).not.toBeInTheDocument();
             });
 
-            // Now select the new address for item-2 from dropdown
+            // Select the new address for item-2 from dropdown
             const select2 = screen.getByTestId('delivery-address-select-item-2');
             const options2 = within(select2).getAllByRole('option');
             const newAddressOption = options2.find((opt) => opt.textContent?.includes('Shared Address'));
@@ -891,7 +817,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -903,8 +829,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            const addAddressButton = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButton[0]);
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // addressId field should NOT be visible
             expect(screen.queryByPlaceholderText(/e\.g\., Home, Work/i)).not.toBeInTheDocument();
@@ -920,7 +845,7 @@ describe('ShippingMultiAddress', () => {
             await user.click(screen.getByRole('button', { name: 'Save' }));
 
             await waitFor(() => {
-                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+                expect(screen.queryByRole('heading', { name: 'Add New Address' })).not.toBeInTheDocument();
             });
 
             // The address should appear in the dropdown with an auto-generated addr_ id
@@ -945,36 +870,30 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            // Open dialog and fill some fields
-            const addAddressButton = screen.getAllByText('+ Add New Address');
-            await user.click(addAddressButton[0]);
+            const addAddressButton = screen.getByRole('button', { name: 'Add new address' });
+            await user.click(addAddressButton);
 
             await user.type(screen.getByPlaceholderText(/first name/i), 'Test');
             await user.type(screen.getByPlaceholderText(/last name/i), 'User');
 
             // Cancel and reopen
-            const cancelButton = screen.getByRole('button', { name: 'Cancel' });
-            await user.click(cancelButton);
+            await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
             await waitFor(() => {
-                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+                expect(screen.queryByRole('heading', { name: 'Add New Address' })).not.toBeInTheDocument();
             });
 
             // Reopen dialog
-            await user.click(addAddressButton[0]);
+            await user.click(addAddressButton);
 
-            // Form should be reset (empty fields)
-            const firstNameInput = screen.getByPlaceholderText(/first name/i);
-            const lastNameInput = screen.getByPlaceholderText(/last name/i);
-
-            expect(firstNameInput).toHaveValue('');
-            expect(lastNameInput).toHaveValue('');
+            expect(screen.getByPlaceholderText(/first name/i)).toHaveValue('');
+            expect(screen.getByPlaceholderText(/last name/i)).toHaveValue('');
         });
     });
 
@@ -1001,7 +920,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1063,7 +982,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1121,7 +1040,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1201,7 +1120,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1260,7 +1179,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -1327,7 +1246,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -1396,7 +1315,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 

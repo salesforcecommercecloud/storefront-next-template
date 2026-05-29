@@ -16,7 +16,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Json } from '+types/lang';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 /**
  * Get the configurable base path for the application.
@@ -98,9 +98,6 @@ export const extractResponseError = async (
         const json = (await (error.response as Response).json()) ?? {};
         const { type, status_code, ...rest } = json;
 
-        // TODO: This sort of anticipation of how the user might want the API response to be interpreted
-        //  as error message, isn't necessarily a good idea. It's better to pass all properties to the user
-        //  let the user decide how to format the error.
         // Extract error message from various possible fields in the API response
         // Salesforce Commerce Cloud API can return error details in different fields
         const responseMessage = (json.message || json.detail || json.title || error.message) as string;
@@ -162,8 +159,6 @@ export function extractStatusCode(error: unknown): string | undefined {
 }
 
 /**
-
- * TODO: This method replaces the extractResponseError for the new scapi client. We may want to rename this once we remove extractResponseError
  * Extracts error message from different error types
  * @param error - The error to extract message from
  * @returns A user-friendly error message
@@ -193,30 +188,6 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /**
- * Returns the application's origin.
- *
- * This function is isomorphic, it can be used on the client and server.
- *
- * On the server, it will return the origin derived from the EXTERNAL_DOMAIN_NAME (from process.env).
- *
- * On the client, it will return the window.location.origin
- */
-export const getAppOrigin = () => {
-    if (typeof window !== 'undefined') {
-        return window.location.origin;
-    }
-
-    const EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME || 'localhost:5173';
-    if (!EXTERNAL_DOMAIN_NAME) {
-        throw new Error('Environment variable: "EXTERNAL_DOMAIN_NAME" is not set.');
-    }
-
-    const isLocalhost = EXTERNAL_DOMAIN_NAME?.includes('localhost');
-    const protocol = isLocalhost ? 'http' : 'https';
-    return `${protocol}://${EXTERNAL_DOMAIN_NAME}`;
-};
-
-/**
  * Get the SCAPI base URL for server-side requests.
  * Uses SCAPI_PROXY_HOST if set, otherwise constructs from the given shortCode.
  *
@@ -235,6 +206,16 @@ export const getScapiBaseUrl = (shortCode: string): string =>
  * @returns True if the specified URL is absolute, otherwise false
  */
 export const isAbsoluteURL = (url: string): boolean => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+
+/**
+ * Returns the URL if it is a safe relative path, otherwise returns the fallback.
+ * Prevents open redirect attacks by rejecting absolute URLs (e.g. https://evil.com, //evil.com).
+ */
+export const getSafeReturnUrl = (url: string | null | undefined, fallback = '/'): string => {
+    if (!url) return fallback;
+    if (isAbsoluteURL(url)) return fallback;
+    return url;
+};
 
 /**
  * Check if code is running on the server side

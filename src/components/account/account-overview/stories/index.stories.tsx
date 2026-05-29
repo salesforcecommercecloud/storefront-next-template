@@ -17,21 +17,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { MemoryRouter } from 'react-router';
-import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import RecommendersProvider from '@/providers/recommenders';
-import {
-    AccountOverview,
-    AccountOverviewSkeleton,
-    WelcomeSection,
-    QuickLinksSection,
-    WelcomeSectionSkeleton,
-    QuickLinksSectionSkeleton,
-    AccountOverviewOrdersAwait,
-    RecentOrdersSectionSkeleton,
-} from '../index';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { AccountOverview, AccountOverviewSkeleton } from '../index';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import heroNewArrivals from '/images/hero-02.webp';
 
@@ -83,66 +70,34 @@ const mockOrders: CustomerOrdersResult = {
     limit: 5,
 };
 
-const emptyOrders: CustomerOrdersResult = {
-    orders: [],
-    total: 0,
-    offset: 0,
-    limit: 5,
-};
+const emptyOrders: CustomerOrdersResult = { orders: [], total: 0, offset: 0, limit: 5 };
 
-/**
- * Account Overview Dashboard - Main "My Account" landing page
- *
- * This dashboard displays:
- * - Welcome back greeting with customer name
- * - Curated product recommendations (using Einstein)
- * - Quick Links to key account sections
- */
 const meta: Meta<typeof AccountOverview> = {
     title: 'ACCOUNT/Account Overview',
     component: AccountOverview,
-    // Note: 'skip-a11y' tag added because this component uses MemoryRouter and
-    // ProductRecommendations which require proper context setup in test environments
-    tags: ['autodocs', 'skip-a11y'],
+    // skip-a11y: ProductRecommendations needs provider context the a11y runner can't set up.
+    tags: ['autodocs', 'skip-a11y', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
-                component: `
-The Account Overview Dashboard is the main landing page for the "My Account" section.
-
-## Features
-- **Welcome Section**: Personalized greeting with customer's first name
-- **Curated for You**: Product recommendations powered by Einstein
-- **Quick Links**: Navigation cards to key account sections (Account Details, Manage Addresses, Payment Methods, Order History)
-
-## Usage
-This component is typically rendered as the default view when users navigate to their account.
-                `,
+                component:
+                    'Main /account landing page. Renders a personalized welcome, deferred Recent Orders (Suspense + Await), Curated For You recommendations, and a Quick Links grid to the four sub-pages. Production gates the route to `userType === "registered"` in `_app.account.tsx`, so `customer` is always populated.',
             },
         },
     },
     decorators: [
         (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="GBP">
-                    <RecommendersProvider>
-                        <MemoryRouter>
-                            <Story />
-                        </MemoryRouter>
-                    </RecommendersProvider>
-                </SiteProvider>
-            </ConfigProvider>
+            <AllProvidersWrapper>
+                <Story />
+            </AllProvidersWrapper>
         ),
     ],
 };
 
 export default meta;
-type Story = StoryObj<typeof AccountOverview>;
+type Story = StoryObj<typeof meta>;
 
-/**
- * Default state with customer data, recent orders, and all sections visible
- */
 export const Default: Story = {
     args: {
         customer: mockCustomer,
@@ -153,226 +108,34 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByText('#INV001')).toBeInTheDocument();
         await expect(canvas.getByText(/Quick Links/i)).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Payment Methods/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Order History/i })).toBeInTheDocument();
     },
 };
 
-/**
- * Guest user view (no customer name)
- */
-export const GuestUser: Story = {
-    args: {
-        customer: null,
-        ordersPromise: Promise.resolve(emptyOrders),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the overview when no customer data is available, using a default greeting.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Welcome back, there!/i)).toBeInTheDocument();
-    },
-};
-
-/**
- * Overview without orders (no ordersPromise provided)
- */
-export const WithoutOrders: Story = {
+export const EmptyOrders: Story = {
     args: {
         customer: mockCustomer,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Account overview without the recent orders section (ordersPromise not provided).',
-            },
-        },
+        ordersPromise: Promise.resolve(emptyOrders),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
-        await expect(canvas.queryByText(/Recent Orders/i)).not.toBeInTheDocument();
-    },
-};
-
-// Welcome Section Stories
-export const WelcomeSectionDefault: StoryObj<typeof WelcomeSection> = {
-    render: (args) => <WelcomeSection {...args} />,
-    args: {
-        customer: mockCustomer,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'The welcome section with personalized greeting.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
-    },
-};
-
-export const WelcomeSectionLoading: StoryObj<typeof WelcomeSectionSkeleton> = {
-    render: () => <WelcomeSectionSkeleton />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Loading skeleton for the welcome section.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Verify skeleton elements are present
-        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
-        await expect(skeletons.length).toBeGreaterThan(0);
-    },
-};
-
-// Recent Orders Section Stories
-export const RecentOrdersDefault: StoryObj<typeof AccountOverviewOrdersAwait> = {
-    render: (args) => <AccountOverviewOrdersAwait {...args} />,
-    args: {
-        ordersPromise: Promise.resolve(mockOrders),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Recent orders section showing the last 5 orders with a View All link.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
-        await expect(canvas.getByText('INV001')).toBeInTheDocument();
-        await expect(canvas.getByText('INV002')).toBeInTheDocument();
-    },
-};
-
-export const RecentOrdersEmpty: StoryObj<typeof AccountOverviewOrdersAwait> = {
-    render: (args) => <AccountOverviewOrdersAwait {...args} />,
-    args: {
-        ordersPromise: Promise.resolve(emptyOrders),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Recent orders section when the shopper has no order history.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
-    },
-};
-
-export const RecentOrdersLoading: StoryObj<typeof RecentOrdersSectionSkeleton> = {
-    render: () => <RecentOrdersSectionSkeleton />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Loading skeleton for the recent orders section.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        const skeletons = canvasElement.querySelectorAll('[data-slot="skeleton"]');
-        await expect(skeletons.length).toBeGreaterThan(0);
-    },
-};
-
-// Quick Links Section Stories
-export const QuickLinksSectionDefault: StoryObj<typeof QuickLinksSection> = {
-    render: () => <QuickLinksSection />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Quick links navigation cards.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
+        await expect(await canvas.findByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByRole('link', { name: /View All/i })).toBeInTheDocument();
+        await expect(canvas.queryByText(/^#/)).not.toBeInTheDocument();
         await expect(canvas.getByText(/Quick Links/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Payment Methods/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Order History/i })).toBeInTheDocument();
     },
 };
 
-export const QuickLinksSectionLoading: StoryObj<typeof QuickLinksSectionSkeleton> = {
-    render: () => <QuickLinksSectionSkeleton />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Loading skeleton for the quick links section.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Verify skeleton elements are present
-        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
-        await expect(skeletons.length).toBeGreaterThan(0);
-
-        // Verify 4 quick link skeletons (items inside the grid)
-        const grid = canvasElement.querySelector('.grid');
-        const linkSkeletons = grid?.querySelectorAll('.rounded-none.border');
-        await expect(linkSkeletons?.length).toBe(4);
-    },
-};
-
-// Full Skeleton Story
 export const LoadingSkeleton: StoryObj<typeof AccountOverviewSkeleton> = {
     render: () => <AccountOverviewSkeleton />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Full loading skeleton for the account overview page.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Verify skeleton elements are present
-        const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
-        await expect(skeletons.length).toBeGreaterThan(0);
-
-        // Verify multiple cards are present
-        const cards = canvasElement.querySelectorAll('[data-slot="card"]');
-        await expect(cards.length).toBeGreaterThanOrEqual(3);
-    },
+    // Pure presentational wireframe — no text or interactive elements to
+    // assert on. Snapshot coverage is the verification for skeleton stories.
+    tags: ['!interaction'],
 };

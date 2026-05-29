@@ -16,10 +16,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigation, useRouteLoaderData } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 
 type CategoryRouteData = {
     category: ShopperProducts.schemas['Category'];
@@ -38,7 +37,7 @@ export default function CategoryBanner() {
     const { t } = useTranslation('category');
     const navigation = useNavigation();
     const location = useLocation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const category = loaderData?.category;
     const total = loaderData?.searchResultCritical?.total;
@@ -103,7 +102,7 @@ export default function CategoryBanner() {
                                 {categoryName}
                             </p>
                         )}
-                        <div className="text-xl text-white/90 font-light max-w-xl" aria-live="polite">
+                        <div className="text-2xl text-white/90 font-light max-w-xl" aria-live="polite">
                             {isCountPending
                                 ? t('banner.counting')
                                 : total !== undefined && t('banner.productsAvailable', { count: total })}

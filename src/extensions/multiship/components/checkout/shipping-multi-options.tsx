@@ -36,12 +36,12 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
-import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
+import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '@/components/checkout/types';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { useTranslation } from 'react-i18next';
-import { formatAddress } from '@/lib/address-utils';
+import { formatAddress } from '@/lib/address/address-utils';
 
 /**
  * Represents a shipping method option available for selection.
@@ -236,7 +236,7 @@ export default function ShippingMultiOptions({
     const showShipmentLabel = shipments.length > 1;
 
     const stepTitle = (
-        <span className="text-lg font-semibold text-foreground">
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">
             {tMultiship('checkout.shippingMultiOptionsTitle')}
         </span>
     );
@@ -248,6 +248,7 @@ export default function ShippingMultiOptions({
             editing={isEditing}
             onEdit={onEdit}
             editLabel={t('common.edit')}
+            showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <form method="post" className="space-y-8" onSubmit={handleSubmit}>
@@ -264,22 +265,35 @@ export default function ShippingMultiOptions({
                             const shipmentId = data.shipment.shipmentId;
                             const shipmentNumber = shipmentIndex + 1;
 
+                            const { nameLine, addressLine } = formatAddress(
+                                data.shipment.shippingAddress,
+                                tMultiship('checkout.noAddress')
+                            );
+
                             return (
-                                <div key={shipmentId || `shipment-${shipmentIndex}`} className="space-y-4">
+                                <div
+                                    key={shipmentId || `shipment-${shipmentIndex}`}
+                                    className="border border-border p-4 space-y-4">
                                     {/* Shipment Header - Only show when there are multiple shipments */}
                                     {showShipmentLabel && (
-                                        <div className="space-y-1">
-                                            <Typography variant="h3" className="font-bold text-base">
-                                                {tMultiship('checkout.shipmentNumber', { number: shipmentNumber })}
-                                            </Typography>
-                                            <Typography variant="small" className="text-muted-foreground">
-                                                {
-                                                    formatAddress(
-                                                        data.shipment.shippingAddress,
-                                                        tMultiship('checkout.noAddress')
-                                                    ).fullAddress
-                                                }
-                                            </Typography>
+                                        <div className="-m-4 mb-4">
+                                            <div className="bg-muted px-4 py-3">
+                                                <span className="text-base font-semibold text-foreground">
+                                                    {nameLine
+                                                        ? tMultiship('checkout.shipmentNumberWithRecipient', {
+                                                              number: shipmentNumber,
+                                                              name: nameLine,
+                                                          })
+                                                        : tMultiship('checkout.shipmentNumber', {
+                                                              number: shipmentNumber,
+                                                          })}
+                                                </span>
+                                            </div>
+                                            <div className="px-4 py-3 border-b border-border">
+                                                <Typography variant="small" className="text-muted-foreground">
+                                                    {addressLine}
+                                                </Typography>
+                                            </div>
                                         </div>
                                     )}
 
@@ -322,7 +336,7 @@ export default function ShippingMultiOptions({
                                                             )}
                                                             <Typography
                                                                 variant="small"
-                                                                className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
+                                                                className="text-muted-foreground group-has-[:checked]:text-foreground text-base">
                                                                 {method.name}
                                                             </Typography>
                                                         </div>
@@ -351,8 +365,8 @@ export default function ShippingMultiOptions({
                         })
                     )}
 
-                    <div className="flex justify-end pt-4">
-                        <Button type="submit" disabled={!canSubmit} size="lg" className="min-w-48">
+                    <div className="w-full pt-2">
+                        <Button type="submit" disabled={!canSubmit} className="w-full">
                             {isLoading
                                 ? t('shippingOptions.saving')
                                 : hasNoMethods

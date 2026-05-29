@@ -27,7 +27,7 @@ import { createElement, type ReactNode } from 'react';
 import { useProductImages } from './use-product-images';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const wrapper = ({ children }: { children: ReactNode }) =>
     createElement(ConfigProvider, { config: mockConfig, children } as never);
@@ -284,7 +284,7 @@ describe('useProductImages', () => {
             expect(result.current.galleryImages[0].src).toBe('https://example.com/disBaseLink.jpg');
         });
 
-        it('should handle empty link with fallback', () => {
+        it('should drop entries whose link/disBaseLink lack a DIS-supported extension', () => {
             const image = {
                 link: '',
                 disBaseLink: '',
@@ -301,7 +301,77 @@ describe('useProductImages', () => {
                 { wrapper }
             );
 
-            expect(result.current.galleryImages[0].src).toBe('');
+            expect(result.current.galleryImages).toEqual([]);
+        });
+    });
+
+    // Restrict the gallery to assets DIS can transform. Anything else (videos, 3D models, opaque blobs SFCC merchants
+    // sometimes attach to image_groups) cannot flow through the <picture>/<DynamicImage> pipeline, so we drop it at the
+    // hook boundary rather than carrying a media-type discriminator through the UI.
+    describe('non-image filtering', () => {
+        it.each(['mp4', 'webm', 'ogg', 'mov'])('drops entries with video extension .%s', (ext) => {
+            const videoEntry = {
+                link: `https://example.com/product.${ext}`,
+                disBaseLink: `https://example.com/product.${ext}`,
+                alt: 'Product Video',
+            } as ShopperProducts.schemas['Image'];
+
+            const product = createMockProduct([createMockImageGroup('large', [videoEntry])]);
+
+            const { result } = renderHook(() => useProductImages({ product }), { wrapper });
+
+            expect(result.current.galleryImages).toEqual([]);
+        });
+
+        it.each(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'jp2', 'tif', 'tiff'])(
+            'keeps entries with DIS-supported extension .%s',
+            (ext) => {
+                const image = {
+                    link: `https://example.com/product.${ext}`,
+                    disBaseLink: `https://example.com/product.${ext}`,
+                    alt: 'Product Image',
+                } as ShopperProducts.schemas['Image'];
+
+                const product = createMockProduct([createMockImageGroup('large', [image])]);
+
+                const { result } = renderHook(() => useProductImages({ product }), { wrapper });
+
+                expect(result.current.galleryImages).toHaveLength(1);
+            }
+        );
+
+        it('keeps only the image entries when image groups mix images and unsupported assets', () => {
+            const mixedMedia = [
+                createMockImage('https://example.com/image1.jpg'),
+                {
+                    link: 'https://example.com/demo.mp4',
+                    disBaseLink: 'https://example.com/demo.mp4',
+                    alt: 'Demo Video',
+                } as ShopperProducts.schemas['Image'],
+                createMockImage('https://example.com/image2.png'),
+            ];
+
+            const product = createMockProduct([createMockImageGroup('large', mixedMedia)]);
+
+            const { result } = renderHook(() => useProductImages({ product }), { wrapper });
+
+            expect(result.current.galleryImages).toHaveLength(2);
+            expect(result.current.galleryImages[0].src).toContain('image1');
+            expect(result.current.galleryImages[1].src).toContain('image2');
+        });
+
+        it('drops entries whose path lacks any extension', () => {
+            const blob = {
+                link: 'https://example.com/media/asset',
+                disBaseLink: 'https://example.com/media/asset',
+                alt: 'Opaque blob',
+            } as ShopperProducts.schemas['Image'];
+
+            const product = createMockProduct([createMockImageGroup('large', [blob])]);
+
+            const { result } = renderHook(() => useProductImages({ product }), { wrapper });
+
+            expect(result.current.galleryImages).toEqual([]);
         });
     });
 });

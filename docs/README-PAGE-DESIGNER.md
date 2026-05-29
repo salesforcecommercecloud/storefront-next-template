@@ -728,11 +728,11 @@ export function fallback({ title = 'Loading...' }: Partial<MyComponentProps>) {
 
 // 4. Component loaders (if needed)
 export const loader = {
-    server: async ({ component, request }) => {
-        const data = await fetchMyData(component.data?.id);
+    server: async ({ componentData, context, request }) => {
+        const data = await fetchMyData(componentData?.id);
         return data;
     },
-    client: async ({ component, request }) => {
+    client: async ({ componentData, request }) => {
         // Client-side logic if needed
         return null;
     },
@@ -1517,7 +1517,7 @@ The build process uses `storefront-next-dev` for metadata generation:
   - Location: `packages/storefront-next-dev/src/cartridge-services/generate-cartridge.ts`
   - Reads TypeScript decorators via reflect-metadata
   - Outputs JSON files matching SFCC Page Designer schema
-  - Run via `pnpm generate:cartridge` in the template, or `sfnext generate-cartridge --project-directory ./` for on-demand generation
+  - Run via `pnpm cartridge:generate` in the template, or `sfnext generate-cartridge --project-directory ./` for on-demand generation
 
 **Verifying Metadata Generation:**
 
@@ -1694,7 +1694,7 @@ When deploying a new Page Designer-enabled route:
 
 ```tsx
 // Check registry
-import { registry } from '@/lib/registry';
+import { registry } from '@/lib/page-designer/registry';
 console.log(registry.getComponent('myComponent')); // Should not be null
 ```
 

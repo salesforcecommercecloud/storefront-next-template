@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import type { ShopperProducts } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { useProductFetcher } from '@/hooks/product/use-product-fetcher';
-import { useModalStateReset } from '@/hooks/use-modal-state-reset';
 import { useProductImages } from '@/hooks/product/use-product-images';
-import { isProductBundle, isProductSet } from '@/lib/product-utils';
+import { isProductBundle, isProductSet } from '@/lib/product/product-utils';
+import { computeInitialVariationValues } from '@/lib/product/initial-variation-values';
 import { CartItemModalView } from './view';
 import type { CartItemModalProps } from './types';
 
@@ -28,84 +27,7 @@ interface CartItemModalAddContainerProps extends CartItemModalProps {
     productId: string;
 }
 
-const areVariationValuesEqual = (a: Record<string, string>, b: Record<string, string>): boolean => {
-    const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
-    if (aKeys.length !== bKeys.length) return false;
-    return aKeys.every((key) => a[key] === b[key]);
-};
-
 type Product = ShopperProducts.schemas['Product'];
-
-interface CartItemModalState {
-    currentProduct: Product | null;
-    variationValues: Record<string, string>;
-    hasUserChangedVariant: boolean;
-    variantInventoryCache: Record<string, Product>;
-}
-
-type CartItemModalAction =
-    | { type: 'MODAL_RESET' }
-    | { type: 'BASE_PRODUCT_RECEIVED'; product: Product }
-    | { type: 'VARIATIONS_SEEDED'; values: Record<string, string> }
-    | { type: 'VARIATION_CHANGED_BY_USER'; attributeId: string; value: string }
-    | { type: 'VARIANT_INVENTORY_CACHED'; product: Product };
-
-const initialCartItemModalState: CartItemModalState = {
-    currentProduct: null,
-    variationValues: {},
-    hasUserChangedVariant: false,
-    variantInventoryCache: {},
-};
-
-function cartItemModalReducer(state: CartItemModalState, action: CartItemModalAction): CartItemModalState {
-    switch (action.type) {
-        case 'MODAL_RESET':
-            return initialCartItemModalState;
-        case 'BASE_PRODUCT_RECEIVED':
-            if (state.currentProduct?.id === action.product.id) {
-                return state;
-            }
-            return { ...state, currentProduct: action.product };
-        case 'VARIATIONS_SEEDED': {
-            // Keep user-controlled selection stable once initialized.
-            if (Object.keys(state.variationValues).length > 0 && state.hasUserChangedVariant) {
-                return state;
-            }
-            if (areVariationValuesEqual(state.variationValues, action.values)) {
-                return state;
-            }
-            return { ...state, variationValues: action.values };
-        }
-        case 'VARIATION_CHANGED_BY_USER': {
-            if (state.variationValues[action.attributeId] === action.value && state.hasUserChangedVariant) {
-                return state;
-            }
-            return {
-                ...state,
-                variationValues: { ...state.variationValues, [action.attributeId]: action.value },
-                hasUserChangedVariant: true,
-            };
-        }
-        case 'VARIANT_INVENTORY_CACHED': {
-            const cached = state.variantInventoryCache[action.product.id];
-            if (
-                cached?.inventory?.ats === action.product.inventory?.ats &&
-                cached?.inventory?.orderable === action.product.inventory?.orderable &&
-                cached?.inventory?.backorderable === action.product.inventory?.backorderable &&
-                cached?.inventory?.preorderable === action.product.inventory?.preorderable
-            ) {
-                return state;
-            }
-            return {
-                ...state,
-                variantInventoryCache: { ...state.variantInventoryCache, [action.product.id]: action.product },
-            };
-        }
-        default:
-            return state;
-    }
-}
 
 export function CartItemModalAddContainer({
     productId,
@@ -115,63 +37,10 @@ export function CartItemModalAddContainer({
     onBuyNow,
     open = false,
 }: CartItemModalAddContainerProps): ReactElement {
-    /**
-     * Reducer action map:
-     *
-     * State shape:
-     * {
-     *   currentProduct: Product | null,
-     *   variationValues: Record<string, string>,
-     *   hasUserChangedVariant: boolean,
-     *   variantInventoryCache: Record<string, Product>
-     * }
-     *
-     * Actions:
-     * - MODAL_RESET
-     *   payload: none
-     *   resets modal state to initial values
-     *
-     * - BASE_PRODUCT_RECEIVED
-     *   payload: { product: Product }
-     *   hydrates base product when initial fetch resolves
-     *
-     * - VARIATIONS_SEEDED
-     *   payload: { values: Record<string, string> }
-     *   seeds variation values from API/defaults unless user already changed them
-     *
-     * - VARIATION_CHANGED_BY_USER
-     *   payload: { attributeId: string, value: string }
-     *   updates variation selection and marks user-changed flag
-     *
-     * - VARIANT_INVENTORY_CACHED
-     *   payload: { product: Product }
-     *   upserts variant inventory/pricing fetch results with no-op guard
-     */
-    const [state, dispatch] = useReducer(cartItemModalReducer, initialCartItemModalState);
-    const { currentProduct, variationValues, hasUserChangedVariant, variantInventoryCache } = state;
-    const initialHydratedProductIdRef = useRef<string | undefined>(undefined);
-    const initialVariantSelectionsRef = useRef(initialVariantSelections);
-    const inFlightVariantIdRef = useRef<string | undefined>(undefined);
+    const { t } = useTranslation('editItem');
 
-    useModalStateReset({
-        open,
-        onReset: useCallback(() => {
-            dispatch({ type: 'MODAL_RESET' });
-            initialHydratedProductIdRef.current = undefined;
-            inFlightVariantIdRef.current = undefined;
-        }, []),
-        resetOn: 'both',
-    });
-
-    const matchingVariant = useMemo(() => {
-        if (!currentProduct) return undefined;
-        const potentialVariants =
-            currentProduct.variants?.filter((variant) =>
-                Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
-            ) ?? [];
-        // Resolve variant only when the current selection maps to exactly one variant.
-        return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
-    }, [currentProduct, variationValues]);
+    const [variationValues, setVariationValues] = useState<Record<string, string>>({});
+    const [variantInventoryCache, setVariantInventoryCache] = useState<Record<string, Product>>({});
 
     const initialProductFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
         params: {
@@ -191,29 +60,53 @@ export function CartItemModalAddContainer({
         },
     });
 
-    useProductFetcher({
-        targetProductId: productId,
-        fetcher: initialProductFetcher,
-        currentProductId: currentProduct?.id,
-        onDataReceived: useCallback((p: ShopperProducts.schemas['Product']) => {
-            if (initialHydratedProductIdRef.current === p.id) {
-                return;
-            }
-            initialHydratedProductIdRef.current = p.id;
-            dispatch({ type: 'BASE_PRODUCT_RECEIVED', product: p });
+    // Auto-load when the modal opens and we don't yet have data. Gated on `!errors` so a
+    // sticky failure doesn't loop SCAPI calls — at the cost that a transient failure won't
+    // auto-retry on reopen (user must click the Retry button). Per-open-session retry is
+    // tracked as a follow-up.
+    useEffect(() => {
+        if (
+            open &&
+            initialProductFetcher.state === 'idle' &&
+            !initialProductFetcher.success &&
+            !initialProductFetcher.errors
+        ) {
+            void initialProductFetcher.load();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, initialProductFetcher.state, initialProductFetcher.success, initialProductFetcher.errors]);
 
-            const seededValues = { ...(p.variationValues ?? {}), ...(initialVariantSelectionsRef.current ?? {}) };
-            dispatch({ type: 'VARIATIONS_SEEDED', values: seededValues });
-        }, []),
-        validateProductId: productId,
-        enabled: open,
-    });
+    const baseProduct: Product | null = (initialProductFetcher.success && initialProductFetcher.data) || null;
 
-    // Re-fetch the currently selected variant in add mode so inventory/availability
-    // reflects the exact variant before enabling cart actions.
+    // Seed variation values when the product first loads or when the modal reopens.
+    // On first open: baseProduct arrives async (after fetch) → seeds then.
+    // On reopen: baseProduct is already cached by the fetcher → seeds immediately.
+    useEffect(() => {
+        if (open && baseProduct) {
+            setVariationValues({
+                ...computeInitialVariationValues(baseProduct),
+                ...(initialVariantSelections ?? {}),
+            });
+            setVariantInventoryCache({});
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, baseProduct]);
+
+    const matchingVariant = useMemo(() => {
+        if (!baseProduct) return undefined;
+        const potentialVariants =
+            baseProduct.variants?.filter((variant) =>
+                Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
+            ) ?? [];
+        return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
+    }, [baseProduct, variationValues]);
+
+    const selectedVariantId = matchingVariant?.productId;
+    const cachedVariantProduct = selectedVariantId ? variantInventoryCache[selectedVariantId] : undefined;
+
     const variantFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
         params: {
-            path: { id: matchingVariant?.productId || '' },
+            path: { id: selectedVariantId || '' },
             query: {
                 allImages: true,
                 expand: [
@@ -229,47 +122,53 @@ export function CartItemModalAddContainer({
         },
     });
 
-    const selectedVariantId = matchingVariant?.productId;
-    const cachedVariantProduct = selectedVariantId ? variantInventoryCache[selectedVariantId] : undefined;
-    const selectedVariantIdRef = useRef<string | undefined>(selectedVariantId);
-    const hasSelectedVariantOnInitialLoad = Boolean(selectedVariantId) && !hasUserChangedVariant;
-    const shouldFetchSelectedVariantInventory =
-        open &&
-        Boolean(selectedVariantId) &&
-        !cachedVariantProduct &&
-        (hasUserChangedVariant || hasSelectedVariantOnInitialLoad);
+    const shouldFetchVariantInventory = open && !!selectedVariantId && !cachedVariantProduct;
 
-    selectedVariantIdRef.current = selectedVariantId;
-    initialVariantSelectionsRef.current = initialVariantSelections;
-
+    // Load variant inventory when needed. Gated on `!variantFetcher.errors` to avoid hammering
+    // SCAPI on a sticky failure — at the cost that a transient failure leaves the variant in a
+    // stuck loading state until the user picks a different variant or reopens. Per-session
+    // retry is tracked as a follow-up.
     useEffect(() => {
-        const shouldMarkInFlight = shouldFetchSelectedVariantInventory && variantFetcher.state === 'idle';
-
-        if (shouldMarkInFlight) {
-            inFlightVariantIdRef.current = selectedVariantId;
+        if (
+            shouldFetchVariantInventory &&
+            variantFetcher.state === 'idle' &&
+            !variantFetcher.errors &&
+            variantFetcher.data?.id !== selectedVariantId
+        ) {
+            void variantFetcher.load();
         }
-    }, [shouldFetchSelectedVariantInventory, selectedVariantId, variantFetcher.state]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        shouldFetchVariantInventory,
+        variantFetcher.state,
+        variantFetcher.errors,
+        variantFetcher.data?.id,
+        selectedVariantId,
+    ]);
 
-    useProductFetcher({
-        targetProductId: selectedVariantId,
-        fetcher: variantFetcher,
-        // Skip refetch when we already cached this variant's inventory in this modal session.
-        currentProductId: cachedVariantProduct?.id,
-        onDataReceived: useCallback((p: ShopperProducts.schemas['Product']) => {
-            const activeVariantId = selectedVariantIdRef.current;
-            if (!activeVariantId || p.id !== activeVariantId) {
-                return;
-            }
-            dispatch({ type: 'VARIANT_INVENTORY_CACHED', product: p });
-            if (inFlightVariantIdRef.current === p.id) {
-                inFlightVariantIdRef.current = undefined;
-            }
-        }, []),
-        validateProductId: selectedVariantId,
-        enabled:
-            shouldFetchSelectedVariantInventory &&
-            !(variantFetcher.state === 'loading' && inFlightVariantIdRef.current === selectedVariantId),
-    });
+    // Cache variant inventory data when it arrives.
+    useEffect(() => {
+        if (
+            variantFetcher.success &&
+            variantFetcher.data &&
+            variantFetcher.state === 'idle' &&
+            variantFetcher.data.id === selectedVariantId
+        ) {
+            const fetchedProduct = variantFetcher.data;
+            setVariantInventoryCache((prev) => {
+                const cached = prev[fetchedProduct.id];
+                if (
+                    cached?.inventory?.ats === fetchedProduct.inventory?.ats &&
+                    cached?.inventory?.orderable === fetchedProduct.inventory?.orderable &&
+                    cached?.inventory?.backorderable === fetchedProduct.inventory?.backorderable &&
+                    cached?.inventory?.preorderable === fetchedProduct.inventory?.preorderable
+                ) {
+                    return prev;
+                }
+                return { ...prev, [fetchedProduct.id]: fetchedProduct };
+            });
+        }
+    }, [variantFetcher.success, variantFetcher.data, variantFetcher.state, selectedVariantId]);
 
     const effectiveMatchingVariant = useMemo(() => {
         if (!matchingVariant) return undefined;
@@ -279,7 +178,6 @@ export function CartItemModalAddContainer({
 
         return {
             ...matchingVariant,
-            // Use fetched variant pricing/promo fields for quick-add price display.
             price: cachedVariantProduct.price,
             priceMax: cachedVariantProduct.priceMax,
             priceMin: cachedVariantProduct.priceMin,
@@ -291,15 +189,18 @@ export function CartItemModalAddContainer({
         };
     }, [matchingVariant, cachedVariantProduct]);
 
-    const isVariantInventoryLoading = shouldFetchSelectedVariantInventory;
+    const isVariantInventoryLoading = shouldFetchVariantInventory;
 
     const handleAttributeChange = useCallback((attributeId: string, value: string) => {
-        dispatch({ type: 'VARIATION_CHANGED_BY_USER', attributeId, value });
+        setVariationValues((prev) => {
+            if (prev[attributeId] === value) return prev;
+            return { ...prev, [attributeId]: value };
+        });
     }, []);
 
-    const safeProduct = currentProduct ?? ({} as ShopperProducts.schemas['Product']);
+    const currentProduct = baseProduct;
+    const safeProduct = currentProduct ?? ({} as Product);
     const { galleryImages } = useProductImages({ product: safeProduct, selectedAttributes: variationValues });
-    const { t } = useTranslation('editItem');
 
     const isProductASet = currentProduct ? isProductSet(currentProduct) : false;
     const isProductABundle = currentProduct ? isProductBundle(currentProduct) : false;
@@ -308,8 +209,8 @@ export function CartItemModalAddContainer({
     const hasError =
         !currentProduct &&
         initialProductFetcher.state === 'idle' &&
-        initialProductFetcher.data != null &&
-        !initialProductFetcher.success;
+        !initialProductFetcher.success &&
+        initialProductFetcher.errors != null;
 
     const handleCloseModal = useCallback(() => {
         onOpenChange?.(false);

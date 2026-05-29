@@ -15,7 +15,7 @@
  */
 import { cloneElement, isValidElement, type ReactNode, Suspense, useEffect, useMemo, useRef } from 'react';
 import { Await } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import CategoryNavigationMenu from './impl';
 import { SubCategoryContext, createSubCategoryStore } from './context';
 

@@ -21,7 +21,7 @@ import {
     findOrCreatePickupShipment,
     getPickupShippingMethodId,
 } from './shipment.server';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { RouterContextProvider } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods.server';

@@ -16,9 +16,9 @@
 
 import { type FormEvent, useEffect, useMemo, useRef, useCallback, type MutableRefObject } from 'react';
 import { useBasket } from '@/providers/basket';
-import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
+import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { CheckoutActionData } from '../types';
 function useLatestRef<T>(value: T): MutableRefObject<T> {
     const ref = useRef(value);
@@ -117,17 +117,11 @@ export function useShippingOptions({
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
 
+    // Only show a summary when the basket's selected method is actually offerable for the current
+    // address.
     const summaryMethod: ShippingMethod | undefined = useMemo(() => {
         if (!selectedMethod?.id) return undefined;
-        const fromList = availableShippingMethods.find((m) => m.id === selectedMethod.id);
-        if (fromList) return fromList;
-        return {
-            id: selectedMethod.id,
-            name: selectedMethod.name ?? selectedMethod.id,
-            description: selectedMethod.description,
-            price: typeof selectedMethod.price === 'number' ? selectedMethod.price : 0,
-            shippingPromotions: selectedMethod.shippingPromotions,
-        };
+        return availableShippingMethods.find((m) => m.id === selectedMethod.id);
     }, [selectedMethod, availableShippingMethods]);
 
     const isGuest = !customerProfile?.customer?.customerId;

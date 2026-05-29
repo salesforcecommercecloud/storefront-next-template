@@ -236,7 +236,6 @@ export const sfccCookiesRecipe = {
     cookies: [
         'cc-at_{SITE_ID}', // Access token
         'cc-nx-g_{SITE_ID}', // Next generation guest token
-        'customerId_{SITE_ID}', // Customer ID
         'usid_{SITE_ID}', // User session ID
     ],
     context: 'SFCC cookies set on storefront, namespaced with SITE_ID (e.g., RefArchGlobal)',

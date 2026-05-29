@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, vi, type Mock } from 'vitest';
 import { render } from '@testing-library/react';
-import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperSearch } from '@/scapi';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { ProductImageContainer } from './index';
 
@@ -27,7 +27,7 @@ vi.mock('@/components/link', () => ({
     ),
 }));
 
-vi.mock('@/lib/product-utils', async (importOriginal) => {
+vi.mock('@/lib/product/product-utils', async (importOriginal) => {
     const original = await importOriginal<object>();
     return {
         ...original,
@@ -84,7 +84,7 @@ describe('ProductImageContainer Dynamic Image Context Integration', () => {
             hasSource: vi.fn(),
         });
 
-        const { getImagesForColor } = await import('@/lib/product-utils');
+        const { getImagesForColor } = await import('@/lib/product/product-utils');
         render(<ProductImageContainer product={mockProduct} />);
 
         expect(mockAddSource).toHaveBeenCalledWith('https://example.com/default1.jpg');
@@ -92,7 +92,7 @@ describe('ProductImageContainer Dynamic Image Context Integration', () => {
     });
 
     test('does not fail when no context is available', async () => {
-        const { getImagesForColor } = await import('@/lib/product-utils');
+        const { getImagesForColor } = await import('@/lib/product/product-utils');
         render(<ProductImageContainer product={mockProduct} />);
         expect(getImagesForColor).toHaveBeenCalledWith(mockProduct, null, 'medium');
     });
@@ -104,7 +104,7 @@ describe('ProductImageContainer Dynamic Image Context Integration', () => {
             hasSource: vi.fn(),
         });
 
-        const { getImagesForColor } = await import('@/lib/product-utils');
+        const { getImagesForColor } = await import('@/lib/product/product-utils');
         vi.mocked(getImagesForColor).mockReturnValueOnce([]);
 
         render(<ProductImageContainer product={mockProduct} />);
@@ -119,7 +119,7 @@ describe('ProductImageContainer Dynamic Image Context Integration', () => {
             hasSource: vi.fn(),
         });
 
-        const { getImagesForColor } = await import('@/lib/product-utils');
+        const { getImagesForColor } = await import('@/lib/product/product-utils');
         vi.mocked(getImagesForColor).mockReturnValueOnce([]);
 
         const productWithFallbackImage = {

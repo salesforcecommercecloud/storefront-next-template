@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { mockSiteObject } from '@/test-utils/config';
 
 const { t } = getTranslation();
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -24,7 +25,8 @@ import {
     handleResetPasswordLanding,
     resetMarketingCloudTokenCache,
 } from './reset-password.server';
-import { getAppOrigin, extractResponseError } from '@/lib/utils';
+import { extractResponseError } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
 const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() => {
@@ -64,8 +66,11 @@ vi.mock('jose', () => ({
 
 // Mock utility functions
 vi.mock('@/lib/utils', () => ({
-    getAppOrigin: vi.fn(),
     extractResponseError: vi.fn(),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(),
 }));
 
 // Mock config module
@@ -76,7 +81,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
                 organizationId: 'f_ecom_zzrf_001',
                 clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
                 shortCode: 'kv7kzm78',
-                siteId: 'RefArchGlobal',
+                siteId: mockSiteObject.id,
             },
         },
         features: {

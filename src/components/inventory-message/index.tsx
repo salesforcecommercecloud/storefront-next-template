@@ -15,7 +15,7 @@
  */
 
 import { type ReactElement } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -37,14 +37,10 @@ interface InventoryMessageProps {
     className?: string;
     /**
      * Stock level at or below which the item is considered "low stock".
-     * When stockLevel > 0 && stockLevel <= lowStockThreshold, shows a warning-colored message.
+     * When stockLevel > 0 && stockLevel <= lowStockThreshold, shows a warning-colored "Few items left"
+     * message ("1 item left" when stockLevel === 1).
      */
     lowStockThreshold?: number;
-    /**
-     * Maximum stock level to display. Stock counts above this value will be capped.
-     * For example, if maxStockDisplay is 99 and actual stock is 150, it will display 99.
-     */
-    maxStockDisplay?: number;
     /**
      * Whether to show unknown inventory status messages. Defaults to false.
      * When false, unknown status messages are visually hidden.
@@ -109,29 +105,24 @@ type InventoryStatusInfo = { message: string; className: string };
 /**
  * Gets the appropriate message and styling for inventory status.
  *
- * Uses semantic status tokens for consistent theming.
+ * Uses semantic status tokens for consistent theming. Stock levels are bucketed,
+ * not surfaced as exact counts — perpetual-inventory items render the same
+ * "In stock" message as any other plentiful variant.
  */
 function getInventoryMessage(
     status: InventoryStatusType,
     t: TFunction<'product'>,
-    stockDisplay?: number | string
+    stockLevel?: number
 ): InventoryStatusInfo {
     switch (status) {
-        case InventoryStatus.IN_STOCK: {
-            // Avoid "In stock (0 units)" while ATS is still settling (e.g. master 0 then variant 58).
-            const showUnitCount =
-                stockDisplay != null &&
-                (typeof stockDisplay === 'string'
-                    ? stockDisplay.endsWith('+') || Number(stockDisplay) > 0
-                    : stockDisplay > 0);
+        case InventoryStatus.IN_STOCK:
             return {
-                message: showUnitCount ? t('inStockCount', { stockDisplay }) : t('inStock'),
+                message: t('inStock'),
                 className: 'text-status-positive',
             };
-        }
         case InventoryStatus.LOW_STOCK:
             return {
-                message: stockDisplay != null ? t('lowStockCount', { stockDisplay }) : t('lowStock'),
+                message: stockLevel === 1 ? t('oneItemLeft') : t('fewItemsLeft'),
                 className: 'text-status-warning',
             };
         case InventoryStatus.PRE_ORDER:
@@ -163,6 +154,7 @@ function getInventoryMessage(
  *
  * Displays inventory status messages for products on the PDP:
  * - In stock: Green message
+ * - Few items left / 1 item left: Warning message at low-stock threshold
  * - Pre-order: Blue message
  * - Back order: Orange message
  * - Out of stock: Red message
@@ -172,21 +164,18 @@ export default function InventoryMessage({
     currentVariant,
     className,
     lowStockThreshold = 0,
-    maxStockDisplay = 99,
     showUnknownStatus = false,
     getInventoryStatus: customGetInventoryStatus,
 }: InventoryMessageProps): ReactElement {
     const { t } = useTranslation('product');
     const inventory = currentVariant?.inventory || product.inventory;
     const stockLevel = inventory?.ats;
-    const displayStock = stockLevel != null && stockLevel > maxStockDisplay ? `${maxStockDisplay}+` : stockLevel;
 
     let status = customGetInventoryStatus
         ? customGetInventoryStatus(product, currentVariant)
         : getInventoryStatus(product, currentVariant, lowStockThreshold);
 
     const hasVariants = (product.variants?.length ?? 0) > 0;
-    const effectiveDisplay: number | string | undefined = displayStock;
 
     if (!customGetInventoryStatus && hasVariants) {
         const awaitingVariant = currentVariant == null;
@@ -207,7 +196,7 @@ export default function InventoryMessage({
         }
     }
 
-    const statusInfo = getInventoryMessage(status, t, effectiveDisplay);
+    const statusInfo = getInventoryMessage(status, t, stockLevel);
     const isUnknown = status === InventoryStatus.UNKNOWN;
 
     return (

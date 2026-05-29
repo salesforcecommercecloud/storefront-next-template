@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ActiveFilters from './index';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
 const mockNavigate = vi.fn();
 

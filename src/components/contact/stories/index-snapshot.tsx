@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('@/components/link', () => ({
     Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
@@ -38,8 +39,6 @@ vi.mock('@/config', () => ({
     useConfig: () => ({}),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -48,7 +47,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({

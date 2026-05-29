@@ -16,6 +16,7 @@
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
     useNavigation: () => ({ state: 'idle', location: undefined }),
 }));

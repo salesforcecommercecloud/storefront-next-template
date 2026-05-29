@@ -15,7 +15,7 @@
  */
 import { fetchCategory } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperExperience } from '@/scapi';
 
 const dataLoader = (args: {
     componentData: unknown;

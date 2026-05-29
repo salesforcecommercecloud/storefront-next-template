@@ -43,11 +43,13 @@ const productBadgesVariants = cva('absolute top-2 left-2 z-10 flex flex-row gap-
 // These define the color schemes for different product states and are used
 // by the ProductBadge wrapper component to apply semantic styling:
 // - success: Green styling for "New" products
-// - warning: Orange/yellow styling for "Sale" and "Best Seller" products
+// - warning: Dark pill with light text for "Sale" and "Best Seller" products (per Figma);
+//   uses scoped --product-badge-promo-* tokens defined in theme/tokens/components.css
 // - info: Blue styling for "Exclusive" products
 export const productBadgeSemanticVariants = {
     success: 'border-transparent bg-success text-success-foreground [a&]:hover:bg-success/90',
-    warning: 'border-transparent bg-warning text-warning-foreground [a&]:hover:bg-warning/90',
+    warning:
+        'border-transparent bg-product-badge-promo-bg text-product-badge-promo-foreground [a&]:hover:bg-product-badge-promo-bg/90',
     info: 'border-transparent bg-info text-info-foreground [a&]:hover:bg-info/90',
 } as const;
 

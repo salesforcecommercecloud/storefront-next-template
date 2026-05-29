@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, type ReactElement } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/components/link';
@@ -25,8 +25,16 @@ import ProductViewProvider from '@/providers/product-view';
 import ChildProducts from '@/components/product-view/child-products';
 import { useTranslation } from 'react-i18next';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
-import { ProductReviewsProvider } from '@/providers/product-reviews-context';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
+/**
+ * `DialogContent sm:max-w-4xl` (~848) with `md:grid-cols-2` → gallery is the full inner column below `md` and
+ * ~412 wide at `md+`. 420 gives DIS a hair of headroom. Thumbnails use the fixed-CSS horizontal strip, so no
+ * thumbnail override is needed.
+ */
+const GALLERY_WIDTHS = { main: { base: '100vw', md: 420 } } as const;
 
 interface CartItemModalViewProps {
     open: boolean;
@@ -117,77 +125,86 @@ export function CartItemModalView({
                 ) : currentProduct ? (
                     <>
                         <ProductProvider product={currentProduct}>
-                            <ProductContentProvider>
-                                <ProductReviewsProvider>
-                                    <ProductViewProvider
-                                        product={currentProduct}
-                                        mode={mode}
-                                        initialQuantity={initialQuantity}
-                                        itemId={itemId}
-                                        currentVariant={matchingVariant}>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                            <div className="order-1">
-                                                <ImageGallery
-                                                    key={currentProduct.id}
-                                                    images={galleryImages}
-                                                    eager={!isProductASet && !isProductABundle}
-                                                    showNavigationArrows
-                                                    horizontalThumbnails
-                                                    productName={currentProduct.name}
-                                                />
-                                            </div>
-                                            <div className="order-2 flex flex-col self-start">
-                                                <ProductInfo
-                                                    product={currentProduct}
-                                                    swatchMode="controlled"
-                                                    onAttributeChange={onAttributeChange}
-                                                    variationValues={variationValues}
-                                                    currentVariantOverride={matchingVariant}
-                                                    isVariantInventoryLoading={isVariantInventoryLoading}
-                                                    variantStyle="full"
-                                                    hideActionIcons
-                                                    disableRatingInteraction={mode === 'add'}
-                                                    headerAction={
-                                                        mode === 'add' && viewDetailsHref ? (
-                                                            <Link
-                                                                to={viewDetailsHref}
-                                                                className="text-sm font-semibold underline"
-                                                                onClick={handleViewDetailsClick}>
-                                                                {t('account:orders.viewDetails')}
-                                                            </Link>
-                                                        ) : undefined
-                                                    }
-                                                    showQuantityInEditMode={mode === 'edit'}
-                                                />
-                                            </div>
+                            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                            <ProductReviewsProvider>
+                                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                                <ProductViewProvider
+                                    product={currentProduct}
+                                    mode={mode}
+                                    initialQuantity={initialQuantity}
+                                    itemId={itemId}
+                                    currentVariant={matchingVariant}>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                        <div className="order-1">
+                                            <ImageGallery
+                                                key={currentProduct.id}
+                                                images={galleryImages}
+                                                eager={!isProductASet && !isProductABundle}
+                                                showNavigationArrows
+                                                horizontalThumbnails
+                                                productName={currentProduct.name}
+                                                widths={GALLERY_WIDTHS}
+                                            />
                                         </div>
-                                        <hr className="border-border border-t-2" />
-                                        <ProductCartActions
-                                            product={currentProduct}
+                                        <div className="order-2 flex flex-col self-start">
+                                            <ProductInfo
+                                                product={currentProduct}
+                                                swatchMode="controlled"
+                                                onAttributeChange={onAttributeChange}
+                                                variationValues={variationValues}
+                                                currentVariantOverride={matchingVariant}
+                                                isVariantInventoryLoading={isVariantInventoryLoading}
+                                                variantStyle="full"
+                                                hideActionIcons
+                                                // @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
+                                                disableRatingInteraction={mode === 'add'}
+                                                headerAction={
+                                                    mode === 'add' && viewDetailsHref ? (
+                                                        <Link
+                                                            to={viewDetailsHref}
+                                                            className="text-sm font-semibold underline"
+                                                            onClick={handleViewDetailsClick}>
+                                                            {t('account:orders.viewDetails')}
+                                                        </Link>
+                                                    ) : undefined
+                                                }
+                                                showQuantityInEditMode={mode === 'edit'}
+                                            />
+                                        </div>
+                                    </div>
+                                    <hr className="border-border border-t-2" />
+                                    <ProductCartActions
+                                        product={currentProduct}
+                                        onBeforeCartAction={onBeforeCartAction}
+                                        onCartSuccess={mode === 'add' ? onBeforeCartAction : undefined}
+                                        onBuyNow={mode === 'add' ? onBuyNow : undefined}
+                                    />
+                                </ProductViewProvider>
+                                {/* Both branches render inside the cart modal — selectionSource="local" so child
+                                        swatch clicks stay in component state and don't pollute the cart URL or
+                                        trigger _app.cart loader revalidation. */}
+                                {(isProductASet || isProductABundle) &&
+                                    (mode === 'edit' && itemId ? (
+                                        <ChildProducts
+                                            parentProduct={currentProduct}
+                                            mode="edit"
+                                            itemId={itemId}
+                                            initialBundleQuantity={initialQuantity}
                                             onBeforeCartAction={onBeforeCartAction}
-                                            onCartSuccess={mode === 'add' ? onBeforeCartAction : undefined}
-                                            onBuyNow={mode === 'add' ? onBuyNow : undefined}
+                                            selectionSource="local"
                                         />
-                                    </ProductViewProvider>
-                                    {(isProductASet || isProductABundle) &&
-                                        (mode === 'edit' && itemId ? (
-                                            <ChildProducts
-                                                parentProduct={currentProduct}
-                                                mode="edit"
-                                                itemId={itemId}
-                                                initialBundleQuantity={initialQuantity}
-                                                onBeforeCartAction={onBeforeCartAction}
-                                            />
-                                        ) : (
-                                            <ChildProducts
-                                                parentProduct={currentProduct}
-                                                mode="add"
-                                                initialBundleQuantity={initialQuantity}
-                                                onCartSuccess={onBeforeCartAction}
-                                            />
-                                        ))}
-                                </ProductReviewsProvider>
-                            </ProductContentProvider>
+                                    ) : (
+                                        <ChildProducts
+                                            parentProduct={currentProduct}
+                                            mode="add"
+                                            initialBundleQuantity={initialQuantity}
+                                            onCartSuccess={onBeforeCartAction}
+                                            selectionSource="local"
+                                        />
+                                    ))}
+                                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                            </ProductReviewsProvider>
+                            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                         </ProductProvider>
                     </>
                 ) : null}

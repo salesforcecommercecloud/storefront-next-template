@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProducts from './child-products';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import userEvent from '@testing-library/user-event';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
@@ -42,8 +42,8 @@ vi.mock('@/extensions/bopis/components/delivery-options/delivery-options', () =>
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 vi.mock('./child-product-card', () => ({
-    default: ({ childProduct, onSelectionChange, onOrderabilityChange, swatchMode }: any) => (
-        <div data-testid={`child-product-${childProduct.id}`} data-swatch-mode={swatchMode}>
+    default: ({ childProduct, onSelectionChange, onOrderabilityChange, selectionSource }: any) => (
+        <div data-testid={`child-product-${childProduct.id}`} data-selection-source={selectionSource ?? 'url'}>
             <div>{childProduct.name}</div>
             <button
                 onClick={() =>
@@ -211,33 +211,28 @@ describe('ChildProducts', () => {
 
             expect(screen.getByText(/0.*2/)).toBeInTheDocument(); // "0 of 2" format
         });
-    });
 
-    describe('swatch mode', () => {
-        test('renders child cards in uncontrolled mode when mode is add', () => {
+        test('passes selectionSource="url" to child cards by default (PDP behavior)', () => {
             const setProduct = createSetProduct();
 
             renderChildProducts({
                 parentProduct: setProduct,
-                mode: 'add',
             });
 
-            const childCard = screen.getByTestId('child-product-child-1');
-            expect(childCard).toHaveAttribute('data-swatch-mode', 'uncontrolled');
+            expect(screen.getByTestId('child-product-child-1')).toHaveAttribute('data-selection-source', 'url');
+            expect(screen.getByTestId('child-product-child-2')).toHaveAttribute('data-selection-source', 'url');
         });
 
-        test('renders child cards in controlled mode when mode is edit', () => {
-            const bundleProduct = createBundleProduct();
+        test('passes selectionSource="local" to child cards when explicitly set (modal behavior)', () => {
+            const setProduct = createSetProduct();
 
             renderChildProducts({
-                parentProduct: bundleProduct,
-                mode: 'edit',
-                itemId: 'item-123',
-                initialBundleQuantity: 2,
+                parentProduct: setProduct,
+                selectionSource: 'local',
             });
 
-            const childCard = screen.getByTestId('child-product-child-1');
-            expect(childCard).toHaveAttribute('data-swatch-mode', 'controlled');
+            expect(screen.getByTestId('child-product-child-1')).toHaveAttribute('data-selection-source', 'local');
+            expect(screen.getByTestId('child-product-child-2')).toHaveAttribute('data-selection-source', 'local');
         });
     });
 

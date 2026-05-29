@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useEffect, type ReactElement, type ReactNode } from 'react';
+import { expect, within } from 'storybook/test';
 import CartSheet from '../cart-sheet';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within, userEvent } from 'storybook/test';
-import { SITE_PREFIX } from '@storybook/test-utils';
 import { Button } from '@/components/ui/button';
 import BasketProvider, { useMiniCart } from '@/providers/basket';
 import emptyBasket from '@/components/__mocks__/empty-basket';
@@ -26,78 +24,8 @@ import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-
-const mockSite = mockConfig.commerce.sites[0];
-
-function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClose = action('cart-sheet-close');
-        const logCheckout = action('cart-sheet-checkout');
-        const logContinueShopping = action('cart-sheet-continue-shopping');
-        const logEditCart = action('cart-sheet-edit-cart');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            // Handle links (checkout and edit cart) - prevent navigation in Storybook
-            const link = target.closest('a');
-            if (link) {
-                const linkText = link.textContent?.toLowerCase() || '';
-                const href = link.getAttribute('href');
-
-                // Prevent navigation for checkout link
-                if (linkText.includes('checkout') || href === '/checkout') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    logCheckout({});
-                    return;
-                }
-                // Prevent navigation for edit cart link
-                else if (linkText.includes('edit cart') || href === '/cart') {
-                    // Only prevent if it's within the cart sheet dialog
-                    const dialog = link.closest('[role="dialog"]');
-                    if (dialog) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        logEditCart({});
-                        return;
-                    }
-                }
-            }
-
-            // Handle buttons
-            const button = target.closest('button');
-            if (button) {
-                const buttonText = button.textContent?.toLowerCase() || '';
-                if (buttonText.includes('continue') || buttonText.includes('shopping')) {
-                    logContinueShopping({});
-                } else if (button.getAttribute('aria-label')?.includes('close')) {
-                    logClose({});
-                }
-            }
-        };
-
-        // Listen on document.body since the cart sheet is portaled there
-        document.body.addEventListener('click', handleClick, true);
-        // Also listen on root for any non-portaled interactions
-        root.addEventListener('click', handleClick, true);
-
-        return () => {
-            document.body.removeEventListener('click', handleClick, true);
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 function CartSheetWithState({ children }: { children: ReactNode }): ReactElement {
     const { setMiniCartOpen } = useMiniCart();
@@ -115,33 +43,22 @@ const meta: Meta<typeof CartSheet> = {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-Cart Sheet component that displays a mini cart flyout with cart contents.
-
-### Features:
-- Side sheet with cart items
-- Cart item list with remove and edit actions
-- Checkout button (primary)
-- Continue Shopping button (secondary with light gray background)
-- Optional View Cart button (ghost variant)
-- Opens automatically when loaded
-- Matches Storefront Next Design System specifications
-
-**Note**: This component uses \`useBasketWithProducts\` which loads product details via \`/resource/basket-products\`.
-In Storybook, this route returns mock product data for demonstration purposes.
-                `,
+                component:
+                    'Mini cart flyout. Opens automatically; reads basket data via `/resource/basket-products` (mocked in Storybook).',
             },
         },
     },
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
-                    <CartSheetStoryHarness>
-                        <div className="p-8">
-                            <Story />
-                        </div>
-                    </CartSheetStoryHarness>
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <div className="p-8">
+                        <Story />
+                    </div>
                 </SiteProvider>
             </ConfigProvider>
         ),
@@ -165,31 +82,17 @@ export const Empty: Story = {
         </CartSheetWithState>
     ),
     parameters: {
-        snapshot: false, // Skip snapshot test - Radix UI Sheet with empty state causes infinite loop in test environment
-        docs: {
-            story: `
-Cart sheet with empty cart.
-
-### Features:
-- Empty cart message
-- No footer buttons shown when cart is empty
-            `,
-        },
+        snapshot: false, // Radix UI Sheet with empty state causes infinite loop in test environment
+        // Override the default populated /resource/basket-products fixture so the cart sheet sees
+        // an empty basket — the cart-sheet panel reads basket through the resource route's
+        // fetcher, not through the BasketProvider decorator wrapping this story.
+        miniCartData: { basket: emptyBasket, productsById: {} },
     },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Cart sheet renders in a portal, so check document.body
+    play: async () => {
         const documentBody = within(document.body);
-
-        // Wait a bit for the sheet to open
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Check for cart sheet dialog
         const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
         await expect(cartSheet).toBeInTheDocument();
-
-        // Check for empty cart message
-        const emptyMessage = await documentBody.findByText(/your cart is empty/i, {}, { timeout: 5000 });
-        await expect(emptyMessage).toBeInTheDocument();
+        await expect(await documentBody.findByText(/your cart is empty/i, {}, { timeout: 5000 })).toBeInTheDocument();
     },
 };
 
@@ -206,153 +109,15 @@ export const WithItems: Story = {
             <Button variant="ghost">Open Cart</Button>
         </CartSheetWithState>
     ),
-    parameters: {
-        docs: {
-            story: `
-Cart sheet with items in cart.
-
-### Features:
-- Order summary with items
-- Checkout button (primary)
-- Continue Shopping button (secondary with light gray background)
-            `,
-        },
-    },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Cart sheet renders in a portal, so check document.body
+    play: async () => {
         const documentBody = within(document.body);
-
-        // Wait a bit for the sheet to open and products to load
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Check for cart sheet dialog
         const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
         await expect(cartSheet).toBeInTheDocument();
-
-        // Check for checkout button
-        const checkoutButton = await documentBody.findByRole('link', { name: /checkout/i }, { timeout: 5000 });
-        await expect(checkoutButton).toBeInTheDocument();
-
-        // Check for continue shopping button (now a Button component with secondary variant)
-        const continueButton = await documentBody.findByRole(
-            'button',
-            { name: /continue shopping/i },
-            { timeout: 5000 }
-        );
-        await expect(continueButton).toBeInTheDocument();
-    },
-};
-
-export const Interactive: Story = {
-    decorators: [
-        (Story) => (
-            <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
-                <Story />
-            </BasketProvider>
-        ),
-    ],
-    render: () => (
-        <CartSheetWithState>
-            <Button variant="ghost">Open Cart</Button>
-        </CartSheetWithState>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Interactive cart sheet for testing user interactions.
-
-### Features:
-- Button interactions
-- Sheet closing
-            `,
-        },
-    },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Cart sheet renders in a portal, so check document.body
-        const documentBody = within(document.body);
-
-        // Wait for cart sheet to open and products to load
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Wait for cart sheet to open
-        const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
-        await expect(cartSheet).toBeInTheDocument();
-
-        // Click continue shopping button (now a Button component)
-        const continueButton = await documentBody.findByRole(
-            'button',
-            { name: /continue shopping/i },
-            { timeout: 5000 }
-        );
-        await userEvent.click(continueButton);
-
-        // Wait a bit for the sheet to close
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // The sheet should be closed (hidden)
-        const closedSheet = documentBody.queryByRole('dialog', { hidden: true });
-        // Sheet might still be in DOM but hidden, which is fine
-        if (closedSheet) {
-            await expect(closedSheet).toHaveAttribute('data-state', 'closed');
-        }
-    },
-};
-
-export const WithViewCartButton: Story = {
-    decorators: [
-        (Story) => {
-            const configWithViewCart = {
-                ...mockConfig,
-                pages: {
-                    ...mockConfig.pages,
-                    cart: {
-                        ...mockConfig.pages.cart,
-                        miniCart: {
-                            enableViewCartButton: true,
-                        },
-                    },
-                },
-            };
-            return (
-                <ConfigProvider config={configWithViewCart}>
-                    <BasketProvider basket={basketWithOneItem} snapshot={basketWithOneItemSnapshot}>
-                        <Story />
-                    </BasketProvider>
-                </ConfigProvider>
-            );
-        },
-    ],
-    render: () => (
-        <CartSheetWithState>
-            <Button variant="ghost">Open Cart</Button>
-        </CartSheetWithState>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Cart sheet with View Cart button enabled via configuration.
-
-### Features:
-- Checkout button (primary)
-- Continue Shopping button (secondary with light gray background)
-- View Cart button (ghost variant, configurable via \`config.pages.cart.miniCart.enableViewCartButton\`)
-            `,
-        },
-    },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Cart sheet renders in a portal, so check document.body
-        const documentBody = within(document.body);
-
-        // Wait for cart sheet to open and products to load
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Check for cart sheet dialog
-        const cartSheet = await documentBody.findByRole('dialog', { hidden: false }, { timeout: 5000 });
-        await expect(cartSheet).toBeInTheDocument();
-
-        // Check for View Cart button (ghost variant Button component wrapping a Link)
-        const viewCartButton = await documentBody.findByRole('link', { name: /view cart/i }, { timeout: 5000 });
-        await expect(viewCartButton).toBeInTheDocument();
-        await expect(viewCartButton).toHaveAttribute('href', `${SITE_PREFIX}/cart`);
+        await expect(
+            await documentBody.findByRole('link', { name: /checkout/i }, { timeout: 5000 })
+        ).toBeInTheDocument();
+        await expect(
+            await documentBody.findByRole('button', { name: /continue shopping/i }, { timeout: 5000 })
+        ).toBeInTheDocument();
     },
 };

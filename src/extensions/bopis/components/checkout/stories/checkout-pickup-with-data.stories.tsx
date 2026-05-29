@@ -21,7 +21,7 @@ import { action } from 'storybook/actions';
 import CheckoutPickupWithData from '../checkout-pickup-with-data';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 // Mock data
 const mockStore = {

@@ -16,25 +16,20 @@
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
-/*
- * Copyright (c) 2025, Salesforce, Inc.
- * All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
- */
 
 // Testing libraries
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { test } from 'vitest';
 // Commerce SDK
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductAccordion from './product-accordion';
 
-vi.mock('@/hooks/product-reviews/use-product-reviews', () => ({
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
     useProductReviews: () => ({
         reviewsSummary: null,
         reviewsSummaryLoading: false,
@@ -42,11 +37,13 @@ vi.mock('@/hooks/product-reviews/use-product-reviews', () => ({
         reviewsLoading: false,
         loadReviewsIfNeeded: () => {},
         aiSummary: '',
-        addReview: () => {},
+        addReviewOptimistic: () => {},
+        removeReviewOptimistic: () => {},
         expandReviews: () => {},
         registerExpand: () => {},
     }),
 }));
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 const renderProductAccordion = (props: React.ComponentProps<typeof ProductAccordion>) => {
     // Using createMemoryRouter in framework mode is fine

@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
@@ -92,6 +92,7 @@ export default function CartPickup({ store, pickupCount, totalCount }: CartPicku
                             <Trans
                                 ns="extBopis"
                                 i18nKey="cart.pickupStoreInfo.pickupHeadingWithCounts"
+                                count={totalCount}
                                 values={{
                                     storeName: store.name ?? store.id ?? '',
                                     pickupCount,

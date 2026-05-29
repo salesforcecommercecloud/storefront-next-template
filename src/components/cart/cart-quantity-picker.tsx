@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
@@ -30,7 +29,8 @@ import QuantityPicker from '@/components/quantity-picker/quantity-picker';
 import { Typography } from '@/components/typography';
 import { Label } from '@/components/ui/label';
 
-// Constants
+// Utils
+import { cn } from '@/lib/utils';
 
 interface CartQuantityPickerProps {
     /** Current quantity value as string */
@@ -68,7 +68,7 @@ export default function CartQuantityPicker({
     max,
     disabled = false,
 }: CartQuantityPickerProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t: tQuantity } = useTranslation('quantitySelector');
     const { t: tRemove } = useTranslation('removeItem');
     const { t: tCart } = useTranslation('cart');
@@ -99,10 +99,10 @@ export default function CartQuantityPicker({
     });
 
     return (
-        <div className={`${className ?? ''} relative`}>
+        <div className={cn('relative flex w-fit max-w-full flex-col items-start gap-2', className)}>
             <Label
                 htmlFor="quantity"
-                className="text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right">
+                className="block text-left font-sans text-base font-semibold leading-6 text-card-foreground">
                 {tQuantity('quantity')}
             </Label>
             <QuantityPicker
@@ -116,7 +116,7 @@ export default function CartQuantityPicker({
             {!disabled && stockValidationError && (
                 <Typography
                     variant="small"
-                    className="absolute top-full mt-1 text-destructive w-max max-md:left-0 md:right-0"
+                    className="absolute top-full left-0 mt-1 w-max max-w-[min(100%,18rem)] text-destructive"
                     role="alert"
                     aria-live="polite">
                     {stockValidationError}

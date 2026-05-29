@@ -24,7 +24,7 @@ import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtim
 import { PageDesignerInit } from '@/page-designer-init';
 import { PageDesignerHostProvider } from '@/test-utils/page-designer-host-provider';
 import { RegionWrapper } from '@/components/region/region-wrapper';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 import type { ComponentType } from '@/components/region';
 
 /**

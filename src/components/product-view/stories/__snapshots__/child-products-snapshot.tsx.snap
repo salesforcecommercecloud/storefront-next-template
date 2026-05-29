@@ -1,2297 +1,601 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ChildProducts stories snapshot > ProductBundle story renders and matches snapshot 1`] = `
-<div>
+exports[`ChildProducts stories snapshot > Playground story renders and matches snapshot 1`] = `
+<div
+  class="space-y-8"
+>
   <div
-    class="space-y-8"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
   >
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
+      data-slot="card"
+      data-testid="child-product"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
+        data-slot="card-header"
       >
         <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
+          class="text-xl font-bold text-card-foreground tracking-tight"
+          data-slot="card-title"
         >
-          <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
+          Turquoise and Gold Bracelet
+        </div>
+        <div
+          class="items-center gap-2"
+        >
+          <span
+            aria-label="Current price: £38.00"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
+          >
+            £38.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
           >
             Turquoise and Gold Bracelet
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £38.00"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £38.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Turquoise and Gold Bracelet
-               
-              Current price: £38.00
-            </span>
              
-          </div>
-        </div>
-        <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
-        >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Turquoise and Gold Bracelet, Gold, large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-                <span>
-                  Gold
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="true"
-                  aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/RefArchGlobal/en-GB/?013742002836M=color%3DJJ887XX"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Turquoise and Gold Bracelet, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-primary font-medium"
-            >
-              ✓ Selected
-            </span>
-          </div>
+            Current price: £38.00
+          </span>
+           
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
+        class="px-6 space-y-4"
+        data-slot="card-content"
       >
         <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
+          class="aspect-square"
         >
           <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
+            class="space-y-4"
+          >
+            <div
+              class="relative aspect-square overflow-hidden rounded-none bg-muted"
+            >
+              <div
+                class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              >
+                <picture>
+                  <source
+                    media="(min-width: 768px)"
+                    sizes="420px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=420 420w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=840 840w"
+                    type="image/webp"
+                  />
+                  <source
+                    sizes="360px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=360 360w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=720 720w"
+                    type="image/webp"
+                  />
+                  <img
+                    alt="Turquoise and Gold Bracelet, Gold, large"
+                    class="object-cover"
+                    fetchpriority="auto"
+                    loading="lazy"
+                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwf4356eab/images/large/PG.60119239.JJ887XX.PZ.webp?sfrm=jpg&q=70"
+                  />
+                </picture>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Color"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
+            >
+              <span>
+                Color
+                :
+              </span>
+              <span>
+                Gold
+              </span>
+            </div>
+            <div
+              class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
+            >
+              <a
+                aria-checked="true"
+                aria-label="Gold"
+                class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                href="/RefArchGlobal/en-GB/?013742002836M=color%3DJJ887XX"
+                position="relative"
+                role="radio"
+                tabindex="0"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
+                >
+                  <div
+                    aria-label="Turquoise and Gold Bracelet, Gold, swatch"
+                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
+                    style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
+                  />
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="text-center text-sm"
+        >
+          <span
+            class="text-primary font-medium"
+          >
+            ✓ Selected
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
+      data-slot="card"
+      data-testid="child-product"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
+        data-slot="card-header"
+      >
+        <div
+          class="text-xl font-bold text-card-foreground tracking-tight"
+          data-slot="card-title"
+        >
+          Turquoise and Gold Necklace
+        </div>
+        <div
+          class="items-center gap-2"
+        >
+          <span
+            aria-label="Current price: £45.00"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
+          >
+            £45.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
           >
             Turquoise and Gold Necklace
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £45.00"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £45.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Turquoise and Gold Necklace
-               
-              Current price: £45.00
-            </span>
              
-          </div>
-        </div>
-        <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
-        >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Turquoise and Gold Necklace, Gold, large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-                <span>
-                  Gold
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="true"
-                  aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/RefArchGlobal/en-GB/?013742002805M=color%3DJJ887XX"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Turquoise and Gold Necklace, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwef2fba24/images/swatch/PG.60119236.JJ887XX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-primary font-medium"
-            >
-              ✓ Selected
-            </span>
-          </div>
+            Current price: £45.00
+          </span>
+           
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
+        class="px-6 space-y-4"
+        data-slot="card-content"
       >
         <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
+          class="aspect-square"
         >
           <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
+            class="space-y-4"
+          >
+            <div
+              class="relative aspect-square overflow-hidden rounded-none bg-muted"
+            >
+              <div
+                class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              >
+                <picture>
+                  <source
+                    media="(min-width: 768px)"
+                    sizes="420px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=420 420w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=840 840w"
+                    type="image/webp"
+                  />
+                  <source
+                    sizes="360px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=360 360w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=720 720w"
+                    type="image/webp"
+                  />
+                  <img
+                    alt="Turquoise and Gold Necklace, Gold, large"
+                    class="object-cover"
+                    fetchpriority="auto"
+                    loading="lazy"
+                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwdc5f4721/images/large/PG.60119236.JJ887XX.PZ.webp?sfrm=jpg&q=70"
+                  />
+                </picture>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Color"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
+            >
+              <span>
+                Color
+                :
+              </span>
+              <span>
+                Gold
+              </span>
+            </div>
+            <div
+              class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
+            >
+              <a
+                aria-checked="true"
+                aria-label="Gold"
+                class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                href="/RefArchGlobal/en-GB/?013742002805M=color%3DJJ887XX"
+                position="relative"
+                role="radio"
+                tabindex="0"
+              >
+                <div
+                  class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
+                >
+                  <div
+                    aria-label="Turquoise and Gold Necklace, Gold, swatch"
+                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
+                    style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwef2fba24/images/swatch/PG.60119236.JJ887XX.CP.jpg");"
+                  />
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="text-center text-sm"
+        >
+          <span
+            class="text-primary font-medium"
+          >
+            ✓ Selected
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
+      data-slot="card"
+      data-testid="child-product"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
+        data-slot="card-header"
+      >
+        <div
+          class="text-xl font-bold text-card-foreground tracking-tight"
+          data-slot="card-title"
+        >
+          Turquoise and Gold Hoop Earring
+        </div>
+        <div
+          class="items-center gap-2"
+        >
+          <span
+            aria-label="Current price: £30.00"
+            aria-live="polite"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
+          >
+            £30.00
+          </span>
+          <span
+            aria-atomic="true"
+            aria-live="polite"
+            class="sr-only"
           >
             Turquoise and Gold Hoop Earring
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £30.00"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £30.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Turquoise and Gold Hoop Earring
-               
-              Current price: £30.00
-            </span>
              
-          </div>
-        </div>
-        <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
-        >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Turquoise and Gold Hoop Earring, Gold, large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-                <span>
-                  Gold
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="true"
-                  aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/RefArchGlobal/en-GB/?013742002799M=color%3DJJ887XX"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Turquoise and Gold Hoop Earring, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwde3c3e85/images/swatch/PG.60119235.JJ887XX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-primary font-medium"
-            >
-              ✓ Selected
-            </span>
-          </div>
+            Current price: £30.00
+          </span>
+           
         </div>
       </div>
-    </div>
-    <div
-      class="flex justify-center"
-    >
       <div
-        class="w-64"
+        class="px-6 space-y-4"
+        data-slot="card-content"
       >
         <div
-          class="space-y-2"
-        >
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
-            data-slot="label"
-            for="quantity"
-          >
-            Quantity:
-          </label>
-          <div
-            class="inline-flex items-center border border-input rounded-none"
-          >
-            <button
-              aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="quantity-decrement"
-              disabled=""
-            >
-              −
-            </button>
-            <input
-              aria-label="Quantity:"
-              class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              min="1"
-              step="1"
-              type="number"
-              value="1"
-            />
-            <button
-              aria-label="Increment Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="quantity-increment"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="flex justify-center"
-    >
-      <div>
-        <div
-          class="space-y-4"
+          class="aspect-square"
         >
           <div
-            class="w-full"
+            class="space-y-4"
           >
             <div
-              aria-required="false"
-              class="grid grid-cols-2 gap-2"
-              data-slot="radio-group"
-              data-testid="delivery-option-select"
-              dir="ltr"
-              role="radiogroup"
-              style="outline: none;"
-              tabindex="0"
+              class="relative aspect-square overflow-hidden rounded-none bg-muted"
             >
-              <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                data-slot="label"
-                for="delivery-option-womens-jewelry-bundleM"
+              <div
+                class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
               >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="delivery-option-womens-jewelry-bundleM"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="delivery"
-                />
+                <picture>
+                  <source
+                    media="(min-width: 768px)"
+                    sizes="420px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=420 420w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=840 840w"
+                    type="image/webp"
+                  />
+                  <source
+                    sizes="360px"
+                    srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=360 360w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70&sw=720 720w"
+                    type="image/webp"
+                  />
+                  <img
+                    alt="Turquoise and Gold Hoop Earring, Gold, large"
+                    class="object-cover"
+                    fetchpriority="auto"
+                    loading="lazy"
+                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd316e8d4/images/large/PG.60119235.JJ887XX.PZ.webp?sfrm=jpg&q=70"
+                  />
+                </picture>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-3"
+        >
+          <div
+            aria-label="Color"
+            class="flex flex-col gap-3"
+            role="radiogroup"
+          >
+            <div
+              class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
+            >
+              <span>
+                Color
+                :
+              </span>
+              <span>
+                Gold
+              </span>
+            </div>
+            <div
+              class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
+            >
+              <a
+                aria-checked="true"
+                aria-label="Gold"
+                class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                href="/RefArchGlobal/en-GB/?013742002799M=color%3DJJ887XX"
+                position="relative"
+                role="radio"
+                tabindex="0"
+              >
                 <div
-                  class="mt-0.5 shrink-0"
+                  class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                 >
                   <div
-                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    aria-label="Turquoise and Gold Hoop Earring, Gold, swatch"
+                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
+                    style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwde3c3e85/images/swatch/PG.60119235.JJ887XX.CP.jpg");"
                   />
                 </div>
-                <div
-                  class="flex-1 min-w-0"
-                >
-                  <div
-                    class="flex flex-col"
-                  >
-                    <span
-                      class="text-xs font-medium text-foreground"
-                    >
-                      Deliver to
-                    </span>
-                    <p
-                      class="text-xs text-muted-foreground mt-0.5"
-                    >
-                      Enter ZIP code to see delivery estimate
-                    </p>
-                  </div>
-                </div>
-              </label>
-              <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                data-slot="label"
-                for="pickup-option-womens-jewelry-bundleM"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="pickup-option-womens-jewelry-bundleM"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="pickup"
-                />
-                <div
-                  class="mt-0.5 shrink-0"
-                >
-                  <div
-                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                  />
-                </div>
-                <div
-                  class="flex-1 min-w-0"
-                >
-                  <div
-                    class="flex flex-col"
-                  >
-                    <span
-                      class="text-xs font-medium text-foreground"
-                    >
-                      Free pickup in
-                    </span>
-                    <div
-                      class="mt-0.5"
-                    >
-                      <button
-                        class="text-xs text-primary hover:underline cursor-pointer"
-                        type="button"
-                      />
-                      <p
-                        class="text-xs font-normal text-muted-foreground mt-1"
-                      >
-                        Now available for pickup today.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </label>
+              </a>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div
-      class="flex items-center justify-center space-x-2 text-sm text-muted-foreground"
-    >
-      <span>
-        3 of {3} selected
-      </span>
-      <div
-        class="w-32 bg-muted rounded-full h-2"
-      >
         <div
-          class="bg-primary h-2 rounded-full transition-all duration-300"
-          style="width: 100%;"
-        />
+          class="text-center text-sm"
+        >
+          <span
+            class="text-primary font-medium"
+          >
+            ✓ Selected
+          </span>
+        </div>
       </div>
-    </div>
-    <div
-      class="flex justify-center"
-    >
-      <button
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-64"
-        data-size="lg"
-        data-slot="button"
-        data-testid="add-to-cart"
-        data-variant="default"
-      >
-        Add Bundle to Cart
-      </button>
     </div>
   </div>
-</div>
-`;
-
-exports[`ChildProducts stories snapshot > ProductSet story renders and matches snapshot 1`] = `
-<div>
   <div
-    class="space-y-8"
+    class="flex justify-center"
   >
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      class="w-64"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
+        class="space-y-2"
       >
-        <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
+        <label
+          class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
+          data-slot="label"
+          for="quantity"
         >
-          <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
-          >
-            Quilted Jacket
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £110.99"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £110.99
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Quilted Jacket
-               
-              Current price: £110.99
-            </span>
-             
-            <span
-              aria-label="List price from £159.00"
-              class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
-            >
-              £159.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Quilted Jacket
-               
-              List price: £159.00
-            </span>
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
-            </span>
-          </div>
-        </div>
+          Quantity
+        </label>
         <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
+          class="inline-flex items-center border border-input rounded-none"
         >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Quilted Jacket, , large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-4 gap-2 sm:gap-3"
-              >
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-primary
-                            "
-                  data-index="0"
-                >
-                  <img
-                    alt="Quilted Jacket, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-transparent hover:border-border
-                            "
-                  data-index="1"
-                >
-                  <img
-                    alt="Quilted Jacket, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9ee2b9a1/images/large/PG.10205921.JJ5FUXX.BZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="royal"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518447M=color%3DJJ5FUXX"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Quilted Jacket, royal, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw1d0ec998/images/swatch/PG.10205921.JJ5FUXX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Size"
-              class="inline-flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Size
-                  :
-                </span>
-              </div>
-              <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9SM"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      S
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9MD"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      M
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9LG"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      L
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9XL"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      XL
-                    </span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-2"
-          >
-            <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
-              data-slot="label"
-              for="quantity"
-            >
-              Quantity:
-            </label>
-            <div
-              class="inline-flex items-center border border-input rounded-none"
-            >
-              <button
-                aria-label="Decrement Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-decrement"
-                disabled=""
-              >
-                −
-              </button>
-              <input
-                aria-label="Quantity:"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                min="1"
-                step="1"
-                type="number"
-                value="1"
-              />
-              <button
-                aria-label="Increment Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-increment"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-muted-foreground"
-            >
-              Select options above
-            </span>
-          </div>
-          <div
-            class="mt-6"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="w-full"
-              >
-                <div
-                  aria-required="false"
-                  class="grid grid-cols-2 gap-2"
-                  data-slot="radio-group"
-                  data-testid="delivery-option-select"
-                  dir="ltr"
-                  role="radiogroup"
-                  style="outline: none;"
-                  tabindex="0"
-                >
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="delivery-option-25518447M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="delivery-option-25518447M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="delivery"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Deliver to
-                        </span>
-                        <p
-                          class="text-xs text-muted-foreground mt-0.5"
-                        >
-                          Enter ZIP code to see delivery estimate
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="pickup-option-25518447M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="pickup-option-25518447M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="pickup"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Free pickup in
-                        </span>
-                        <div
-                          class="mt-0.5"
-                        >
-                          <button
-                            class="text-xs text-primary hover:underline cursor-pointer"
-                            type="button"
-                          />
-                          <p
-                            class="text-xs font-normal text-muted-foreground mt-1"
-                          >
-                            Now available for pickup today.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
           <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
-            data-size="sm"
-            data-slot="button"
-            data-testid="add-to-cart"
-            data-variant="default"
+            aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
+            class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+            data-testid="quantity-decrement"
             disabled=""
           >
-            Add to Cart
+            −
           </button>
-        </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
-      >
-        <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
-        >
-          <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
-          >
-            Pull On Pant
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £69.00"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £69.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Pull On Pant
-               
-              Current price: £69.00
-            </span>
-             
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
-        >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Pull On Pant, , large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-4 gap-2 sm:gap-3"
-              >
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-primary
-                            "
-                  data-index="0"
-                >
-                  <img
-                    alt="Pull On Pant, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-transparent hover:border-border
-                            "
-                  data-index="1"
-                >
-                  <img
-                    alt="Pull On Pant, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw94990901/images/large/PG.10218785.JJ2XNXX.BZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="Grey Heather"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=color%3DJJ2XNXX"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Pull On Pant, Grey Heather, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw811d3399/images/swatch/PG.10218785.JJ2XNXX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Size"
-              class="inline-flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Size
-                  :
-                </span>
-              </div>
-              <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="XS"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9XS"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      XS
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9SM"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      S
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9MD"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      M
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9LG"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      L
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9XL"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      XL
-                    </span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-2"
-          >
-            <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
-              data-slot="label"
-              for="quantity"
-            >
-              Quantity:
-            </label>
-            <div
-              class="inline-flex items-center border border-input rounded-none"
-            >
-              <button
-                aria-label="Decrement Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-decrement"
-                disabled=""
-              >
-                −
-              </button>
-              <input
-                aria-label="Quantity:"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                min="1"
-                step="1"
-                type="number"
-                value="1"
-              />
-              <button
-                aria-label="Increment Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-increment"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-muted-foreground"
-            >
-              Select options above
-            </span>
-          </div>
-          <div
-            class="mt-6"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="w-full"
-              >
-                <div
-                  aria-required="false"
-                  class="grid grid-cols-2 gap-2"
-                  data-slot="radio-group"
-                  data-testid="delivery-option-select"
-                  dir="ltr"
-                  role="radiogroup"
-                  style="outline: none;"
-                  tabindex="0"
-                >
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="delivery-option-25518704M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="delivery-option-25518704M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="delivery"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Deliver to
-                        </span>
-                        <p
-                          class="text-xs text-muted-foreground mt-0.5"
-                        >
-                          Enter ZIP code to see delivery estimate
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="pickup-option-25518704M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="pickup-option-25518704M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="pickup"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Free pickup in
-                        </span>
-                        <div
-                          class="mt-0.5"
-                        >
-                          <button
-                            class="text-xs text-primary hover:underline cursor-pointer"
-                            type="button"
-                          />
-                          <p
-                            class="text-xs font-normal text-muted-foreground mt-1"
-                          >
-                            Now available for pickup today.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
+          <input
+            aria-label="Quantity"
+            class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            min="1"
+            step="1"
+            type="number"
+            value="1"
+          />
           <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
-            data-size="sm"
-            data-slot="button"
-            data-testid="add-to-cart"
-            data-variant="default"
-            disabled=""
+            aria-label="Increment Quantity for Turquoise Jewelry Bundle"
+            class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+            data-testid="quantity-increment"
           >
-            Add to Cart
-          </button>
-        </div>
-      </div>
-      <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
-        data-slot="card"
-        data-testid="child-product"
-      >
-        <div
-          class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-4"
-          data-slot="card-header"
-        >
-          <div
-            class="font-semibold text-lg"
-            data-slot="card-title"
-          >
-            Zerrick
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              aria-label="Current price: £99.00"
-              aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
-            >
-              £99.00
-            </span>
-            <span
-              aria-atomic="true"
-              aria-live="polite"
-              class="sr-only"
-            >
-              Zerrick
-               
-              Current price: £99.00
-            </span>
-             
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
-            </span>
-          </div>
-        </div>
-        <div
-          class="px-6 space-y-4"
-          data-slot="card-content"
-        >
-          <div
-            class="aspect-square"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="relative aspect-square overflow-hidden rounded-none bg-muted"
-              >
-                <div
-                  class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                >
-                  <picture>
-                    <source
-                      media="(min-width: 640px)"
-                      sizes="680px"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70&sw=1360 1360w"
-                      type="image/webp"
-                    />
-                    <source
-                      sizes="100vw"
-                      srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70&sw=1280 1280w"
-                      type="image/webp"
-                    />
-                    <img
-                      alt="Zerrick, , large"
-                      class="object-cover"
-                      fetchpriority="auto"
-                      loading="lazy"
-                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70"
-                    />
-                  </picture>
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-4 gap-2 sm:gap-3"
-              >
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-primary
-                            "
-                  data-index="0"
-                >
-                  <img
-                    alt="Zerrick, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-                <button
-                  class="
-                                aspect-square overflow-hidden rounded-none bg-muted
-                                border-2 transition-colors cursor-pointer
-                                border-transparent hover:border-border
-                            "
-                  data-index="1"
-                >
-                  <img
-                    alt="Zerrick, , large"
-                    class="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwa5064a0b/images/large/PG.CJZERRICK.BLACKLE.BZ.webp?sfrm=jpg&q=70"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Color"
-              class="flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Color
-                  :
-                </span>
-              </div>
-              <div
-                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="Black"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=color%3DBLACKLE"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Zerrick, Black, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwaaf5a5ba/images/swatch/PG.CJZERRICK.BLACKLE.CP.jpg");"
-                    />
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="Taupe"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=color%3DTAUPETX"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <div
-                      aria-label="Zerrick, Taupe, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
-                      style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw114ea19c/images/swatch/PG.CJZERRICK.TAUPETX.CP.jpg");"
-                    />
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Size"
-              class="inline-flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Size
-                  :
-                </span>
-              </div>
-              <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="6"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D060"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      6
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="6.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D065"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      6.5
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="7"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D070"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      7
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="7.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D075"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      7.5
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="8"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D080"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      8
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="8.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D085"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      8.5
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="9"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D090"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      9
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="9.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D095"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      9.5
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="10"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D100"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      10
-                    </span>
-                  </div>
-                </a>
-                <a
-                  aria-checked="false"
-                  aria-label="11"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=size%3D110"
-                  position="relative"
-                  role="radio"
-                  tabindex="-1"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      11
-                    </span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-3"
-          >
-            <div
-              aria-label="Width"
-              class="inline-flex flex-col gap-3"
-              role="radiogroup"
-            >
-              <div
-                class="flex items-center gap-2 text-sm text-foreground"
-              >
-                <span
-                  class="font-semibold"
-                >
-                  Width
-                  :
-                </span>
-              </div>
-              <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
-              >
-                <a
-                  aria-checked="false"
-                  aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/RefArchGlobal/en-GB/?25772717M=width%3DM"
-                  position="relative"
-                  role="radio"
-                  tabindex="0"
-                >
-                  <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
-                  >
-                    <span
-                      class="text-xs font-medium"
-                    >
-                      M
-                    </span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div
-            class="space-y-2"
-          >
-            <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
-              data-slot="label"
-              for="quantity"
-            >
-              Quantity:
-            </label>
-            <div
-              class="inline-flex items-center border border-input rounded-none"
-            >
-              <button
-                aria-label="Decrement Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-decrement"
-                disabled=""
-              >
-                −
-              </button>
-              <input
-                aria-label="Quantity:"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                min="1"
-                step="1"
-                type="number"
-                value="1"
-              />
-              <button
-                aria-label="Increment Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="quantity-increment"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div
-            class="text-center text-sm"
-          >
-            <span
-              class="text-muted-foreground"
-            >
-              Select options above
-            </span>
-          </div>
-          <div
-            class="mt-6"
-          >
-            <div
-              class="space-y-4"
-            >
-              <div
-                class="w-full"
-              >
-                <div
-                  aria-required="false"
-                  class="grid grid-cols-2 gap-2"
-                  data-slot="radio-group"
-                  data-testid="delivery-option-select"
-                  dir="ltr"
-                  role="radiogroup"
-                  style="outline: none;"
-                  tabindex="0"
-                >
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="delivery-option-25772717M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="delivery-option-25772717M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="delivery"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Deliver to
-                        </span>
-                        <p
-                          class="text-xs text-muted-foreground mt-0.5"
-                        >
-                          Enter ZIP code to see delivery estimate
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                    data-slot="label"
-                    for="pickup-option-25772717M"
-                  >
-                    <button
-                      aria-checked="false"
-                      class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                      data-radix-collection-item=""
-                      data-slot="radio-group-item"
-                      data-state="unchecked"
-                      id="pickup-option-25772717M"
-                      role="radio"
-                      tabindex="-1"
-                      type="button"
-                      value="pickup"
-                    />
-                    <div
-                      class="mt-0.5 shrink-0"
-                    >
-                      <div
-                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 min-w-0"
-                    >
-                      <div
-                        class="flex flex-col"
-                      >
-                        <span
-                          class="text-xs font-medium text-foreground"
-                        >
-                          Free pickup in
-                        </span>
-                        <div
-                          class="mt-0.5"
-                        >
-                          <button
-                            class="text-xs text-primary hover:underline cursor-pointer"
-                            type="button"
-                          />
-                          <p
-                            class="text-xs font-normal text-muted-foreground mt-1"
-                          >
-                            Now available for pickup today.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
-            data-size="sm"
-            data-slot="button"
-            data-testid="add-to-cart"
-            data-variant="default"
-            disabled=""
-          >
-            Add to Cart
+            +
           </button>
         </div>
       </div>
     </div>
-    <div
-      class="flex justify-center"
-    >
-      <div>
+  </div>
+  <div
+    class="flex justify-center"
+  >
+    <div>
+      <div
+        class="space-y-4"
+      >
         <div
-          class="space-y-4"
+          class="w-full"
         >
           <div
-            class="w-full"
+            aria-required="false"
+            class="grid grid-cols-2 gap-2"
+            data-slot="radio-group"
+            data-testid="delivery-option-select"
+            dir="ltr"
+            role="radiogroup"
+            style="outline: none;"
+            tabindex="0"
           >
-            <div
-              aria-required="false"
-              class="grid grid-cols-2 gap-2"
-              data-slot="radio-group"
-              data-testid="delivery-option-select"
-              dir="ltr"
-              role="radiogroup"
-              style="outline: none;"
-              tabindex="0"
+            <label
+              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+              data-slot="label"
+              for="delivery-option-womens-jewelry-bundleM"
             >
-              <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                data-slot="label"
-                for="delivery-option-winter-lookM"
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="delivery-option-womens-jewelry-bundleM"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="delivery"
+              />
+              <div
+                class="mt-0.5 shrink-0"
               >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="delivery-option-winter-lookM"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="delivery"
+                <div
+                  class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                 />
+              </div>
+              <div
+                class="flex-1 min-w-0"
+              >
                 <div
-                  class="mt-0.5 shrink-0"
+                  class="flex flex-col"
                 >
-                  <div
-                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                  />
-                </div>
-                <div
-                  class="flex-1 min-w-0"
-                >
-                  <div
-                    class="flex flex-col"
+                  <span
+                    class="text-sm font-medium leading-none text-foreground"
                   >
-                    <span
-                      class="text-xs font-medium text-foreground"
-                    >
-                      Deliver to
-                    </span>
+                    Deliver to
+                  </span>
+                  <p
+                    class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
+                  >
+                    Enter ZIP code to see delivery estimate
+                  </p>
+                </div>
+              </div>
+            </label>
+            <label
+              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+              data-slot="label"
+              for="pickup-option-womens-jewelry-bundleM"
+            >
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="pickup-option-womens-jewelry-bundleM"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="pickup"
+              />
+              <div
+                class="mt-0.5 shrink-0"
+              >
+                <div
+                  class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                />
+              </div>
+              <div
+                class="flex-1 min-w-0"
+              >
+                <div
+                  class="flex flex-col"
+                >
+                  <span
+                    class="text-sm font-medium leading-none text-foreground"
+                  >
+                    Free pickup in
+                  </span>
+                  <div
+                    class="mt-0.5"
+                  >
+                    <button
+                      class="text-xs text-primary hover:underline cursor-pointer"
+                      type="button"
+                    />
                     <p
-                      class="text-xs text-muted-foreground mt-0.5"
+                      class="text-xs font-normal text-muted-foreground mt-1"
                     >
-                      Enter ZIP code to see delivery estimate
+                      Now available for pickup today.
                     </p>
                   </div>
                 </div>
-              </label>
-              <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
-                data-slot="label"
-                for="pickup-option-winter-lookM"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="pickup-option-winter-lookM"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="pickup"
-                />
-                <div
-                  class="mt-0.5 shrink-0"
-                >
-                  <div
-                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
-                  />
-                </div>
-                <div
-                  class="flex-1 min-w-0"
-                >
-                  <div
-                    class="flex flex-col"
-                  >
-                    <span
-                      class="text-xs font-medium text-foreground"
-                    >
-                      Free pickup in
-                    </span>
-                    <div
-                      class="mt-0.5"
-                    >
-                      <button
-                        class="text-xs text-primary hover:underline cursor-pointer"
-                        type="button"
-                      />
-                      <p
-                        class="text-xs font-normal text-muted-foreground mt-1"
-                      >
-                        Now available for pickup today.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+              </div>
+            </label>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  <div
+    class="flex items-center justify-center space-x-2 text-sm text-muted-foreground"
+  >
+    <span>
+      3 of {3} selected
+    </span>
     <div
-      class="flex items-center justify-center space-x-2 text-sm text-muted-foreground"
+      class="w-32 bg-muted rounded-full h-2"
     >
-      <span>
-        0 of {3} selected
-      </span>
       <div
-        class="w-32 bg-muted rounded-full h-2"
-      >
-        <div
-          class="bg-primary h-2 rounded-full transition-all duration-300"
-          style="width: 0%;"
-        />
-      </div>
+        class="bg-primary h-2 rounded-full transition-all duration-300"
+        style="width: 100%;"
+      />
     </div>
-    <div
-      class="flex justify-center"
+  </div>
+  <div
+    class="flex justify-center"
+  >
+    <button
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-64"
+      data-size="lg"
+      data-slot="button"
+      data-testid="add-to-cart"
+      data-variant="default"
     >
-      <button
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-64"
-        data-size="lg"
-        data-slot="button"
-        data-testid="add-to-cart"
-        data-variant="default"
-        disabled=""
-      >
-        Add Set to Cart
-      </button>
-    </div>
+      Add Bundle to Cart
+    </button>
   </div>
 </div>
 `;

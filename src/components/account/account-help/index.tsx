@@ -20,8 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { SparklesIcon } from '@/components/icons';
 import { openShopperAgent } from '@/components/shopper-agent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { isShopperAgentContextUiEnabled } from '@/lib/shopper-agent-context-ui';
+import { isShopperAgentContextUiEnabled } from '@/lib/shopper-context/agent-ui';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 
 /**
@@ -33,7 +32,7 @@ import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-a
  */
 export function AccountHelp(): ReactElement {
     const { t } = useTranslation('account');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const isShopperAgentEnabled =
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
@@ -48,9 +47,7 @@ export function AccountHelp(): ReactElement {
     return (
         <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
-                <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2">
-                    {t('shopperAgentEntry.title')}
-                </h2>
+                <h2 className="text-lg font-semibold text-foreground mb-2">{t('shopperAgentEntry.title')}</h2>
                 <p className="text-sm text-muted-foreground mb-4">{t('shopperAgentEntry.description')}</p>
                 <div className="flex flex-wrap gap-3">
                     {showAskQuestionButton ? (

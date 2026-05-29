@@ -17,16 +17,14 @@ import { useFetcher } from 'react-router';
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketUpdater } from '@/providers/basket';
-import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
+import type { ContactInfoData, PaymentData } from '@/lib/checkout/schemas';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import {
     CHECKOUT_STEPS,
     CHECKOUT_ACTION_INTENTS,
     type CheckoutStep,
 } from '@/components/checkout/utils/checkout-context-types';
-
-// Place order uses a dedicated action route (excluded from site context prefix via /action/**)
-const placeOrderActionRoute = '/action/place-order';
+import { resourceRoutes } from '@/route-paths';
 
 /** Persists create-account intent across reloads (mirrors handleCreateAccountPreferenceChange). */
 const SESSION_SHOULD_CREATE_ACCOUNT = 'shouldCreateAccount';
@@ -98,11 +96,16 @@ export type PaymentSubmissionRef = MutableRefObject<{
 /** When true, contact step should not advance (e.g. OTP modal is open or authorize in flight). */
 export type OtpFlowActiveRef = MutableRefObject<boolean>;
 
+/** When true, shipping address step should not advance (no valid shipping methods for address). */
+export type NoShippingMethodsRef = MutableRefObject<boolean>;
+
 export function useCheckoutActions(options?: {
     paymentSubmissionRef?: PaymentSubmissionRef;
     placeOrderOptionsRef?: PlaceOrderOptionsRef;
     /** When .current is true, do not advance from contact step after submit (OTP modal flow). */
     otpFlowActiveRef?: OtpFlowActiveRef;
+    /** When .current is true, do not advance from shipping address step (no valid methods available). */
+    noShippingMethodsRef?: NoShippingMethodsRef;
 }) {
     const { exitEditMode, editingStep } = useCheckoutContext();
     const updateBasket = useBasketUpdater();
@@ -213,6 +216,11 @@ export function useCheckoutActions(options?: {
 
         // Do not advance from contact step when OTP modal is open or authorize is in flight
         if (step === CHECKOUT_STEPS.CONTACT_INFO && options?.otpFlowActiveRef?.current) {
+            return;
+        }
+
+        // Do not advance from shipping address step when no valid shipping methods are available
+        if (step === CHECKOUT_STEPS.SHIPPING_ADDRESS && options?.noShippingMethodsRef?.current) {
             return;
         }
 
@@ -423,7 +431,7 @@ export function useCheckoutActions(options?: {
         }
         void placeOrderFetcher.submit(formData, {
             method: 'post',
-            action: placeOrderActionRoute,
+            action: resourceRoutes.placeOrder,
         });
     };
 

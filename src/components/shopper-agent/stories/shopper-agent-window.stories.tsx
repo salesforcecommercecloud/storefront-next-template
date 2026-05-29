@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import { ShopperAgentWindow } from '../shopper-agent-window';
+import { mockAltSiteObject } from '@/test-utils/config';
 
 const mockConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -25,7 +26,7 @@ const mockConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: 'RefArchGlobal',
+    siteId: mockAltSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgentWindow> = {
@@ -50,6 +51,7 @@ It does not render visible UI; it mounts the embedded service. In Storybook the 
         currency: { control: 'text' },
         siteId: { control: 'text' },
         userId: { control: 'text' },
+        usid: { control: 'text' },
     },
 };
 
@@ -59,9 +61,9 @@ type Story = StoryObj<typeof ShopperAgentWindow>;
 export const Default: Story = {
     args: {
         config: mockConfig,
-        locale: 'en-US',
-        currency: 'USD',
-        siteId: 'RefArchGlobal',
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
         domainUrl: 'https://example.com/',
     },
 };
@@ -69,10 +71,21 @@ export const Default: Story = {
 export const WithUserId: Story = {
     args: {
         config: mockConfig,
-        locale: 'en-US',
-        currency: 'USD',
-        siteId: 'RefArchGlobal',
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
         domainUrl: 'https://example.com/',
         userId: 'user-123',
+    },
+};
+
+export const WithUsid: Story = {
+    args: {
+        config: mockConfig,
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
+        domainUrl: 'https://example.com/',
+        usid: 'usid-abc-123',
     },
 };

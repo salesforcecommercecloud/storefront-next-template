@@ -41,6 +41,7 @@ interface ShopperAgentWindowProps {
     currency?: string;
     siteId: string;
     userId?: string;
+    usid?: string;
     domainUrl: string;
     onReady?: () => void;
 }
@@ -64,6 +65,7 @@ export function ShopperAgentWindow({
     currency,
     siteId,
     userId,
+    usid,
     domainUrl,
     onReady,
 }: ShopperAgentWindowProps) {
@@ -259,7 +261,7 @@ export function ShopperAgentWindow({
                 const prechatFields: Record<string, string> = {
                     SiteId: siteId,
                     Locale: locale,
-                    DomainUrl: domainUrl,
+                    DomainURL: domainUrl,
                 };
 
                 if (currency) {
@@ -269,6 +271,12 @@ export function ShopperAgentWindow({
                 if (userId) {
                     prechatFields.UserId = userId;
                 }
+
+                if (usid) {
+                    prechatFields.UsId = usid;
+                }
+                prechatFields.isCartMgmtSupported = 'true';
+                prechatFields.OrganizationId = salesforceOrgId;
 
                 void window.embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(prechatFields);
 
@@ -324,7 +332,7 @@ export function ShopperAgentWindow({
                 handleEmbeddedMessagingFirstBotMessageSent
             );
         };
-    }, [siteId, locale, currency, userId, domainUrl, onReady]);
+    }, [siteId, locale, currency, userId, usid, domainUrl, onReady, salesforceOrgId]);
 
     // This component doesn't render visible UI, only manages the messaging service
     return null;

@@ -62,8 +62,8 @@ vi.mock('@/hooks/use-rule-based-bonus-products', () => ({
 }));
 
 // Mock product-utils
-vi.mock('@/lib/product-utils', async () => {
-    const actual = await vi.importActual('@/lib/product-utils');
+vi.mock('@/lib/product/product-utils', async () => {
+    const actual = await vi.importActual('@/lib/product/product-utils');
     return {
         ...actual,
         isRuleBasedPromotion: () => false, // Default to list-based for storybook
@@ -74,6 +74,7 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as BonusProductSelectionStories from './bonus-product-selection.stories';
 import { render, cleanup } from '@testing-library/react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const composed = composeStories(BonusProductSelectionStories);
 
@@ -84,7 +85,14 @@ afterEach(() => {
 describe('BonusProductSelection stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(<Story />);
+            // `BonusProductSelection` reads `useSite()` — wrap the render so the
+            // story inherits `SiteProvider` here even when the global decorator
+            // stack doesn't propagate through `composeStories` in this harness.
+            const { container } = render(
+                <AllProvidersWrapper>
+                    <Story />
+                </AllProvidersWrapper>
+            );
             expect(container.firstChild).toMatchSnapshot();
         });
     }

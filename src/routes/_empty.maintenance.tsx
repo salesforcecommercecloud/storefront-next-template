@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type LoaderFunctionArgs, useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
+import type { Route } from './+types/_empty.maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
 import { getLogger } from '@/lib/logger.server';
 import { Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export async function loader(args: LoaderFunctionArgs) {
+export async function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     logger.debug('MaintenancePage: loader starting');
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const { sharedMaintenancePage, cdnUrl, forwardedHost } = config.pages.maintenancePage;
 
     if (sharedMaintenancePage) {
@@ -108,7 +108,7 @@ export default function MaintenancePage() {
                 </h1>
 
                 {/* Body text */}
-                <p className="mb-6 text-lg text-muted-foreground sm:text-xl">{t('description')}</p>
+                <p className="mb-6 text-lg text-muted-foreground sm:text-2xl">{t('description')}</p>
 
                 {/* Apology text */}
                 <p className="mb-12 text-base text-muted-foreground sm:text-lg">{t('apology')}</p>

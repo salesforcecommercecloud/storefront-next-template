@@ -1,270 +1,112 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SuggestionsList stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-0"
-    data-testid="sf-suggestion"
-  >
-    <div>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
-      >
-        <div
-          class="flex items-center"
-        >
-          <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-          >
-            <div
-              class="w-full h-full"
-            >
-              <img
-                alt="Footwear"
-                class="w-full h-full object-cover rounded-full"
-                fetchpriority="auto"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-              />
-            </div>
-          </div>
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Footwear
-            </span>
-          </div>
-        </div>
-      </button>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
-      >
-        <div
-          class="flex items-center"
-        >
-          <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-          >
-            <div
-              class="w-full h-full"
-            >
-              <img
-                alt="Clothing"
-                class="w-full h-full object-cover rounded-full"
-                fetchpriority="auto"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
-              />
-            </div>
-          </div>
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Clothing
-            </span>
-          </div>
-        </div>
-      </button>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
-      >
-        <div
-          class="flex items-center"
-        >
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Accessories
-            </span>
-          </div>
-        </div>
-      </button>
-    </div>
-  </div>
-</div>
-`;
+exports[`SuggestionsList stories snapshot > Empty story renders and matches snapshot 1`] = `null`;
 
-exports[`SuggestionsList stories snapshot > Empty story renders and matches snapshot 1`] = `<div />`;
-
-exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-0"
-    data-testid="sf-suggestion"
-  >
-    <div>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
+exports[`SuggestionsList stories snapshot > FullyFeatured story renders and matches snapshot 1`] = `
+<div
+  class="space-y-0"
+  data-testid="sf-suggestion"
+>
+  <div>
+    <button
+      class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+      data-slot="suggestion"
+    >
+      <div
+        class="flex items-center"
       >
         <div
-          class="flex items-center"
+          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+            class="w-full h-full"
           >
-            <div
-              class="w-full h-full"
-            >
-              <img
-                alt="Single Item"
-                class="w-full h-full object-cover rounded-full"
-                fetchpriority="auto"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-              />
-            </div>
-          </div>
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Single Item
-            </span>
+            <img
+              alt="Footwear"
+              class="w-full h-full object-cover rounded-full"
+              fetchpriority="auto"
+              loading="eager"
+              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
+            />
           </div>
         </div>
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`SuggestionsList stories snapshot > WithProducts story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-0"
-    data-testid="sf-suggestion"
-  >
-    <div>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
+        <div
+          class="text-left"
+        >
+          <span
+            class="text-sm font-medium"
+          >
+            Footwear
+          </span>
+        </div>
+      </div>
+    </button>
+    <button
+      class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+      data-slot="suggestion"
+    >
+      <div
+        class="flex items-center"
       >
         <div
-          class="flex items-center"
+          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+            class="w-full h-full"
           >
-            <div
-              class="w-full h-full"
-            >
-              <img
-                alt="Running Shoes"
-                class="w-full h-full object-cover rounded-full"
-                fetchpriority="auto"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop"
-              />
-            </div>
-          </div>
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Running Shoes
-            </span>
+            <img
+              alt="Clothing"
+              class="w-full h-full object-cover rounded-full"
+              fetchpriority="auto"
+              loading="eager"
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop"
+            />
           </div>
         </div>
-      </button>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
+        <div
+          class="text-left"
+        >
+          <span
+            class="text-sm font-medium"
+          >
+            Clothing
+          </span>
+        </div>
+      </div>
+    </button>
+    <button
+      class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+      data-slot="suggestion"
+    >
+      <div
+        class="flex items-center"
       >
         <div
-          class="flex items-center"
+          class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
+            class="w-full h-full"
           >
-            <div
-              class="w-full h-full"
-            >
-              <img
-                alt="Hiking Boots"
-                class="w-full h-full object-cover rounded-full"
-                fetchpriority="auto"
-                loading="eager"
-                src="https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=100&h=100&fit=crop"
-              />
-            </div>
-          </div>
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Hiking Boots
-            </span>
+            <img
+              alt="Accessories"
+              class="w-full h-full object-cover rounded-full"
+              fetchpriority="auto"
+              loading="eager"
+              src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100&h=100&fit=crop"
+            />
           </div>
         </div>
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`SuggestionsList stories snapshot > WithoutImages story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-0"
-    data-testid="sf-suggestion"
-  >
-    <div>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
-      >
         <div
-          class="flex items-center"
+          class="text-left"
         >
-          <div
-            class="text-left"
+          <span
+            class="text-sm font-medium"
           >
-            <span
-              class="text-sm font-medium"
-            >
-              Category Without Image
-            </span>
-          </div>
+            Accessories
+          </span>
         </div>
-      </button>
-      <button
-        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
-        data-slot="suggestion"
-      >
-        <div
-          class="flex items-center"
-        >
-          <div
-            class="text-left"
-          >
-            <span
-              class="text-sm font-medium"
-            >
-              Another Category
-            </span>
-          </div>
-        </div>
-      </button>
-    </div>
+      </div>
+    </button>
   </div>
 </div>
 `;

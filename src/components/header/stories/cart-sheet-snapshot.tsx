@@ -53,6 +53,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async () => {
 });
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -110,6 +111,12 @@ vi.mock('@/providers/basket', () => ({
             return (mockBasketValue as { current?: unknown }).current;
         }
         return mockBasketValue;
+    },
+    useBasketSnapshot: () => {
+        if (mockBasketValue && typeof mockBasketValue === 'object' && 'snapshot' in mockBasketValue) {
+            return (mockBasketValue as { snapshot?: unknown }).snapshot;
+        }
+        return undefined;
     },
     useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => vi.fn(),

@@ -19,7 +19,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 type CustomerAddress = ShopperCustomers.schemas['CustomerAddress'];
 type Customer = ShopperCustomers.schemas['Customer'];

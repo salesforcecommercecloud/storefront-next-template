@@ -174,7 +174,7 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('grid-cols-2');
             expect(gridContainer).toHaveClass('lg:grid-cols-5');
         });
 
@@ -183,7 +183,7 @@ describe('ExpressPayments Integration Tests', () => {
 
             const gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('grid-cols-2');
             expect(gridContainer).not.toHaveClass('lg:grid-cols-5');
         });
 
@@ -510,7 +510,7 @@ describe('ExpressPayments Integration Tests', () => {
             );
 
             let gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('grid-cols-2');
             expect(gridContainer).toHaveClass('lg:grid-cols-5');
 
             // Change to vertical
@@ -518,7 +518,7 @@ describe('ExpressPayments Integration Tests', () => {
 
             gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('grid-cols-2');
         });
 
         test('updates separator position prop correctly', () => {
@@ -600,9 +600,7 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<ApplePayLogo />);
                 const image = screen.getByAltText('Apple Pay');
                 expect(image).toBeInTheDocument();
-                // SVG is imported as a module and inlined as data URL
                 expect(image).toHaveAttribute('src');
-                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {
@@ -626,9 +624,7 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<GooglePayLogo />);
                 const image = screen.getByAltText('Google Pay');
                 expect(image).toBeInTheDocument();
-                // SVG is imported as a module and inlined as data URL
                 expect(image).toHaveAttribute('src');
-                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {
@@ -651,9 +647,7 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<PayPalLogo />);
                 const image = screen.getByAltText('PayPal');
                 expect(image).toBeInTheDocument();
-                // SVG is imported as a module and inlined as data URL
                 expect(image).toHaveAttribute('src');
-                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {
@@ -676,9 +670,7 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<VenmoLogo />);
                 const image = screen.getByAltText('Venmo');
                 expect(image).toBeInTheDocument();
-                // SVG is imported as a module and inlined as data URL
                 expect(image).toHaveAttribute('src');
-                expect(image.getAttribute('src')).toContain('data:image/svg+xml');
             });
 
             test('applies custom className', () => {

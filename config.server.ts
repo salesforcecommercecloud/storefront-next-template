@@ -140,6 +140,18 @@ export default defineConfig<Config>(
                                 preferredCurrency: 'GBP',
                             },
                             {
+                                id: 'da-DK',
+                                preferredCurrency: 'DKK',
+                            },
+                            {
+                                id: 'de-DE',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
+                                id: 'fi-FI',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
                                 id: 'fr-FR',
                                 preferredCurrency: 'EUR',
                             },
@@ -152,11 +164,31 @@ export default defineConfig<Config>(
                                 preferredCurrency: 'JPY',
                             },
                             {
+                                id: 'ko-KR',
+                                preferredCurrency: 'KRW',
+                            },
+                            {
+                                id: 'nl-NL',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
+                                id: 'pl-PL',
+                                preferredCurrency: 'PLN',
+                            },
+                            {
+                                id: 'sv-SE',
+                                preferredCurrency: 'SEK',
+                            },
+                            {
                                 id: 'zh-CN',
                                 preferredCurrency: 'CNY',
                             },
+                            {
+                                id: 'zh-TW',
+                                preferredCurrency: 'TWD',
+                            },
                         ],
-                        supportedCurrencies: ['EUR', 'GBP'],
+                        supportedCurrencies: ['CNY', 'DKK', 'EUR', 'GBP', 'JPY', 'KRW', 'PLN', 'SEK', 'TWD'],
                     },
                     {
                         id: 'RefArch',
@@ -188,16 +220,21 @@ export default defineConfig<Config>(
             // Authentication configuration shared across all auth features
             // See CONFIG-OPTIONS.md#auth for detailed documentation
             auth: {
-                otpLength: 8,
+                otpLength: 6,
             },
             // Feature flags for enabling/disabling functionality
             // See CONFIG-OPTIONS.md#features for detailed documentation
             features: {
                 passwordlessLogin: {
-                    enabled: true, // Enabled for Turnstile testing
+                    enabled: false,
                     mode: 'email',
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/login',
+                    skipWhenEmailVerificationDisabled: true,
+                },
+                otpRequest: {
+                    mode: 'email',
+                    callbackUri: '',
                 },
                 resetPassword: {
                     mode: 'email',
@@ -205,7 +242,7 @@ export default defineConfig<Config>(
                     landingUri: '/reset-password',
                 },
                 socialLogin: {
-                    enabled: false,
+                    enabled: true,
                     callbackUri: '/social-callback',
                     providers: ['Apple', 'Google'],
                 },
@@ -230,7 +267,22 @@ export default defineConfig<Config>(
             // make sure the app can fully be translated to another language
             i18n: {
                 fallbackLng: 'en-GB',
-                supportedLngs: ['it-IT', 'en-US', 'en-GB'], // Your supported languages, the fallback should be LAST
+                supportedLngs: [
+                    'da-DK',
+                    'de-DE',
+                    'fi-FI',
+                    'fr-FR',
+                    'it-IT',
+                    'ja-JP',
+                    'ko-KR',
+                    'nl-NL',
+                    'pl-PL',
+                    'sv-SE',
+                    'zh-CN',
+                    'zh-TW',
+                    'en-US',
+                    'en-GB',
+                ], // Your supported languages, the fallback should be LAST
             },
             // Global UI configuration and component settings
             // See CONFIG-OPTIONS.md#global for detailed documentation
@@ -241,7 +293,7 @@ export default defineConfig<Config>(
                 productListing: {
                     defaultProductTileImgAspectRatio: 1,
                 },
-                inventory: { lowStockThreshold: 5, maxStockDisplay: 99 },
+                inventory: { lowStockThreshold: 5 },
                 carousel: { defaultItemCount: 4 },
                 badges: [
                     { propertyName: 'c_isNew', label: 'New', color: 'green', priority: 1 },
@@ -319,6 +371,15 @@ export default defineConfig<Config>(
                         limit: 24,
                         critical: 4,
                     },
+                    // Discrete viewType declarations the storefront uses for product images.
+                    // The search filter derives its SCAPI `imgTypes` from these values
+                    // (Object.values), so adding a new role here automatically widens the
+                    // filter. Must stay aligned with the hardcoded viewTypes in product-image
+                    // and product-utils.ts, see docs/README-IMAGES.md.
+                    images: {
+                        tile: 'medium',
+                        swatch: 'swatch',
+                    },
                 },
             },
             // Performance optimization settings
@@ -356,7 +417,11 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
-                            commerce_agent_engagement: true,
+                            wishlist_item_added: true,
+                            wishlist_item_removed: true,
+                            wishlist_viewed: true,
+                            wishlist_item_merged: true,
+                            wishlist_merged: true,
                         },
                     },
                     dataCloud: {
@@ -378,7 +443,11 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
-                            commerce_agent_engagement: true,
+                            wishlist_item_added: true,
+                            wishlist_item_removed: true,
+                            wishlist_viewed: true,
+                            wishlist_item_merged: true,
+                            wishlist_merged: true,
                         },
                     },
                     activeData: {
@@ -399,7 +468,11 @@ export default defineConfig<Config>(
                             checkout_step: false,
                             view_search_suggestion: false,
                             click_search_suggestion: false,
-                            commerce_agent_engagement: true,
+                            wishlist_item_added: false,
+                            wishlist_item_removed: false,
+                            wishlist_viewed: false,
+                            wishlist_item_merged: false,
+                            wishlist_merged: false,
                         },
                     },
                 },
@@ -453,20 +526,20 @@ export default defineConfig<Config>(
             security: {
                 turnstile: {
                     sites: (() => {
-                        if (!process.env.PUBLIC__security__turnstile__sites) return {};
+                        if (!process.env.PUBLIC__app__security__turnstile__sites) return {};
                         try {
-                            return JSON.parse(process.env.PUBLIC__security__turnstile__sites);
+                            return JSON.parse(process.env.PUBLIC__app__security__turnstile__sites);
                         } catch {
                             // eslint-disable-next-line no-console
                             console.error(
-                                '[Turnstile] Failed to parse PUBLIC__security__turnstile__sites — no sites configured (fail-closed)'
+                                '[Turnstile] Failed to parse PUBLIC__app__security__turnstile__sites - no sites configured (fail-closed)'
                             );
                             return {};
                         }
                     })(),
-                    enabled: process.env.PUBLIC__security__turnstile__enabled === 'true',
+                    enabled: process.env.PUBLIC__app__security__turnstile__enabled === 'true',
                     mode:
-                        (process.env.PUBLIC__security__turnstile__mode as
+                        (process.env.PUBLIC__app__security__turnstile__mode as
                             | 'managed'
                             | 'non-interactive'
                             | 'invisible') || 'managed',

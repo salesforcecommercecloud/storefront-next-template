@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';

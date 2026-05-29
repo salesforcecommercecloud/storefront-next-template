@@ -27,6 +27,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
@@ -47,29 +48,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = typeof props === 'object' && props !== null ? props : {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: () => {} }),
 }));

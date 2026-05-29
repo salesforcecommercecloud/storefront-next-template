@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
 import { NormalizedApiError } from './normalized-api-error';

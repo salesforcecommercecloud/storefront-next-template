@@ -16,7 +16,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import CategoryBanner from './index';
 
 // ---------------------------------------------------------------------------
@@ -25,7 +25,7 @@ import CategoryBanner from './index';
 
 const mockToImageUrl = vi.fn((params: { src?: string }) => params.src);
 
-vi.mock('@/lib/dynamic-image', () => ({
+vi.mock('@/lib/images/dynamic-image', () => ({
     toImageUrl: (params: { src?: string }) => mockToImageUrl(params),
 }));
 

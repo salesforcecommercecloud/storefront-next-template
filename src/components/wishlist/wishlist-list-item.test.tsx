@@ -19,16 +19,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { WishlistListItem } from './wishlist-list-item';
+import { resourceRoutes } from '@/route-paths';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -42,7 +43,7 @@ vi.mock('react-i18next', () => ({
             }
             return t(key, options);
         },
-        i18n: { language: 'en-GB' },
+        i18n: { language: mockSiteObject.defaultLocale },
     }),
 }));
 
@@ -57,6 +58,14 @@ const mockAddToast = vi.fn();
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
+    }),
+}));
+
+// Mock analytics
+const mockTrackWishlistItemRemoved = vi.fn();
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackWishlistItemRemoved: mockTrackWishlistItemRemoved,
     }),
 }));
 
@@ -141,7 +150,11 @@ function renderWithRouter(component: React.ReactElement) {
         {
             path: '/',
             element: (
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     {component}
                 </SiteProvider>
             ),
@@ -339,7 +352,7 @@ describe('WishlistListItem', () => {
 
             expect(mockSubmit).toHaveBeenCalledWith(
                 { itemId: 'item-123' },
-                { method: 'POST', action: '/action/wishlist-remove' }
+                { method: 'POST', action: resourceRoutes.wishlistRemove }
             );
         });
 

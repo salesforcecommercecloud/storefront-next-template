@@ -1,116 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`QuickFilters stories snapshot > AccessibilityTest story renders and matches snapshot 1`] = `
-<div
-  aria-label="Quick category filters"
-  class="flex flex-wrap gap-2"
-  role="group"
->
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Tops
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Bottoms
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Outerwear
-  </button>
-</div>
-`;
-
-exports[`QuickFilters stories snapshot > ClickCategory story renders and matches snapshot 1`] = `
-<div
-  aria-label="Quick category filters"
-  class="flex flex-wrap gap-2"
-  role="group"
->
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Tops
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Bottoms
-  </button>
-</div>
-`;
-
-exports[`QuickFilters stories snapshot > Default story renders and matches snapshot 1`] = `
-<div
-  aria-label="Quick category filters"
-  class="flex flex-wrap gap-2"
-  role="group"
->
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Suits
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Shorts
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Pants
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Accessories
-  </button>
-</div>
-`;
-
 exports[`QuickFilters stories snapshot > EmptyState story renders and matches snapshot 1`] = `null`;
 
-exports[`QuickFilters stories snapshot > ManyCategories story renders and matches snapshot 1`] = `
+exports[`QuickFilters stories snapshot > FullyFeatured story renders and matches snapshot 1`] = `
 <div
   aria-label="Quick category filters"
   class="flex flex-wrap gap-2"
@@ -118,7 +10,7 @@ exports[`QuickFilters stories snapshot > ManyCategories story renders and matche
 >
   <button
     aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
+    class="inline-flex items-center justify-center transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px] text-foreground"
     data-size="sm"
     data-slot="button"
     data-variant="outline"
@@ -127,7 +19,7 @@ exports[`QuickFilters stories snapshot > ManyCategories story renders and matche
   </button>
   <button
     aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
+    class="inline-flex items-center justify-center transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px] text-foreground"
     data-size="sm"
     data-slot="button"
     data-variant="outline"
@@ -136,7 +28,7 @@ exports[`QuickFilters stories snapshot > ManyCategories story renders and matche
   </button>
   <button
     aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
+    class="inline-flex items-center justify-center transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px] text-foreground"
     data-size="sm"
     data-slot="button"
     data-variant="outline"
@@ -145,75 +37,12 @@ exports[`QuickFilters stories snapshot > ManyCategories story renders and matche
   </button>
   <button
     aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
+    class="inline-flex items-center justify-center transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px] text-foreground"
     data-size="sm"
     data-slot="button"
     data-variant="outline"
   >
     Outerwear
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Shoes
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Accessories
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Bags
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    Jewelry
-  </button>
-</div>
-`;
-
-exports[`QuickFilters stories snapshot > NoLabels story renders and matches snapshot 1`] = `
-<div
-  aria-label="Quick category filters"
-  class="flex flex-wrap gap-2"
-  role="group"
->
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    mens-tops
-  </button>
-  <button
-    aria-pressed="false"
-    class="inline-flex items-center justify-center text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 gap-1.5 px-3 has-[>svg]:px-2.5 whitespace-nowrap rounded-none cursor-pointer bg-muted hover:bg-muted-hover"
-    data-size="sm"
-    data-slot="button"
-    data-variant="outline"
-  >
-    mens-bottoms
   </button>
 </div>
 `;

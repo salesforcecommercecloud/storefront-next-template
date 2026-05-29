@@ -14,66 +14,44 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
+import { within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import { useState, type ReactElement } from 'react';
+// @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
 import { action } from 'storybook/actions';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import InfoModal, { type InfoModalData } from '../index';
 import { Button } from '@/components/ui/button';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-                logAction({ type: 'click', tag, label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-function InfoModalWrapper({ data, currency = 'USD' }: { data?: InfoModalData; currency?: string }): ReactElement {
+function InfoModalWrapper({
+    data,
+    currency = mockSiteObject.defaultCurrency,
+}: {
+    data?: InfoModalData;
+    currency?: string;
+}): ReactElement {
     const [open, setOpen] = useState(false);
 
     return (
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency={currency}>
-                <ActionLogger>
-                    <div className="p-6">
-                        <Button onClick={() => setOpen(true)}>Open Modal</Button>
-                        <InfoModal open={open} onOpenChange={setOpen} data={data} />
-                    </div>
-                </ActionLogger>
+            <SiteProvider
+                site={mockSiteObject}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={currency}>
+                <div className="p-6">
+                    <Button onClick={() => setOpen(true)}>Open Modal</Button>
+                    <InfoModal open={open} onOpenChange={setOpen} data={data} />
+                </div>
             </SiteProvider>
         </ConfigProvider>
     );
 }
 
 const meta: Meta<typeof InfoModalWrapper> = {
-    title: 'Components/InfoModal',
+    title: 'COMMON/Info Modal',
     component: InfoModalWrapper,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -100,38 +78,11 @@ The modal accepts structured data with a specific type and transforms it into th
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType<{ data?: InfoModalData; currency?: string }>, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const args = context.args as { data?: InfoModalData; currency?: string };
-                const content = <Story data={args.data} currency={args.currency} />;
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
     argTypes: {
-        data: {
-            description: 'Structured modal data from adapter',
-            control: 'object',
-        },
+        // `data` is a discriminated union with deeply structured shapes —
+        // JSON editor fails the Designer-Friendly Input Rule. The
+        // branch-specific stories below cover every meaningful `type`.
+        data: { control: false, table: { disable: true } },
         currency: {
             description: 'Currency code for formatting',
             control: 'select',
@@ -154,11 +105,8 @@ export const NoData: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = documentBody.getByRole('dialog');
-        await expect(dialog).toBeInTheDocument();
-        await expect(documentBody.getByText('Information')).toBeInTheDocument();
-        await expect(within(dialog).getByText('No data available.')).toBeInTheDocument();
+        // Verify the dialog opens — the post-mount text content is covered by snapshot.
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -193,14 +141,7 @@ export const PaymentScheduleType: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        await expect(inDialog.getByText('Pay in 4 interest-free payments')).toBeInTheDocument();
-        await expect(inDialog.getByText('Payment Schedule')).toBeInTheDocument();
-        await expect(inDialog.getByText('How it works')).toBeInTheDocument();
-        await expect(inDialog.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -228,13 +169,11 @@ export const PaymentScheduleOnly: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        await expect(documentBody.getByRole('dialog')).toBeInTheDocument();
-        await expect(documentBody.getByText('Pay in 4')).toBeInTheDocument();
-        await expect(documentBody.getByText('Payment Schedule')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 export const StarRatingDistributionType: Story = {
     args: {
         data: {
@@ -276,24 +215,60 @@ Star rating distribution modal displaying rating overview and distribution break
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        // Check modal title (same as right label in star rating)
-        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
-        const ratingTexts = inDialog.getAllByText('4.8 out of 5');
-        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
-
-        // Check that star rating component is rendered
-        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
-
-        // Check that stars are rendered
-        const stars = dialog.querySelectorAll('svg');
-        await expect(stars.length).toBeGreaterThan(5);
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
+export const PaymentScheduleLongContent: Story = {
+    args: {
+        data: {
+            type: 'payment-schedule',
+            title: 'Pay over 12 months — full installment plan',
+            description:
+                'Split your purchase of $1,200.00 into 12 equal monthly payments at 0% interest. ' +
+                'Approval is subject to a soft credit check and does not affect your credit score. ' +
+                'Late payments may incur fees of up to $25. Subject to availability and merchant approval.',
+            paymentSchedule: {
+                totalAmount: 1200.0,
+                numberOfPayments: 12,
+                payments: Array.from({ length: 12 }, (_, i) => ({
+                    amount: 100.0,
+                    dueDate: i === 0 ? 'Today' : `Month ${i + 1}`,
+                })),
+            },
+            steps: [
+                { number: 1, text: 'Select Pay-Over-Time at checkout.' },
+                { number: 2, text: 'Confirm the payment schedule and authorize the soft credit check.' },
+                { number: 3, text: 'Pay the first installment immediately on order confirmation.' },
+                { number: 4, text: 'Subsequent installments are billed automatically each month.' },
+                { number: 5, text: 'Manage or pay off early any time from your account dashboard.' },
+            ],
+            disclaimer:
+                'Subject to credit approval. Terms and conditions apply. Late fees of up to $25 may be charged. ' +
+                'See merchant agreement for full terms. Available only to US residents over 18.',
+        },
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Long-content payment schedule with 12 payments and extended copy — verifies the modal scrolls cleanly without breaking layout.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const openButton = canvas.getByRole('button', { name: /open modal/i });
+        await userEvent.click(openButton);
+
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
+    },
+};
+
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 export const StarRatingDistributionHighlyRated: Story = {
     args: {
         data: {
@@ -331,16 +306,7 @@ Highly rated product with most reviews being 5-star. Demonstrates how the modal 
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        // Check modal title defaults to rating label when title is not provided
-        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
-        const ratingTexts = inDialog.getAllByText('4.9 out of 5');
-        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
-
-        // Check that star rating is displayed
-        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS

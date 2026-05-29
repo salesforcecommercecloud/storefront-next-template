@@ -15,19 +15,20 @@
  */
 
 import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
 import { useOptionalProductView } from '@/providers/product-view';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import ProductPrice from '../product-price';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import InventoryMessage, { InventoryStatus } from '../inventory-message';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 import { ProductRatingSummary } from './product-rating-summary';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
 import { WishlistButton } from '@/components/buttons/wishlist-button';
@@ -51,8 +52,10 @@ type ProductInfoBaseProps = {
     hideActionIcons?: boolean;
     /** Optional action content rendered inline with title in full variant style */
     headerAction?: ReactNode;
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     /** Disable rating summary interactions (hover popover and review links) */
     disableRatingInteraction?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 };
 type ProductInfoUncontrolledProps = ProductInfoBaseProps & {
     /** Mode for swatch interaction: 'uncontrolled' uses URL navigation */
@@ -123,9 +126,10 @@ export default function ProductInfo({
     isVariantInventoryLoading = false,
     hideActionIcons = false,
     headerAction,
+    // @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
     disableRatingInteraction = false,
 }: ProductInfoProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches
@@ -265,6 +269,7 @@ export default function ProductInfo({
                             price: product.price,
                             image: product.imageGroups?.[0]?.images?.[0],
                         }}
+                        surface="pdp"
                         size="sm"
                         className="!static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
                     />
@@ -280,11 +285,11 @@ export default function ProductInfo({
             {isCompactStyle && (
                 <>
                     {product.brand && (
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        <p className="text-xs font-normal leading-none uppercase tracking-wide text-secondary-foreground">
                             {product.brand}
                         </p>
                     )}
-                    <h2 className="text-xl font-bold text-foreground">{product.name}</h2>
+                    <h2 className="text-3xl font-bold text-card-foreground tracking-tight">{product.name}</h2>
                 </>
             )}
 
@@ -293,33 +298,37 @@ export default function ProductInfo({
                 <div className="flex items-start justify-between gap-4">
                     <div className={`${hideActionIcons ? '' : 'pr-20'} min-w-0`}>
                         {product.brand && (
-                            <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
+                            <p className="mb-1 text-xs font-normal leading-none uppercase tracking-wide text-secondary-foreground">
                                 {product.brand}
                             </p>
                         )}
                         <h1
                             data-testid="product-title"
-                            className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">
+                            className="text-3xl font-bold text-card-foreground tracking-tight">
                             {product.name}
                         </h1>
                         {product.id && (
-                            <p className="mt-2 text-xs text-muted-foreground">
+                            <p className="mt-2 text-xs leading-none text-secondary-foreground">
                                 {t('sku')} {product.id}
                             </p>
                         )}
                         {product.shortDescription && (
-                            <p className="mt-2 text-lg text-muted-foreground">{product.shortDescription}</p>
+                            <p className="mt-2 text-base font-normal leading-6 text-accent-foreground">
+                                {product.shortDescription}
+                            </p>
                         )}
                     </div>
                     {headerAction ? <div className="pt-1 shrink-0">{headerAction}</div> : null}
                 </div>
             )}
             {/* Rating summary - visible on both mobile and desktop */}
+            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
             {!isCompactStyle && (
                 <UITarget targetId="sfcc.pdp.reviews.rating">
                     <ProductRatingSummary interactive={!disableRatingInteraction} />
                 </UITarget>
             )}
+            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
 
             {/* Price - show unit price on PDP */}
             <div className="space-y-3">
@@ -330,7 +339,7 @@ export default function ProductInfo({
                     currency={currency}
                     labelForA11y={product?.name}
                     currentPriceProps={{
-                        className: 'text-xl font-bold text-foreground',
+                        className: 'text-2xl font-bold text-card-foreground leading-[120%] tracking-[-0.6px]',
                     }}
                     promoCalloutProps={{
                         className: 'text-sm [&_span]:mx-0 [&_span]:text-status-positive',
@@ -347,7 +356,6 @@ export default function ProductInfo({
                         product={product}
                         currentVariant={currentVariant}
                         lowStockThreshold={config.global.inventory.lowStockThreshold}
-                        maxStockDisplay={config.global.inventory.maxStockDisplay}
                         getInventoryStatus={inventoryStatusOverride}
                     />
                 </UITarget>

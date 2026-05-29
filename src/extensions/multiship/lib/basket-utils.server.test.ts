@@ -20,7 +20,7 @@ import {
     isDeliveryShipment,
     updateBasketWithCustomerInfoFallback,
 } from './basket-utils.server';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { RouterContextProvider } from 'react-router';
 
 // Mock the dependencies

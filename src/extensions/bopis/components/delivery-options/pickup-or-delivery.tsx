@@ -125,14 +125,14 @@ export default function PickupOrDelivery({
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-col">
-                            <span className="text-xs font-medium text-foreground">
+                            <span className="text-sm font-medium leading-none text-foreground">
                                 {deliveryZipCode
                                     ? t('deliveryOptions.pickupOrDelivery.deliverToZip', {
                                           zipCode: deliveryZipCode,
                                       })
                                     : t('deliveryOptions.pickupOrDelivery.deliverTo')}
                             </span>
-                            <p className="text-xs text-muted-foreground mt-0.5">
+                            <p className="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5">
                                 {deliveryDays
                                     ? t('deliveryOptions.pickupOrDelivery.deliveryInDays', {
                                           days: deliveryDays,
@@ -175,7 +175,7 @@ export default function PickupOrDelivery({
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-col">
-                            <span className="text-xs font-medium text-foreground">
+                            <span className="text-sm font-medium leading-none text-foreground">
                                 {!isPickupDisabled
                                     ? t('deliveryOptions.pickupOrDelivery.pickUpInStore')
                                     : t('deliveryOptions.pickupOrDelivery.unavailablePickUpIn')}
@@ -211,7 +211,7 @@ export default function PickupOrDelivery({
                                         e.stopPropagation();
                                         openStoreLocator();
                                     }}
-                                    className="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer">
+                                    className="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer">
                                     {storeSelectionText}
                                 </button>
                             )}

@@ -15,7 +15,7 @@
  */
 import { Suspense } from 'react';
 import { Await, useAsyncError } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CarouselItem } from '@/components/ui/carousel';
 import { Component } from '@/lib/decorators/component';

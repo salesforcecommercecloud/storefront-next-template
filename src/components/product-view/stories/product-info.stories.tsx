@@ -16,167 +16,146 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+import { type ReactElement } from 'react';
 
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import ProductViewProvider from '@/providers/product-view';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('product-info-click');
-        const logAddToCart = action('product-info-add-to-cart');
-        const logWishlist = action('product-info-wishlist');
-        const logQuantityChange = action('product-info-quantity-change');
-        const logVariationSelect = action('product-info-variation-select');
-        const logHover = action('product-info-hover');
-
-        const isInsideHarness = (element: Element) => root.contains(element);
-
-        const deriveLabel = (element: HTMLElement): string => {
-            const ariaLabel = element.getAttribute('aria-label')?.trim();
-            if (ariaLabel) {
-                return ariaLabel;
-            }
-
-            const text = element.textContent?.replace(/\s+/g, ' ').trim();
-            if (text) {
-                return text;
-            }
-
-            const dataLabel = element.getAttribute('data-testid')?.trim();
-            if (dataLabel) {
-                return dataLabel;
-            }
-
-            return element.tagName.toLowerCase();
-        };
-
-        const findInteractiveElement = (start: Element | null): HTMLElement | null => {
-            let current: Element | null = start;
-            while (current && current !== root) {
-                if (current instanceof HTMLElement && isInsideHarness(current)) {
-                    if (current.tagName === 'BUTTON' || current.tagName === 'INPUT' || current.tagName === 'A') {
-                        return current;
-                    }
-                    if (current.getAttribute('role') === 'radio') {
-                        return current;
-                    }
-                }
-                current = current.parentElement;
-            }
-            return null;
-        };
-
-        let lastHoverElement: HTMLElement | null = null;
-
-        const handleClick = (event: Event) => {
-            const target = event.target as Element | null;
-            if (!target) return;
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive) {
-                return;
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            logClick({ label });
-
-            if (interactive instanceof HTMLButtonElement) {
-                const normalized = label.toLowerCase();
-                if (normalized.includes('add to cart') || normalized.includes('add to bag')) {
-                    logAddToCart({ label });
-                }
-                if (normalized.includes('wishlist') || normalized.includes('favorite')) {
-                    logWishlist({ label });
-                }
-            }
-
-            if (interactive.getAttribute('role') === 'radio') {
-                logVariationSelect({ label });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const target = event.target as Element | null;
-            if (!(target instanceof HTMLInputElement) || !isInsideHarness(target)) {
-                return;
-            }
-
-            if (target.type === 'number') {
-                const label = deriveLabel(target);
-                logQuantityChange({ label: label || 'Quantity', value: target.value });
-            }
-        };
-
-        const handlePointerOver = (event: PointerEvent) => {
-            const target = event.target as Element | null;
-            if (!target) return;
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || interactive === lastHoverElement) {
-                return;
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            lastHoverElement = interactive;
-            logHover({ label });
-        };
-
-        const handlePointerOut = (event: PointerEvent) => {
-            if (!lastHoverElement) {
-                return;
-            }
-
-            const target = event.target as Element | null;
-            if (!target) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || interactive !== lastHoverElement) {
-                return;
-            }
-
-            const related = event.relatedTarget as Element | null;
-            if (related && lastHoverElement.contains(related)) {
-                return;
-            }
-
-            lastHoverElement = null;
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('pointerover', handlePointerOver, true);
-        root.addEventListener('pointerout', handlePointerOut, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('pointerover', handlePointerOver, true);
-            root.removeEventListener('pointerout', handlePointerOut, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { ProductInfo } from '../index';
+
+type InventoryStatus = 'in-stock' | 'pre-order' | 'back-order' | 'out-of-stock';
+
+type SyntheticArgs = {
+    inventoryStatus: InventoryStatus;
+    hasVariations: boolean;
+    productName: string;
+    shortDescription: string;
+    brand: string;
+};
+
+const inventoryFixtures: Record<InventoryStatus, ShopperProducts.schemas['Inventory']> = {
+    'in-stock': {
+        id: 'inv-in-stock',
+        ats: 50,
+        orderable: true,
+        backorderable: false,
+        preorderable: false,
+    },
+    'pre-order': {
+        id: 'inv-preorder',
+        ats: 0,
+        orderable: true,
+        backorderable: false,
+        preorderable: true,
+    },
+    'back-order': {
+        id: 'inv-backorder',
+        ats: 0,
+        orderable: true,
+        backorderable: true,
+        preorderable: false,
+    },
+    'out-of-stock': {
+        id: 'inv-out',
+        ats: 0,
+        orderable: false,
+        backorderable: false,
+        preorderable: false,
+    },
+};
+
+const defaultVariationAttributes: ShopperProducts.schemas['Product']['variationAttributes'] = [
+    {
+        id: 'color',
+        name: 'Color',
+        values: [
+            { value: 'red', name: 'Red', orderable: true },
+            { value: 'blue', name: 'Blue', orderable: true },
+            { value: 'green', name: 'Green', orderable: true },
+        ],
+    },
+    {
+        id: 'size',
+        name: 'Size',
+        values: [
+            { value: 'S', name: 'Small', orderable: true },
+            { value: 'M', name: 'Medium', orderable: true },
+            { value: 'L', name: 'Large', orderable: true },
+            { value: 'XL', name: 'Extra Large', orderable: true },
+        ],
+    },
+];
+
+const defaultImageGroups: ShopperProducts.schemas['Product']['imageGroups'] = [
+    {
+        viewType: 'swatch',
+        variationAttributes: [{ id: 'color', values: [{ value: 'red', name: 'Red' }] }],
+        images: [
+            {
+                link: 'https://placehold.co/50x50/ff0000/ffffff?text=R',
+                disBaseLink: 'https://placehold.co/50x50/ff0000/ffffff?text=R',
+                alt: 'Red swatch',
+            },
+        ],
+    },
+    {
+        viewType: 'swatch',
+        variationAttributes: [{ id: 'color', values: [{ value: 'blue', name: 'Blue' }] }],
+        images: [
+            {
+                link: 'https://placehold.co/50x50/0000ff/ffffff?text=B',
+                disBaseLink: 'https://placehold.co/50x50/0000ff/ffffff?text=B',
+                alt: 'Blue swatch',
+            },
+        ],
+    },
+    {
+        viewType: 'swatch',
+        variationAttributes: [{ id: 'color', values: [{ value: 'green', name: 'Green' }] }],
+        images: [
+            {
+                link: 'https://placehold.co/50x50/00ff00/ffffff?text=G',
+                disBaseLink: 'https://placehold.co/50x50/00ff00/ffffff?text=G',
+                alt: 'Green swatch',
+            },
+        ],
+    },
+];
+
+// Helper function to create mock product. Accepts synthetic args (inventoryStatus,
+// hasVariations, etc.) so the Playground story can drive fixture shape from
+// the Controls panel. Keeps the legacy `overrides` escape hatch for dedicated
+// stories that need bespoke shapes (e.g. WithDisabledVariants).
+const createMockProduct = (
+    synthetic: Partial<SyntheticArgs> = {},
+    overrides?: Partial<ShopperProducts.schemas['Product']>
+): ShopperProducts.schemas['Product'] => {
+    const {
+        inventoryStatus = 'in-stock',
+        hasVariations = true,
+        productName = 'Premium Cotton T-Shirt',
+        shortDescription = 'Soft, breathable cotton t-shirt perfect for everyday wear',
+        brand = '',
+    } = synthetic;
+
+    return {
+        id: 'test-product-123',
+        name: productName,
+        shortDescription,
+        brand: brand || undefined,
+        price: 29.99,
+        priceMax: 29.99,
+        inventory: inventoryFixtures[inventoryStatus],
+        variationAttributes: hasVariations ? defaultVariationAttributes : [],
+        imageGroups: hasVariations ? defaultImageGroups : [],
+        ...overrides,
+    };
+};
 
 /**
  * The ProductInfo component displays comprehensive product details on the Product Detail Page (PDP).
@@ -225,16 +204,20 @@ The Product Info component is the main information panel on the Product Detail P
     },
     decorators: [
         (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
+            const Wrapper = (): ReactElement => {
                 const inRouter = useInRouterContext();
                 const productArg = context.args.product ?? createMockProduct();
                 const content = (
                     <ProductViewProvider product={productArg}>
-                        <ActionLogger>
-                            <Story {...(context.args as Record<string, unknown>)} />
-                        </ActionLogger>
+                        <Story {...(context.args as Record<string, unknown>)} />
                     </ProductViewProvider>
                 );
+                // The global preview decorator (`withRouter(StoryShell)`)
+                // already provides Config, Site, i18n, *and* a memory router —
+                // so we shouldn't bring our own. Only fall back to a local
+                // MemoryRouter for the snapshot harness, which doesn't apply
+                // preview decorators uniformly. Wrap with Config + Site
+                // alongside it so deep `<Link>` / `useConfig()` calls resolve.
                 if (inRouter) {
                     return content;
                 }
@@ -243,7 +226,17 @@ The Product Info component is the main information panel on the Product Detail P
                     [
                         {
                             path: '/product/:productId',
-                            element: content,
+                            element: (
+                                <ConfigProvider config={mockConfig}>
+                                    <SiteProvider
+                                        site={mockSiteObject}
+                                        locale={mockLocale}
+                                        language={mockSiteObject.defaultLocale}
+                                        currency={mockSiteObject.defaultCurrency}>
+                                        {content}
+                                    </SiteProvider>
+                                </ConfigProvider>
+                            ),
                         },
                     ],
                     { initialEntries: ['/product/test-product'] }
@@ -252,7 +245,7 @@ The Product Info component is the main information panel on the Product Detail P
                 return <RouterProvider router={router} />;
             };
 
-            return <RouterWrapper />;
+            return <Wrapper />;
         },
     ],
     argTypes: {
@@ -266,182 +259,103 @@ The Product Info component is the main information panel on the Product Detail P
 
 export default meta;
 type Story = StoryObj<typeof ProductInfo>;
-
-// Helper function to create mock product with variations
-const createMockProduct = (
-    overrides?: Partial<ShopperProducts.schemas['Product']>
-): ShopperProducts.schemas['Product'] => ({
-    id: 'test-product-123',
-    name: 'Premium Cotton T-Shirt',
-    shortDescription: 'Soft, breathable cotton t-shirt perfect for everyday wear',
-    price: 29.99,
-    priceMax: 29.99,
-    inventory: {
-        id: 'inv-123',
-        ats: 50,
-        orderable: true,
-        backorderable: false,
-        preorderable: false,
-    },
-    variationAttributes: [
-        {
-            id: 'color',
-            name: 'Color',
-            values: [
-                { value: 'red', name: 'Red', orderable: true },
-                { value: 'blue', name: 'Blue', orderable: true },
-                { value: 'green', name: 'Green', orderable: true },
-            ],
-        },
-        {
-            id: 'size',
-            name: 'Size',
-            values: [
-                { value: 'S', name: 'Small', orderable: true },
-                { value: 'M', name: 'Medium', orderable: true },
-                { value: 'L', name: 'Large', orderable: true },
-                { value: 'XL', name: 'Extra Large', orderable: true },
-            ],
-        },
-    ],
-    imageGroups: [
-        {
-            viewType: 'swatch',
-            variationAttributes: [
-                {
-                    id: 'color',
-                    values: [{ value: 'red', name: 'Red' }],
-                },
-            ],
-            images: [
-                {
-                    link: 'https://placehold.co/50x50/ff0000/ffffff?text=R',
-                    disBaseLink: 'https://placehold.co/50x50/ff0000/ffffff?text=R',
-                    alt: 'Red swatch',
-                },
-            ],
-        },
-        {
-            viewType: 'swatch',
-            variationAttributes: [
-                {
-                    id: 'color',
-                    values: [{ value: 'blue', name: 'Blue' }],
-                },
-            ],
-            images: [
-                {
-                    link: 'https://placehold.co/50x50/0000ff/ffffff?text=B',
-                    disBaseLink: 'https://placehold.co/50x50/0000ff/ffffff?text=B',
-                    alt: 'Blue swatch',
-                },
-            ],
-        },
-        {
-            viewType: 'swatch',
-            variationAttributes: [
-                {
-                    id: 'color',
-                    values: [{ value: 'green', name: 'Green' }],
-                },
-            ],
-            images: [
-                {
-                    link: 'https://placehold.co/50x50/00ff00/ffffff?text=G',
-                    disBaseLink: 'https://placehold.co/50x50/00ff00/ffffff?text=G',
-                    alt: 'Green swatch',
-                },
-            ],
-        },
-    ],
-    ...overrides,
-});
+// Story type loose enough to accept synthetic Controls args alongside ProductInfo props.
+type StoryWithSynthetic = StoryObj<React.ComponentType<Parameters<typeof ProductInfo>[0] & Partial<SyntheticArgs>>>;
 
 /**
- * Standard Product with Variations - Default state showing color and size options
+ * Rich-but-realistic baseline. Every additive prop and data-shape variation is
+ * exposed in the Controls panel so a QA tester can flip individual options
+ * without bookmarking dozens of stories. View-changing data states (out-of-stock
+ * graying, controlled swatch mode, disabled variants) live as dedicated stories
+ * below.
  */
-export const WithVariations: Story = {
+export const Playground: StoryWithSynthetic = {
     args: {
-        product: createMockProduct(),
+        inventoryStatus: 'in-stock',
+        hasVariations: true,
+        productName: 'Premium Cotton T-Shirt',
+        shortDescription: 'Soft, breathable cotton t-shirt perfect for everyday wear',
+        brand: 'Salesforce Apparel',
+        hideVariantSelection: false,
+        variantStyle: 'full',
+        showQuantityInEditMode: false,
+        isVariantInventoryLoading: false,
+        hideActionIcons: false,
+        disableRatingInteraction: false,
     },
-    play: async ({ canvasElement }) => {
+    argTypes: {
+        inventoryStatus: {
+            description: 'Synthetic: drives `product.inventory` shape',
+            control: 'select',
+            options: ['in-stock', 'pre-order', 'back-order', 'out-of-stock'] satisfies InventoryStatus[],
+            table: { category: 'Synthetic (data shape)' },
+        },
+        hasVariations: {
+            description: 'Synthetic: include color/size variation attributes',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        productName: {
+            description: 'Synthetic: product display name',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        shortDescription: {
+            description: 'Synthetic: short description shown under the title',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        brand: {
+            description: 'Synthetic: brand label (empty hides the row)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        hideVariantSelection: { control: 'boolean' },
+        variantStyle: { control: 'inline-radio', options: ['full', 'compact'] },
+        showQuantityInEditMode: { control: 'boolean' },
+        isVariantInventoryLoading: { control: 'boolean' },
+        hideActionIcons: { control: 'boolean' },
+        disableRatingInteraction: { control: 'boolean' },
+    },
+    render: (args) => {
+        const { inventoryStatus, hasVariations, productName, shortDescription, brand, ...componentProps } = args;
+        const product = createMockProduct({
+            inventoryStatus,
+            hasVariations,
+            productName,
+            shortDescription,
+            brand,
+        });
+        return <ProductInfo {...(componentProps as Parameters<typeof ProductInfo>[0])} product={product} />;
+    },
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify wishlist button exists
-        const wishlistButton = canvas.queryByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        if (wishlistButton) {
-            await expect(wishlistButton).toBeInTheDocument();
+        // Synthetic args drive the visible product name + brand — assert both render.
+        const { productName, brand } = args as Partial<SyntheticArgs>;
+        if (productName) {
+            await expect(canvas.getByRole('heading', { name: productName })).toBeInTheDocument();
+        }
+        if (brand) {
+            await expect(canvas.getByText(brand)).toBeInTheDocument();
         }
 
-        // Verify share button exists
-        const shareButton = canvas.queryByRole('button', { name: /share/i });
-        if (shareButton) {
-            await expect(shareButton).toBeInTheDocument();
-        }
-
-        // Test basic component interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
+        // Action-icons row is visible by default; both buttons render.
+        await expect(canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /share/i })).toBeInTheDocument();
     },
 };
 
-export const PreOrderStatus: Story = {
-    args: {
-        product: createMockProduct({
-            inventory: {
-                id: 'inv-preorder',
-                ats: 0,
-                orderable: true,
-                backorderable: false,
-                preorderable: true,
-            },
-        }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const badge = canvas.getByText(/pre-order/i);
-        await expect(badge).toBeInTheDocument();
-    },
-};
-
-export const BackOrderStatus: Story = {
-    args: {
-        product: createMockProduct({
-            inventory: {
-                id: 'inv-backorder',
-                ats: 0,
-                orderable: true,
-                backorderable: true,
-                preorderable: false,
-            },
-        }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const badge = canvas.getByText(/back order/i);
-        await expect(badge).toBeInTheDocument();
-    },
-};
-
+/**
+ * Out-of-stock state — the component renders fundamentally differently:
+ * inventory badge flips to "Out of Stock", quantity picker disables, and the
+ * delivery options block is suppressed entirely. Worth a dedicated bookmarkable
+ * URL for QA review.
+ */
 export const OutOfStockStatus: Story = {
     args: {
-        product: createMockProduct({
-            inventory: {
-                id: 'inv-out',
-                ats: 0,
-                orderable: false,
-                backorderable: false,
-                preorderable: false,
-            },
-        }),
+        product: createMockProduct({ inventoryStatus: 'out-of-stock' }),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -452,49 +366,68 @@ export const OutOfStockStatus: Story = {
     },
 };
 
+/**
+ * One swatch value flagged `orderable: false` — exercises the disabled-swatch
+ * rendering path. The variation data shape isn't a single boolean toggle, so
+ * this stays as a dedicated fixture rather than a Controls toggle.
+ */
 export const WithDisabledVariants: Story = {
     args: {
-        product: createMockProduct({
-            variationAttributes: [
-                {
-                    id: 'color',
-                    name: 'Color',
-                    values: [
-                        { value: 'red', name: 'Red', orderable: true },
-                        { value: 'blue', name: 'Blue', orderable: true },
-                        { value: 'green', name: 'Green', orderable: false },
-                    ],
-                },
-                {
-                    id: 'size',
-                    name: 'Size',
-                    values: [
-                        { value: 'S', name: 'Small', orderable: true },
-                        { value: 'M', name: 'Medium', orderable: true },
-                    ],
-                },
-            ],
-        }),
+        product: createMockProduct(
+            {},
+            {
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [
+                            { value: 'red', name: 'Red', orderable: true },
+                            { value: 'blue', name: 'Blue', orderable: true },
+                            { value: 'green', name: 'Green', orderable: false },
+                        ],
+                    },
+                    {
+                        id: 'size',
+                        name: 'Size',
+                        values: [
+                            { value: 'S', name: 'Small', orderable: true },
+                            { value: 'M', name: 'Medium', orderable: true },
+                        ],
+                    },
+                ],
+                // The component recomputes orderable from product.variants (see
+                // isVariantValueOrderable in use-variation-attributes.ts), not from the
+                // value-level orderable flag. Variants must be present for the green
+                // swatch to actually render its disabled treatment.
+                variants: [
+                    { productId: 'v-red-s', orderable: true, variationValues: { color: 'red', size: 'S' } },
+                    { productId: 'v-red-m', orderable: true, variationValues: { color: 'red', size: 'M' } },
+                    { productId: 'v-blue-s', orderable: true, variationValues: { color: 'blue', size: 'S' } },
+                    { productId: 'v-blue-m', orderable: true, variationValues: { color: 'blue', size: 'M' } },
+                    { productId: 'v-green-s', orderable: false, variationValues: { color: 'green', size: 'S' } },
+                    { productId: 'v-green-m', orderable: false, variationValues: { color: 'green', size: 'M' } },
+                ],
+            }
+        ),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Disabled variants may be rendered as links or buttons, check if element exists
-        const greenSwatch =
-            canvas.queryByRole('radio', { name: /green/i }) ||
-            canvas.queryByRole('link', { name: /green/i }) ||
-            canvas.queryByLabelText(/green/i);
-        if (greenSwatch) {
-            // If it's a link, it might not be disabled but might have different styling
-            // Just verify the element exists
-            await expect(greenSwatch).toBeInTheDocument();
-        } else {
-            // If swatch not found, verify component still renders
-            void expect(canvasElement).toBeInTheDocument();
-        }
+        // The component renders non-orderable swatches as <a> (NavLink) rather than
+        // <button>, so toBeDisabled() doesn't apply. Assert the disabled visual treatment
+        // via the strikethrough class (cursor-not-allowed) the cva variant adds.
+        const greenSwatch = canvas.getByRole('radio', { name: /green/i });
+        await expect(greenSwatch).toHaveClass('cursor-not-allowed');
+        await expect(canvas.getByRole('radio', { name: /red/i })).toHaveClass('cursor-pointer');
     },
 };
 
+/**
+ * Controlled swatch mode — distinct prop API where the parent owns variation
+ * state via `variationValues` and `onAttributeChange`. Different enough from
+ * the default uncontrolled URL flow that it warrants a dedicated story rather
+ * than a Controls boolean.
+ */
 export const ControlledSwatchMode: Story = {
     args: {
         product: createMockProduct(),
@@ -510,23 +443,5 @@ export const ControlledSwatchMode: Story = {
         const canvas = within(canvasElement);
         const selectedSwatch = canvas.getByRole('radio', { name: /blue/i });
         await expect(selectedSwatch).toHaveAttribute('aria-checked', 'true');
-    },
-};
-
-export const NoVariations: Story = {
-    args: {
-        product: createMockProduct({ variationAttributes: [] }),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const radios = canvasElement.querySelectorAll('[role="radio"]');
-        // Product without variations should not have radio buttons for variant selection
-        // However, there might be other radio buttons in the component (e.g., quantity)
-        // So we check that there are no variation-related radios
-        const variationRadios = Array.from(radios).filter((radio) => {
-            const parent = radio.closest('[data-variant]');
-            return parent !== null;
-        });
-        await expect(variationRadios.length).toBe(0);
     },
 };

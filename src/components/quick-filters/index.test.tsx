@@ -17,7 +17,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import QuickFilters from './index';

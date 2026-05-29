@@ -20,7 +20,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/spinner';
 import AddressDisplay from '@/components/address-display';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 interface AddressCardProps {
     /** The address data to display */
@@ -74,6 +74,7 @@ export default function AddressCard({
 
     return (
         <Card
+            data-testid="address-card"
             className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'} rounded-none shadow-none`}>
             <CardContent className="px-6 pt-4">
                 <AddressDisplay address={address} showName={true} isPreferred={isPreferred} />

@@ -15,7 +15,7 @@
  */
 
 import type { ReactElement } from 'react';
-import type { HtmlContentType } from '@/lib/adapters/product-content-data-types';
+import type { HtmlContentType } from '@/components/html-fragment/types';
 import CollapsibleSection from '.';
 import HtmlFragment from '@/components/html-fragment';
 

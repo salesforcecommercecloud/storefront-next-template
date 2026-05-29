@@ -27,10 +27,10 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
-
     useNavigate: () => () => {},
     useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
     useNavigation: () => ({
@@ -47,29 +47,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: () => {} }),
 }));
@@ -105,7 +82,6 @@ const mockConfig = {
         locale: 'en-GB',
         currency: 'USD',
         features: {
-            passwordlessLogin: false,
             socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
             guestCheckout: true,
         },
@@ -153,7 +129,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
 
 import { composeStories } from '@storybook/react-vite';
 
-import * as ProductGridStories from './index.stories';
+import * as ProductGridStories from './grid.stories';
 import { render, cleanup, waitFor, act } from '@testing-library/react';
 
 const composed = composeStories(ProductGridStories);

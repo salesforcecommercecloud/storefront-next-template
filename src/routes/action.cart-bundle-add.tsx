@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import { type ShopperBasketsV2, type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients.server';
+import type { ShopperProducts } from '@/scapi';
+import { data } from 'react-router';
+import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-// @sfdc-extension-line SFDC_EXT_BOPIS
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
-import { getLogger } from '@/lib/logger.server';
+import { validateDeliveryOptionCompatibility } from '@/extensions/bopis/lib/product-actions';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Product selection values structure matching client-side ProductSelectionValues
- * This structure makes it clear what type of entity we're dealing with (product, variant, standard, etc.)
  */
 type ProductSelectionValues = {
     product: ShopperProducts.schemas['Product'];
@@ -33,35 +32,72 @@ type ProductSelectionValues = {
     quantity: number;
 };
 
-async function addBundleToCart(
-    context: ActionFunctionArgs['context'],
-    bundleItem: Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
-        storeId?: string | null;
+/**
+ * Server action to add a product bundle to the cart.
+ *
+ * This is a multi-step operation:
+ * 1. Add the bundle parent item with bundled product items
+ * 2. Update child items with correct variant selections
+ * 3. Refresh the basket to get the final state
+ */
+export const action = createBasketAction(
+    {
+        method: 'POST',
+        action: BasketAction.CartBundleAdd,
+        parse: (fd) => {
+            const bundleItemRaw = fd.get('bundleItem') as string | null;
+            const childSelectionsRaw = fd.get('childSelections') as string | null;
+            if (!bundleItemRaw || !childSelectionsRaw) return null;
+            return {
+                bundleItem: JSON.parse(bundleItemRaw) as {
+                    productId: string;
+                    quantity: number;
+                    inventoryId?: string;
+                    storeId?: string | null;
+                },
+                childSelections: JSON.parse(childSelectionsRaw) as ProductSelectionValues[],
+            };
+        },
     },
-    childSelections: ProductSelectionValues[]
-) {
-    const logger = getLogger(context);
-    logger.debug('CartBundleAdd: starting addBundleToCart', {
-        productId: bundleItem.productId,
-        quantity: bundleItem.quantity,
-        childCount: childSelections.length,
-    });
-    const basketResource = await getBasket(context);
-    const basket = basketResource.current;
+    async ({ input, basketId, basket, context, clients, logger }) => {
+        if (!input) {
+            logger.warn('CartBundleAdd: missing bundle data in form data');
+            return data(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Bundle data missing from form data',
+                    }),
+                },
+                { status: 400 }
+            );
+        }
 
-    if (!basket) {
-        logger.warn('CartBundleAdd: no basket found');
-        return {
-            success: false,
-            error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
-        };
-    }
+        const { bundleItem, childSelections } = input;
 
-    try {
-        const clients = createApiClients(context);
+        logger.debug('CartBundleAdd: starting addBundleToCart', {
+            productId: bundleItem.productId,
+            quantity: bundleItem.quantity,
+            childCount: childSelections.length,
+        });
+
         let shipmentId = 'me';
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        const deliveryValidation = validateDeliveryOptionCompatibility(basket, bundleItem.storeId, context);
+        if (!deliveryValidation.valid) {
+            return data(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.CONFLICT,
+                        message: deliveryValidation.errorMessage,
+                    }),
+                },
+                { status: 409 }
+            );
+        }
         if (bundleItem.storeId && bundleItem.inventoryId) {
             const pickupShipment = await findOrCreatePickupShipment(basket, context, bundleItem.storeId);
             shipmentId = pickupShipment.shipmentId;
@@ -78,7 +114,7 @@ async function addBundleToCart(
         // Add bundle to basket with bundled product items
         const { data: initialBasket } = await clients.shopperBasketsV2.addItemToBasket({
             params: {
-                path: { basketId: basket.basketId as string },
+                path: { basketId },
             },
             body: [
                 {
@@ -94,7 +130,6 @@ async function addBundleToCart(
         let updatedBasket = initialBasket;
 
         // If there are child selections, we may need to update them
-        // This is a follow-up call similar to the original implementation
         if (childSelections.length > 0) {
             // Get the basket item we just added
             const addedItem = updatedBasket.productItems?.find((item) => item.productId === bundleItem.productId);
@@ -104,7 +139,6 @@ async function addBundleToCart(
                 // Match by product ID instead of array index to handle correct ordering
                 const itemsToUpdate = addedItem.bundledProductItems.map((bundledItem) => {
                     // Find the corresponding selection by matching product ID
-                    // Check both variant.productId and product.id to find the match
                     const matchingSelection = childSelections.find(
                         (selection) =>
                             selection.variant?.productId === bundledItem.productId ||
@@ -125,7 +159,7 @@ async function addBundleToCart(
 
                 await clients.shopperBasketsV2.updateItemsInBasket({
                     params: {
-                        path: { basketId: basket.basketId as string },
+                        path: { basketId },
                     },
                     body: itemsToUpdate,
                 });
@@ -133,78 +167,13 @@ async function addBundleToCart(
                 // Get the updated basket after child items update
                 const { data: refreshedBasket } = await clients.shopperBasketsV2.getBasket({
                     params: {
-                        path: { basketId: basket.basketId as string },
+                        path: { basketId },
                     },
                 });
                 updatedBasket = refreshedBasket;
             }
         }
 
-        // Update the basket storage
-        updateBasketResource(context, updatedBasket);
-
-        logger.info('CartBundleAdd: bundle added successfully');
-        return {
-            success: true,
-            basket: updatedBasket,
-        };
-    } catch (error) {
-        logger.error('CartBundleAdd: failed', { error });
-        return { success: false, error: createActionError({ error }) };
+        return updatedBasket;
     }
-}
-
-/**
- * Server action to add a product bundle to the cart.
- */
-export async function action({ request, context }: ActionFunctionArgs) {
-    const logger = getLogger(context);
-    logger.debug('CartBundleAdd: action starting');
-
-    if (request.method !== 'POST') {
-        return Response.json(
-            {
-                success: false,
-                error: createActionError({
-                    code: ErrorCode.METHOD_NOT_ALLOWED,
-                    message: `Expected POST, got ${request.method}`,
-                }),
-            },
-            { status: 405 }
-        );
-    }
-
-    try {
-        const formData = await request.formData();
-        const bundleItemJson = formData.get('bundleItem') as string;
-        const childSelectionsJson = formData.get('childSelections') as string;
-
-        if (!bundleItemJson || !childSelectionsJson) {
-            logger.warn('CartBundleAdd: missing bundle data in form data');
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({
-                        code: ErrorCode.REQUIRED_FIELD,
-                        message: 'Bundle data missing from form data',
-                    }),
-                },
-                { status: 400 }
-            );
-        }
-
-        const bundleItem = JSON.parse(bundleItemJson);
-        const childSelections = JSON.parse(childSelectionsJson);
-
-        const result = await addBundleToCart(context, bundleItem, childSelections);
-
-        if (!result.success) {
-            const status = result.error?.code === ErrorCode.NOT_FOUND ? 404 : 500;
-            return Response.json(result, { status });
-        }
-        return Response.json(result);
-    } catch (error) {
-        logger.error('CartBundleAdd: action failed', { error });
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
-    }
-}
+);

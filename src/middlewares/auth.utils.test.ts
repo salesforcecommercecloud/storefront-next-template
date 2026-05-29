@@ -21,13 +21,19 @@ import {
     decodeSLASAccessToken,
     getSLASAccessTokenClaims,
     getCustomerIdFromClaims,
+    isRegisteredTokenClaims,
+    deriveUserTypeFromClaims,
     isTrackingConsentEnabled,
     getPublicSessionData,
+    hasUsableShopperSession,
+    updateAuthStorageDataByTokenResponse,
+    type AuthStorageData,
 } from './auth.utils';
+import { buildMockTokenResponse } from '@/test-utils/auth';
 import type { SessionData } from '@/lib/api/types';
 import type { AppConfig } from '@/types/config';
 import { createTestContext } from '@/lib/test-utils';
-import { mockBuildConfig } from '@/test-utils/config';
+import { mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 
 describe('auth.utils', () => {
@@ -305,8 +311,8 @@ describe('auth.utils', () => {
                 const claims1 = getSLASAccessTokenClaims('invalid.token');
                 const claims2 = getSLASAccessTokenClaims('');
 
-                expect(claims1).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
-                expect(claims2).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
+                expect(claims1).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null });
+                expect(claims2).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null });
             });
 
             it('should handle exp as 0', () => {
@@ -387,13 +393,13 @@ describe('auth.utils', () => {
             it.each([
                 {
                     desc: 'guest (gcid only)',
-                    isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::chid:RefArchGlobal',
+                    isb: `uido:slas::upn:Guest::uidn:Guest User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::chid:${mockSiteObject.id}`,
                     expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
                     expectedRcid: null,
                 },
                 {
                     desc: 'registered (gcid + rcid)',
-                    isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::rcid:abwuhGmbgXkHkRlehKlaYYlrxG::chid:RefArchGlobal',
+                    isb: `uido:ecom::upn:user@example.com::uidn:Test User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::rcid:abwuhGmbgXkHkRlehKlaYYlrxG::chid:${mockSiteObject.id}`,
                     expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
                     expectedRcid: 'abwuhGmbgXkHkRlehKlaYYlrxG',
                 },
@@ -416,48 +422,84 @@ describe('auth.utils', () => {
                 expect(claims.gcid).toBeNull();
                 expect(claims.rcid).toBeNull();
             });
+
+            it.each([
+                {
+                    desc: 'sub with usid segment',
+                    sub: 'cc-slas::zzrf_001::scid:083859f2-5d93-4209-b999-a112266d63a0::usid:e8664844-e00e-4850-a56a-9dc44c04df1c',
+                    expectedUsid: 'e8664844-e00e-4850-a56a-9dc44c04df1c',
+                },
+                {
+                    desc: 'sub with usid as last segment',
+                    sub: 'cc-slas::zzrf_001::usid:plain-usid',
+                    expectedUsid: 'plain-usid',
+                },
+            ])('should extract usid from $desc', ({ sub, expectedUsid }) => {
+                const token = createTestToken({ exp: 1234567890, sub });
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.usid).toBe(expectedUsid);
+            });
+
+            it.each([
+                { desc: 'missing', payload: { exp: 1234567890 } },
+                { desc: 'not a string', payload: { exp: 1234567890, sub: 12345 } },
+                { desc: 'empty string', payload: { exp: 1234567890, sub: '' } },
+                { desc: 'no usid segment', payload: { exp: 1234567890, sub: 'cc-slas::zzrf_001::scid:abc' } },
+            ])('should return null usid when sub claim is $desc', ({ payload }) => {
+                const token = createTestToken(payload);
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.usid).toBeNull();
+            });
         });
 
         describe('getCustomerIdFromClaims', () => {
             it.each([
                 {
-                    desc: 'gcid for guest user',
-                    userType: 'guest' as const,
+                    desc: 'gcid when only gcid is present (guest token)',
                     gcid: 'guest-id',
                     rcid: null,
                     expected: 'guest-id',
                 },
                 {
-                    desc: 'rcid for registered user',
-                    userType: 'registered' as const,
+                    desc: 'rcid when both are present (registered token)',
                     gcid: 'guest-id',
                     rcid: 'reg-id',
                     expected: 'reg-id',
                 },
                 {
-                    desc: 'gcid fallback for registered when rcid is null',
-                    userType: 'registered' as const,
-                    gcid: 'guest-id',
-                    rcid: null,
-                    expected: 'guest-id',
-                },
-                {
-                    desc: 'null for guest when gcid is null',
-                    userType: 'guest' as const,
+                    desc: 'null when neither claim is present',
                     gcid: null,
                     rcid: null,
                     expected: null,
                 },
-                {
-                    desc: 'null for registered when both null',
-                    userType: 'registered' as const,
-                    gcid: null,
-                    rcid: null,
-                    expected: null,
-                },
-            ])('should return $desc', ({ userType, gcid, rcid, expected }) => {
-                const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid };
-                expect(getCustomerIdFromClaims(claims, userType)).toBe(expected);
+            ])('should return $desc', ({ gcid, rcid, expected }) => {
+                const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid, usid: null };
+                expect(getCustomerIdFromClaims(claims)).toBe(expected);
+            });
+        });
+
+        describe('isRegisteredTokenClaims / deriveUserTypeFromClaims', () => {
+            const baseClaims = { expiry: 1234567890000, trackingConsent: null, usid: 'usid-1' };
+
+            it.each<{ desc: string; gcid: string; rcid: string | null; expected: boolean }>([
+                { desc: 'rcid present and non-empty', gcid: 'g', rcid: 'r', expected: true },
+                { desc: 'rcid is null', gcid: 'g', rcid: null, expected: false },
+                { desc: 'rcid is empty string', gcid: 'g', rcid: '', expected: false },
+            ])('isRegisteredTokenClaims returns $expected when $desc', ({ gcid, rcid, expected }) => {
+                const claims = { ...baseClaims, gcid, rcid };
+                expect(isRegisteredTokenClaims(claims)).toBe(expected);
+            });
+
+            it('deriveUserTypeFromClaims returns "registered" when rcid is non-empty', () => {
+                const claims = { ...baseClaims, gcid: 'g', rcid: 'r' };
+                expect(deriveUserTypeFromClaims(claims)).toBe('registered');
+            });
+
+            it('deriveUserTypeFromClaims returns "guest" when rcid is missing', () => {
+                const claims = { ...baseClaims, gcid: 'g', rcid: null };
+                expect(deriveUserTypeFromClaims(claims)).toBe('guest');
             });
         });
     });
@@ -561,6 +603,8 @@ describe('auth.utils', () => {
                 codeVerifier: 'secret-code-verifier',
                 idpAccessToken: 'secret-idp-token',
                 idpAccessTokenExpiry: 1111111111,
+                idToken: 'secret-id-token',
+                idpRefreshToken: 'secret-idp-refresh-token',
                 dwsid: 'secret-dwsid',
             };
 
@@ -580,7 +624,117 @@ describe('auth.utils', () => {
             expect(publicData).not.toHaveProperty('refreshToken');
             expect(publicData).not.toHaveProperty('codeVerifier');
             expect(publicData).not.toHaveProperty('idpAccessToken');
+            expect(publicData).not.toHaveProperty('idToken');
+            expect(publicData).not.toHaveProperty('idpRefreshToken');
             expect(publicData).not.toHaveProperty('dwsid');
+        });
+    });
+
+    describe('updateAuthStorageDataByTokenResponse', () => {
+        const makeStorage = () => new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+        it('stores idToken when id_token is present on the response', () => {
+            const storage = makeStorage();
+            const tokenResponse = buildMockTokenResponse();
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
+
+            expect(storage.get('idToken')).toBe('id-token-123');
+        });
+
+        it('does not store idToken when token response omits id_token', () => {
+            const storage = makeStorage();
+            const tokenResponse = { ...buildMockTokenResponse(), id_token: undefined as unknown as string };
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
+
+            expect(storage.has('idToken')).toBe(false);
+        });
+
+        it('stores idpRefreshToken when idp_refresh_token is present on the response', () => {
+            const storage = makeStorage();
+            const tokenResponse = buildMockTokenResponse();
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
+
+            expect(storage.get('idpRefreshToken')).toBe('idp-refresh-token-789');
+        });
+
+        it('does not store idpRefreshToken when token response omits idp_refresh_token', () => {
+            const storage = makeStorage();
+            const tokenResponse = { ...buildMockTokenResponse(), idp_refresh_token: undefined };
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
+
+            expect(storage.has('idpRefreshToken')).toBe(false);
+        });
+    });
+
+    describe('hasUsableShopperSession', () => {
+        const inFuture = Date.now() + 60_000;
+        const inPast = Date.now() - 60_000;
+
+        it('returns true for a guest with a valid token and customerId', () => {
+            const session: SessionData = {
+                userType: 'guest',
+                customerId: 'guest-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(true);
+        });
+
+        it('returns true for a registered shopper with a valid token and customerId', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(true);
+        });
+
+        it('returns false when customerId is missing', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessToken is missing', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessTokenExpiry is in the past', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inPast,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessTokenExpiry is undefined', () => {
+            const session: SessionData = {
+                userType: 'guest',
+                customerId: 'guest-1',
+                accessToken: 'tok',
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
         });
     });
 });

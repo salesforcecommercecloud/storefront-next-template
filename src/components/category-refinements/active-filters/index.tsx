@@ -17,7 +17,7 @@ import { useCallback, useMemo, type JSX } from 'react';
 import { useLocation, useNavigation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { Button } from '@/components/ui/button';
 import { X as Close } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

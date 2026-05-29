@@ -16,7 +16,7 @@
 import { afterEach, beforeEach, describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
@@ -331,6 +331,39 @@ describe('OrderSummary', () => {
 
         expect(screen.getByText('$12.75')).toBeInTheDocument();
         expect(screen.queryByText(t('cart:summary.taxTbd'))).not.toBeInTheDocument();
+    });
+
+    test('hides tax line when taxation is gross', () => {
+        const grossBasket = {
+            ...mockBasket,
+            taxation: 'gross' as const,
+        };
+
+        renderWithProviders(<OrderSummary basket={grossBasket} />);
+
+        expect(screen.queryByText(t('cart:summary.tax'))).not.toBeInTheDocument();
+        expect(screen.queryByText('$8.50')).not.toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.total'))).toBeInTheDocument();
+    });
+
+    test('shows tax line when taxation is net', () => {
+        const netBasket = {
+            ...mockBasket,
+            taxation: 'net' as const,
+        };
+
+        renderWithProviders(<OrderSummary basket={netBasket} />);
+
+        expect(screen.getByText(t('cart:summary.tax'))).toBeInTheDocument();
+        expect(screen.getByText('$8.50')).toBeInTheDocument();
+    });
+
+    test('shows tax line when taxation is undefined', () => {
+        renderWithProviders(<OrderSummary basket={mockBasket} />);
+
+        expect(screen.getByText(t('cart:summary.tax'))).toBeInTheDocument();
+        expect(screen.getByText('$8.50')).toBeInTheDocument();
     });
 
     test('displays item-level price adjustments from productItems', () => {

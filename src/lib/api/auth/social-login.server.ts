@@ -16,15 +16,22 @@
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
-import { getAppOrigin, getErrorMessage, isAbsoluteURL } from '@/lib/utils';
+import { getErrorMessage, isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { mergeBasket } from '@/lib/api/basket.server';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    mergeWishlist,
+    type WishlistMergeResult,
+} from '@/lib/api/wishlist.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -137,18 +144,12 @@ export const loginIDPUser = async (
             ...(dnt !== undefined && { dnt }),
         });
 
-        // Update session with user tokens and info (similar to standard login)
-        // result already includes dwsid extracted from response headers by SDK
+        // Update session with user tokens and info (similar to standard login). userType,
+        // customerId, usid, and the refresh-token expiry cap all derive from the access-token
+        // JWT inside updateAuth. The PKCE code verifier is wiped because updateAuth clears
+        // non-meta storage keys before writing the new token-response state — no follow-up
+        // call is needed.
         updateAuth(context, result);
-        updateAuth(context, (current) => {
-            // Delete the code verifier once the user has logged in
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { codeVerifier: _, ...rest } = current;
-            return {
-                ...rest,
-                userType: 'registered',
-            };
-        });
 
         logger.info('SocialLogin: IDP login succeeded');
         return {
@@ -168,7 +169,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
     const { t } = getTranslation(context);
 
     try {
-        const config = getConfig<AppConfig>(context);
+        const config = getConfig(context);
         const url = new URL(request.url);
 
         // SLAS may send different parameter names than direct OAuth
@@ -181,7 +182,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
         if (error) {
             logger.error('SocialLogin: provider returned error', { error });
             const errorMessage = t('socialCallback:socialError');
-            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+            return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
         }
 
         // Handle successful authorization with code
@@ -189,7 +190,10 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
             const callbackUri = config.features.socialLogin.callbackUri;
             const redirectURI = isAbsoluteURL(callbackUri)
                 ? callbackUri
-                : `${getAppOrigin()}${buildUrlFromContext(callbackUri, context)}`;
+                : `${getAppOrigin(context)}${buildUrlFromContext(callbackUri, context)}`;
+
+            // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+            const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
 
             const result = await loginIDPUser(context, {
                 code,
@@ -206,22 +210,39 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
                     logger.error('SocialLogin: basket merge failed', { error: err });
                 }
 
+                let wishlistMergeResult: WishlistMergeResult | null = null;
+                if (guestWishlistSnapshot) {
+                    try {
+                        wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                    } catch (err) {
+                        logger.error('SocialLogin: wishlist merge failed', { error: err });
+                    }
+                }
+
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
+                if (wishlistMergeResult) {
+                    const { url: finalUrl, setCookie } = appendWishlistMergeFlag(
+                        context,
+                        redirectTo,
+                        wishlistMergeResult
+                    );
+                    return redirect(finalUrl, { headers: { 'Set-Cookie': setCookie } });
+                }
                 return redirect(redirectTo);
             } else {
                 logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');
-                return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+                return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
             }
         } else {
             logger.error('SocialLogin: missing authorization code');
             const errorMessage = t('errors:genericTryAgain');
-            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+            return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
         }
     } catch (error) {
         logger.error('SocialLogin: landing handler failed', { error });
         const errorMessage = t('errors:genericTryAgain');
-        return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+        return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
     }
 }

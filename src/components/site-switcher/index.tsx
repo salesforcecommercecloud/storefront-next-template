@@ -20,13 +20,13 @@ import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
+import { resourceRoutes, routes } from '@/route-paths';
 
 export default function SiteSwitcher(): ReactElement {
     const id = useId();
     const { t } = useTranslation('sitePicker');
     const fetcher = useFetcher();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { site } = useSite();
     const sites = config.commerce.sites;
 
@@ -42,10 +42,10 @@ export default function SiteSwitcher(): ReactElement {
         // with the new site.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
         // go back to home page bc not all pages are guaranteed the same for all sites.
-        window.location.href = '/';
+        window.location.href = routes.home;
     };
 
     return (

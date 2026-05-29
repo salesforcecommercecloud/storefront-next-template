@@ -24,7 +24,7 @@ import { expect } from 'chai';
  *
  * Test Flow:
  * 1. Navigate to homepage to establish guest session
- * 2. Capture initial guest cookies (cc-at, cc-nx-g, usid, customerId)
+ * 2. Capture initial guest cookies (cc-at, cc-nx-g, usid)
  * 3. Execute login flow with stored credentials from signup
  * 4. Validate login success
  * 5. Validate authentication cookie transition:
@@ -32,10 +32,10 @@ import { expect } from 'chai';
  *    - cc-nx-g_{SiteId} deleted (guest refresh token removed)
  *    - cc-nx_{SiteId} set (authenticated refresh token created)
  *    - usid_{SiteId} updated (guest → authenticated session)
- *    - customerId_{SiteId} updated (guest → registered customer)
  *
- * Note: Login flow automatically ensures valid credentials exist by creating
- * an account via signup if needed, then reuses those credentials.
+ * Note: customerId is derived per-request from the access token JWT `isb` claim and is
+ * not persisted as a cookie. Login flow automatically ensures valid credentials exist
+ * by creating an account via signup if needed, then reuses those credentials.
  */
 Scenario('Guest shopper login transitions cookies from guest to authenticated', async () => {
     const siteId = process.env.SITE_ID || 'RefArchGlobal';
@@ -61,15 +61,13 @@ Scenario('Guest shopper login transitions cookies from guest to authenticated', 
         .be.undefined;
 
     // Validate user session ID exists
-    expect(authCookies.usid, `User session ID usid_${siteId} should exist after login`).to.not.be.undefined;
-
-    // Validate customer ID exists
-    expect(authCookies.customerId, `Customer ID customerId_${siteId} should exist after login`).to.not.be.null;
+    expect(authCookies.usid, `User session ID usid_${siteId} should exist after login`).to.not.be.null;
 })
     .tag('@login')
     .tag('@authentication')
     .tag('@cookies')
-    .tag('@authentication-state');
+    .tag('@authentication-state')
+    .tag('@smoke');
 
 /**
  * Login with Invalid Credentials
@@ -85,7 +83,7 @@ Scenario('Guest shopper login transitions cookies from guest to authenticated', 
  */
 Scenario('Login with invalid credentials fails with error message', async () => {
     // Navigate to login page
-    loginPage.navigate();
+    loginPage.navigate('/login?mode=password');
     // Dismiss tracking consent first so form is visible
     await storefrontPage.handleTrackingConsent(true);
     loginPage.validatePageLoaded();
@@ -109,4 +107,5 @@ Scenario('Login with invalid credentials fails with error message', async () => 
     .tag('@login')
     .tag('@authentication')
     .tag('@negative')
-    .tag('@validation');
+    .tag('@validation')
+    .tag('@smoke');

@@ -18,15 +18,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFetcher } from 'react-router';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import { getPasswordlessErrorMessageKey } from '@/lib/auth-error-handler';
-
-type VerifyOtpResponse = {
-    success: boolean;
-    error?: { code: string; message: string };
-    message?: string;
-    tokenResponse?: ShopperLogin.schemas['TokenResponse'];
-};
+import type { ShopperLogin } from '@/scapi';
+import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
+import type { action as verifyPasswordlessOtpAction } from '@/routes/action.verify-passwordless-otp';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,16 +28,23 @@ import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useOtpVerification } from '@/hooks/use-otp-verification';
+import { resourceRoutes } from '@/route-paths';
 
 interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
-    onSuccess: (tokenResponse?: VerifyOtpResponse['tokenResponse']) => void;
+    onSuccess: (
+        tokenResponse?: ShopperLogin.schemas['TokenResponse'],
+        meta?: { wishlistMerge?: 'success' | 'partial' }
+    ) => void;
     onCheckoutAsGuest?: () => void;
     onResendCode?: () => Promise<void>;
     otpLength?: number;
     initialError?: string;
+    verifyActionUrl?: string; // Custom action endpoint (defaults to resourceRoutes.verifyPasswordlessOtp)
+    onVerifyCode?: (code: string) => void; // Callback to handle OTP verification externally
+    isRegistration?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,16 +71,19 @@ export default function OtpModal({
     onSuccess,
     onCheckoutAsGuest,
     onResendCode,
-    otpLength = 8,
+    otpLength = 6,
     initialError,
+    verifyActionUrl = resourceRoutes.verifyPasswordlessOtp,
+    onVerifyCode,
+    isRegistration = false,
 }: OtpModalProps): ReactElement {
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
     const { t } = useTranslation('login');
-    const fetcher = useFetcher<VerifyOtpResponse>({ key: 'otp-verification' });
+    const fetcherKey = verifyActionUrl === resourceRoutes.otpVerify ? 'otp-email-verification' : 'otp-verification';
+    const fetcher = useFetcher<typeof verifyPasswordlessOtpAction>({ key: fetcherKey });
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
-
     const [resendTimer, setResendTimer] = useState(0);
     const schema = useMemo(() => createOtpSchema(t, otpLength), [t, otpLength]);
     const form = useForm<z.infer<ReturnType<typeof createOtpSchema>>>({
@@ -92,19 +96,26 @@ export default function OtpModal({
     const isLoading = fetcher.state === 'submitting' || fetcher.state === 'loading';
 
     const handleVerify = (code: string) => {
-        setIsVerifying(true);
         setError(null);
-
-        // Update form value for consistency
         form.setValue('otpCode', code);
 
-        // Submit OTP for verification
+        // If onVerifyCode callback is provided, use it (parent handles verification)
+        if (onVerifyCode) {
+            onVerifyCode(code);
+            return;
+        }
+
+        // Otherwise use fetcher
+        setIsVerifying(true);
         const formData = new FormData();
         formData.append('otpCode', code);
         formData.append('email', email);
+        if (isRegistration) {
+            formData.append('isRegistration', 'true');
+        }
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/verify-otp',
+            action: verifyActionUrl,
         });
     };
 
@@ -141,7 +152,18 @@ export default function OtpModal({
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, initialError]);
+    }, [isOpen]);
+
+    // Update error when initialError changes (for external fetcher/manual error handling)
+    useEffect(() => {
+        if (initialError) {
+            setError(initialError);
+            setIsVerifying(false);
+            // Clear OTP inputs so user can retry
+            otpInputsRef.current.clear();
+            form.setValue('otpCode', '');
+        }
+    }, [initialError, form, otpInputsRef]);
 
     // Reset success guard when closing or submitting
     useEffect(() => {
@@ -151,6 +173,11 @@ export default function OtpModal({
     }, [isOpen, fetcher.state]);
 
     useEffect(() => {
+        // Skip this effect if using onVerifyCode callback (parent handles verification externally)
+        if (onVerifyCode) {
+            return;
+        }
+
         // Only proceed when fetcher is idle (server action has completed)
         // AND we haven't already called onSuccess for this verification
         // AND we have success data
@@ -160,7 +187,10 @@ export default function OtpModal({
             form.reset();
             setError(null);
             setIsVerifying(false);
-            onSuccess(fetcher.data.tokenResponse);
+            onSuccess(
+                fetcher.data.tokenResponse,
+                fetcher.data.wishlistMerge ? { wishlistMerge: fetcher.data.wishlistMerge } : undefined
+            );
         }
         // Failure
         else if (fetcher.state === 'idle' && fetcher.data?.success === false && fetcher.data?.error) {
@@ -174,7 +204,7 @@ export default function OtpModal({
             form.setValue('otpCode', '');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetcher.state, fetcher.data, onSuccess]);
+    }, [fetcher.state, fetcher.data, onSuccess, onVerifyCode]);
 
     const handleResend = async () => {
         if (!onResendCode || resendTimer > 0) return;
@@ -231,7 +261,7 @@ export default function OtpModal({
                                 onPaste={otpInputs.handlePaste}
                                 disabled={isVerifying || isLoading}
                                 autoFocus={index === 0}
-                                className="w-12 h-14 text-center text-lg font-bold border-2"
+                                className="w-12 h-14 text-center text-sm font-bold border-2"
                                 aria-label={`${t('otpCodeLabel')} ${index + 1} of ${otpLength}`}
                             />
                         ))}

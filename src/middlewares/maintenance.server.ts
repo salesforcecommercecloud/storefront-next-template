@@ -16,6 +16,7 @@
 import { type MiddlewareFunction, redirect } from 'react-router';
 import { createMaintenance, maintenanceContext } from '@/lib/maintenance';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 /**
  * Middleware that initializes the API ready signal in the context.
@@ -45,7 +46,7 @@ export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
             url.searchParams.delete('_routes');
             const returnPath = `${url.pathname}${url.search}`;
             // eslint-disable-next-line @typescript-eslint/only-throw-error
-            throw redirect(`/maintenance?returnTo=${encodeURIComponent(returnPath)}`);
+            throw redirect(`${routes.maintenance}?returnTo=${encodeURIComponent(returnPath)}`);
         }
     }
 

@@ -25,6 +25,7 @@ interface MockInputProps extends ComponentProps<'input'> {
 
 // Mock React Router Form component
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     Form: ({ children, ...props }: { children: ReactNode; method?: string; className?: string }) => (
         <form {...props}>{children}</form>
     ),

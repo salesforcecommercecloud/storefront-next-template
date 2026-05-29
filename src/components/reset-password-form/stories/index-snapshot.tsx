@@ -17,6 +17,7 @@ import { vi, expect, test, describe, afterEach } from 'vitest';
 import type React from 'react';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createCookie: (name: string) => ({
         name,
         parse: () => null,
@@ -66,7 +67,7 @@ afterEach(() => {
 
 describe('ResetPasswordForm stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
+        if (Story?.parameters?.snapshot === false) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();

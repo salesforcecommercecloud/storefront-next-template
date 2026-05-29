@@ -26,6 +26,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     createCookie: (name: string) => ({ name, parse: () => null, serialize: () => '' }),
     useFetcher: () => fetcherMock,
@@ -46,28 +47,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/providers/basket', () => ({
     useBasket: () => ({
         customerInfo: { email: 'test@example.com' },

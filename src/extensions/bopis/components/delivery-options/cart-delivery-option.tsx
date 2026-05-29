@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
+import { resourceRoutes } from '@/route-paths';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import PickupOrDeliveryDropdown from './pickup-or-delivery-dropdown';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
@@ -23,7 +24,7 @@ import { useStoreLocator } from '@/extensions/store-locator/providers/store-loca
 import { useBasket } from '@/providers/basket';
 import { useToast } from '@/components/toast';
 import { useTranslation } from 'react-i18next';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 interface CartDeliveryOptionProps {
     product: EnrichedProductItem;
@@ -131,7 +132,7 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
         }
         void fetcher.submit(formData, {
             method: 'PATCH',
-            action: '/action/cart-item-update',
+            action: resourceRoutes.cartItemUpdate,
         });
     };
 

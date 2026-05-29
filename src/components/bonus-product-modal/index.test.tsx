@@ -59,15 +59,28 @@ vi.mock('@/providers/product-view', () => ({
     useProductView: () => ({
         quantity: 1,
         setQuantity: vi.fn(),
+        canAddToCart: true,
+        isMasterOrVariantProduct: false,
     }),
 }));
 
+// Capture the props the modal hands to <ImageGallery> so tests can assert that the documented
+// GALLERY_WIDTHS constant (and any other shape-bearing props) actually reach the component.
+const capturedImageGalleryProps: { last: any } = { last: null };
 vi.mock('@/components/image-gallery', () => ({
-    default: () => <div data-testid="image-gallery">Image Gallery</div>,
+    default: (props: any) => {
+        capturedImageGalleryProps.last = props;
+        return <div data-testid="image-gallery">Image Gallery</div>;
+    },
 }));
 
+// Capture the variationValues prop so tests can assert what the modal seeded.
+const capturedProductInfoProps: { last: any } = { last: null };
 vi.mock('@/components/product-view/product-info', () => ({
-    default: () => <div data-testid="product-info">Product Info</div>,
+    default: (props: any) => {
+        capturedProductInfoProps.last = props;
+        return <div data-testid="product-info">Product Info</div>;
+    },
 }));
 
 // Helper to render with router context - similar to CartItemEditModal pattern
@@ -112,6 +125,8 @@ describe('BonusProductModal', () => {
         mockFetcherLoad.mockClear();
         mockFetcherSubmit.mockClear();
         mockAddToast.mockClear();
+        capturedProductInfoProps.last = null;
+        capturedImageGalleryProps.last = null;
         // Use vi.spyOn to mock useFetcher while keeping real router exports
         vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue({
             submit: mockFetcherSubmit,
@@ -255,6 +270,164 @@ describe('BonusProductModal', () => {
 
             expect(closeButton).toBeInTheDocument();
             expect(closeButton).not.toBeDisabled();
+        });
+    });
+
+    describe('Variant pre-selection', () => {
+        it('seeds variationValues from product.variationValues for variant products', () => {
+            mockFetcherData = {
+                id: 'variant-123',
+                name: 'Variant Bonus Tie',
+                type: { variant: true },
+                variationValues: { color: 'NAVY', width: 'REGULAR' },
+            };
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            renderWithRouter(<BonusProductModal {...mockProps} />);
+
+            expect(capturedProductInfoProps.last?.variationValues).toEqual({ color: 'NAVY', width: 'REGULAR' });
+        });
+
+        it('seeds variationValues from first orderable variant for master products without defaults', () => {
+            mockFetcherData = {
+                id: 'master-123',
+                name: 'Master Bonus Tie',
+                type: { master: true },
+                variationAttributes: [
+                    { id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] },
+                    { id: 'size', name: 'Size', values: [{ value: 'M' }, { value: 'L' }] },
+                ],
+                variants: [
+                    { productId: 'v1', variationValues: { color: 'NAVY', size: 'M' }, orderable: false },
+                    { productId: 'v2', variationValues: { color: 'RED', size: 'L' }, orderable: true },
+                ],
+            };
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            renderWithRouter(<BonusProductModal {...mockProps} />);
+
+            // First orderable variant — color RED, size L — gets pre-selected so the picker is actionable.
+            expect(capturedProductInfoProps.last?.variationValues).toEqual({ color: 'RED', size: 'L' });
+        });
+
+        it('respects representedProduct hint over first-orderable fallback', () => {
+            mockFetcherData = {
+                id: 'master-456',
+                name: 'Master Bonus Tie With Hint',
+                type: { master: true },
+                representedProduct: { id: 'v1' },
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] }],
+                variants: [
+                    { productId: 'v1', variationValues: { color: 'NAVY' }, orderable: true },
+                    { productId: 'v2', variationValues: { color: 'RED' }, orderable: true },
+                ],
+            };
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            renderWithRouter(<BonusProductModal {...mockProps} />);
+
+            expect(capturedProductInfoProps.last?.variationValues).toEqual({ color: 'NAVY' });
+        });
+    });
+
+    describe('Add to cart result handling', () => {
+        const fetcherProduct = {
+            id: 'variant-123',
+            name: 'Variant Bonus Tie',
+            type: { variant: true },
+            variationValues: { color: 'NAVY' },
+        };
+
+        function setupAndClickAdd(addToCartFetcherData: unknown) {
+            mockFetcherData = fetcherProduct;
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            // Two-phase fetcher mock: first render returns no data (so the user can click),
+            // second render returns the completed result that drives the result-handling effect.
+            const useFetcherSpy = vi.spyOn(ReactRouter, 'useFetcher');
+            useFetcherSpy.mockReturnValueOnce({
+                submit: mockFetcherSubmit,
+                data: null,
+                state: 'idle',
+            } as any);
+            useFetcherSpy.mockReturnValue({
+                submit: mockFetcherSubmit,
+                data: addToCartFetcherData,
+                state: 'idle',
+            } as any);
+
+            const { rerender } = renderWithRouter(<BonusProductModal {...mockProps} />);
+            // Click the Add to Cart button so isAddingToCart flips to true. The modal renders
+            // both a desktop and mobile button; either click drives the same handler.
+            const [addBtn] = screen.getAllByRole('button', { name: /add to cart/i });
+            fireEvent.click(addBtn);
+
+            // Force a rerender so the second useFetcher mock value (with data) is consumed
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: (
+                            <AllProvidersWrapper>
+                                <BonusProductModal {...mockProps} />
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                { initialEntries: ['/'] }
+            );
+            rerender(<RouterProvider router={router} />);
+        }
+
+        it('does not show a success toast when add-to-cart succeeds — closes the modal instead', () => {
+            setupAndClickAdd({ success: true, basket: { basketId: 'b1' } });
+
+            // No success toast — the closing modal is the user-visible confirmation.
+            const successCalls = mockAddToast.mock.calls.filter(([, level]) => level === 'success');
+            expect(successCalls).toHaveLength(0);
+            // Modal close was requested
+            expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+        });
+
+        it('shows an error toast when add-to-cart fails', () => {
+            setupAndClickAdd({ success: false, error: { message: 'Inventory short' } });
+
+            const errorCalls = mockAddToast.mock.calls.filter(([, level]) => level === 'error');
+            expect(errorCalls).toHaveLength(1);
+            // The translation key produces a string containing the SCAPI error
+            expect(String(errorCalls[0][0])).toContain('Inventory short');
+            // Modal stays open on error
+            expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
+        });
+    });
+
+    describe('Gallery widths', () => {
+        // The bonus modal's gallery sits in `lg:max-w-4xl` (~848) with `lg:grid-cols-2`, so the gallery
+        // is the full inner column below `lg` and ~408 wide at `lg+`. We deliberately snap to the shared
+        // pixel ladder (lg:420 main, md:240 thumb) instead of the tight fit so this surface reuses DIS
+        // cache entries with the cart-modal and the child-product-card. The constant is private to the
+        // module — these assertions guard that snap by checking the values that actually reach the
+        // <ImageGallery> component.
+        it('passes the documented widths to <ImageGallery> (cache-ladder rungs)', () => {
+            mockFetcherData = {
+                id: 'variant-123',
+                name: 'Variant Bonus Tie',
+                type: { variant: true },
+                variationValues: { color: 'NAVY' },
+            };
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            renderWithRouter(<BonusProductModal {...mockProps} />);
+
+            expect(capturedImageGalleryProps.last?.widths).toEqual({
+                main: { base: '100vw', lg: 420 },
+                thumbnail: { base: 144, sm: 176, md: 240, lg: 96 },
+            });
         });
     });
 

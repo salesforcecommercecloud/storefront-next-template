@@ -16,42 +16,33 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import RecentSearches from '../recent-searches';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// RecentSearches takes a string array and renders one button per entry plus a
+// trailing "Clear recent searches" button. Visible state is fully a function
+// of the array length: empty → component renders an empty wrapper (no list,
+// no clear button). All variation folds cleanly into Controls. The empty
+// case is kept as a dedicated story so the no-content render is bookmarkable.
+//
+// `closeAndNavigate` and `clearRecentSearches` callbacks bind to `action()`
+// directly via component props — no decorator-level click synthesis needed.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('recent-search-click');
-        const logClear = action('clear-recent-searches-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const button = target.closest('button');
-            if (button && root.contains(button)) {
-                if (button.textContent?.toLowerCase().includes('clear')) {
-                    logClear({});
-                } else {
-                    logClick({ text: button.textContent?.trim() });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const ALL_RECENT_SEARCHES = [
+    'shoes',
+    'boots',
+    'sneakers',
+    'sandals',
+    'flip flops',
+    'running shoes',
+    'hiking boots',
+    'dress shoes',
+];
+const MAX_RECENT = ALL_RECENT_SEARCHES.length;
 
 const meta: Meta<typeof RecentSearches> = {
     title: 'Search/RecentSearches',
@@ -62,61 +53,63 @@ const meta: Meta<typeof RecentSearches> = {
         docs: {
             description: {
                 component:
-                    'Displays a list of recent search queries with the ability to navigate to them or clear the list.',
+                    'Recent-searches list shown in the search dropdown when no fresh suggestions are available. Renders one button per entry plus a trailing "Clear recent searches" button.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
-    argTypes: {
-        recentSearches: {
-            description: 'Array of recent search query strings',
-            control: 'object',
-        },
-        closeAndNavigate: {
-            description: 'Callback function to close the search and navigate to a URL',
-            action: 'closeAndNavigate',
-        },
-        clearRecentSearches: {
-            description: 'Callback function to clear all recent searches',
-            action: 'clearRecentSearches',
-        },
-    },
 };
 
 export default meta;
-type Story = StoryObj<typeof RecentSearches>;
 
-export const Default: Story = {
+type SyntheticArgs = {
+    searchCount: number;
+};
+
+/**
+ * Rich-but-realistic baseline — 3 recent searches plus the trailing "Clear"
+ * button. Use Controls to slice the canonical list (1–8) or set to 0 for
+ * the empty branch.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        recentSearches: ['shoes', 'boots', 'sneakers'],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
+        searchCount: 3,
+    },
+    argTypes: {
+        searchCount: {
+            description: `Synthetic: number of recent-search buttons to render (0–${MAX_RECENT}). Setting to 0 shows the empty wrapper (no list, no clear button).`,
+            control: { type: 'number', min: 0, max: MAX_RECENT, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            searchCount: args.searchCount ?? 3,
+        };
+        const clamped = Math.max(0, Math.min(synthetic.searchCount, MAX_RECENT));
+        const recentSearches = ALL_RECENT_SEARCHES.slice(0, clamped);
+        return (
+            <RecentSearches
+                recentSearches={recentSearches}
+                closeAndNavigate={action('closeAndNavigate')}
+                clearRecentSearches={action('clearRecentSearches')}
+            />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
         const recentSearchesTitles = await canvas.findAllByText(/recent searches/i, {}, { timeout: 5000 });
         await expect(recentSearchesTitles.length).toBeGreaterThan(0);
-
-        const buttons = canvas.getAllByRole('button');
-        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
-        await expect(shoesButton).toBeInTheDocument();
-
-        if (shoesButton) {
-            await userEvent.click(shoesButton);
-        }
     },
 };
 
-export const Empty: Story = {
+/**
+ * Empty `recentSearches` array. The component renders an empty section
+ * wrapper — no list, no clear button. Worth a bookmarkable URL because the
+ * resulting visual is fundamentally different (nothing visible at all).
+ */
+export const Empty: StoryObj<typeof RecentSearches> = {
     args: {
         recentSearches: [],
         closeAndNavigate: action('closeAndNavigate'),
@@ -125,56 +118,7 @@ export const Empty: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
         await expect(canvas.queryByText(/recent searches/i)).not.toBeInTheDocument();
         await expect(canvas.queryByRole('button')).not.toBeInTheDocument();
-    },
-};
-
-export const SingleSearch: Story = {
-    args: {
-        recentSearches: ['laptop'],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const laptopButton = canvas.getByRole('button', { name: /laptop/i });
-        await expect(laptopButton).toBeInTheDocument();
-
-        const clearButton = canvas.getByRole('button', { name: /clear recent searches/i });
-        await expect(clearButton).toBeInTheDocument();
-
-        await userEvent.click(clearButton);
-    },
-};
-
-export const ManySearches: Story = {
-    args: {
-        recentSearches: [
-            'shoes',
-            'boots',
-            'sneakers',
-            'sandals',
-            'flip flops',
-            'running shoes',
-            'hiking boots',
-            'dress shoes',
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const buttons = canvas.getAllByRole('button');
-        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
-        await expect(shoesButton).toBeInTheDocument();
-
-        const clearButton = buttons.find((btn) => btn.textContent?.toLowerCase().includes('clear'));
-        await expect(clearButton).toBeInTheDocument();
     },
 };

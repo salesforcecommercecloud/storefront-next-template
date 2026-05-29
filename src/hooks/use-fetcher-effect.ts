@@ -147,15 +147,21 @@ export function useFetcherEffect<TData = unknown>(
 
     // Track the previous state to detect changes
     const previousStateRef = useRef<string | undefined>(undefined);
+    // Track which data we've already processed (by reference) to prevent duplicate callbacks
+    const processedDataRef = useRef<TData | undefined>(undefined);
 
     useEffect(() => {
         const currentState = fetcher.state;
         const currentData = fetcher.data;
 
-        // Only process when the state has changed and we're in idle state (operation completed)
+        // Only process when the state has changed and we're in idle or loading state with data
+        // Loading state with data means the action completed but revalidation is happening
         const stateChanged = previousStateRef.current !== currentState;
+        const hasCompletedOperation =
+            currentState === 'idle' || (currentState === 'loading' && currentData !== undefined);
+        const hasUnprocessedData = currentData !== undefined && currentData !== processedDataRef.current;
 
-        if (stateChanged && currentState === 'idle') {
+        if (stateChanged && hasCompletedOperation && hasUnprocessedData) {
             // Check if the operation was successful
             const success = defaultIsSuccess(currentData);
             const error = defaultGetError(currentData);
@@ -163,12 +169,16 @@ export function useFetcherEffect<TData = unknown>(
             if (success && onSuccess) {
                 try {
                     onSuccess(currentData);
+                    // Mark this data as processed
+                    processedDataRef.current = currentData;
                 } catch (callbackError) {
                     logger.error('Error in onSuccess callback', { error: callbackError });
                 }
             } else if (!success && error !== undefined && onError) {
                 try {
                     onError(error, currentData);
+                    // Mark this data as processed
+                    processedDataRef.current = currentData;
                 } catch (callbackError) {
                     logger.error('Error in onError callback', { error: callbackError });
                 }

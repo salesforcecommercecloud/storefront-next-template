@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { Typography } from '@/components/typography';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
 /**
  * Renders estimated delivery / fulfillment & shipping modal content.
- * Receives the adapter data directly from ProductContentAdapter.getEstimatedDelivery().
  * Layout: Estimated Delivery options table, Shipping Options (rates), International Shipping, Order Tracking.
  */
 export function EstimatedDeliveryModalContent({
@@ -81,7 +83,7 @@ export function EstimatedDeliveryModalContent({
                                             {option.deliveryTime}
                                         </Typography>
                                     </div>
-                                    <Typography as="span" className="text-lg font-semibold text-foreground">
+                                    <Typography as="span" className="text-sm font-semibold text-foreground">
                                         {option.cost != null && option.cost > 0
                                             ? formatCurrency(option.cost, locale, currency)
                                             : t('free')}

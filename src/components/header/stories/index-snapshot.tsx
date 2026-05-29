@@ -27,6 +27,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     createCookie: vi.fn().mockImplementation((name) => ({ name, parse: vi.fn(), serialize: vi.fn() })),
     useFetcher: () => fetcherMock,
@@ -55,34 +56,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal();
-    return {
-        ...(actual && typeof actual === 'object' ? (actual as Record<string, unknown>) : {}),
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        // Add missing createMemoryRouter
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/', search: '', hash: '', state: null } },
-        })),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: () => {},
@@ -103,9 +76,17 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });
@@ -115,7 +96,7 @@ import { composeStories } from '@storybook/react-vite';
 import * as HeaderStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 
 const composed = composeStories(HeaderStories);
 
@@ -124,11 +105,21 @@ afterEach(() => {
 });
 
 describe('Header stories snapshot', () => {
-    for (const [storyName, Story] of Object.entries(composed)) {
-        // Skip MobileMenuInteraction - it uses React Router's Await which isn't properly mocked in snapshot tests
-        if (storyName === 'MobileMenuInteraction') {
-            continue;
-        }
+    const snapshotStories = Object.entries(composed).filter(
+        ([, Story]) => Story?.parameters?.snapshot !== false
+    );
+
+    if (snapshotStories.length === 0) {
+        // Every story opted out (e.g., they mount a Suspense/Await tree the harness's
+        // vi.mock can't pass through). Vitest fails an empty suite, so register one
+        // no-op assertion. Interaction + a11y suites cover these stories.
+        test('all stories opt out of snapshot (covered by interaction/a11y)', () => {
+            expect(snapshotStories).toEqual([]);
+        });
+        return;
+    }
+
+    for (const [storyName, Story] of snapshotStories) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(
                 <ConfigProvider config={mockConfig}>

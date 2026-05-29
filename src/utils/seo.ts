@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { buildUrl, sanitizePrefix, type Locale, type Site } from '@salesforce/storefront-next-runtime/site-context';
+import { buildUrl, stripPathPrefix, type Locale, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import type { MetaDescriptor } from 'react-router';
 import type { AppConfig } from '@/types/config';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
@@ -89,7 +89,7 @@ function getBarePath({ pathname, urlConfig, currentSiteRef, currentLocaleRef }: 
         params: { siteId: currentSiteRef, localeId: currentLocaleRef },
     });
     const currentPrefix = rootWithPrefix.endsWith('/') ? rootWithPrefix.slice(0, -1) : rootWithPrefix;
-    return sanitizePrefix(pathname, currentPrefix) || '/';
+    return stripPathPrefix({ pathname, prefix: currentPrefix }) || '/';
 }
 
 type HreflangInputs = {

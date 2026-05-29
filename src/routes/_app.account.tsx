@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { useMemo, type ReactElement } from 'react';
-import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { Outlet, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.account';
 import { useTranslation } from 'react-i18next';
 import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 
 // Runtime SDK
-import type { ShopperCustomers, ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperConsents } from '@/scapi';
 
 // Components
 import { AccountNavList, type AccountNavItemData } from '@/components/account-navigation';
@@ -29,6 +30,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getSubscriptions } from '@/lib/api/consent.server';
 import { getCustomer } from '@/lib/api/customer.server';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { resourceRoutes, routes } from '@/route-paths';
 
 // Logging
 import { getLogger } from '@/lib/logger.server';
@@ -51,7 +53,7 @@ type AccountPageData = {
  * @param args - Loader function arguments containing request context
  * @returns Promise containing customer data or redirects to login
  */
-export function loader(args: LoaderFunctionArgs) {
+export function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     logger.debug('Account: loader starting');
 
@@ -66,7 +68,7 @@ export function loader(args: LoaderFunctionArgs) {
         !customerId
     ) {
         logger.warn('Account: authentication validation failed, redirecting to login');
-        throw redirect(buildUrlFromContext('/login', args.context));
+        throw redirect(buildUrlFromContext(routes.login, args.context));
     }
 
     const customer = getCustomer(args.context, customerId);
@@ -79,6 +81,26 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
     // Defer revalidation when a fetcher submits to our SCAPI resource route (profile/password update)
     // so AccountDetailsContent stays mounted and useScapiFetcherEffect can fire its callbacks.
     if (formAction?.includes('/resource/api/client')) {
+        return false;
+    }
+
+    // Defer revalidation for OTP email verification so modal can close and email edit form can open
+    if (formAction?.includes(resourceRoutes.otpRequest) || formAction?.includes(resourceRoutes.otpVerify)) {
+        return false;
+    }
+
+    // Defer revalidation when sending the passwordless OTP to the new email after an email change.
+    // We cannot revalidate until the user completes the verify-passwordless call and is reauthenticated
+    // with a new JWT scoped to the new email.
+    if (
+        formAction?.includes(resourceRoutes.authorizePasswordlessEmail) ||
+        formAction?.includes(resourceRoutes.verifyPasswordlessOtp)
+    ) {
+        return false;
+    }
+
+    // Defer revalidation for password reset action - no need to refetch customer data
+    if (formAction?.includes(resourceRoutes.requestPasswordReset)) {
         return false;
     }
 
@@ -162,7 +184,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                         <div className="lg:hidden">
                             <Card className="bg-muted/30 rounded-none shadow-none">
                                 <CardContent className="p-4">
-                                    <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
+                                    <h2 className="text-sm font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                     <nav className="space-y-1">
                                         <AccountNavList items={navigationItems} isMobile={true} />
                                         <AccountNavList items={[logoutItem]} isMobile={true} />
@@ -173,7 +195,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                         {/* Desktop Sidebar Navigation */}
                         <div className="hidden lg:block">
                             <div className="space-y-4">
-                                <h2 className="text-xl font-semibold text-foreground">{t('myAccount')}</h2>
+                                <h2 className="text-2xl font-semibold text-foreground">{t('myAccount')}</h2>
                                 <nav className="space-y-1">
                                     <AccountNavList items={navigationItems} />
                                     <AccountNavList items={[logoutItem]} />

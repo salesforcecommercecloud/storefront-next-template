@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
-import { ProductReviewsProvider } from '@/providers/product-reviews-context';
+import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import { mockConfig } from '@/test-utils/config';
 import { ProductRatingSummary } from '../product-rating-summary';
 
 const mockProduct = { id: 'storybook-product', name: 'Storybook Product' };
 
-function ProductRatingSummaryWrapper(): ReactElement {
+function ProductRatingSummaryWrapper({ interactive }: { interactive?: boolean }): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
             <ProductProvider product={mockProduct}>
-                <ProductContentProvider>
-                    <ProductReviewsProvider>
-                        <div className="max-w-md">
-                            <ProductRatingSummary />
-                        </div>
-                    </ProductReviewsProvider>
-                </ProductContentProvider>
+                <ProductReviewsProvider>
+                    <div className="max-w-md">
+                        <ProductRatingSummary interactive={interactive} />
+                    </div>
+                </ProductReviewsProvider>
             </ProductProvider>
         </ConfigProvider>
     );
@@ -60,10 +58,29 @@ const meta: Meta<typeof ProductRatingSummaryWrapper> = {
             },
         },
     },
+    argTypes: {
+        interactive: {
+            description:
+                'When false, disables hover popover and review-link interactions (used by ProductInfo when other components own the rating popover).',
+            control: 'boolean',
+        },
+    },
 };
 
 export default meta;
 
 type Story = StoryObj<typeof ProductRatingSummaryWrapper>;
 
-export const Default: Story = {};
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes the `interactive`
+ * prop, the only customization the component accepts. Review-count variations
+ * (0, 1, many reviews) are not driven from props or fixtures — they come from
+ * the `ProductReviewsProvider` adapter, which doesn't accept seed data. Adding
+ * a controlled provider is component-source work outside this PR's boundary,
+ * so review-count states stay covered by the customer-reviews-section stories.
+ */
+export const Playground: Story = {
+    args: {
+        interactive: true,
+    },
+};

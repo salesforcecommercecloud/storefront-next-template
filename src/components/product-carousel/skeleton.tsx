@@ -16,7 +16,6 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { cn } from '@/lib/utils';
 
 /**
@@ -59,7 +58,7 @@ export default function ProductCarouselSkeleton({
     itemCount?: number;
     className?: string;
 }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const finalItemCount = itemCount ?? config.global.carousel.defaultItemCount;
     return (
         <div className={cn('w-full section-container py-6 animate-pulse', className)}>

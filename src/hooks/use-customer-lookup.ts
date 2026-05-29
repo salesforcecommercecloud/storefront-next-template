@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useEffect } from 'react';
-import { getCustomerLookupFromStorage, getLoginSuggestion } from '@/lib/customer-lookup-utils';
+import { getCustomerLookupFromStorage, getLoginSuggestion } from '@/lib/customer/lookup-utils';
 
 /**
  * Customer lookup result from the contact info submission
@@ -63,4 +63,4 @@ export {
     saveCustomerLookupToStorage,
     isRegisteredCustomerLookup,
     isCurrentUserLookup,
-} from '@/lib/customer-lookup-utils';
+} from '@/lib/customer/lookup-utils';

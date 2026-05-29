@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState, type ComponentType } from 'react';
 import { RemoveAddressConfirmationDialog } from '../index';
+import { Button } from '@/components/ui/button';
 import { action } from 'storybook/actions';
-import { expect } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
-const mockAddress: ShopperCustomers.schemas['CustomerAddress'] = {
+// ---------------------------------------------------------------------------
+// RemoveAddressConfirmationDialog wraps a Dialog around an address card with
+// a destructive "Remove" CTA. The dialog encapsulates its own SCAPI fetcher,
+// so the only externally-visible toggles are `open` and the address shape
+// (specifically `preferred`, which drives the "removing your default
+// address" warning banner). Per Pattern 11 the Playground is
+// closed-by-default with a trigger button so designers see the realistic
+// trigger surface, not an always-open dialog at story load.
+// ---------------------------------------------------------------------------
+
+const SAMPLE_ADDRESS: ShopperCustomers.schemas['CustomerAddress'] = {
     addressId: 'home-address',
     firstName: 'John',
     lastName: 'Doe',
@@ -33,53 +42,36 @@ const mockAddress: ShopperCustomers.schemas['CustomerAddress'] = {
     preferred: false,
 };
 
-const mockPreferredAddress: ShopperCustomers.schemas['CustomerAddress'] = {
-    ...mockAddress,
-    addressId: 'work-address',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    address1: '456 Office Blvd',
-    preferred: true,
+type SyntheticArgs = {
+    preferred: boolean;
 };
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+const PLAYGROUND_DEFAULTS: SyntheticArgs = { preferred: false };
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('remove-address-dialog-click');
-
-        const handleClick = (event: MouseEvent) => {
-            // Since dialog renders in a portal, we might need to listen on document
-            // But if we want to log clicks within the harness, this works for non-portal content
-            // For portal content, we'd typically need a global listener or context
-            // However, this harness is consistent with others requested.
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const button = target.closest('button');
-            if (button) {
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-                const label = button.textContent?.trim() || button.getAttribute('aria-label') || 'button';
-                // Only log if it seems relevant to this story
-                logClick({ label });
-            }
-        };
-
-        // For dialogs that might render in portals, we often attach to document in these harnesses
-        // to capture the interaction outside the root ref
-        document.addEventListener('click', handleClick, true);
-
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+function PlaygroundHarness(args: Partial<SyntheticArgs>) {
+    const merged: SyntheticArgs = { ...PLAYGROUND_DEFAULTS, ...args };
+    const [open, setOpen] = useState(false);
+    const address: ShopperCustomers.schemas['CustomerAddress'] = {
+        ...SAMPLE_ADDRESS,
+        preferred: merged.preferred,
+    };
+    return (
+        <>
+            <Button onClick={() => setOpen(true)} variant="outline">
+                Remove address
+            </Button>
+            <RemoveAddressConfirmationDialog
+                open={open}
+                onOpenChange={(next) => {
+                    setOpen(next);
+                    action('onOpenChange')(next);
+                }}
+                address={address}
+                customerId="customer-123"
+                onSuccess={action('onSuccess')}
+            />
+        </>
+    );
 }
 
 const meta: Meta<typeof RemoveAddressConfirmationDialog> = {
@@ -89,84 +81,66 @@ const meta: Meta<typeof RemoveAddressConfirmationDialog> = {
         layout: 'centered',
         docs: {
             description: {
-                component:
-                    'Confirmation dialog for removing customer addresses with integrated SCAPI fetcher. Handles success and error states with toast notifications.',
+                component: `
+Confirmation dialog for removing customer addresses with an integrated SCAPI fetcher.
+The dialog encapsulates its own remove-fetcher, so external toggles are limited to
+\`open\` and the address shape. Toggling \`preferred\` on surfaces the "default address"
+warning banner. The submitting state isn't surfaceable from a static story because
+the fetcher state is internal — clicking Remove fires a real SCAPI call.
+                `,
             },
         },
     },
     tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
     argTypes: {
-        open: {
-            description: 'Whether the dialog is open',
-            control: 'boolean',
-        },
-        onOpenChange: {
-            description: 'Callback when dialog open state changes',
-            action: 'onOpenChange',
-        },
-        address: {
-            description: 'The address object to remove',
-            control: 'object',
-        },
-        customerId: {
-            description: 'Customer ID for the remove operation',
-            control: 'text',
-        },
-        onSuccess: {
-            description: 'Callback when remove succeeds',
-            action: 'onSuccess',
-        },
+        open: { table: { disable: true } },
+        onOpenChange: { table: { disable: true } },
+        address: { table: { disable: true } },
+        customerId: { table: { disable: true } },
+        onSuccess: { table: { disable: true } },
     },
 };
 
 export default meta;
-type Story = StoryObj<typeof RemoveAddressConfirmationDialog>;
+type Story = StoryObj<typeof meta>;
+type SyntheticStory = StoryObj<ComponentType<Partial<SyntheticArgs>>>;
 
-export const Default: Story = {
-    args: {
-        open: true,
-        onOpenChange: action('onOpenChange'),
-        address: mockAddress,
-        customerId: 'customer-123',
-        onSuccess: action('onSuccess'),
+/**
+ * Closed-by-default Playground with a trigger button. Click "Remove address"
+ * to open the dialog; flip `preferred` on to surface the warning banner.
+ */
+export const Playground: SyntheticStory = {
+    args: PLAYGROUND_DEFAULTS,
+    argTypes: {
+        preferred: {
+            description:
+                'Mark the address as the customer\'s default. When on, the dialog renders the "removing your default address" warning banner.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(canvasElement).toBeInTheDocument();
-    },
+    render: PlaygroundHarness,
 };
 
-export const PreferredAddress: Story = {
-    args: {
-        open: true,
-        onOpenChange: action('onOpenChange'),
-        address: mockPreferredAddress,
-        customerId: 'customer-123',
-        onSuccess: action('onSuccess'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const Closed: Story = {
-    args: {
-        open: false,
-        onOpenChange: action('onOpenChange'),
-        address: mockAddress,
-        customerId: 'customer-123',
-        onSuccess: action('onSuccess'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(canvasElement).toBeInTheDocument();
-    },
+/**
+ * Dialog opened on a preferred (default) address — visible delta is the
+ * AlertTriangle warning banner explaining the consequence of removing the
+ * customer's default.
+ *
+ * Snapshot opted out: Radix Dialog portals to `document.body`, so the
+ * composeStories snapshot harness (which captures `container.firstChild`)
+ * would record `null`. The visual is verified interactively in Storybook
+ * and by the interaction test runner.
+ */
+export const WhenOpenedPreferred: Story = {
+    parameters: { snapshot: false },
+    render: () => (
+        <RemoveAddressConfirmationDialog
+            open={true}
+            onOpenChange={action('onOpenChange')}
+            address={{ ...SAMPLE_ADDRESS, preferred: true }}
+            customerId="customer-123"
+            onSuccess={action('onSuccess')}
+        />
+    ),
 };

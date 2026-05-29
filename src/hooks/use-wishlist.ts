@@ -16,10 +16,12 @@
 import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useToast } from '@/components/toast';
-import { useRequireAuth } from '@/hooks/use-require-auth';
-import type { WishlistActionResponse } from '@/lib/api/wishlist.server';
+import { useAnalytics } from '@/hooks/use-analytics';
+import { resourceRoutes } from '@/route-paths';
+import type { action as wishlistAddAction } from '@/routes/action.wishlist-add';
+import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
@@ -37,9 +39,10 @@ export type UseWishlistOptions = {
 
 export const useWishlist = (options?: UseWishlistOptions) => {
     const { t } = useTranslation();
-    const addFetcher = useFetcher<WishlistActionResponse>();
-    const removeFetcher = useFetcher<WishlistActionResponse>();
+    const addFetcher = useFetcher<typeof wishlistAddAction>();
+    const removeFetcher = useFetcher<typeof wishlistRemoveAction>();
     const { addToast } = useToast();
+    const { trackWishlistItemAdded, trackWishlistItemRemoved } = useAnalytics();
 
     const initialProductIds = options?.initialProductIds;
     const initialProductIdsKey = useMemo(
@@ -60,8 +63,8 @@ export const useWishlist = (options?: UseWishlistOptions) => {
     }, [initialProductIds, initialProductIdsKey]);
 
     // Refs to carry operation context into the useEffect handlers
-    const pendingAddRef = useRef<{ productId: string; productName: string } | null>(null);
-    const pendingRemoveRef = useRef<{ productId: string } | null>(null);
+    const pendingAddRef = useRef<{ productId: string; productName: string; surface?: string } | null>(null);
+    const pendingRemoveRef = useRef<{ productId: string; surface?: string } | null>(null);
     const hasHandledAddRef = useRef(false);
     const hasHandledRemoveRef = useRef(false);
 
@@ -78,7 +81,7 @@ export const useWishlist = (options?: UseWishlistOptions) => {
         if (addFetcher.state === 'idle' && addFetcher.data && pendingAddRef.current && !hasHandledAddRef.current) {
             hasHandledAddRef.current = true;
             const result = addFetcher.data;
-            const { productId, productName } = pendingAddRef.current;
+            const { productId, productName, surface } = pendingAddRef.current;
             pendingAddRef.current = null;
 
             if (result.success) {
@@ -86,6 +89,14 @@ export const useWishlist = (options?: UseWishlistOptions) => {
                     addToast(t('product:alreadyInWishlist', { productName }), 'info');
                 } else {
                     addToast(t('product:addedToWishlist', { productName }), 'success');
+                }
+
+                // Emit analytics event on success (not for duplicates, only new adds)
+                if (!result.alreadyInWishlist && surface) {
+                    void trackWishlistItemAdded({
+                        surface: surface as 'pdp' | 'plp' | 'cart' | 'wishlist-page',
+                        productId,
+                    });
                 }
             } else {
                 setWishlistItems((prev) => {
@@ -97,7 +108,7 @@ export const useWishlist = (options?: UseWishlistOptions) => {
             }
             setPendingOperation(null);
         }
-    }, [addFetcher.state, addFetcher.data, addToast, t]);
+    }, [addFetcher.state, addFetcher.data, addToast, t, trackWishlistItemAdded]);
 
     // Handle remove response
     useEffect(() => {
@@ -114,11 +125,19 @@ export const useWishlist = (options?: UseWishlistOptions) => {
         ) {
             hasHandledRemoveRef.current = true;
             const result = removeFetcher.data;
-            const { productId } = pendingRemoveRef.current;
+            const { productId, surface } = pendingRemoveRef.current;
             pendingRemoveRef.current = null;
 
             if (result.success) {
                 addToast(t('product:removedFromWishlist'), 'success');
+
+                // Emit analytics event on success
+                if (surface) {
+                    void trackWishlistItemRemoved({
+                        surface: surface as 'pdp' | 'plp' | 'cart' | 'wishlist-page',
+                        productId,
+                    });
+                }
             } else {
                 setWishlistItems((prev) => {
                     const next = new Set(prev);
@@ -129,7 +148,7 @@ export const useWishlist = (options?: UseWishlistOptions) => {
             }
             setPendingOperation(null);
         }
-    }, [removeFetcher.state, removeFetcher.data, addToast, t]);
+    }, [removeFetcher.state, removeFetcher.data, addToast, t, trackWishlistItemRemoved]);
 
     const isItemInWishlist = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
@@ -139,11 +158,16 @@ export const useWishlist = (options?: UseWishlistOptions) => {
         [wishlistItems]
     );
 
-    // Base toggle function (without auth check).
+    // Toggle the wishlist state for a product. Works for both guest and registered
+    // sessions — SCAPI accepts the underlying `customerId` from either token type.
     // Fire-and-forget: submit is called synchronously and the useEffect handlers
     // above react to the fetcher state/data changes on subsequent renders.
-    const toggleWishlistBase = useCallback(
-        (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
+    const toggleWishlist = useCallback(
+        (
+            product: ShopperSearch.schemas['ProductSearchHit'],
+            variant?: ShopperSearch.schemas['ProductSearchHit'],
+            surface?: 'pdp' | 'plp' | 'cart' | 'wishlist-page'
+        ) => {
             const productId = variant?.productId || product.productId;
             if (!productId) {
                 addToast(t('product:failedToAddToWishlist'), 'error');
@@ -167,33 +191,16 @@ export const useWishlist = (options?: UseWishlistOptions) => {
 
             // Store context for the effect handlers, then submit
             if (isInWishlist) {
-                pendingRemoveRef.current = { productId };
+                pendingRemoveRef.current = { productId, surface };
                 // In this case, we have access to only the product id (not item id)
-                void removeFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-remove' });
+                void removeFetcher.submit({ productId }, { method: 'POST', action: resourceRoutes.wishlistRemove });
             } else {
-                pendingAddRef.current = { productId, productName: product.productName || 'product' };
-                void addFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-add' });
+                pendingAddRef.current = { productId, productName: product.productName || 'product', surface };
+                void addFetcher.submit({ productId }, { method: 'POST', action: resourceRoutes.wishlistAdd });
             }
         },
         [wishlistItems, addFetcher, removeFetcher, addToast, t]
     );
-
-    // Wrap with auth requirement
-    const toggleWishlist = useRequireAuth(toggleWishlistBase as (...args: unknown[]) => Promise<unknown>, {
-        actionName: 'addToWishlist',
-        getActionParams: (...args: unknown[]) => {
-            const product = args[0] as ShopperSearch.schemas['ProductSearchHit'];
-            const variant = args[1] as ShopperSearch.schemas['ProductSearchHit'] | undefined;
-            const productId = variant?.productId || product.productId;
-            const productName = product.productName;
-            return productId ? { productId, productName } : {};
-        },
-        getReturnUrl: () => window.location.pathname + window.location.search,
-        toastMessage: t('product:signInToAddToWishlist'),
-    }) as (
-        product: ShopperSearch.schemas['ProductSearchHit'],
-        variant?: ShopperSearch.schemas['ProductSearchHit']
-    ) => Promise<void>;
 
     return {
         wishlist: Array.from(wishlistItems),

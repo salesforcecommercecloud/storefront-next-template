@@ -50,10 +50,16 @@ vi.mock('./suggestions-grid', () => ({
     ),
 }));
 
-// Mock URL builder
-vi.mock('@/lib/url', () => ({
-    searchUrlBuilder: vi.fn((phrase: string) => `/search?q=${encodeURIComponent(phrase)}`),
-}));
+// Mock URL builder. `encodeBase64Url` is preserved so that downstream consumers
+// (e.g. WishlistProvider's useScapiFetchClient in AllProvidersWrapper) still get a real
+// implementation without each test having to stub it.
+vi.mock('@/lib/url', async () => {
+    const actual = await vi.importActual<typeof import('@/lib/url')>('@/lib/url');
+    return {
+        ...actual,
+        searchUrlBuilder: vi.fn((phrase: string) => `/search?q=${encodeURIComponent(phrase)}`),
+    };
+});
 
 vi.mock('@/hooks/use-analytics', () => ({
     useAnalytics: () => ({

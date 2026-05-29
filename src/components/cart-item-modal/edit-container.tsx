@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductImages } from '@/hooks/product/use-product-images';
-import { isProductBundle, isProductSet } from '@/lib/product-utils';
+import { isProductBundle, isProductSet } from '@/lib/product/product-utils';
 import { CartItemModalView } from './view';
 import type { CartItemModalProps } from './types';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -59,42 +59,18 @@ export function CartItemModalEditContainer({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
-    const fullProductFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
-        params: {
-            path: { id: productId },
-            query: {
-                allImages: true,
-                expand: [
-                    'variations',
-                    'availability',
-                    'images',
-                    'prices',
-                    'promotions',
-                    'set_products',
-                    'bundled_products',
-                ],
-                // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                ...(inventoryIds ? { inventoryIds } : {}),
-                // @sfdc-extension-block-end SFDC_EXT_BOPIS
-            },
-        },
-    });
-
-    useEffect(() => {
-        if (open && fullProductFetcher.state === 'idle' && !fullProductFetcher.data) {
-            void fullProductFetcher.load();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, fullProductFetcher.state, fullProductFetcher.data]);
-
-    const fullProduct: Product = fullProductFetcher.data ?? product;
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
+    // Only master products require variants for the edit modal to function.
+    // Standard, bundle, and set products don't need variant selection.
+    const hasError = !!product.type?.master && !product.variants;
 
     const matchingVariant = useMemo(() => {
-        if (!fullProduct.variants) return undefined;
-        return fullProduct.variants.find((variant) =>
+        if (!product.variants) return undefined;
+        return product.variants.find((variant) =>
             Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
         );
-    }, [fullProduct, variationValues]);
+    }, [product, variationValues]);
 
     const variantProductId = matchingVariant?.productId;
     const needsVariantFetch = !!variantProductId && variantProductId !== productId;
@@ -117,28 +93,34 @@ export function CartItemModalEditContainer({
             open &&
             needsVariantFetch &&
             variantFetcher.state === 'idle' &&
+            !variantFetcher.errors &&
             variantFetcher.data?.id !== variantProductId
         ) {
             void variantFetcher.load();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, needsVariantFetch, variantFetcher.state, variantFetcher.data?.id, variantProductId]);
+    }, [
+        open,
+        needsVariantFetch,
+        variantFetcher.state,
+        variantFetcher.errors,
+        variantFetcher.data?.id,
+        variantProductId,
+    ]);
 
     const variantData =
         needsVariantFetch && variantFetcher.data?.id === variantProductId ? variantFetcher.data : undefined;
 
     const currentProduct: Product = useMemo(() => {
-        if (!variantData) return fullProduct;
+        if (!variantData) return product;
         return {
-            ...fullProduct,
+            ...product,
             ...variantData,
-            id: fullProduct.id,
-            variants: fullProduct.variants,
-            variationAttributes: fullProduct.variationAttributes,
+            id: product.id,
+            variants: product.variants,
+            variationAttributes: product.variationAttributes,
         };
-    }, [fullProduct, variantData]);
-
-    const isLoading = !fullProductFetcher.data && fullProductFetcher.state !== 'idle';
+    }, [product, variantData]);
 
     const handleAttributeChange = useCallback((attributeId: string, value: string) => {
         setVariationValues((prev) => {
@@ -149,9 +131,6 @@ export function CartItemModalEditContainer({
 
     const { galleryImages } = useProductImages({ product: currentProduct, selectedAttributes: variationValues });
 
-    const isProductASet = isProductSet(currentProduct);
-    const isProductABundle = isProductBundle(currentProduct);
-
     const handleCloseModal = useCallback(() => {
         onOpenChange?.(false);
     }, [onOpenChange]);
@@ -161,8 +140,11 @@ export function CartItemModalEditContainer({
             open={open}
             onOpenChange={onOpenChange}
             dialogTitle={t('title')}
-            isLoading={isLoading}
-            hasError={false}
+            // The product prop comes fully expanded from the cart loader (getProducts returns all
+            // expand fields by default), so it's always available synchronously — no async fetch needed.
+            // Therefore, isLoading is always false.
+            isLoading={false}
+            hasError={hasError}
             retryLabel={t('retry')}
             loadingLabel={t('loadingProduct')}
             loadErrorLabel={t('loadError')}

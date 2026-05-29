@@ -15,10 +15,9 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isSelectedDeliveryOptionValid } from './product-actions';
+import { isSelectedDeliveryOptionValid, validateDeliveryOptionCompatibility } from './product-actions';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import type { ToastType } from '@/components/toast';
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
@@ -36,64 +35,65 @@ beforeEach(() => {
     vi.resetAllMocks();
 });
 
-describe('isSelectedDeliveryOptionValid', () => {
-    let mockAddToast: (message: string, type: ToastType) => void;
-
-    beforeEach(() => {
-        mockAddToast = vi.fn() as unknown as (message: string, type: ToastType) => void;
+describe('validateDeliveryOptionCompatibility', () => {
+    it('returns valid when basket is undefined', () => {
+        expect(validateDeliveryOptionCompatibility(undefined, 'store-123')).toEqual({ valid: true });
     });
 
-    it('should return true when basket is undefined', () => {
-        const result = isSelectedDeliveryOptionValid(undefined, 'store-123', mockAddToast);
-        expect(result).toBe(true);
-        expect(mockAddToast).not.toHaveBeenCalled();
-    });
-
-    it('should return true when basket has no product items', () => {
+    it('returns valid when basket has no product items', () => {
         const basket = createMockBasketWithPickupItems(undefined, {
             productItems: undefined,
         });
-
-        const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
-        expect(result).toBe(true);
-        expect(mockAddToast).not.toHaveBeenCalled();
+        expect(validateDeliveryOptionCompatibility(basket, 'store-123')).toEqual({ valid: true });
     });
 
-    it('should return true when adding delivery item to basket with empty productItems array', () => {
+    it('returns valid when adding delivery item (null storeId) to a basket with empty productItems', () => {
         const basket = createMockBasketWithPickupItems();
-
-        // Adding delivery item (null) when existingStoreId is undefined should pass
-        const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
-        expect(result).toBe(true);
-        expect(mockAddToast).not.toHaveBeenCalled();
+        expect(validateDeliveryOptionCompatibility(basket, null)).toEqual({ valid: true });
     });
 
-    it('should return true when adding delivery item to empty basket', () => {
-        const basket = createMockBasketWithPickupItems();
-
-        const result = isSelectedDeliveryOptionValid(basket, null, mockAddToast);
-        expect(result).toBe(true);
-        expect(mockAddToast).not.toHaveBeenCalled();
-    });
-
-    it('should return true when adding pickup item from same store to basket with pickup items', () => {
+    it('returns valid when adding pickup item from the same store as existing pickup items', () => {
         const basket = createMockBasketWithPickupItems([
             { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
         ]);
-
-        const result = isSelectedDeliveryOptionValid(basket, 'store-123', mockAddToast);
-        expect(result).toBe(true);
-        expect(mockAddToast).not.toHaveBeenCalled();
+        expect(validateDeliveryOptionCompatibility(basket, 'store-123')).toEqual({ valid: true });
     });
 
-    it('should return false and show error when adding pickup item from different store', () => {
+    it('returns invalid with translated error when adding pickup item from a different store', () => {
         const basket = createMockBasketWithPickupItems([
             { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
         ]);
-
-        const result = isSelectedDeliveryOptionValid(basket, 'store-456', mockAddToast);
         const { t } = getTranslation();
-        expect(result).toBe(false);
-        expect(mockAddToast).toHaveBeenCalledWith(t('extBopis:cart.addToCartValidation.changeStoreError'), 'error');
+        expect(validateDeliveryOptionCompatibility(basket, 'store-456')).toEqual({
+            valid: false,
+            errorMessage: t('extBopis:cart.addToCartValidation.changeStoreError'),
+        });
+    });
+});
+
+describe('isSelectedDeliveryOptionValid', () => {
+    it('returns true and does not call addToast when basket is undefined', () => {
+        const addToast = vi.fn();
+        expect(isSelectedDeliveryOptionValid(undefined, 'store-123', addToast)).toBe(true);
+        expect(addToast).not.toHaveBeenCalled();
+    });
+
+    it('returns true and does not call addToast when adding pickup item from the same store', () => {
+        const addToast = vi.fn();
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+        expect(isSelectedDeliveryOptionValid(basket, 'store-123', addToast)).toBe(true);
+        expect(addToast).not.toHaveBeenCalled();
+    });
+
+    it('returns false and shows error toast when adding pickup item from a different store', () => {
+        const addToast = vi.fn();
+        const basket = createMockBasketWithPickupItems([
+            { productId: 'product-1', inventoryId: 'inventory-1', storeId: 'store-123' },
+        ]);
+        const { t } = getTranslation();
+        expect(isSelectedDeliveryOptionValid(basket, 'store-456', addToast)).toBe(false);
+        expect(addToast).toHaveBeenCalledWith(t('extBopis:cart.addToCartValidation.changeStoreError'), 'error');
     });
 });

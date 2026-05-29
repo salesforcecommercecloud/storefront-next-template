@@ -77,6 +77,7 @@ const passwordlessFetcherState = {
         success: boolean;
         email?: string;
         requiresLogin?: boolean;
+        error?: { code: string; message: string };
     } | null,
     submit: mockPasswordlessSubmit,
 };
@@ -152,22 +153,26 @@ vi.mock('@/hooks/use-checkout', () => ({
     useCheckoutContext: () => mockUseCheckoutContext(),
 }));
 
-vi.mock('@/lib/customer-profile-utils', () => ({
+vi.mock('@/lib/customer/profile-utils', () => ({
     getContactInfoFromCustomer: () => ({}),
 }));
 
-vi.mock('@/lib/country-codes', () => ({
+vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => [{ dialingCode: '+1', countryName: 'United States' }],
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/config', () => {
-    const { createContext } = React;
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
     return {
-        ConfigContext: createContext<{ auth?: { otpLength?: number } } | null>({ auth: { otpLength: 6 } }),
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
     };
 });
 
 import ContactInfo from './contact-info';
+import { resourceRoutes } from '@/route-paths';
 
 const createMockBasket = () => ({
     basketId: 'test-basket-123',
@@ -182,7 +187,7 @@ function renderWithRouter(ui: React.ReactElement) {
         [
             { path: '/', element: ui },
             {
-                path: '/action/authorize-passwordless-email',
+                path: resourceRoutes.authorizePasswordlessEmail,
                 action: () => ({ success: true, email: 'shopper@example.com' }),
             },
         ],
@@ -362,5 +367,108 @@ describe('ContactInfo passwordless OTP modal actions', () => {
         });
 
         expect(screen.queryByTestId('login-modal-checkout-as-guest')).not.toBeInTheDocument();
+    });
+});
+
+describe('ContactInfo - server-side Turnstile verification rejection (NOT_AUTHORIZED)', () => {
+    let useBasket: ReturnType<typeof vi.fn>;
+
+    beforeEach(async () => {
+        vi.clearAllMocks();
+        passwordlessFetcherState.state = 'idle';
+        mockUseCheckoutContext.mockReturnValue(buildCheckoutContext());
+
+        const basketModule = await import('@/providers/basket');
+        useBasket = basketModule.useBasket as ReturnType<typeof vi.fn>;
+        useBasket.mockReturnValue(createMockBasket());
+    });
+
+    test('renders generic verification-error alert when action returns NOT_AUTHORIZED', async () => {
+        passwordlessFetcherState.data = {
+            success: false,
+            error: { code: 'NOT_AUTHORIZED', message: 'Turnstile verification failed' },
+        };
+
+        renderWithRouter(
+            <ContactInfo onSubmit={vi.fn()} isLoading={false} isCompleted={false} isEditing={true} onEdit={vi.fn()} />
+        );
+
+        const alert = await screen.findByTestId('contact-info-verification-error');
+        // Generic copy - we never expose "Turnstile" or "bot" to the shopper.
+        expect(alert).toHaveTextContent(/verify/i);
+        expect(alert).not.toHaveTextContent(/turnstile/i);
+        expect(alert).not.toHaveTextContent(/bot/i);
+        expect(alert).toHaveAttribute('role', 'alert');
+    });
+
+    test('does not render verification error on success response', async () => {
+        passwordlessFetcherState.data = { success: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo onSubmit={vi.fn()} isLoading={false} isCompleted={false} isEditing={true} onEdit={vi.fn()} />
+        );
+
+        // Wait briefly to ensure any fetcher effects have run.
+        await waitFor(() => {
+            expect(screen.queryByTestId('otp-modal-mock')).toBeInTheDocument();
+        });
+        expect(screen.queryByTestId('contact-info-verification-error')).not.toBeInTheDocument();
+    });
+
+    test('does not render verification error on requiresLogin response', async () => {
+        passwordlessFetcherState.data = { success: false, requiresLogin: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo onSubmit={vi.fn()} isLoading={false} isCompleted={false} isEditing={true} onEdit={vi.fn()} />
+        );
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('login-modal-mock')).toBeInTheDocument();
+        });
+        // requiresLogin is a separate, non-NOT_AUTHORIZED path; no generic error should show.
+        expect(screen.queryByTestId('contact-info-verification-error')).not.toBeInTheDocument();
+    });
+
+    test('does not render verification error for non-Turnstile errors (e.g. OPERATION_FAILED)', async () => {
+        passwordlessFetcherState.data = {
+            success: false,
+            error: { code: 'OPERATION_FAILED', message: 'Backend exploded' },
+        };
+
+        renderWithRouter(
+            <ContactInfo onSubmit={vi.fn()} isLoading={false} isCompleted={false} isEditing={true} onEdit={vi.fn()} />
+        );
+
+        // Generic verification copy is reserved for NOT_AUTHORIZED - other errors must not show it.
+        await waitFor(() => {
+            // Give the fetcher effect a chance to run.
+            expect(passwordlessFetcherState.data).toBeTruthy();
+        });
+        expect(screen.queryByTestId('contact-info-verification-error')).not.toBeInTheDocument();
+    });
+
+    test('clears verification error when shopper focuses the email field again', async () => {
+        passwordlessFetcherState.data = {
+            success: false,
+            error: { code: 'NOT_AUTHORIZED', message: 'Turnstile verification failed' },
+        };
+
+        renderWithRouter(
+            <ContactInfo onSubmit={vi.fn()} isLoading={false} isCompleted={false} isEditing={true} onEdit={vi.fn()} />
+        );
+
+        const alert = await screen.findByTestId('contact-info-verification-error');
+        expect(alert).toBeInTheDocument();
+
+        // Fire a focus event directly on the input. This invokes the onFocus React handler
+        // (handleEmailFocus) which clears verificationError. We use fireEvent rather than
+        // user.click because click in jsdom can blur+refocus inconsistently.
+        const emailInput = screen.getByLabelText(/Email Address/i);
+        const { fireEvent } = await import('@testing-library/react');
+        fireEvent.focus(emailInput);
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('contact-info-verification-error')).not.toBeInTheDocument();
+        });
     });
 });

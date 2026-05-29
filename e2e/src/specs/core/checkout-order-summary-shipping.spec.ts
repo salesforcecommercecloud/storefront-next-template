@@ -18,7 +18,7 @@
  * Checkout Order Summary & Shipping Method Tests (Guest Shopper)
  *
  * Test Coverage:
- * - Order summary displays subtotal, shipping, tax, and total at checkout
+ * - Order summary displays subtotal, shipping, and total at checkout (tax shown only for net taxation)
  * - Shipping method selection and verification during guest checkout
  *
  * Prerequisites:
@@ -37,7 +37,7 @@ import { TEST_SHIPPING_ADDRESS, TEST_PRODUCT_CATEGORIES, generateTestEmail } fro
  * Test Flow:
  * 1. Add product to cart and navigate to checkout
  * 2. Verify order summary container is visible
- * 3. Verify summary includes pricing labels (Subtotal, Shipping, Tax, Total)
+ * 3. Verify summary includes pricing labels (Subtotal, Shipping, Total)
  * 4. Verify at least one currency value is present
  * 5. Fill through checkout to payment step
  * 6. Verify order summary is still visible with a non-zero total
@@ -54,7 +54,6 @@ Scenario('Order summary displays subtotal, shipping, tax, and total', async () =
     const summaryText = await checkoutPage.getOrderSummaryText();
     expect(summaryText, 'Order summary should include Subtotal').to.match(/subtotal/i);
     expect(summaryText, 'Order summary should include Shipping').to.match(/shipping/i);
-    expect(summaryText, 'Order summary should include Tax').to.match(/tax/i);
     expect(summaryText, 'Order summary should include Total').to.match(/total/i);
     expect(summaryText, 'Order summary should include a currency value').to.match(/[$£€¥][\d,.]+/);
 

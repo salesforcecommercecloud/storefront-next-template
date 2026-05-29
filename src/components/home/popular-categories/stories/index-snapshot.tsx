@@ -17,6 +17,7 @@ import { vi, expect, test, describe, afterEach } from 'vitest';
 import type React from 'react';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -64,9 +65,17 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });
@@ -76,7 +85,7 @@ import { composeStories } from '@storybook/react-vite';
 import * as PopularCategoriesStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import type { ReactNode } from 'react';
 
 const composed = composeStories(PopularCategoriesStories);

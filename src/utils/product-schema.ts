@@ -13,7 +13,94 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
+
+type JsonLdObject = Record<string, unknown>;
+
+// TODO: Remove when SCAPI types include `type` on PageMetaTag
+interface PageMetaTag {
+    type?: string;
+    id?: string;
+    value?: string;
+}
+
+/**
+ * Deep-merges two plain objects. Values from `override` take precedence.
+ * Arrays are replaced entirely (not concatenated) to preserve customer intent.
+ * @mutates base
+ */
+export function deepMerge(base: JsonLdObject, override: JsonLdObject): JsonLdObject {
+    for (const key of Object.keys(override)) {
+        const overrideVal = override[key];
+        const baseVal = base[key];
+
+        if (
+            overrideVal !== null &&
+            typeof overrideVal === 'object' &&
+            !Array.isArray(overrideVal) &&
+            baseVal !== null &&
+            typeof baseVal === 'object' &&
+            !Array.isArray(baseVal)
+        ) {
+            deepMerge(baseVal as JsonLdObject, overrideVal as JsonLdObject);
+        } else {
+            base[key] = overrideVal;
+        }
+    }
+
+    return base;
+}
+
+/**
+ * Extracts JSON-LD schema objects from pageMetaTags.
+ * Looks for entries with id "json-ld" and parses their value as JSON.
+ */
+export function parseJsonLdMetaTags(pageMetaTags: PageMetaTag[] | undefined | null): JsonLdObject | null {
+    if (!pageMetaTags || !Array.isArray(pageMetaTags) || pageMetaTags.length === 0) {
+        return null;
+    }
+
+    const jsonLdTags = pageMetaTags.filter(
+        (tag) => tag.type === 'jsonld' && typeof tag.value === 'string' && tag.value
+    );
+
+    if (jsonLdTags.length === 0) {
+        return null;
+    }
+
+    let merged: JsonLdObject | null = null;
+
+    for (const tag of jsonLdTags) {
+        try {
+            const parsed = JSON.parse(tag.value as string);
+            // Only accept plain objects (skip arrays/primitives). If multiple jsonld tags exist, deep-merge them sequentially.
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                merged = merged ? deepMerge(merged, parsed as JsonLdObject) : (parsed as JsonLdObject);
+            }
+        } catch {
+            // Invalid JSON in pageMetaTag — skip silently
+        }
+    }
+
+    return merged;
+}
+
+/**
+ * Merges customer-defined JSON-LD attributes from pageMetaTags into a generated schema.
+ * Customer values take priority over dynamically generated values.
+ */
+export function mergeJsonLdSchema<T extends JsonLdObject>(
+    generatedSchema: T,
+    pageMetaTags: PageMetaTag[] | undefined | null
+): T {
+    const customerSchema = parseJsonLdMetaTags(pageMetaTags);
+
+    if (!customerSchema) {
+        return generatedSchema;
+    }
+
+    return deepMerge(generatedSchema, customerSchema) as T;
+}
 
 /**
  * Schema.org Product JSON-LD structure
@@ -323,5 +410,5 @@ export function generateProductSchema(product: ShopperProducts.schemas['Product'
         }
     }
 
-    return schema;
+    return mergeJsonLdSchema(schema, product.pageMetaTags as PageMetaTag[] | undefined);
 }

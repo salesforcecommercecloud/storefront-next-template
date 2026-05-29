@@ -28,14 +28,20 @@ import { useToast } from '@/components/toast';
 
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // Constants
+import { resourceRoutes } from '@/route-paths';
 // Types
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 
-interface UseCartQuantityUpdateProps {
+/**
+ * The constraint `{ success?: boolean }` is intentionally weak: this hook submits to two
+ * different action routes (`removeAction` from config, `/action/cart-item-update`) whose
+ * full response shapes differ, but the hook only reads `fetcher.data?.success`. Callers
+ * pin a richer type if they want narrower access.
+ */
+interface UseCartQuantityUpdateProps<TResponse extends { success?: boolean }> {
     /** Cart item ID for API calls */
     itemId: string;
     /** Initial quantity value */
@@ -44,8 +50,8 @@ interface UseCartQuantityUpdateProps {
     stockLevel?: number;
     /** Debounce delay in milliseconds */
     debounceDelay?: number;
-    /** Fetcher to use for quantity updates */
-    fetcher: ReturnType<typeof useFetcher<ActionResponse>>;
+    /** Fetcher used to submit the quantity update / remove. */
+    fetcher: ReturnType<typeof useFetcher<TResponse>>;
 }
 
 interface UseCartQuantityUpdateReturn {
@@ -101,14 +107,14 @@ interface UseCartQuantityUpdateReturn {
  * });
  * ```
  */
-export function useCartQuantityUpdate({
+export function useCartQuantityUpdate<TResponse extends { success?: boolean } = ActionResponse>({
     itemId,
     initialValue,
     stockLevel,
     debounceDelay,
     fetcher,
-}: UseCartQuantityUpdateProps): UseCartQuantityUpdateReturn {
-    const config = useConfig<AppConfig>();
+}: UseCartQuantityUpdateProps<TResponse>): UseCartQuantityUpdateReturn {
+    const config = useConfig();
     const { addToast } = useToast();
     const { t } = useTranslation('quantitySelector');
 
@@ -170,7 +176,7 @@ export function useCartQuantityUpdate({
 
             void fetcher.submit(formData, {
                 method: 'PATCH',
-                action: '/action/cart-item-update',
+                action: resourceRoutes.cartItemUpdate,
             });
         }, effectiveDebounceDelay);
         // effectiveDebounceDelay: stable value, no need to recreate effect

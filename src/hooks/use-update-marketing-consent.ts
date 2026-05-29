@@ -16,6 +16,11 @@
 import { useFetcher } from 'react-router';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { createLogger } from '@/lib/logger';
+import { resourceRoutes } from '@/route-paths';
+import type {
+    action as updateMarketingConsentAction,
+    UpdateMarketingConsentResponse,
+} from '@/routes/action.update-marketing-consent';
 
 const logger = createLogger();
 
@@ -26,13 +31,6 @@ export interface UpdateMarketingConsentPayload {
     contactPointValue: string;
     status: 'opt_in' | 'opt_out';
 }
-
-/** Response shape from the update-marketing-consent action. */
-export type UpdateMarketingConsentResponse = {
-    success: boolean;
-    error?: string;
-    partialSuccess?: boolean;
-};
 
 /**
  * Hook for updating marketing consent. Submit one batch of changes per Save.
@@ -51,7 +49,7 @@ export function useUpdateMarketingConsent(
     updateBatch: (updates: UpdateMarketingConsentPayload[]) => void;
     isUpdating: boolean;
 } {
-    const fetcher = useFetcher<UpdateMarketingConsentResponse>();
+    const fetcher = useFetcher<typeof updateMarketingConsentAction>();
 
     useFetcherEffect(fetcher, {
         onSuccess: () => {
@@ -68,7 +66,7 @@ export function useUpdateMarketingConsent(
         if (updates.length === 0) return;
         void fetcher.submit({ updates } as unknown as FormData, {
             method: 'POST',
-            action: '/action/update-marketing-consent',
+            action: resourceRoutes.updateMarketingConsent,
             encType: 'application/json',
         });
     };

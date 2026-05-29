@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
-import { data, type ActionFunction } from 'react-router';
+import { data } from 'react-router';
+import type { Route } from './+types/action.set-selected-store';
 import { updateSelectedStore } from '@/extensions/store-locator/middlewares/selected-store.server';
 import { getLogger } from '@/lib/logger.server';
 
@@ -27,7 +28,7 @@ import { getLogger } from '@/lib/logger.server';
  * Form data:
  * - `storeInfo`: JSON string of SelectedStoreInfo, or empty string to clear
  */
-export const action: ActionFunction = async ({ request, context }) => {
+export const action = async ({ request, context }: Route.ActionArgs) => {
     const logger = getLogger(context);
     const formData = await request.formData();
     const storeInfoRaw = formData.get('storeInfo') as string;

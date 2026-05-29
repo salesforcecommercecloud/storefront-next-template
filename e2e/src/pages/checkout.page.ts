@@ -19,6 +19,52 @@ import { buildSitePath } from '../utils/url-utils';
 const { I } = inject();
 
 /**
+ * Extract customerId (gcid/rcid from `isb`) and usid (from `sub`) from a SLAS access token JWT.
+ * Used by SCAPI helper calls that previously read these values from server-only cookies.
+ *
+ * Customer-id selection mirrors the storefront's `getCustomerIdFromClaims`:
+ * - userType='registered' (default): prefer rcid, fall back to gcid
+ * - userType='guest': use gcid only
+ *
+ * Throws if either claim is missing — both values are required by the SCAPI helpers that
+ * consume the result, and an absent claim would surface as a server-side 404/400 anyway.
+ */
+function extractCustomerIdAndUsidFromJwt(
+    accessToken: string,
+    userType: 'guest' | 'registered' = 'registered'
+): { customerId: string; usid: string } {
+    const parts = accessToken.split('.');
+    if (parts.length !== 3 || !parts[1]) {
+        throw new Error('Invalid SLAS access token: expected JWT with 3 parts');
+    }
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(Buffer.from(base64, 'base64').toString('utf-8')) as Record<string, unknown>;
+
+    const parseDelimitedClaim = (claim: unknown, prefix: string): string | null => {
+        if (typeof claim !== 'string' || !claim) return null;
+        for (const segment of claim.split('::')) {
+            if (segment.startsWith(prefix)) return segment.slice(prefix.length);
+        }
+        return null;
+    };
+
+    const isb = payload.isb;
+    const sub = payload.sub;
+    const gcid = parseDelimitedClaim(isb, 'gcid:');
+    const rcid = parseDelimitedClaim(isb, 'rcid:');
+    const customerId = userType === 'registered' ? (rcid ?? gcid) : gcid;
+    const usid = parseDelimitedClaim(sub, 'usid:');
+
+    if (!customerId) {
+        throw new Error('Customer ID not found in SLAS access token isb claim');
+    }
+    if (!usid) {
+        throw new Error('usid not found in SLAS access token sub claim');
+    }
+    return { customerId, usid };
+}
+
+/**
  * Checkout Page Object
  * Handles interactions with the multi-step checkout page
  *
@@ -1692,18 +1738,17 @@ class CheckoutPage {
 
                 const accessTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-at_${siteId}`);
                 const refreshTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-nx_${siteId}`);
-                const usidCookie = cookies.find((c: { name: string }) => c.name === `usid_${siteId}`);
-                const customerIdCookie = cookies.find((c: { name: string }) => c.name === `customerId_${siteId}`);
 
-                if (!accessTokenCookie || !customerIdCookie) {
+                if (!accessTokenCookie) {
                     throw new Error('Customer session cookies not found - user may not be logged in');
                 }
 
+                const { customerId, usid } = extractCustomerIdAndUsidFromJwt(accessTokenCookie.value);
                 const tokens = {
                     accessToken: accessTokenCookie.value,
                     refreshToken: refreshTokenCookie?.value ?? '',
-                    usid: usidCookie?.value ?? '',
-                    customerId: customerIdCookie.value,
+                    usid,
+                    customerId,
                     expiresIn: 1800,
                 };
 
@@ -1773,18 +1818,17 @@ class CheckoutPage {
 
                 const accessTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-at_${siteId}`);
                 const refreshTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-nx_${siteId}`);
-                const usidCookie = cookies.find((c: { name: string }) => c.name === `usid_${siteId}`);
-                const customerIdCookie = cookies.find((c: { name: string }) => c.name === `customerId_${siteId}`);
 
-                if (!accessTokenCookie || !customerIdCookie) {
+                if (!accessTokenCookie) {
                     throw new Error('Customer session cookies not found - user may not be logged in');
                 }
 
+                const { customerId, usid } = extractCustomerIdAndUsidFromJwt(accessTokenCookie.value);
                 const tokens = {
                     accessToken: accessTokenCookie.value,
                     refreshToken: refreshTokenCookie?.value ?? '',
-                    usid: usidCookie?.value ?? '',
-                    customerId: customerIdCookie.value,
+                    usid,
+                    customerId,
                     expiresIn: 1800,
                 };
 
@@ -1958,6 +2002,29 @@ class CheckoutPage {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
         return false;
+    }
+
+    /**
+     * Mock the passwordless authorization API to return the guest path: success=false
+     * with no requiresLogin and no error. Simulates SLAS 403 (not authorized for
+     * passwordless on this site) or 404 (email not registered) - both of which are
+     * mapped server-side to a "let the shopper proceed as guest" response. The OTP
+     * modal must not open and the standard login modal must not open either.
+     */
+    async mockPasswordlessAuthorizationGuestPath(email: string): Promise<void> {
+        await (I.usePlaywrightTo('mock passwordless API with guest path', async ({ browserContext }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
+                // Turbo-stream format: flattened index-referenced JSON.
+                // Shape: { success: false, email }. No `requiresLogin` field.
+                const body = JSON.stringify([{ _1: 2 }, 'data', { _3: 4, _5: 6 }, 'success', false, 'email', email]);
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'text/x-script; charset=utf-8',
+                    body,
+                });
+            });
+        }) as unknown as Promise<void>);
     }
 
     /**

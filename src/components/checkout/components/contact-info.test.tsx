@@ -19,6 +19,7 @@ import { render, screen, waitFor, fireEvent, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ContactInfo from './contact-info';
+import { resourceRoutes } from '@/route-paths';
 
 // Use real react-hook-form for integration tests
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
@@ -71,14 +72,24 @@ vi.mock('@/hooks/use-checkout', () => ({
 }));
 
 const mockGetContactInfoFromCustomer = vi.fn((_customerProfile?: unknown) => ({}));
-vi.mock('@/lib/customer-profile-utils', () => ({
+vi.mock('@/lib/customer/profile-utils', () => ({
     getContactInfoFromCustomer: (customerProfile?: unknown) => mockGetContactInfoFromCustomer(customerProfile),
 }));
 
 const mockGetCommonPhoneCountryCodes = vi.fn(() => [{ dialingCode: '+1', countryName: 'United States' }]);
-vi.mock('@/lib/country-codes', () => ({
+vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => mockGetCommonPhoneCountryCodes(),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
+    };
+});
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
@@ -111,7 +122,7 @@ function renderWithRouter(ui: React.ReactElement) {
                 element: ui,
             },
             {
-                path: '/action/authorize-passwordless-email',
+                path: resourceRoutes.authorizePasswordlessEmail,
                 action: () => ({ success: false }), // avoid opening OTP modal so form interactions work
             },
         ],

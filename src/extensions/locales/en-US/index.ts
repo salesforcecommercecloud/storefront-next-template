@@ -17,15 +17,21 @@
 // NOTE: This file is auto-generated. Do not edit manually.
 // Run 'pnpm locales:aggregate-extensions' to regenerate this file.
 
+import bnplTranslations from '@/extensions/bnpl/locales/en-US/translations.json';
 import bopisTranslations from '@/extensions/bopis/locales/en-US/translations.json';
+import customerPreferencesTranslations from '@/extensions/customer-preferences/locales/en-US/translations.json';
 import multishipTranslations from '@/extensions/multiship/locales/en-US/translations.json';
+import productContentTranslations from '@/extensions/product-content/locales/en-US/translations.json';
+import ratingsReviewsTranslations from '@/extensions/ratings-reviews/locales/en-US/translations.json';
 import storeLocatorTranslations from '@/extensions/store-locator/locales/en-US/translations.json';
-import themeSwitcherTranslations from '@/extensions/theme-switcher/locales/en-US/translations.json';
 
 // Namespace is based on the following convention: extPascalCase, and it's the pascal case of the folder name (e.g. store-locator -> extStoreLocator)
 export default {
+    extBnpl: bnplTranslations,
     extBopis: bopisTranslations,
+    extCustomerPreferences: customerPreferencesTranslations,
     extMultiship: multishipTranslations,
+    extProductContent: productContentTranslations,
+    extRatingsReviews: ratingsReviewsTranslations,
     extStoreLocator: storeLocatorTranslations,
-    extThemeSwitcher: themeSwitcherTranslations,
 };

@@ -19,16 +19,15 @@ import { Link } from '@/components/link';
 import Search from './search';
 import CartBadge from './cart-badge';
 import UserActions from './user-actions/user-actions';
+import WishlistIcon from './wishlist-icon';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/logo.svg';
 import { Button } from '@/components/ui/button';
 import { SparklesIcon } from '@/components/icons';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { launchChat } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
-import { useAnalytics } from '@/hooks/use-analytics';
 
 interface HeaderProps extends PropsWithChildren {
     beforeHeader?: ReactNode;
@@ -46,8 +45,7 @@ function LocationKeyedSearch() {
 export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
     const headerRef = useRef<HTMLElement>(null);
-    const config = useConfig<AppConfig>();
-    const { trackCommerceAgentEngagement } = useAnalytics();
+    const config = useConfig();
     const showChat =
         variant === 'full' &&
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
@@ -71,9 +69,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
 
     if (variant === 'checkout') {
         return (
-            <header
-                ref={headerRef}
-                className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+            <header ref={headerRef} className="bg-header-background text-header-foreground sticky top-0 z-50">
                 <div className="section-container">
                     <div className="flex items-center h-16">
                         <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
@@ -92,13 +88,11 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
     }
 
     return (
-        <header
-            ref={headerRef}
-            className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+        <header ref={headerRef} className="bg-header-background text-header-foreground sticky top-0 z-50">
             <div className="flex justify-end section-container">{beforeHeader}</div>
             <div className="section-container py-6">
                 {/* Top row: Logo left, Icons right */}
-                <div className="flex items-center gap-x-4 lg:gap-x-6">
+                <div className="flex items-center gap-x-1 lg:gap-x-6">
                     {/* Logo - color swapped by theme via --header-logo-filter in app.css */}
                     <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
                         <img
@@ -127,15 +121,13 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                                 variant="ghost"
                                 size="icon"
                                 className="cursor-pointer lg:px-4 px-1 text-header-foreground hover:bg-transparent hover:opacity-50 transition-opacity"
-                                onClick={() => {
-                                    void trackCommerceAgentEngagement({ surface: 'header' });
-                                    launchChat();
-                                }}
+                                onClick={() => launchChat()}
                                 aria-label={t('openChat')}>
                                 <SparklesIcon />
                             </Button>
                         )}
                         <UserActions />
+                        <WishlistIcon />
                         <CartBadge />
                         <div className="lg:hidden">{children}</div>
                     </div>

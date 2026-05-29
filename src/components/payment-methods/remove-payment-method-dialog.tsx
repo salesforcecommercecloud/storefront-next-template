@@ -21,9 +21,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { accountDestructiveButtonClasses } from '@/lib/account-action-styles';
-import { getCardIcon } from '@/lib/card-icon-utils';
-import { getCardTypeDisplay } from '@/lib/payment-utils';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
+import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { PaymentMethod } from './payment-method-card';
 
 export interface RemovePaymentMethodDialogProps {
@@ -70,9 +70,7 @@ export function RemovePaymentMethodDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader className="mb-2">
-                    <DialogTitle
-                        className="font-semibold text-foreground"
-                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                    <DialogTitle className="text-lg font-semibold text-foreground">
                         {t('paymentMethods.removePaymentMethod')}
                     </DialogTitle>
                 </DialogHeader>

@@ -13,14 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, mergeConfig, configDefaults, coverageConfigDefaults } from 'vitest/config';
 import viteConfig from './vite.config';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig((configEnv) =>
     mergeConfig(
         viteConfig(configEnv),
         defineConfig({
             test: {
+                alias: [
+                    {
+                        find: /^\/.*\.(svg|png|jpe?g|gif|webp|ico|avif|woff2?|ttf|eot)(\?.*)?$/,
+                        replacement: resolve(__dirname, 'src/test-utils/__mocks__/asset-mock.ts'),
+                    },
+                    {
+                        find: 'virtual:action-hooks',
+                        replacement: resolve(__dirname, 'src/test-utils/__mocks__/virtual-action-hooks.ts'),
+                    },
+                ],
                 globals: true,
                 environment: 'jsdom',
                 setupFiles: ['./vitest.setup.ts'],
@@ -41,7 +55,7 @@ export default defineConfig((configEnv) =>
                         'src/test-utils/*',
                         'src/lib/test-utils/*',
                         'src/**/__tests__/*',
-                        'src/lib/static-registry.ts',
+                        'src/lib/page-designer/static-registry.ts',
                     ],
                     reportOnFailure: true,
                     thresholds: { lines: 73, statements: 73, functions: 72, branches: 67 },

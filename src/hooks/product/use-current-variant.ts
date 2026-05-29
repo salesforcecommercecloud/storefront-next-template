@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 import { useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { useNavigation, useSearchParams } from 'react-router';
+import type { ShopperProducts } from '@/scapi';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 
 interface UseCurrentVariantProps {
     product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
+    /**
+     * Optional override forwarded to {@link useSelectedVariations}. Modal contexts pass their
+     * local selection state here to avoid reading from / writing to the page URL.
+     */
+    selectionsOverride?: Record<string, string>;
 }
 
 /**
@@ -47,11 +52,12 @@ interface UseCurrentVariantProps {
  * @param props.isChildProduct - If true, prevents URL updates (useful for product sets/bundles)
  * @returns The matching variant object or undefined if no exact match is found
  */
-export function useCurrentVariant({ product, isChildProduct = false }: UseCurrentVariantProps) {
+export function useCurrentVariant({ product, isChildProduct = false, selectionsOverride }: UseCurrentVariantProps) {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigation = useNavigation();
 
-    // Use useSelectedVariations to get URL-aware selected attributes
-    const selectedAttributes = useSelectedVariations({ product, isChildProduct });
+    // Use useSelectedVariations to get URL-aware selected attributes (or override-driven in modal usage)
+    const selectedAttributes = useSelectedVariations({ product, isChildProduct, selectionsOverride });
 
     const variants = useMemo(() => product?.variants ?? [], [product]);
 
@@ -68,9 +74,24 @@ export function useCurrentVariant({ product, isChildProduct = false }: UseCurren
         return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
     }, [selectedAttributes, variants]);
 
-    // Update URL when variant changes
+    // Update URL when variant changes. Skip when an override is supplied (modal usage) so swatch
+    // changes there don't pollute the page URL or trigger route revalidation.
+    //
+    // The navigation.state === 'idle' guard avoids a race during the swatch click: while the
+    // NavLink's nav to ?color=<new> is in flight, useSelectedVariations has already flipped
+    // optimistically, so currentVariant points at the new variant — but searchParams is still
+    // the canonical (old) URL. Building a new URL from that snapshot and calling setSearchParams
+    // would supersede the in-flight nav with one that strips the user's color choice. Defer the
+    // pid sync until the navigation has settled and searchParams reflects the new URL.
     useEffect(() => {
-        if (product?.id && currentVariant && currentVariant.productId !== product.id && !isChildProduct) {
+        if (
+            navigation.state === 'idle' &&
+            product?.id &&
+            currentVariant &&
+            currentVariant.productId !== product.id &&
+            !isChildProduct &&
+            !selectionsOverride
+        ) {
             const currentPid = searchParams.get('pid');
             // Only set pid if it's not already set to the correct value
             if (currentPid !== currentVariant.productId) {
@@ -79,7 +100,7 @@ export function useCurrentVariant({ product, isChildProduct = false }: UseCurren
                 setSearchParams(newSearchParams, { replace: true, preventScrollReset: true });
             }
         }
-    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct]);
+    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct, selectionsOverride, navigation.state]);
 
     return currentVariant;
 }

@@ -15,18 +15,19 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductCarousel, { ProductCarouselWithSuspense } from '../carousel';
-// @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import DynamicImageProvider from '@/providers/dynamic-image';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -77,12 +78,18 @@ const meta: Meta<typeof ProductCarousel> = {
     decorators: [
         (Story: React.ComponentType) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <ActionLogger>
                         <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
-                            <div className="p-8">
-                                <Story />
-                            </div>
+                            <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                                <div className="p-8">
+                                    <Story />
+                                </div>
+                            </WishlistProvider>
                         </DynamicImageProvider>
                     </ActionLogger>
                 </SiteProvider>
@@ -164,5 +171,46 @@ export const PageDesignerMode: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Page Designer Carousel')).toBeInTheDocument();
+    },
+};
+
+export const WithSubtitle: Story = {
+    args: {
+        products,
+        title: 'Trending Now',
+        subtitle: 'Our most popular picks this week',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Trending Now')).toBeInTheDocument();
+        await expect(canvas.getByText('Our most popular picks this week')).toBeInTheDocument();
+    },
+};
+
+export const SingleProduct: Story = {
+    args: {
+        products: [products[0]],
+        title: 'Just For You',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Just For You')).toBeInTheDocument();
+    },
+};
+
+export const WithShopAllLink: Story = {
+    args: {
+        products,
+        title: 'New Arrivals',
+        shopAllText: 'Shop All',
+        shopAllUrl: '/category/new-arrivals',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('New Arrivals')).toBeInTheDocument();
+        await expect(canvas.getByText('Shop All')).toBeInTheDocument();
     },
 };

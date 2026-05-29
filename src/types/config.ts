@@ -21,12 +21,12 @@
  * pages, features, engagement, etc. `Config` wraps it in `BaseConfig<AppConfig>`
  * which adds `metadata` and `runtime` sections.
  */
-import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/config';
+import type { BaseConfig, Url } from '@salesforce/storefront-next-runtime/config';
 import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-import type { DetectionConfig, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
+import type { DetectionConfig, Site, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
 export type BadgeDetail = {
     propertyName: string;
@@ -70,7 +70,28 @@ export type AppConfig = {
         strictMode: boolean;
     };
     engagement: {
-        adapters: Record<string, EngagementAdapterConfig>;
+        adapters: {
+            einstein: EngagementAdapterConfig & {
+                enabled: boolean;
+                host: string;
+                einsteinId: string;
+                realm: string;
+                siteId: string;
+                isProduction: boolean;
+            };
+            dataCloud: EngagementAdapterConfig & {
+                enabled: boolean;
+                appSourceId: string;
+                tenantId: string;
+                siteId: string;
+            };
+            activeData: EngagementAdapterConfig & {
+                enabled: boolean;
+                host: string;
+                siteUUID: string;
+            };
+            [key: string]: EngagementAdapterConfig;
+        };
         analytics: {
             trackingConsent?: {
                 enabled: boolean;
@@ -84,9 +105,18 @@ export type AppConfig = {
     };
     features: {
         passwordlessLogin: {
-            enabled: boolean;
+            enabled?: boolean;
             callbackUri?: string;
             landingUri?: string;
+            mode: 'callback' | 'email' | 'sms';
+            /**
+             * When true (default), checkout skips the passwordless authorize call when the
+             * email-verification site pref is disabled. Set to false to always call SLAS.
+             */
+            skipWhenEmailVerificationDisabled?: boolean;
+        };
+        otpRequest: {
+            callbackUri?: string;
             mode: 'callback' | 'email' | 'sms';
         };
         resetPassword: {
@@ -122,7 +152,6 @@ export type AppConfig = {
         };
         inventory: {
             lowStockThreshold: number;
-            maxStockDisplay: number;
         };
         carousel: {
             defaultItemCount: number;
@@ -245,6 +274,20 @@ export type AppConfig = {
                 limit: number;
                 critical?: number;
             };
+            /**
+             * Discrete viewType declarations the storefront uses for product images. Each role
+             * names the viewType that a specific consumer reads (the product tile hero, the
+             * swatch builder, etc.). The search filter derives its SCAPI `imgTypes` query
+             * parameter from these values, so the same declaration drives both what SCAPI
+             * returns and what tile components render — preventing drift. Set a role to
+             * `undefined` to opt out of search filtering for that role.
+             */
+            images?: {
+                /** viewType the product tile reads for the hero image. Default: `'medium'`. */
+                tile?: string;
+                /** viewType the swatch builder reads for color thumbnails. Default: `'swatch'`. */
+                swatch?: string;
+            };
         };
     };
     siteAliasMap?: Record<string, string>;
@@ -270,3 +313,13 @@ export type AppConfig = {
 };
 
 export type Config = BaseConfig<AppConfig>;
+
+/**
+ * Augment the SDK so `getConfig()` and `useConfig()` return `AppConfig` without
+ * a generic argument at every call site. Customers writing additional templates
+ * augment this interface in their own template's types file.
+ */
+declare module '@salesforce/storefront-next-runtime/config' {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface AppConfigShape extends AppConfig {}
+}

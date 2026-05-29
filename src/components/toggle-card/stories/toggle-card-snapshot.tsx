@@ -13,72 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, expect, test, describe, afterEach } from 'vitest';
-
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-const fetcherMock = {
-    data: null,
-    state: 'idle',
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
-vi.mock('@/components/toast', () => ({
-    useToast: () => ({
-        addToast: () => {},
-    }),
-}));
-
+import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-
 import * as ToggleCardStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
+
+// ToggleCard has no router or provider dependencies — render the composed
+// story directly with no module mocks.
 
 const composed = composeStories(ToggleCardStories);
 
@@ -88,7 +29,6 @@ afterEach(() => {
 
 describe('ToggleCard stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();

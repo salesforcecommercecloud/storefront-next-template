@@ -21,10 +21,15 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperLogin } from '@/scapi';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import type {
+    action as initiateRegistrationAction,
+    InitiateRegistrationResponse,
+} from '@/routes/action.initiate-checkout-registration';
+import { resourceRoutes } from '@/route-paths';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
@@ -35,23 +40,25 @@ interface RegisterCustomerSelectionProps {
     savePaymentToProfile?: boolean;
     /** Optional toast callback to avoid bundling sonner in this lazy chunk */
     showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    /** Initial checked state — used in Storybook to show the expanded description without triggering fetcher logic */
+    defaultChecked?: boolean;
+    /** Initial account created state — used in Storybook to show the confirmation banner without triggering OTP logic */
+    defaultAccountCreated?: boolean;
+    /** Initial submitting state — used in Storybook to show the sending verification code state */
+    defaultSubmitting?: boolean;
 }
-
-type InitiateRegistrationResponse = {
-    success: boolean;
-    error?: { code: string; message: string };
-    email?: string;
-    unavailable?: boolean;
-};
 
 export default function RegisterCustomerSelection({
     onSaved,
     onRegistrationSuccess,
     savePaymentToProfile: _savePaymentToProfile = false,
     showToast,
+    defaultChecked = false,
+    defaultAccountCreated = false,
+    defaultSubmitting = false,
 }: RegisterCustomerSelectionProps) {
-    const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
-    const [accountCreated, setAccountCreated] = useState(false);
+    const [shouldCreateAccount, setShouldCreateAccount] = useState(defaultChecked || defaultSubmitting);
+    const [accountCreated, setAccountCreated] = useState(defaultAccountCreated);
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
     const [registrationEmail, setRegistrationEmail] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -59,18 +66,19 @@ export default function RegisterCustomerSelection({
     const t = _t as (key: string, options?: object) => string;
     const basket = useBasket();
     const config = useConfig();
-    const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
+    const registrationFetcher = useFetcher<typeof initiateRegistrationAction>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileResetRef = useRef<(() => void) | null>(null);
-    const [alreadyVerified, setAlreadyVerified] = useState(false);
-    useEffect(() => {
-        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('turnstileVerified') === '1') {
-            setAlreadyVerified(true);
-        }
-    }, []);
-    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) && !alreadyVerified : false;
+    // The widget is always rendered when Turnstile is enabled. The server's `cc-tv`
+    // httpOnly cookie is the single source of truth for "this client passed Turnstile
+    // recently"; if it's present the server skips re-verification regardless of whether
+    // the client also sends a token, so the cost of mounting the widget here is just an
+    // extra silent siteverify roundtrip in the rare interactive-required case.
+    // Mirroring the cookie via client-side state (e.g. sessionStorage) would just
+    // duplicate state for no benefit — the server cookie already covers the skip path.
+    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) : false;
     const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;
@@ -129,7 +137,7 @@ export default function RegisterCustomerSelection({
 
             void registrationFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/initiate-checkout-registration',
+                action: resourceRoutes.initiateCheckoutRegistration,
             });
             if (turnstileEnabled) resetTurnstile();
         } else {
@@ -197,7 +205,7 @@ export default function RegisterCustomerSelection({
         return new Promise<void>((resolve, _reject) => {
             void registrationFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/initiate-checkout-registration',
+                action: resourceRoutes.initiateCheckoutRegistration,
             });
             if (turnstileEnabled) resetTurnstile();
 
@@ -244,19 +252,22 @@ export default function RegisterCustomerSelection({
                     onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
                     className="mt-0.5 shrink-0"
                     aria-label={t('payment.saveForFutureUse')}
-                    disabled={registrationFetcher.state === 'submitting'}
+                    disabled={registrationFetcher.state === 'submitting' || defaultSubmitting}
                 />
                 <div className="flex flex-1 flex-col gap-1 text-sm">
                     <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
                     <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
-                    {registrationFetcher.state === 'submitting' && (
+                    {(registrationFetcher.state === 'submitting' || defaultSubmitting) && (
                         <p className="text-muted-foreground">{t('registration.sendingVerificationCode')}</p>
                     )}
-                    {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
-                        <p className="mt-3 leading-5 text-foreground">
-                            {t('registration.checkboxExpandedDescription')}
-                        </p>
-                    )}
+                    {shouldCreateAccount &&
+                        !error &&
+                        registrationFetcher.state !== 'submitting' &&
+                        !defaultSubmitting && (
+                            <p className="mt-3 leading-5 text-foreground">
+                                {t('registration.checkboxExpandedDescription')}
+                            </p>
+                        )}
                 </div>
             </label>
             {turnstileEnabled && turnstileSiteKey && (
@@ -281,6 +292,7 @@ export default function RegisterCustomerSelection({
                         onCheckoutAsGuest={handleCheckoutAsGuest}
                         onResendCode={handleResendCode}
                         otpLength={(config.auth as { otpLength: number })?.otpLength ?? 6}
+                        isRegistration={true}
                     />
                 </Suspense>
             )}

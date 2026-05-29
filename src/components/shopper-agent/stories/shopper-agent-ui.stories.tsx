@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import ShopperAgentUI from '../shopper-agent-ui';
+import { mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
 const validConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -25,7 +26,7 @@ const validConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: 'RefArchGlobal',
+    siteId: mockSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgentUI> = {
@@ -48,6 +49,7 @@ When configuration is invalid, renders null. In Storybook the embedded script is
         locale: { control: 'text' },
         currency: { control: 'text' },
         userId: { control: 'text' },
+        usid: { control: 'text' },
     },
 };
 
@@ -57,8 +59,8 @@ type Story = StoryObj<typeof ShopperAgentUI>;
 export const WithValidConfig: Story = {
     args: {
         commerceAgentConfiguration: validConfig,
-        locale: 'en-US',
-        currency: 'USD',
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
     },
     parameters: {
         docs: {
@@ -72,7 +74,7 @@ export const WithValidConfig: Story = {
 export const InvalidConfig: Story = {
     args: {
         commerceAgentConfiguration: undefined,
-        locale: 'en-US',
+        locale: mockAltSiteObject.defaultLocale,
     },
     parameters: {
         docs: {
@@ -86,8 +88,17 @@ export const InvalidConfig: Story = {
 export const WithUserId: Story = {
     args: {
         commerceAgentConfiguration: validConfig,
-        locale: 'en-US',
-        currency: 'USD',
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
         userId: 'user-123',
+    },
+};
+
+export const WithUsid: Story = {
+    args: {
+        commerceAgentConfiguration: validConfig,
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        usid: 'usid-abc-123',
     },
 };

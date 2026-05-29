@@ -28,12 +28,23 @@ import Footer from '@/components/footer';
  */
 export default function CheckoutLayout() {
     return (
-        <>
+        <div className="group/checkout flex flex-col grow">
             <Header variant="checkout" />
-            <main className="grow">
+            <main className="lg:grow">
                 <Outlet />
             </main>
             <Footer variant="checkout" />
-        </>
+            <CheckoutMobileBarSpacer />
+        </div>
+    );
+}
+
+/**
+ * Spacer matching the fixed mobile checkout bar height (Place Order or
+ * step Continue button) so the footer is fully visible above the bar.
+ */
+function CheckoutMobileBarSpacer() {
+    return (
+        <div className="hidden h-20 group-has-[[data-checkout-mobile-bar]]/checkout:max-lg:block" aria-hidden="true" />
     );
 }

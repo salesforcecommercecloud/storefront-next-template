@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { Suspense } from 'react';
 import CheckoutPickupWithData from './checkout-pickup-with-data';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { CHECKOUT_STEPS } from '@/components/checkout/utils/checkout-context-types';
 
 // Helper to create a promise that resolves asynchronously (needed for Suspense)

@@ -16,7 +16,7 @@
 import { forwardRef, type ComponentProps, useState, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { Link } from '@/components/link';
 
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 
 import { cn } from '@/lib/utils';
@@ -24,8 +24,8 @@ import {
     createProductUrl,
     getDecoratedVariationAttributes,
     type DecoratedVariationAttributeValue,
-} from '@/lib/product-utils';
-import { getProductRating } from '@/lib/product-utils-plp';
+} from '@/lib/product/product-utils';
+import { getProductRating } from '@/lib/product/product-utils-plp';
 import { useProductTileContext } from './context';
 import { DeferredWishlistButton } from './deferred-wishlist-button';
 import { PickupIcon } from '@/components/icons';
@@ -323,13 +323,17 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
         const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
 
         const isMasterProd = !!product?.variants;
+        const isBundleOrSet = product?.productType?.bundle || product?.productType?.set;
+        const representedVariant = isMasterProd
+            ? product?.variants?.find((variant) => variant?.productId === product?.representedProduct?.id)
+            : undefined;
+        const defaultVariantPid = isMasterProd && !isBundleOrSet ? (product?.representedProduct?.id ?? null) : null;
+
+        // use the representedVariant values to get a product for PDP
         const initialVariationValue =
             selectedVariantColorValue !== undefined && selectedVariantColorValue !== null
                 ? selectedVariantColorValue
-                : isMasterProd && !!product?.representedProduct
-                  ? product?.variants?.find((variant) => variant?.productId == product?.representedProduct?.id)
-                        ?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID]
-                  : undefined;
+                : (representedVariant?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID] ?? undefined);
 
         // Local swatch selection state — drives image switching and selected ring on swatches.
         // Initialized from the URL-driven prop; updates when the user clicks a swatch on the tile.
@@ -342,6 +346,18 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                 setSelectedAttributeValue(selectedVariantColorValue);
             }
         }, [selectedVariantColorValue]);
+
+        // Pre-seed every quick-add swatch from the tile's represented variant, with the
+        // locally-selected color overriding the represented variant's color when set.
+        const initialVariantSelections = useMemo<Record<string, string> | undefined>(() => {
+            const representedVariantSelections: Record<string, string> = {
+                ...(representedVariant?.variationValues ?? {}),
+            };
+            if (selectedAttributeValue) {
+                representedVariantSelections[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID] = selectedAttributeValue;
+            }
+            return Object.keys(representedVariantSelections).length > 0 ? representedVariantSelections : undefined;
+        }, [representedVariant, selectedAttributeValue]);
 
         const variationAttributes = useMemo(() => (product ? getDecoratedVariationAttributes(product) : []), [product]);
         const colorAttributes = variationAttributes.filter(({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id);
@@ -360,7 +376,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             product && handleProductClick?.(product);
         }, [handleProductClick, product]);
 
-        const productUrl = createProductUrl(product?.productId ?? '');
+        const productUrl = createProductUrl(product?.productId ?? '', null, 'color', defaultVariantPid);
         const productName = product?.productName ?? '';
 
         const pageDesignerStyles = getPageDesignerStyleClasses({
@@ -454,6 +470,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <DeferredWishlistButton
                                     product={product}
+                                    surface="plp"
                                     size="sm"
                                     tabIndex={-1}
                                     className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
@@ -470,6 +487,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                 productId={product.productId ?? ''}
                                 productName={productName}
                                 selectedColorValue={selectedAttributeValue}
+                                initialVariantSelections={initialVariantSelections}
                                 label={quickAddLabel ?? t('quickAdd')}
                             />
                         </div>
@@ -497,15 +515,17 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     )}
 
                     {/* Store name */}
-                    <p className="text-xs text-muted-foreground mb-1">{config.global.branding.name}</p>
+                    <p className="text-sm font-normal leading-none text-muted-foreground mb-1">
+                        {config.global.branding.name}
+                    </p>
 
                     {/* Top category */}
                     {topCategoryName && (
-                        <p className="text-xs text-muted-foreground mb-1 uppercase">{topCategoryName}</p>
+                        <p className="text-sm font-normal leading-none text-muted-foreground mb-1">{topCategoryName}</p>
                     )}
 
                     {/* Product name — the single keyboard/SR tab stop for this tile */}
-                    <h3 className="text-sm font-medium text-card-foreground mb-2">
+                    <h3 className="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2">
                         <Link
                             to={productUrl}
                             className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -516,7 +536,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
 
                     {/* SKU */}
                     {product.productId && (
-                        <p className="text-xs text-muted-foreground mb-1" data-testid="product-tile-sku">
+                        <p
+                            className="text-sm font-normal leading-none text-muted-foreground mb-1"
+                            data-testid="product-tile-sku">
                             {t('sku')} {product.productId}
                         </p>
                     )}
@@ -543,7 +565,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             currency={currency ?? config.commerce.sites?.[0]?.defaultCurrency ?? ''}
                             labelForA11y={(product?.productName ?? product?.productId) || ''}
                             currentPriceProps={{
-                                className: 'text-base font-semibold text-card-foreground',
+                                className:
+                                    'text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground',
                             }}
                             listPriceProps={{
                                 className: 'text-muted-foreground text-sm leading-none line-through',

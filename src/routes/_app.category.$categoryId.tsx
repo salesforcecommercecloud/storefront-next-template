@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
-import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShouldRevalidateFunctionArgs, useAsyncError, useLocation, useNavigation } from 'react-router';
+import type { Route } from './+types/_app.category.$categoryId';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
@@ -28,17 +32,18 @@ import ActiveFilters from '@/components/category-refinements/active-filters';
 import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
-import ProductGrid from '@/components/product-grid';
+import DeferredProductGrid from '@/components/product-grid';
 import QuickFilters from '@/components/quick-filters';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import CategoryBanner from '@/components/category-banner';
 import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
@@ -90,6 +95,7 @@ type CategoryPageData = {
     locale: string;
     initialFiltersOpen?: boolean;
     categorySchema: Promise<ReturnType<typeof generateCategorySchema> | null>;
+    wishlistInitialState: Promise<WishlistInitialState>;
 };
 
 /**
@@ -97,11 +103,11 @@ type CategoryPageData = {
  * This function runs on the server during SSR and prepares data for the category page.
  * @returns Object containing search results, category data, and page metadata
  */
-export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData> {
+export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> {
     const {
         context,
         request,
-        params: { categoryId = '' },
+        params: { categoryId },
     } = args;
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;
@@ -116,7 +122,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
 
     // Get currency and locale for cache-busting the page key
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const siteCtx = context.get(siteContext);
     if (!siteCtx) {
         logger.error('Category: site context is not available');
@@ -128,20 +134,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;
     try {
-        // Fetch one level of child categories so quick filters can render direct subcategories
-        // (e.g. suits/shorts/pants) from category.categories instead of falling back to refinements.
         categoryData = await fetchCategory(context, categoryId, 1);
     } catch (e) {
-        // Category data is considered critical, i.e., if the related SCAPI request fails, out-of-the-box we either
-        // throw a `Response` with all the available information from the underlying `ApiError`, or we fall back to
-        // simply throwing a generic 500 error. If that out-of-the-box behavior needs to be tweaked, e.g., for more
-        // sophisticated SEO or error handling, this is the place to do it.
-        if (e instanceof ApiError) {
-            throw new Response(e.body.title || e.statusText, {
-                status: e.status,
-                statusText: e.body.detail || e.statusText,
-                headers: e.headers,
-            });
+        if (e instanceof NormalizedApiError && e.status) {
+            throw new Response(e.message, { status: e.status });
         }
         throw new Response('Internal Server Error', { status: 500 });
     }
@@ -217,7 +213,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         searchResultCritical,
         searchResultNonCritical,
         page: fetchPageWithComponentData(args, {
-            pageId: 'plp',
+            aspectType: 'plp',
             categoryId,
         }),
         categoryId,
@@ -227,6 +223,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         locale,
         initialFiltersOpen,
         categorySchema: categorySchemaPromise,
+        wishlistInitialState: fetchWishlistInitialState(args.context),
     };
 }
 
@@ -248,6 +245,23 @@ export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate 
  * This component uses the createPage factory to handle Suspense patterns.
  * @returns JSX element representing the category page
  */
+function ProductGridError() {
+    const rawError = useAsyncError();
+    const error = rawError instanceof NormalizedApiError ? rawError : null;
+    const { t } = useTranslation('common');
+    return (
+        <div role="alert" className="col-span-full py-8 text-center text-muted-foreground">
+            <p>{t('productGrid.loadFailed')}</p>
+            {import.meta.env.DEV && error && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status} </span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
+
 /**
  * Component that renders JSON-LD schema when categorySchema promise resolves.
  * Must be inside Suspense boundary to ensure it streams correctly in SSR.
@@ -274,11 +288,12 @@ export default function CategoryPage({
         currency,
         initialFiltersOpen,
         categorySchema,
+        wishlistInitialState,
     },
 }: {
     loaderData: CategoryPageData;
 }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
     const limit = config.search.products.hits.limit;
@@ -365,7 +380,7 @@ export default function CategoryPage({
     );
 
     return (
-        <>
+        <WishlistProvider initialState={wishlistInitialState}>
             <SeoMeta
                 title={category.name || category.id}
                 description={category.pageDescription || category.description}
@@ -390,7 +405,7 @@ export default function CategoryPage({
                     </div>
 
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h1 className="text-3xl font-bold text-foreground">
+                        <h1 className="text-3xl font-bold leading-none tracking-[-0.75px] text-card-foreground">
                             {category?.name || category.id} ({searchResultCritical.total})
                         </h1>
                         <UITarget targetId="sfcc.plp.search.summary" />
@@ -437,7 +452,7 @@ export default function CategoryPage({
 
                             <UITarget targetId="sfcc.plp.agent.categoryHelper" />
                             <UITarget targetId="sfcc.plp.search.results">
-                                <ProductGrid
+                                <DeferredProductGrid
                                     key={productGridDataKey}
                                     critical={searchResultCritical.hits ?? []}
                                     nonCritical={nonCriticalPromise}
@@ -448,6 +463,7 @@ export default function CategoryPage({
                                     topCategoryName={
                                         category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
                                     }
+                                    errorElement={<ProductGridError />}
                                 />
                             </UITarget>
 
@@ -470,6 +486,6 @@ export default function CategoryPage({
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>
-        </>
+        </WishlistProvider>
     );
 }

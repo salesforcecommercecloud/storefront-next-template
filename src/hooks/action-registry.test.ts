@@ -16,6 +16,7 @@
 
 import { describe, test, expect, vi } from 'vitest';
 import { actionRegistry, type ActionResponse } from './action-registry';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
@@ -26,7 +27,7 @@ describe('actionRegistry', () => {
         const handler = actionRegistry.addToWishlist;
 
         test('has the correct action route', () => {
-            expect(handler.actionRoute).toBe('/action/wishlist-add');
+            expect(handler.actionRoute).toBe(resourceRoutes.wishlistAdd);
         });
 
         describe('buildFormData', () => {

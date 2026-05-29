@@ -15,13 +15,12 @@
  */
 import { type UseFormReturn } from 'react-hook-form';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type CustomerProfileFormData = {
     firstName: string;
     lastName: string;
-    email: string;
     phone?: string;
     gender?: string;
     birthday?: string;

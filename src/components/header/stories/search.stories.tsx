@@ -16,9 +16,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import SearchBar from '../search';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { useEffect, useRef, type ComponentType, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+
+// ---------------------------------------------------------------------------
+// SearchBar is the header search input — combobox + suggestions popover. The
+// component is parameter-less; visible state is driven entirely by what the
+// user types (and what the search-suggestions hook returns). Story variation
+// folds into a single synthetic arg `initialQuery` that pre-types text into
+// the input via the play function.
+// ---------------------------------------------------------------------------
 
 function SearchStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -79,20 +87,13 @@ const meta: Meta<typeof SearchBar> = {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-Search Bar component for product and category search with suggestions.
-
-### Features:
-- Search input field
-- Search suggestions popover
-- Form submission
-- Navigation to search results
-                `,
+                component:
+                    'Header search input with suggestions popover. Combobox role + autocomplete; popover opens when the user focuses an empty input (showing recent searches) or types ≥3 characters (showing suggestion sections).',
             },
         },
     },
     decorators: [
-        (Story) => (
+        (Story: ComponentType) => (
             <SearchStoryHarness>
                 <div className="p-8 w-full max-w-md">
                     <Story />
@@ -103,98 +104,40 @@ Search Bar component for product and category search with suggestions.
 };
 
 export default meta;
-type Story = StoryObj<typeof SearchBar>;
 
-export const Default: Story = {
-    render: () => <SearchBar />,
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Default search bar component.
+type SyntheticArgs = {
+    initialQuery: string;
+};
 
-### Features:
-- Search input field
-- Search icon
-- Placeholder text
-                `,
-            },
+/**
+ * Rich-but-realistic baseline — empty search input. Use the `initialQuery`
+ * Control to pre-type text into the input via the play function (e.g.,
+ * "dress" or "jacket" to trigger the suggestions popover after the
+ * 3-character minimum).
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
+    args: {
+        initialQuery: '',
+    },
+    argTypes: {
+        initialQuery: {
+            description:
+                'Synthetic: text typed into the input by the play function on mount. Empty = focused-but-empty state; ≥3 chars = triggers suggestions popover (mock data).',
+            control: 'text',
+            table: { category: 'Synthetic (initial state)' },
         },
     },
-    play: async ({ canvasElement }) => {
+    render: () => <SearchBar />,
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Check for search input
         const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(searchInput).toBeInTheDocument();
         await expect(searchInput).toHaveAttribute('type', 'text');
-    },
-};
-
-export const Interactive: Story = {
-    render: () => <SearchBar />,
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Interactive search bar for testing user interactions.
-
-### Features:
-- Input typing
-- Form submission
-- Suggestions display
-            `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find and interact with search input
-        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
-        await userEvent.type(searchInput, 'dress');
-        await expect(searchInput).toHaveValue('dress');
-
-        // Wait a bit for suggestions to potentially appear
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    },
-};
-
-export const WithQuery: Story = {
-    render: () => <SearchBar />,
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Search bar with a query entered (simulated).
-
-### Features:
-- Pre-filled search query
-- Suggestions may appear
-            `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find search input and type a query
-        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
-        await userEvent.type(searchInput, 'jacket');
-        await expect(searchInput).toHaveValue('jacket');
-
-        // Wait for suggestions to potentially load
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Check if suggestions popover appears (may or may not appear depending on mock data)
-        const documentBody = within(document.body);
-        const suggestions = documentBody.queryByRole('listbox');
-        // Suggestions may or may not appear, so we don't assert on them
-        if (suggestions) {
-            await expect(suggestions).toBeInTheDocument();
+        const initialQuery = args.initialQuery ?? '';
+        if (initialQuery) {
+            await userEvent.type(searchInput, initialQuery);
+            await expect(searchInput).toHaveValue(initialQuery);
         }
     },
 };

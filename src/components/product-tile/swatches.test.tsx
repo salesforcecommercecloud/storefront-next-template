@@ -17,19 +17,19 @@ import { vi, test, describe, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
+import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
 import { ProductTileSwatches } from './swatches';
-import { ConfigWrapper, mockBuildConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockBuildConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 const mockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
-    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+    ...mockSiteObject,
+    alias: mockBuildConfig.app.siteAliasMap?.[mockSiteObject.id] ?? undefined,
 };
 
 // toImageUrl returns the raw image link in tests; mock it to avoid config dependency inside swatches
-vi.mock('@/lib/dynamic-image', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/dynamic-image')>();
+vi.mock('@/lib/images/dynamic-image', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/images/dynamic-image')>();
     return {
         ...actual,
         toImageUrl: vi.fn(({ image }: { image: { link: string } }) => image.link),
@@ -118,8 +118,9 @@ const renderSwatches = ({
 
 describe('ProductTileSwatches', () => {
     test('renders a container with an accessible label for available colors', () => {
-        const { container } = renderSwatches();
-        expect(container.querySelector('[aria-label="Available colors"]')).toBeInTheDocument();
+        renderSwatches();
+        // Locale-agnostic: en-GB uses "colours", en-US uses "colors"; both match /colou?rs/i.
+        expect(screen.getByRole('group', { name: /available colou?rs/i })).toBeInTheDocument();
     });
 
     test('renders one swatch link per colorValue', () => {
@@ -236,7 +237,8 @@ describe('ProductTileSwatches', () => {
             totalColorCount: 5,
             productName: 'Blue Shirt',
         });
-        expect(screen.getByRole('link', { name: /view all 5 colors for blue shirt/i })).toBeInTheDocument();
+        // Locale-agnostic across en-US ("colors") and en-GB ("colours")
+        expect(screen.getByRole('link', { name: /view all 5 colou?rs for blue shirt/i })).toBeInTheDocument();
     });
 
     test('overflow indicator fires onSwatchClick on click', async () => {

@@ -17,7 +17,6 @@ import type { PropsWithChildren } from 'react';
 import { useRouteLoaderData } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import type { loader as rootLoader } from '@/root';
 
 /**
@@ -33,7 +32,7 @@ import type { loader as rootLoader } from '@/root';
  * @returns The resolved Google Cloud API key, or an empty string when neither source is available.
  */
 function useGoogleCloudAPIKey(): string {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const rootData = useRouteLoaderData<typeof rootLoader>('root');
 
     return config.features.googleCloudAPI.apiKey || rootData?.gcpApiKeyFromDAL || '';

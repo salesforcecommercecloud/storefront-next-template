@@ -19,7 +19,7 @@
  *
  * Use `sfnext scapi add --schema <file>` to add a client from a local schema file.
  * Use `sfnext scapi add <family> <name> <version>` to pull from the SCAPI Schemas API.
- * Use `sfnext scapi list` to see registered custom clients.
+ * Use `sfnext scapi list` to see registered clients.
  */
 export { type Clients as AppClients } from '@salesforce/storefront-next-runtime/scapi';
 

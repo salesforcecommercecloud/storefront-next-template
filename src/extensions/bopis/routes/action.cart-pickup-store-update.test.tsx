@@ -20,15 +20,15 @@ import { action as actionImpl } from './action.cart-pickup-store-update';
 const action = actionImpl as unknown as (args: any) => ReturnType<typeof actionImpl>;
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
-import { isStoreOutOfStock } from '@/lib/inventory-utils';
+import { isStoreOutOfStock } from '@/lib/product/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 vi.mock('@/middlewares/basket.server');
 vi.mock('@/extensions/bopis/lib/api/shipment.server');
-vi.mock('@/lib/inventory-utils');
+vi.mock('@/lib/product/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
 vi.mock('@/lib/api-clients.server');
 vi.mock('@/lib/utils', () => ({
@@ -39,6 +39,8 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 describe('action.cart-pickup-store-update', () => {
     const mockBasketId = 'test-basket-123';
@@ -174,7 +176,7 @@ describe('action.cart-pickup-store-update', () => {
 
     describe('action', () => {
         test('returns error for non-PATCH requests', async () => {
-            const request = new Request('http://localhost/action/cart-pickup-store-update', {
+            const request = new Request(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, {
                 method: 'POST',
             });
 
@@ -183,10 +185,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const json = await response.json();
+            expectStatus(response, 405);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
@@ -194,7 +194,7 @@ describe('action.cart-pickup-store-update', () => {
         test('returns error when basket is not found', async () => {
             vi.mocked(getBasket).mockResolvedValue(createBasketResource(undefined) as any);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -204,16 +204,14 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
         });
 
         test('returns error when storeId is missing', async () => {
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 inventoryId: mockInventoryId,
             });
 
@@ -222,16 +220,14 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(400);
-            const json = await response.json();
+            expectStatus(response, 400);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('Store ID');
         });
 
         test('returns error when inventoryId is missing', async () => {
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
             });
 
@@ -240,10 +236,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(400);
-            const json = await response.json();
+            expectStatus(response, 400);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('Inventory ID');
         });
@@ -251,7 +245,7 @@ describe('action.cart-pickup-store-update', () => {
         test('returns error when no pickup shipment found', async () => {
             vi.mocked(getPickupShipment).mockReturnValue(undefined);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -261,10 +255,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
@@ -303,7 +295,7 @@ describe('action.cart-pickup-store-update', () => {
                 ],
             } as ShopperBasketsV2.schemas['Basket']);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -313,17 +305,15 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
             expect(updateBasketResource).toHaveBeenCalled();
         });
 
         test('successfully updates pickup store when all items are in stock', async () => {
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
                 storeName: mockStoreName,
@@ -334,10 +324,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(json.basket).toBeDefined();
 
@@ -396,7 +384,7 @@ describe('action.cart-pickup-store-update', () => {
         test('returns error when items are out of stock at new store', async () => {
             vi.mocked(isStoreOutOfStock).mockReturnValue(true);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
                 storeName: mockStoreName,
@@ -407,10 +395,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain(mockStoreName);
             expect(json.error?.message).toContain('out of stock');
@@ -424,7 +410,7 @@ describe('action.cart-pickup-store-update', () => {
             vi.mocked(isStoreOutOfStock).mockReturnValue(true);
 
             // No storeName included
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -434,10 +420,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain(mockStoreId);
         });
@@ -448,7 +432,7 @@ describe('action.cart-pickup-store-update', () => {
                 data: { data: [mockProduct1] }, // Missing product-2
             });
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -458,10 +442,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('out of stock');
         });
@@ -495,7 +477,7 @@ describe('action.cart-pickup-store-update', () => {
                 createBasketResource(basketWithMissingProductId as ShopperBasketsV2.schemas['Basket']) as any
             );
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -549,7 +531,7 @@ describe('action.cart-pickup-store-update', () => {
                 createBasketResource(basketWithDuplicates as ShopperBasketsV2.schemas['Basket']) as any
             );
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -577,7 +559,7 @@ describe('action.cart-pickup-store-update', () => {
         test('handles empty products response gracefully', async () => {
             mockShopperProducts.getProducts.mockResolvedValue({ data: { data: undefined } });
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -589,9 +571,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still proceed with update if no products data
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalled();
         });
@@ -600,7 +581,7 @@ describe('action.cart-pickup-store-update', () => {
             const mockError = new Error('API Error');
             mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -610,10 +591,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('API Error');
         });
@@ -622,7 +601,7 @@ describe('action.cart-pickup-store-update', () => {
             const mockError = new Error('Shipment update failed');
             vi.mocked(updateShipmentForPickup).mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -632,10 +611,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Shipment update failed');
         });
@@ -651,7 +628,7 @@ describe('action.cart-pickup-store-update', () => {
 
             mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -661,10 +638,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Item update failed');
 
@@ -688,7 +663,7 @@ describe('action.cart-pickup-store-update', () => {
 
             mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -700,9 +675,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still return the original error, not the rollback error
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Item update failed');
 
@@ -713,7 +687,7 @@ describe('action.cart-pickup-store-update', () => {
         test('does not rollback when shipment was not updated', async () => {
             vi.mocked(isStoreOutOfStock).mockReturnValue(true);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -723,10 +697,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('out of stock');
 
@@ -759,7 +731,7 @@ describe('action.cart-pickup-store-update', () => {
             // Action fails early when getPickupShipment returns undefined
             vi.mocked(getPickupShipment).mockReturnValue(undefined);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -769,10 +741,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
 
@@ -792,7 +762,7 @@ describe('action.cart-pickup-store-update', () => {
             mockShopperBasketsV2.updateItemsInBasket.mockResolvedValue({} as any);
             mockShopperBasketsV2.getBasket.mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -802,10 +772,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Basket retrieval failed');
 
@@ -838,7 +806,7 @@ describe('action.cart-pickup-store-update', () => {
             vi.mocked(getPickupProductItemsForStore).mockReturnValueOnce(mockBasketWithPickupItems.productItems || []); // First call for validation
             vi.mocked(getPickupProductItemsForStore).mockReturnValueOnce([]); // Second call after update returns empty
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -848,10 +816,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             // Should not update items if none match the new store
             expect(mockShopperBasketsV2.updateItemsInBasket).not.toHaveBeenCalled();
@@ -881,7 +847,7 @@ describe('action.cart-pickup-store-update', () => {
             const mockError = new Error('API Error: itemId is required');
             mockShopperBasketsV2.updateItemsInBasket.mockRejectedValue(mockError);
 
-            const request = createFormDataRequest('http://localhost/action/cart-pickup-store-update', 'PATCH', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartPickupStoreUpdate}`, 'PATCH', {
                 storeId: mockStoreId,
                 inventoryId: mockInventoryId,
             });
@@ -908,9 +874,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Error should be returned to user
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
         });

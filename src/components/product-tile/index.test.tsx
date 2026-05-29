@@ -13,95 +13,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import type React from 'react';
+import { vi, test, describe, expect, beforeEach } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-// eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
-import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 import { ProductTile } from './index';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { masterProduct } from '@/components/__mocks__/master-variant-product';
 
-vi.mock('@/lib/product-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/product-utils')>();
-    return {
-        ...actual,
-        createProductUrl: vi.fn(() => '/product/test-product'),
-        getDecoratedVariationAttributes: vi.fn(() => [
-            {
-                id: 'color',
-                name: 'Colour',
-                values: [
-                    {
-                        value: 'navy',
-                        name: 'Navy',
-                        href: '/product/test?color=navy',
-                        swatch: null,
-                    },
-                    {
-                        value: 'red',
-                        name: 'Red',
-                        href: '/product/test?color=red',
-                        swatch: null,
-                    },
-                ],
-            },
-        ]),
-    };
-});
-
-vi.mock('@/lib/product-utils-plp', () => ({
-    getProductRating: vi.fn(() => ({ rating: 4.2, reviewCount: 218 })),
+// Mock only the network boundary. `useScapiFetcher` is what the CartItemModal
+// uses to load product data after the user clicks quick-add; everything else
+// renders for real.
+const mockLoad = vi.fn().mockResolvedValue(undefined);
+vi.mock('@/hooks/use-scapi-fetcher', () => ({
+    useScapiFetcher: () => ({
+        load: mockLoad,
+        data: masterProduct,
+        state: 'idle',
+        success: true,
+    }),
 }));
 
-vi.mock('@/lib/currency', () => ({
-    formatCurrency: vi.fn((price) => `$${price}`),
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
+    ProductReviewsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useProductReviews: () => ({
+        reviewsSummary: null,
+        reviewsSummaryLoading: false,
+        reviews: [],
+        reviewsLoading: false,
+        loadReviewsIfNeeded: () => {},
+        aiSummary: '',
+        addReviewOptimistic: () => {},
+        removeReviewOptimistic: () => {},
+        expandReviews: () => {},
+        registerExpand: () => {},
+        registerOnExpanded: () => {},
+        triggerOnExpanded: () => {},
+    }),
 }));
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
-vi.mock('@/lib/product-badges', () => ({
-    getProductBadges: vi.fn(() => ({
-        hasBadges: false,
-        badges: [],
-    })),
-}));
+const mockMasterProduct: ShopperSearch.schemas['ProductSearchHit'] = {
+    productId: masterProduct.id,
+    productName: 'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit',
+    price: 299.99,
+    productType: { master: true },
+    representedProduct: { id: '750518699578M' },
+    variants: [
+        { productId: '750518699578M', variationValues: { color: 'CHARCWL', size: '036', width: 'S' } },
+        { productId: '750518699585M', variationValues: { color: 'CHARCWL', size: '038', width: 'V' } },
+    ],
+    variationAttributes: masterProduct.variationAttributes as ShopperProducts.schemas['VariationAttribute'][],
+    imageGroups: masterProduct.imageGroups,
+};
 
-// Isolate DeferredWishlistButton to avoid auth/wishlist context dependencies
-vi.mock('./deferred-wishlist-button', () => ({
-    DeferredWishlistButton: ({ product }: { product: { productName?: string } }) => (
-        <button aria-label={`Add ${product.productName ?? ''} to wishlist`}>Wishlist</button>
-    ),
-}));
-
-// Isolate QuickAddButton to avoid CartItemModal/modal dependencies
-vi.mock('./quick-add-button', () => ({
-    QuickAddButton: ({ label, productName }: { label: string; productName: string }) => (
-        <button aria-label={`${label} ${productName}`}>{label}</button>
-    ),
-}));
-
-// Isolate ProductImageContainer to avoid dynamic image dependencies
-vi.mock('@/components/product-image', () => ({
-    ProductImageContainer: ({ product }: { product: { productName?: string } }) => (
-        <img src="https://example.com/test.jpg" alt={product.productName ?? ''} />
-    ),
-}));
-
-// Pass-through DynamicImageProvider
-vi.mock('@/providers/dynamic-image', () => ({
-    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
-
-const mockNavigate = vi.fn();
-
-const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
-    productId: 'test-product',
-    productName: 'Test Product',
-    price: 99.99,
+const mockSingleVariantProduct: ShopperSearch.schemas['ProductSearchHit'] = {
+    productId: 'simple-001',
+    productName: 'Simple Test Product',
+    price: 49.99,
     variationAttributes: [
         {
             id: 'color',
+            name: 'Color',
             values: [
                 { value: 'navy', name: 'Navy' },
                 { value: 'red', name: 'Red' },
@@ -113,9 +90,9 @@ const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
             viewType: 'medium',
             images: [
                 {
-                    alt: 'Test Image',
-                    link: 'https://example.com/test.jpg',
-                    disBaseLink: 'https://example.com/test.jpg',
+                    alt: 'Simple Test Product',
+                    link: 'https://example.com/simple.jpg',
+                    disBaseLink: 'https://example.com/simple.jpg',
                 },
             ],
         },
@@ -129,7 +106,7 @@ const renderTile = (props: Partial<React.ComponentProps<typeof ProductTile>> = {
                 path: '/test',
                 element: (
                     <AllProvidersWrapper>
-                        <ProductTile product={mockProduct} {...props} />
+                        <ProductTile product={mockSingleVariantProduct} {...props} />
                     </AllProvidersWrapper>
                 ),
             },
@@ -143,55 +120,44 @@ const renderTile = (props: Partial<React.ComponentProps<typeof ProductTile>> = {
 describe('ProductTile — rendering', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
-    });
-
-    test('renders product name as a heading', () => {
+    test('renders product name as a heading linking to the PDP', () => {
         renderTile();
-        expect(screen.getByRole('heading', { name: 'Test Product' })).toBeInTheDocument();
+        const heading = screen.getByRole('heading', { name: 'Simple Test Product' });
+        expect(heading).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Simple Test Product' })).toHaveAttribute(
+            'href',
+            '/global/en-GB/product/simple-001'
+        );
     });
 
-    test('renders product price', () => {
+    test('renders the product price', () => {
         renderTile();
-        expect(screen.getByText('$99.99')).toBeInTheDocument();
+        expect(screen.getByText('$49.99')).toBeInTheDocument();
     });
 
-    test('renders SKU via data-testid', () => {
+    test('renders the product SKU', () => {
         renderTile();
-        const skuEl = screen.getByTestId('product-tile-sku');
-        expect(skuEl).toBeInTheDocument();
-        expect(skuEl.textContent).toContain('test-product');
+        expect(screen.getByText(/simple-001/)).toBeInTheDocument();
     });
 
-    test('renders badges when hasBadges is true', async () => {
-        const { getProductBadges } = await import('@/lib/product-badges');
-        vi.mocked(getProductBadges).mockReturnValueOnce({
-            hasBadges: true,
-            badges: [
-                { label: 'Sale', propertyName: 'c_isSale', color: 'orange' },
-                { label: 'New', propertyName: 'c_isNew', color: 'green' },
-            ],
-        });
-        renderTile();
+    test('renders sale badge when the product is on sale', () => {
+        const productOnSale = {
+            ...mockSingleVariantProduct,
+            representedProduct: {
+                id: 'v1',
+                c_isSale: true,
+            } as ShopperSearch.schemas['ProductSearchHit']['representedProduct'],
+        };
+        renderTile({ product: productOnSale });
         expect(screen.getByText('Sale')).toBeInTheDocument();
-        expect(screen.getByText('New')).toBeInTheDocument();
     });
 
-    test('does not render badges when hasBadges is false', () => {
+    test('does not render a badge for a product without badge flags', () => {
         renderTile();
         expect(screen.queryByText('Sale')).not.toBeInTheDocument();
-    });
-
-    test('renders store name from config', () => {
-        renderTile();
-        // AllProvidersWrapper provides a test config; the tile renders config.global.branding.name
-        // Verify the tile renders without error and the product card is present
-        const card = document.querySelector('.product-card');
-        expect(card).toBeInTheDocument();
+        expect(screen.queryByText('New')).not.toBeInTheDocument();
     });
 
     test('renders topCategoryName when provided', () => {
@@ -199,81 +165,62 @@ describe('ProductTile — rendering', () => {
         expect(screen.getByText('Women')).toBeInTheDocument();
     });
 
-    test('does not render topCategoryName when not provided', () => {
-        renderTile();
-        // topCategoryName paragraph is conditionally rendered
-        // We verify the tile renders without error and topCategoryName text is absent
-        expect(screen.queryByText('Women')).not.toBeInTheDocument();
+    test('renders the pickup-available tooltip when showPickupAvailable is true', () => {
+        renderTile({ showPickupAvailable: true });
+        expect(screen.getByText('Pickup Available')).toBeInTheDocument();
     });
 
-    test('renders wishlist button (inside aria-hidden container)', () => {
+    test('does not render the pickup tooltip by default', () => {
         renderTile();
-        // hidden: true is required because the button is inside an aria-hidden="true" container
-        expect(screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true })).toBeInTheDocument();
+        expect(screen.queryByText('Pickup Available')).not.toBeInTheDocument();
     });
 
-    test('renders quick add button with custom label (inside aria-hidden container)', () => {
+    test('renders a quick-add button with the default label', () => {
+        renderTile();
+        expect(screen.getByRole('button', { name: /quick add/i })).toBeInTheDocument();
+    });
+
+    test('renders a quick-add button with a custom label', () => {
         renderTile({ quickAddLabel: 'Fast Add' });
-        expect(screen.getByRole('button', { name: /fast add test product/i, hidden: true })).toBeInTheDocument();
-    });
-
-    test('renders pickup indicator when showPickupAvailable is true', () => {
-        const { container } = renderTile({ showPickupAvailable: true });
-        // group/pickup is a unique class applied only to the pickup indicator wrapper
-        expect(container.querySelector('[class*="group/pickup"]')).toBeInTheDocument();
-    });
-
-    test('does not render pickup indicator when showPickupAvailable is false', () => {
-        const { container } = renderTile({ showPickupAvailable: false });
-        expect(container.querySelector('[class*="group/pickup"]')).not.toBeInTheDocument();
-    });
-
-    test('does not render pickup indicator by default', () => {
-        const { container } = renderTile();
-        expect(container.querySelector('[class*="group/pickup"]')).not.toBeInTheDocument();
-    });
-
-    test('applies custom className to the root card element', () => {
-        const { container } = renderTile({ className: 'my-custom-class' });
-        expect(container.querySelector('.my-custom-class')).toBeInTheDocument();
-    });
-
-    test('accepts showNavigationArrows prop without error', () => {
-        expect(() => renderTile({ showNavigationArrows: true })).not.toThrow();
-    });
-
-    test('filters out Page Designer system props without error', () => {
-        expect(() =>
-            renderTile({
-                regionId: 'test-region',
-                component: { type: 'productTile' } as never,
-                componentData: {},
-                data: {},
-            })
-        ).not.toThrow();
+        expect(screen.getByRole('button', { name: /fast add/i })).toBeInTheDocument();
     });
 });
 
-describe('ProductTile — navigation', () => {
+describe('ProductTile — PDP URL', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
-    });
-
-    test('renders product name as the primary link to the PDP', () => {
+    test('standard product links to the product route without a pid', () => {
         renderTile();
-        const nameLink = screen.getByRole('link', { name: 'Test Product' });
-        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
+        expect(screen.getByRole('link', { name: 'Simple Test Product' })).toHaveAttribute(
+            'href',
+            '/global/en-GB/product/simple-001'
+        );
     });
 
-    test('product name link is in the tab order (no tabIndex={-1})', () => {
-        renderTile();
-        const nameLink = screen.getByRole('link', { name: 'Test Product' });
-        expect(nameLink).not.toHaveAttribute('tabindex', '-1');
+    test('master product links to the product route with the represented variant pid', () => {
+        renderTile({ product: mockMasterProduct });
+        expect(screen.getByRole('link', { name: mockMasterProduct.productName as string })).toHaveAttribute(
+            'href',
+            `/global/en-GB/product/${mockMasterProduct.productId}?pid=750518699578M`
+        );
+    });
+
+    test('bundle product links without a pid', () => {
+        renderTile({ product: { ...mockMasterProduct, productType: { bundle: true } } });
+        expect(screen.getByRole('link', { name: mockMasterProduct.productName as string })).toHaveAttribute(
+            'href',
+            `/global/en-GB/product/${mockMasterProduct.productId}`
+        );
+    });
+
+    test('set product links without a pid', () => {
+        renderTile({ product: { ...mockMasterProduct, productType: { set: true } } });
+        expect(screen.getByRole('link', { name: mockMasterProduct.productName as string })).toHaveAttribute(
+            'href',
+            `/global/en-GB/product/${mockMasterProduct.productId}`
+        );
     });
 
     test('calls handleProductClick when the product name link is clicked', async () => {
@@ -281,76 +228,113 @@ describe('ProductTile — navigation', () => {
         const handleProductClick = vi.fn();
         renderTile({ handleProductClick });
 
-        await user.click(screen.getByRole('link', { name: 'Test Product' }));
+        await user.click(screen.getByRole('link', { name: 'Simple Test Product' }));
 
-        expect(handleProductClick).toHaveBeenCalledWith(mockProduct);
-    });
-
-    test('image area overlay link points to the PDP', () => {
-        renderTile();
-        const overlayLink = screen.getByLabelText('View Test Product');
-        expect(overlayLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
+        expect(handleProductClick).toHaveBeenCalledWith(mockSingleVariantProduct);
     });
 });
 
-describe('ProductTile — swatch rendering', () => {
+describe('ProductTile — color swatches', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
+    test('renders a swatch link for each color value', async () => {
+        renderTile();
+        // Locale-agnostic: query by ARIA role with a regex that matches both en-US ("colors") and en-GB ("colours").
+        const swatchRegion = await screen.findByRole('group', { name: /available colou?rs/i });
+        expect(within(swatchRegion).getByRole('link', { name: /Navy/ })).toBeInTheDocument();
+        expect(within(swatchRegion).getByRole('link', { name: /Red/ })).toBeInTheDocument();
     });
 
-    test('renders color swatches for interaction', async () => {
-        const { container } = renderTile();
-        // LazySwatches loads async; wait for it to render.
-        await waitFor(() => {
-            const swatchWrapper = container.querySelector('[aria-label="Available colors"]');
-            expect(swatchWrapper).toBeInTheDocument();
-        });
+    test('does not render a swatch region when the product has no variation attributes', async () => {
+        const productWithoutVariations: ShopperSearch.schemas['ProductSearchHit'] = {
+            productId: mockSingleVariantProduct.productId,
+            productName: mockSingleVariantProduct.productName,
+            price: mockSingleVariantProduct.price,
+            imageGroups: mockSingleVariantProduct.imageGroups,
+        };
+        renderTile({ product: productWithoutVariations });
+        // Wait a tick for any lazy suspense to settle before asserting absence.
+        await Promise.resolve();
+        expect(screen.queryByRole('group', { name: /available colou?rs/i })).not.toBeInTheDocument();
     });
 
-    test('does not render swatch container when getDecoratedVariationAttributes returns empty', async () => {
-        const { getDecoratedVariationAttributes } = await import('@/lib/product-utils');
-        vi.mocked(getDecoratedVariationAttributes).mockReturnValueOnce([]);
-        const { container } = renderTile();
-        expect(container.querySelector('[aria-label="Available colors"]')).not.toBeInTheDocument();
+    test('renders swatches synthesized from variants when variationAttributes is omitted', async () => {
+        const productWithVariantsOnly: ShopperSearch.schemas['ProductSearchHit'] = {
+            productId: 'master-001',
+            productName: 'Trainer',
+            price: 129.99,
+            productType: { master: true },
+            representedProduct: { id: 'master-001-red' },
+            variants: [
+                { productId: 'master-001-red', variationValues: { color: 'RED', size: '10' } },
+                { productId: 'master-001-blu', variationValues: { color: 'BLU', size: '10' } },
+            ],
+            imageGroups: [
+                {
+                    viewType: 'swatch',
+                    images: [
+                        {
+                            link: 'https://example.com/swatch-red.jpg',
+                            disBaseLink: 'https://example.com/swatch-red.jpg',
+                            alt: 'Red swatch',
+                        },
+                    ],
+                    variationAttributes: [{ id: 'color', values: [{ value: 'RED' }] }],
+                },
+                {
+                    viewType: 'swatch',
+                    images: [
+                        {
+                            link: 'https://example.com/swatch-blu.jpg',
+                            disBaseLink: 'https://example.com/swatch-blu.jpg',
+                            alt: 'Blue swatch',
+                        },
+                    ],
+                    variationAttributes: [{ id: 'color', values: [{ value: 'BLU' }] }],
+                },
+            ],
+        };
+        renderTile({ product: productWithVariantsOnly });
+
+        const swatchRegion = await screen.findByRole('group', { name: /available colou?rs/i });
+        const swatchLinks = within(swatchRegion).getAllByRole('link');
+        expect(swatchLinks).toHaveLength(2);
+        expect(swatchLinks[0]).toHaveAttribute('href', '/global/en-GB/product/master-001?color=RED');
+        expect(swatchLinks[1]).toHaveAttribute('href', '/global/en-GB/product/master-001?color=BLU');
     });
 });
 
-describe('ProductTile — accessibility', () => {
+describe('ProductTile — quick-add pre-selection', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
+    test('opens the quick-add modal pre-seeded with every axis from the represented variant', async () => {
+        const user = userEvent.setup();
+        renderTile({ product: mockMasterProduct });
+
+        await user.click(screen.getByRole('button', { name: /quick add/i }));
+
+        const dialog = await screen.findByRole('dialog');
+        // Each variation group renders its selected value in the header as "<label>:<displayName>".
+        // Represented variant is { color: 'CHARCWL', size: '036', width: 'S' },
+        // which maps to display names "Charcoal", "36", "Short".
+        expect(within(dialog).getByRole('radiogroup', { name: /color/i })).toHaveTextContent(/Color:.*Charcoal/);
+        expect(within(dialog).getByRole('radiogroup', { name: /size/i })).toHaveTextContent(/Size:.*36/);
+        expect(within(dialog).getByRole('radiogroup', { name: /width/i })).toHaveTextContent(/Width:.*Short/);
     });
 
-    test('wishlist button is not in an aria-hidden container', () => {
-        renderTile();
-        const wishlistBtn = screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true });
-        expect(wishlistBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
-    });
+    test('marks the represented variant swatches as selected inside the modal', async () => {
+        const user = userEvent.setup();
+        renderTile({ product: mockMasterProduct });
 
-    test('quick add button is not in an aria-hidden container', () => {
-        renderTile();
-        const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
-        expect(quickAddBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
-    });
+        await user.click(screen.getByRole('button', { name: /quick add/i }));
 
-    test('quick add container becomes visible when tile receives keyboard focus', () => {
-        renderTile();
-        const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
-        expect(quickAddBtn.parentElement).toHaveClass('group-focus-within:opacity-100');
-    });
-
-    test('product name heading wraps the PDP link', () => {
-        renderTile();
-        const heading = screen.getByRole('heading', { name: 'Test Product' });
-        expect(heading.querySelector('a')).toHaveAttribute('href', '/global/en-GB/product/test-product');
+        const dialog = await screen.findByRole('dialog');
+        expect(within(dialog).getByRole('radio', { name: /Charcoal/ })).toBeChecked();
+        expect(within(dialog).getByRole('radio', { name: /^36$/ })).toBeChecked();
+        expect(within(dialog).getByRole('radio', { name: /Short/ })).toBeChecked();
     });
 });

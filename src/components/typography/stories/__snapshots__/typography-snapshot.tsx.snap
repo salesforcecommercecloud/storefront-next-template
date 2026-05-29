@@ -1,199 +1,111 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Typography stories snapshot > AllVariants story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
+<div
+  class="space-y-6"
+>
+  <h1
+    class="text-4xl font-bold tracking-tight text-left"
   >
-    <div
-      class="space-y-6"
-      data-typography="showcase"
-    >
-      <h1
-        class="text-4xl font-bold tracking-tight text-left"
-        data-typography="h1"
-      >
-        Heading 1
-      </h1>
-      <h2
-        class="text-3xl font-semibold tracking-tight text-left"
-        data-typography="h2"
-      >
-        Heading 2
-      </h2>
-      <h3
-        class="text-2xl font-semibold tracking-tight text-left"
-        data-typography="h3"
-      >
-        Heading 3
-      </h3>
-      <h4
-        class="text-xl font-semibold tracking-tight text-left"
-        data-typography="h4"
-      >
-        Heading 4
-      </h4>
-      <h5
-        class="text-lg font-semibold tracking-tight text-left"
-        data-typography="h5"
-      >
-        Heading 5
-      </h5>
-      <h6
-        class="text-base font-semibold tracking-tight text-left"
-        data-typography="h6"
-      >
-        Heading 6
-      </h6>
-      <p
-        class="leading-7 [&:not(:first-child)]:mt-6 text-left"
-        data-typography="p"
-      >
-        Paragraph text with regular styling.
-      </p>
-      <p
-        class="text-xl text-muted-foreground text-left"
-        data-typography="lead"
-      >
-        Lead paragraph with larger text.
-      </p>
-      <p
-        class="text-lg font-semibold text-left"
-        data-typography="large"
-      >
-        Large text
-      </p>
-      <p
-        class="text-sm font-medium leading-none text-left"
-        data-typography="small"
-      >
-        Small text
-      </p>
-      <p
-        class="text-sm text-muted-foreground text-left"
-        data-typography="muted"
-      >
-        Muted text
-      </p>
-      <blockquote
-        class="mt-6 border-l-2 pl-6 italic text-left"
-        data-typography="blockquote"
-      >
-        Blockquote
-      </blockquote>
-      <code
-        class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium text-left"
-        data-typography="inline-code"
-      >
-        inline code
-      </code>
-      <h3
-        class="text-lg font-medium text-foreground leading-tight text-left"
-        data-typography="product-title"
-      >
-        Product Title
-      </h3>
-      <p
-        class="text-base font-semibold text-foreground text-left"
-        data-typography="product-price"
-      >
-        $29.99
-      </p>
-      <p
-        class="text-sm text-muted-foreground leading-relaxed text-left"
-        data-typography="product-description"
-      >
-        Product description text
-      </p>
-    </div>
-  </div>
+    Heading 1
+  </h1>
+  <h2
+    class="text-3xl font-semibold tracking-tight text-left"
+  >
+    Heading 2
+  </h2>
+  <h3
+    class="text-2xl font-semibold tracking-tight text-left"
+  >
+    Heading 3
+  </h3>
+  <h4
+    class="text-2xl font-semibold tracking-tight text-left"
+  >
+    Heading 4
+  </h4>
+  <h5
+    class="text-sm font-semibold tracking-tight text-left"
+  >
+    Heading 5
+  </h5>
+  <h6
+    class="text-base font-semibold tracking-tight text-left"
+  >
+    Heading 6
+  </h6>
+  <p
+    class="leading-7 [&:not(:first-child)]:mt-6 text-left"
+  >
+    Paragraph text with regular styling.
+  </p>
+  <p
+    class="text-2xl text-muted-foreground text-left"
+  >
+    Lead paragraph with larger text.
+  </p>
+  <p
+    class="text-sm font-semibold text-left"
+  >
+    Large text
+  </p>
+  <p
+    class="text-sm font-medium leading-none text-left"
+  >
+    Small text
+  </p>
+  <p
+    class="text-sm text-muted-foreground text-left"
+  >
+    Muted text
+  </p>
+  <blockquote
+    class="mt-6 border-l-2 pl-6 italic text-left"
+  >
+    Blockquote
+  </blockquote>
+  <code
+    class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium text-left"
+  >
+    inline code
+  </code>
+  <h3
+    class="text-sm font-medium text-foreground leading-tight text-left"
+  >
+    Product Title
+  </h3>
+  <p
+    class="text-base font-semibold text-foreground text-left"
+  >
+    $29.99
+  </p>
+  <p
+    class="text-sm text-muted-foreground leading-relaxed text-left"
+  >
+    Product description text
+  </p>
+  <p
+    class="self-stretch text-foreground text-3xl font-bold leading-none tracking-tight text-left"
+  >
+    Recommendation title
+  </p>
 </div>
 `;
 
 exports[`Typography stories snapshot > AsChildButton story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <button
-      class="text-xl font-semibold tracking-tight text-left px-4 py-2 bg-primary text-primary-foreground rounded"
-      data-testid="typography-button"
-      type="button"
-    >
-      Typography Button
-    </button>
-  </div>
-</div>
+<button
+  class="text-2xl font-semibold tracking-tight text-left px-4 py-2 bg-primary text-primary-foreground rounded"
+  data-testid="typography-button"
+  type="button"
+>
+  Typography Button
+</button>
 `;
 
-exports[`Typography stories snapshot > AsChildLink story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <a
-      class="text-xl text-muted-foreground text-left underline text-primary"
-      data-testid="typography-link"
-      href="#"
-    >
-      Typography Link
-    </a>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > CenterAligned story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h2
-      class="text-3xl font-semibold tracking-tight text-center"
-    >
-      Center Aligned Heading
-    </h2>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > CustomElement story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <div
-      class="text-2xl font-semibold tracking-tight text-left"
-    >
-      H3 variant rendered as div element
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > CustomStyling story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <h2
-      class="text-3xl font-semibold tracking-tight text-left text-primary bg-primary/10 p-4 rounded-none"
-    >
-      Custom Styled Heading
-    </h2>
-  </div>
-</div>
-`;
-
-exports[`Typography stories snapshot > RightAligned story renders and matches snapshot 1`] = `
-<div>
-  <div
-    data-typography="root"
-  >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-right"
-    >
-      Right aligned paragraph text
-    </p>
-  </div>
-</div>
+exports[`Typography stories snapshot > Playground story renders and matches snapshot 1`] = `
+<h2
+  class="text-3xl font-semibold tracking-tight text-left"
+>
+  Edit me from the Controls panel
+</h2>
 `;

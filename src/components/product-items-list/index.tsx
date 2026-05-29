@@ -16,7 +16,7 @@
 import { useMemo, type ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import ProductItem from '@/components/product-item';
@@ -28,8 +28,8 @@ import {
     buildBonusPromotionMap,
     getAttachedBonusPromotions,
     calculateMaxQuantityForBonusProduct,
-} from '@/lib/bonus-product-utils';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+} from '@/lib/cart/bonus-product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 /**
  * Spacing constants for different display variants
@@ -54,6 +54,7 @@ const SUMMARY_SPACING = 'space-y-5';
  * @property {function} [primaryAction] - Optional render prop function to generate primary action buttons for each product
  * @property {function} [secondaryActions] - Optional render prop function to generate secondary action buttons for each product
  * @property {function} [deliveryActions] - Optional render prop (e.g. cart pickup/delivery selector per line)
+ * @property {function} [lineItemExtra] - Optional render prop for extra content at the end of each line’s right column (e.g. gift)
  */
 interface ProductItemsListProps {
     /** Array of product items from the basket */
@@ -80,6 +81,8 @@ interface ProductItemsListProps {
     secondaryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
     /** Optional per-line fulfillment UI (e.g. BOPIS pickup vs delivery dropdown on cart) */
     deliveryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
+    /** Optional extra UI at the end of the cart line right column (e.g. gift checkbox) */
+    lineItemExtra?: (product: EnrichedProductItem) => ReactElement | undefined;
     /** Optional basket for bonus product selection */
     basket?: ShopperBasketsV2.schemas['Basket'];
     /** Callback when user clicks select bonus products button */
@@ -157,6 +160,7 @@ export default function ProductItemsList({
     primaryAction,
     secondaryActions,
     deliveryActions,
+    lineItemExtra,
     basket,
     onSelectBonusProducts,
     separateCards = false,
@@ -242,6 +246,7 @@ export default function ProductItemsList({
                         primaryAction={primaryAction}
                         secondaryActions={secondaryActions}
                         deliveryActions={deliveryActions}
+                        lineItemExtra={lineItemExtra?.(enrichedProductItem)}
                         displayVariant={variant}
                         promotions={promotions}
                         bonusDiscountLineItems={bonusDiscountLineItems}

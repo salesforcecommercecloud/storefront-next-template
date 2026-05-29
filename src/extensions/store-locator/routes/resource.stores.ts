@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
-import { data, type LoaderFunctionArgs } from 'react-router';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import { data } from 'react-router';
+import type { Route } from './+types/resource.stores';
+import type { ShopperStores } from '@/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';
+
+/**
+ * Result of searchStores API
+ * @property success - Whether the search was successful
+ * @property stores - Result of searchStores API
+ * @property error - Error message if the search was not successful
+ */
+export interface SearchStoresResult {
+    success: boolean;
+    stores?: ShopperStores.schemas['StoreResult'];
+    error?: string;
+}
 
 /**
  * Server-side loader to search for stores.
@@ -36,7 +49,10 @@ import { getLogger } from '@/lib/logger.server';
  * GET /resource/stores?mode=input&countryCode=US&postalCode=94102&maxDistance=50&distanceUnit=mi
  */
 // Resource route for store search API
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({
+    request,
+    context,
+}: Route.LoaderArgs): Promise<ReturnType<typeof data<SearchStoresResult>>> {
     const logger = getLogger(context);
     logger.debug('StoreSearch: loader starting');
     try {
@@ -75,7 +91,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             },
         });
 
-        return Response.json({
+        return data({
             success: true,
             stores,
         });

@@ -22,8 +22,7 @@ import { expect } from 'chai';
 // Get test email from environment variable or use default
 const testEmail = process.env.E2E_TEST_USER_EMAIL || 'e2e.test.user@gmail.com';
 
-// TODO: Remove the skip (xScenario or x prefix) once the password reset test uses randomly generated emails.
-// This fails CI because the same email is used for tests and hits the password reset limit.
+// This scenario is skipped because using a fixed email triggers the password reset rate limit in CI.
 xScenario('User can request password reset', () => {
     // Navigate to the forgot password page
     forgotPasswordPage.navigate();

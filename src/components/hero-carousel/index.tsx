@@ -67,13 +67,13 @@ export class HeroCarouselMetadata {
 
 type Image = {
     url: string;
-    meta_data?: {
-        height?: string;
-        width?: string;
+    metaData?: {
+        height?: number | string;
+        width?: number | string;
     };
-    focal_point?: {
-        x?: string;
-        y?: string;
+    focalPoint?: {
+        x?: number | string;
+        y?: number | string;
     };
 };
 
@@ -252,7 +252,7 @@ export function HeroCarouselPlain({
     const emptyState = useMemo(
         () => (
             <div className="relative w-full flex items-center justify-center bg-muted h-[400px] md:h-[500px] lg:h-[600px]">
-                <p className="text-muted-foreground text-lg">No slides available</p>
+                <p className="text-muted-foreground text-sm">No slides available</p>
             </div>
         ),
         []
@@ -437,7 +437,7 @@ const HeroSlideContent = React.memo(({ slide }: { slide: HeroSlide }): ReactElem
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-lg font-normal leading-[1.2] text-primary-foreground mb-8">
+                            <p className="text-lg font-normal leading-[120%] text-primary-foreground mb-8">
                                 {slide.subtitle}
                             </p>
                         )}

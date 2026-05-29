@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import type { LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.about-us';
 import { Link } from '@/components/link';
 import {
     Breadcrumb,
@@ -36,7 +36,7 @@ import type { TFunction } from 'i18next';
 import { getLogger } from '@/lib/logger.server';
 import visionImage from '/images/hero-02.webp';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/page-designer/page-loader.server';
 
 @PageType({
     name: 'About Us Page',
@@ -65,7 +65,7 @@ export type AboutUsPageData = {
     ogImageUrl: string;
 };
 
-export async function loader(args: LoaderFunctionArgs): Promise<AboutUsPageData> {
+export async function loader(args: Route.LoaderArgs): Promise<AboutUsPageData> {
     const logger = getLogger(args.context);
     logger.debug('AboutUs: loader starting');
 
@@ -159,7 +159,7 @@ function AboutUsRegionContent({
     // Always render Region, it will handle empty regions:
     // - In Page Designer: shows empty placeholder for drag-and-drop
     // - In MRT: shows errorElement (static content) when no components
-    return <Region page={Promise.resolve(page)} regionId={regionId} errorElement={fallback} />;
+    return <Region page={page} regionId={regionId} errorElement={fallback} />;
 }
 
 /**

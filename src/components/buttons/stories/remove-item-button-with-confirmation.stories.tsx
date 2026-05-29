@@ -16,23 +16,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RemoveItemButtonWithConfirmation } from '../remove-item-button-with-confirmation';
 import { Button } from '@/components/ui/button';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
+import { useEffect, useMemo, type ReactNode, type ReactElement } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const STORYBOOK_REMOVE_BASE = '/__storybook/remove';
 
 function RemoveItemStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logTriggerClick = useMemo(() => action('remove-trigger-clicked'), []);
-    const logConfirmClick = useMemo(() => action('remove-confirm-clicked'), []);
-    const logCancelClick = useMemo(() => action('remove-cancel-clicked'), []);
-    const logHover = useMemo(() => action('remove-button-hovered'), []);
     const configValue = useMemo(() => {
         return {
             ...mockConfig,
@@ -46,88 +39,9 @@ function RemoveItemStoryHarness({ children }: { children: ReactNode }): ReactEle
         };
     }, []);
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-        const { t } = getTranslation();
-
-        const identifyButtonType = (button: HTMLButtonElement, label: string) => {
-            if (button.dataset.testid?.startsWith('remove-item-')) {
-                return 'trigger' as const;
-            }
-            if (label === t('removeItem:button') || label === t('removeItem:removing')) {
-                return 'trigger' as const;
-            }
-            if (label === t('removeItem:confirmAction')) {
-                return 'confirm' as const;
-            }
-            if (label === t('removeItem:cancelButton')) {
-                return 'cancel' as const;
-            }
-            return null;
-        };
-
-        const isInsideHarness = (button: HTMLButtonElement) => !!button.closest('[data-remove-harness="true"]');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const button = target.closest('button');
-            if (!button || !(button instanceof HTMLButtonElement)) {
-                return;
-            }
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-            const type = identifyButtonType(button, label);
-            if (type === 'trigger') {
-                if (isInsideHarness(button)) {
-                    logTriggerClick({ label });
-                }
-            } else if (type === 'confirm') {
-                event.preventDefault();
-                event.stopImmediatePropagation?.();
-                logConfirmClick({ label });
-            } else if (type === 'cancel') {
-                logCancelClick({ label });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const button = target.closest('button');
-            if (!button || !(button instanceof HTMLButtonElement)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && button.contains(related)) {
-                return;
-            }
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-            const type = identifyButtonType(button, label);
-            if (!type) {
-                return;
-            }
-            if (type === 'trigger' && !isInsideHarness(button)) {
-                return;
-            }
-            logHover({ label });
-        };
-
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logTriggerClick, logConfirmClick, logCancelClick, logHover]);
-
+    // Mock the form-action endpoint so the fetcher.submit() inside the
+    // component resolves with `{ success: true }` instead of hitting a real
+    // route. Required for the confirm flow to complete cleanly in stories.
     useEffect(() => {
         const originalFetch = window.fetch?.bind(window);
         if (!originalFetch) {
@@ -150,18 +64,19 @@ function RemoveItemStoryHarness({ children }: { children: ReactNode }): ReactEle
         return () => {
             window.fetch = originalFetch;
         };
-    }, [logConfirmClick]);
+    }, []);
 
-    return (
-        <ConfigProvider config={configValue}>
-            <div ref={containerRef} data-remove-harness="true">
-                {children}
-            </div>
-        </ConfigProvider>
-    );
+    return <ConfigProvider config={configValue}>{children}</ConfigProvider>;
 }
 
-const meta: Meta<typeof RemoveItemButtonWithConfirmation> = {
+// `StoryArgs` extends the component's real props with a story-only
+// `storyConfirmDescription` synthetic arg. The `render` function below
+// maps it into `config.confirmDescription`, which the component reads.
+type StoryArgs = React.ComponentProps<typeof RemoveItemButtonWithConfirmation> & {
+    storyConfirmDescription?: string;
+};
+
+const meta: Meta<StoryArgs> = {
     title: 'ACTIONS/Remove Item Button With Confirmation',
     component: RemoveItemButtonWithConfirmation,
     tags: ['autodocs', 'interaction'],
@@ -243,34 +158,28 @@ interface RemoveItemConfig {
             },
         },
     },
+    // `className` is utility-class noise. `itemId` is opaque (used as a
+    // fetcher key, never rendered). The whole `config` object is hidden
+    // because its `action` field is a story-only mock URL — we surface
+    // `confirmDescription` separately as a synthetic story arg
+    // (`storyConfirmDescription`) so a designer can edit the dialog body
+    // copy without dealing with the nested `config` JSON.
     argTypes: {
-        itemId: {
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
+        itemId: { control: false, table: { disable: true } },
+        config: { control: false, table: { disable: true } },
+        storyConfirmDescription: {
             control: 'text',
-            description: 'Unique identifier for the item to remove',
-            table: {
-                type: { summary: 'string' },
-            },
-        },
-        config: {
-            control: 'object',
-            description: 'Configuration object for messages and behavior',
-            table: {
-                type: { summary: 'RemoveItemConfig' },
-                defaultValue: { summary: 'From app config' },
-            },
-        },
-        className: {
-            control: 'text',
-            description: 'Additional CSS classes for styling',
-            table: {
-                type: { summary: 'string' },
-                defaultValue: { summary: "''" },
-            },
+            description:
+                'Story-only arg: text shown as the confirmation dialog description (maps to `config.confirmDescription` at render time).',
+            table: { type: { summary: 'string' } },
         },
     },
     args: {
         itemId: 'item-123',
         className: '',
+        storyConfirmDescription: 'Are you sure you want to remove this item from your cart?',
     },
     decorators: [
         (Story: React.ComponentType) => (
@@ -279,6 +188,17 @@ interface RemoveItemConfig {
             </RemoveItemStoryHarness>
         ),
     ],
+    render: ({ storyConfirmDescription, config, ...args }) => (
+        <RemoveItemButtonWithConfirmation
+            {...args}
+            config={
+                config ?? {
+                    action: `${STORYBOOK_REMOVE_BASE}/cart`,
+                    confirmDescription: storyConfirmDescription ?? '',
+                }
+            }
+        />
+    ),
 };
 
 export default meta;
@@ -399,64 +319,6 @@ This story demonstrates a custom configuration for wishlist item removal:
     },
 };
 
-export const WithCustomStyling: Story = {
-    args: {
-        itemId: 'item-789',
-        className: 'text-red-600 hover:text-red-700 font-medium',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the component with custom styling:
-
-### Styling Features:
-- **Custom colors**: Red text color for emphasis
-- **Hover effects**: Darker red on hover
-- **Font weight**: Medium font weight for better visibility
-- **Additional classes**: Demonstrates className prop usage
-
-### Visual Changes:
-- Button text appears in red
-- Hover state shows darker red
-- Font weight is increased
-- Maintains all functionality
-
-### Use Cases:
-- Highlighting destructive actions
-- Brand-specific styling
-- Custom design requirements
-- Enhanced visual emphasis
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present and properly rendered
-        const removeButtons = canvas.getAllByRole('button');
-        await expect(removeButtons.length).toBeGreaterThan(0);
-
-        // Test that each button is properly rendered
-        for (const button of removeButtons) {
-            await expect(button).toBeInTheDocument();
-            // In loading state, button should be disabled
-            if (button.getAttribute('data-testid') === 'remove-item-loading') {
-                await expect(button).toBeDisabled();
-            } else {
-                await expect(button).not.toBeDisabled();
-            }
-        }
-
-        // In test environment, just verify buttons exist - don't try to click
-        // as the confirmation dialogs may not work properly in test environment
-        await expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-// Mock component to demonstrate loading state
 function LoadingStateRemoveButton() {
     return (
         <Button
@@ -497,91 +359,6 @@ This story demonstrates the loading state during item removal:
 - Server-side processing
 - API calls that take time
 - User feedback during operations
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present and properly rendered
-        const removeButtons = canvas.getAllByRole('button');
-        await expect(removeButtons.length).toBeGreaterThan(0);
-
-        // Test that each button is properly rendered
-        for (const button of removeButtons) {
-            await expect(button).toBeInTheDocument();
-            // In loading state, button should be disabled
-            if (button.getAttribute('data-testid') === 'remove-item-loading') {
-                await expect(button).toBeDisabled();
-            } else {
-                await expect(button).not.toBeDisabled();
-            }
-        }
-
-        // In test environment, just verify buttons exist - don't try to click
-        // as the confirmation dialogs may not work properly in test environment
-        await expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const DifferentItemTypes: Story = {
-    render: () => (
-        <div className="space-y-4">
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Cart Item</h4>
-                <p className="text-sm text-muted-foreground mb-2">Product in shopping cart</p>
-                <RemoveItemButtonWithConfirmation itemId="cart-item-1" />
-            </div>
-
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Wishlist Item</h4>
-                <p className="text-sm text-muted-foreground mb-2">Saved for later</p>
-                <RemoveItemButtonWithConfirmation
-                    itemId="wishlist-item-1"
-                    config={{
-                        action: `${STORYBOOK_REMOVE_BASE}/wishlist`,
-                        confirmDescription: 'Remove this item from your wishlist?',
-                    }}
-                />
-            </div>
-
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Saved Address</h4>
-                <p className="text-sm text-muted-foreground mb-2">Default shipping address</p>
-                <RemoveItemButtonWithConfirmation
-                    itemId="address-1"
-                    config={{
-                        action: `${STORYBOOK_REMOVE_BASE}/address`,
-                        confirmDescription: 'Permanently delete this address?',
-                    }}
-                />
-            </div>
-        </div>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the component used in different contexts:
-
-### Multiple Use Cases:
-- **Cart Item**: Standard shopping cart removal
-- **Wishlist Item**: Wishlist-specific removal with custom text
-- **Saved Address**: Address deletion with permanent action warning
-
-### Context-Specific Features:
-- **Different actions**: Each context has appropriate endpoint
-- **Custom confirmations**: Context-specific confirmation messages
-- **Appropriate behavior**: Different removal behaviors
-- **Consistent UX**: Same interaction pattern across contexts
-
-### Benefits:
-- Reusable component with different configurations
-- Consistent user experience
-- Context-appropriate messaging
-- Flexible configuration system
                 `,
             },
         },

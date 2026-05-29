@@ -17,7 +17,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SavedAddressesList } from './saved-addresses-list';
-import type { AddressBookItem } from '@/lib/customer-profile-utils';
+import type { AddressBookItem } from '@/lib/customer/profile-utils';
 
 const address1: AddressBookItem = {
     id: 'addr-1',

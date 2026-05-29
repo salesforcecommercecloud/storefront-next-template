@@ -73,6 +73,9 @@ function defineComponentMetadata<T extends object>(typeId: string, metadata: Com
  * ```
  */
 export function Component(typeId: string, metadata: ComponentTypeMetadata) {
+    // Class decorators must accept any constructor signature — `unknown[]` would reject
+    // classes whose constructors take typed args. This matches TypeScript's class
+    // decorator type pattern.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function <T extends new (...args: any[]) => any>(constructor: T) {
         return defineComponentMetadata(typeId, metadata, constructor);
@@ -84,6 +87,8 @@ export function Component(typeId: string, metadata: ComponentTypeMetadata) {
  * This works by wrapping the function and adding metadata
  */
 export function RegisterComponent(typeId: string, metadata: ComponentTypeMetadata) {
+    // Function decorators must accept any callable signature — see the comment on
+    // `Component` for why `any[]` is required here.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function <T extends (...args: any[]) => any>(target: T): T {
         return defineComponentMetadata(typeId, metadata, target);
@@ -105,16 +110,16 @@ export function withComponentMetadata<T extends new (...args: any[]) => any>(
 }
 
 /**
- * Decorator for marking component props with validation metadata
+ * Decorator for marking component props with validation metadata.
+ * The legacy property-decorator signature receives either the class prototype (instance
+ * properties) or the constructor (static properties), so the target must be an object.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function Required(target: any, propertyKey: string) {
-    const existingRequired = Reflect.getMetadata('component:required', target) || [];
+export function Required(target: object, propertyKey: string) {
+    const existingRequired = (Reflect.getMetadata('component:required', target) as string[] | undefined) ?? [];
     Reflect.defineMetadata('component:required', [...existingRequired, propertyKey], target);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function Optional(target: any, propertyKey: string) {
-    const existingOptional = Reflect.getMetadata('component:optional', target) || [];
+export function Optional(target: object, propertyKey: string) {
+    const existingOptional = (Reflect.getMetadata('component:optional', target) as string[] | undefined) ?? [];
     Reflect.defineMetadata('component:optional', [...existingOptional, propertyKey], target);
 }

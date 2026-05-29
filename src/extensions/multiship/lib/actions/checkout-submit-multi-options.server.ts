@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperBasketsV2 } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';

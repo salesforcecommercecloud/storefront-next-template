@@ -18,52 +18,6 @@ import { SwatchGroup } from '../swatch-group';
 import { Swatch } from '../swatch';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logChange = action('swatch-group-change');
-        const logClick = action('swatch-group-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            // Check for swatches which might be radio inputs or buttons/divs with role radio
-            const swatch = target.closest('[role="radio"], input[type="radio"]');
-            if (swatch) {
-                const label = swatch.getAttribute('aria-label') || swatch.getAttribute('value') || 'swatch';
-                logClick({ label });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const target = event.target as HTMLInputElement | null;
-            if (!target || !root.contains(target)) return;
-
-            if (target.type === 'radio') {
-                logChange({ value: target.value });
-            }
-        };
-
-        // Capture both clicks and native changes if inputs are used
-        root.addEventListener('click', handleClick);
-        root.addEventListener('change', handleChange);
-
-        return () => {
-            root.removeEventListener('click', handleClick);
-            root.removeEventListener('change', handleChange);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof SwatchGroup> = {
     title: 'SWATCH/SwatchGroup',
@@ -78,13 +32,6 @@ const meta: Meta<typeof SwatchGroup> = {
         },
     },
     tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
     argTypes: {
         label: {
             description: 'Label text displayed above the swatches',
@@ -94,10 +41,7 @@ const meta: Meta<typeof SwatchGroup> = {
             description: 'Currently selected swatch value',
             control: 'text',
         },
-        handleChange: {
-            description: 'Callback function called when a swatch is selected',
-            action: 'handleChange',
-        },
+        handleChange: { table: { disable: true } },
         ariaLabel: {
             description: 'Accessible label for screen readers',
             control: 'text',
@@ -116,11 +60,51 @@ const meta: Meta<typeof SwatchGroup> = {
 export default meta;
 type Story = StoryObj<typeof SwatchGroup>;
 
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes every text prop the
+ * `SwatchGroup` reads (`label`, `displayName`, `value`, `ariaLabel`,
+ * `className`). Children — the swatches themselves — are composite React
+ * elements, so they stay defined in the story body. The dedicated stories
+ * below remain bookmarked entry points for the most common variants.
+ */
+export const Playground: Story = {
+    args: {
+        label: 'Color',
+        displayName: 'Red',
+        value: 'red',
+        ariaLabel: 'Color picker',
+        handleChange: () => {},
+        children: (
+            <>
+                <Swatch value="red" label="Red" mode="hover">
+                    {}
+                    <div className="w-full h-full bg-red-500 rounded-full" />
+                </Swatch>
+                <Swatch value="blue" label="Blue" mode="hover">
+                    {}
+                    <div className="w-full h-full bg-blue-500 rounded-full" />
+                </Swatch>
+                <Swatch value="green" label="Green" mode="hover">
+                    {}
+                    <div className="w-full h-full bg-green-500 rounded-full" />
+                </Swatch>
+            </>
+        ),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const label = await canvas.findByText(/color:/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
+    },
+};
+
 export const Default: Story = {
     args: {
         label: 'Color',
         value: 'red',
-        handleChange: action('handleChange'),
+        handleChange: () => {},
         children: (
             <>
                 <Swatch value="red" label="Red" mode="hover">
@@ -158,7 +142,7 @@ export const SquareSwatches: Story = {
     args: {
         label: 'Size',
         value: 'medium',
-        handleChange: action('handleChange'),
+        handleChange: () => {},
         children: (
             <>
                 <Swatch value="small" label="Small" shape="label" mode="click">
@@ -197,7 +181,7 @@ export const WithDisplayName: Story = {
         label: 'Material',
         displayName: 'Cotton',
         value: 'cotton',
-        handleChange: action('handleChange'),
+        handleChange: () => {},
         children: (
             <>
                 <Swatch value="cotton" label="Cotton" mode="hover">
@@ -216,12 +200,12 @@ export const WithDisplayName: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Find the display name span specifically (not the swatch content)
-        const displayNameContainer = await canvas.findByText(/material/i, {}, { timeout: 5000 });
-        await expect(displayNameContainer).toBeInTheDocument();
+        // Find the label span specifically (not the swatch content)
+        const labelSpan = await canvas.findByText(/material:/i, {}, { timeout: 5000 });
+        await expect(labelSpan).toBeInTheDocument();
 
         // Check that display name appears next to the label
-        const displayName = canvasElement.querySelector('span.font-semibold')?.nextElementSibling;
+        const displayName = labelSpan.nextElementSibling;
         await expect(displayName?.textContent).toContain('Cotton');
     },
 };
@@ -229,7 +213,7 @@ export const WithDisplayName: Story = {
 export const NoSelection: Story = {
     args: {
         label: 'Color',
-        handleChange: action('handleChange'),
+        handleChange: () => {},
         children: (
             <>
                 <Swatch value="red" label="Red" mode="hover">

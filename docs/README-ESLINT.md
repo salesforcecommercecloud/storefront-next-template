@@ -22,7 +22,7 @@ pnpm lint
 pnpm lint:fix
 
 # Check that no JavaScript files exist in source
-pnpm lint:check-extensions
+node scripts/check-typescript-only.js
 
 # Build (includes JavaScript file check)
 pnpm build

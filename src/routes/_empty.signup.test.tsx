@@ -16,13 +16,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { createRoutesStub } from 'react-router';
 import Signup, { loader, action } from './_empty.signup';
 import { registerCustomer } from '@/lib/api/auth/register.server';
 import { isPasswordValid } from '@/lib/utils';
-import { getAuth } from '@/middlewares/auth.server';
+import { getAuth, authorizePasswordless, requestOtp } from '@/middlewares/auth.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { createTestContext } from '@/lib/test-utils';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
+import type { Route } from '../+types/root';
 
 const { t } = getTranslation();
 
@@ -43,7 +47,29 @@ vi.mock('@/lib/utils', async () => {
 // Mock auth middleware
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
+    authorizePasswordless: vi.fn(),
+    requestOtp: vi.fn(),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    return {
+        ...actual,
+        getConfig: vi.fn(),
+    };
+});
+
+vi.mock('@salesforce/storefront-next-runtime/data-store', () => ({
+    getLoginPreferences: vi.fn(),
+}));
+
+vi.mock('@/middlewares/auth.utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/middlewares/auth.utils')>();
+    return {
+        ...actual,
+        isTrackingConsentEnabled: vi.fn(() => false),
+    };
+});
 
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
@@ -54,17 +80,67 @@ vi.mock('@/lib/logger.server', () => ({
     })),
 }));
 
+// Mock OTP modal to expose props for assertion
+vi.mock('@/components/login/otp-modal', () => ({
+    __esModule: true,
+    default: ({
+        isOpen,
+        onClose,
+        onResendCode,
+        verifyActionUrl,
+    }: {
+        isOpen: boolean;
+        onClose: () => void;
+        onResendCode?: () => Promise<void>;
+        verifyActionUrl?: string;
+    }) =>
+        isOpen ? (
+            <div data-testid="otp-modal" data-verify-action-url={verifyActionUrl}>
+                <button onClick={onClose}>Close</button>
+                {onResendCode && <button onClick={() => void onResendCode()}>Resend</button>}
+            </div>
+        ) : null,
+}));
+
 // Mock PasswordRequirement component to avoid needing to deal with its complexity
 vi.mock('@/components/password-requirements', () => ({
     PasswordRequirement: () => null,
 }));
 
+const mockNavigate = vi.fn();
+vi.mock('@/hooks/use-navigate', () => ({
+    useNavigate: () => mockNavigate,
+}));
+
+const defaultLoaderData = {
+    showOTPModal: false,
+    email: '',
+    firstName: '',
+    lastName: '',
+    returnUrl: '/',
+    isPasswordlessEnabled: false,
+    otpLength: 6,
+    registrationMode: '',
+};
+
 // Helper to render with createRoutesStub (provides full data router context for Form/Link components)
-const renderWithRoutesStub = () => {
+const renderWithRoutesStub = (
+    loaderData: {
+        showOTPModal: boolean;
+        email: string;
+        firstName: string;
+        lastName: string;
+        returnUrl: string;
+        isPasswordlessEnabled: boolean;
+        otpLength: number;
+        registrationMode: string;
+    } = defaultLoaderData
+) => {
+    const WrappedComponent = () => <Signup loaderData={loaderData} />;
     const Stub = createRoutesStub([
         {
             path: '/',
-            Component: Signup,
+            Component: WrappedComponent,
         },
     ]);
     return render(
@@ -77,15 +153,21 @@ const renderWithRoutesStub = () => {
 const mockRegisterCustomer = vi.mocked(registerCustomer);
 const mockIsPasswordValid = vi.mocked(isPasswordValid);
 const mockGetAuth = vi.mocked(getAuth);
+const mockGetConfig = vi.mocked(getConfig);
+const mockGetLoginPreferences = vi.mocked(getLoginPreferences);
 
 describe('signup route', () => {
-    const mockContext = {
-        get: vi.fn(),
-        set: vi.fn(),
-    } as any;
+    const mockContext = createTestContext();
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockGetConfig.mockReturnValue({
+            commerce: { api: { privateKeyEnabled: false } },
+            features: { passwordlessLogin: { mode: 'email' } },
+            auth: { otpLength: 6 },
+        } as any);
+        mockGetLoginPreferences.mockReturnValue({ emailVerificationEnabled: false });
+        mockNavigate.mockReset();
     });
 
     afterEach(() => {
@@ -99,9 +181,9 @@ describe('signup route', () => {
             } as any);
 
             const mockRequest = new Request('http://localhost/signup');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'signup',
             };
@@ -116,15 +198,104 @@ describe('signup route', () => {
             }
         });
 
-        it('should return null when user is not registered', () => {
+        it('should return loader data when user is not registered', () => {
             mockGetAuth.mockReturnValue({
                 userType: 'guest',
             } as any);
+            const mockRequest = new Request('http://localhost/signup');
+            const args = {
+                request: mockRequest,
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                context: mockContext,
+                unstable_pattern: 'signup',
+            };
+
+            const result = loader(args);
+
+            expect(result).toMatchObject({
+                showOTPModal: false,
+                email: '',
+                firstName: '',
+                lastName: '',
+                returnUrl: '/',
+                isPasswordlessEnabled: false,
+                otpLength: 6,
+                registrationMode: '',
+            });
+        });
+
+        it('should not redirect when registered user has otp=true in URL', () => {
+            mockGetAuth.mockReturnValue({ userType: 'registered' } as any);
+
+            const mockRequest = new Request('http://localhost/signup?otp=true');
+            const args = {
+                request: mockRequest,
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                context: mockContext,
+                unstable_pattern: 'signup',
+            };
+
+            const result = loader(args);
+
+            // Returns a loader data object instead of a redirect response
+            expect(result).not.toBeInstanceOf(Response);
+            expect(result).toMatchObject({
+                showOTPModal: true,
+            });
+        });
+
+        it('should read firstName, lastName, email, and returnUrl from URL params', () => {
+            const mockRequest = new Request(
+                'http://localhost/signup?otp=true&email=test%40example.com&firstName=Jane&lastName=Smith&returnUrl=%2Fcheckout'
+            );
+            const args = {
+                request: mockRequest,
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                context: mockContext,
+                unstable_pattern: 'signup',
+            };
+
+            const result = loader(args);
+
+            expect(result).toMatchObject({
+                showOTPModal: true,
+                email: 'test@example.com',
+                firstName: 'Jane',
+                lastName: 'Smith',
+                returnUrl: '/checkout',
+            });
+        });
+
+        it('should read registrationMode from URL params', () => {
+            mockGetAuth.mockReturnValue({ userType: 'registered' } as any);
+
+            const mockRequest = new Request(
+                'http://localhost/signup?otp=true&email=test%40example.com&registrationMode=password'
+            );
+            const args = {
+                request: mockRequest,
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                context: mockContext,
+                unstable_pattern: 'signup',
+            };
+
+            const result = loader(args);
+
+            expect(result).toMatchObject({
+                registrationMode: 'password',
+            });
+        });
+
+        it('should set isPasswordlessEnabled true when emailVerificationEnabled is true in login preferences', () => {
+            mockGetAuth.mockReturnValue({
+                userType: 'guest',
+            } as any);
+            mockGetLoginPreferences.mockReturnValue({ emailVerificationEnabled: true });
 
             const mockRequest = new Request('http://localhost/signup');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'signup',
             };
@@ -132,7 +303,7 @@ describe('signup route', () => {
             const result = loader(args);
 
             expect(mockGetAuth).toHaveBeenCalledWith(mockContext);
-            expect(result).toBeNull();
+            expect(result).toMatchObject({ isPasswordlessEnabled: true });
         });
     });
 
@@ -160,9 +331,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -190,9 +361,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -220,9 +391,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -250,9 +421,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -280,9 +451,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -311,9 +482,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -344,9 +515,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -381,9 +552,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -426,9 +597,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -440,6 +611,40 @@ describe('signup route', () => {
                 if (result instanceof Response) {
                     expect(result.status).toBe(302);
                     expect(result.headers.get('Location')).toBe('/checkout');
+                }
+            });
+
+            it('should not redirect to external returnUrl on successful registration (open redirect prevention)', async () => {
+                mockIsPasswordValid.mockReturnValue(true);
+                mockRegisterCustomer.mockResolvedValue({ success: true } as any);
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('password', 'Test123!');
+                formData.append('confirmPassword', 'Test123!');
+
+                const mockRequest = new Request('http://localhost/signup?returnUrl=https://evil.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const args = {
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                };
+
+                const result = await action(args);
+
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    const location = result.headers.get('Location') ?? '';
+                    expect(location).not.toContain('evil.com');
+                    expect(result.headers.get('Location')).toBe('/');
                 }
             });
         });
@@ -464,9 +669,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -498,9 +703,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -510,6 +715,250 @@ describe('signup route', () => {
                 expect(result).toEqual({
                     error: t('errors:genericTryAgain'),
                 });
+            });
+        });
+
+        describe('passwordless registration enabled', () => {
+            const mockAuthorizePasswordless = vi.mocked(authorizePasswordless);
+            const mockRequestOtp = vi.mocked(requestOtp);
+
+            beforeEach(() => {
+                mockGetConfig.mockReturnValue({
+                    features: { passwordlessLogin: { mode: 'email' } },
+                } as any);
+                mockGetLoginPreferences.mockReturnValue({ emailVerificationEnabled: true });
+                mockRequestOtp.mockResolvedValue(undefined);
+            });
+
+            it('should call passwordless authorize with registerCustomer: true', async () => {
+                mockAuthorizePasswordless.mockResolvedValue(undefined as any);
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('registrationMode', 'passwordless');
+
+                const mockRequest = new Request('http://localhost/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const args = {
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                };
+
+                await action(args);
+
+                expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
+                    mockContext,
+                    expect.objectContaining({
+                        userid: 'test@example.com',
+                        registerCustomer: true,
+                        firstName: 'John',
+                        lastName: 'Doe',
+                    })
+                );
+            });
+
+            it('should redirect back to the same page with expected query params', async () => {
+                mockAuthorizePasswordless.mockResolvedValue(undefined as any);
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('registrationMode', 'passwordless');
+
+                const mockRequest = new Request('http://localhost/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    const location = result.headers.get('Location');
+                    const url = new URL(location as string, 'http://localhost');
+                    expect(url.pathname).toBe('/signup');
+                    expect(url.searchParams.get('otp')).toBe('true');
+                    expect(url.searchParams.get('email')).toBe('test@example.com');
+                    expect(url.searchParams.get('firstName')).toBe('John');
+                    expect(url.searchParams.get('lastName')).toBe('Doe');
+                    expect(url.searchParams.get('returnUrl')).toBe('/');
+                    expect(url.searchParams.get('registrationMode')).toBe('passwordless');
+                }
+            });
+
+            it('should include returnUrl in redirect when provided', async () => {
+                mockAuthorizePasswordless.mockResolvedValue(undefined as any);
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('registrationMode', 'passwordless');
+
+                const mockRequest = new Request('http://localhost/signup?returnUrl=%2Fcheckout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    const location = result.headers.get('Location');
+                    const url = new URL(location as string, 'http://localhost');
+                    expect(url.searchParams.get('returnUrl')).toBe('/checkout');
+                }
+            });
+
+            it('should return error when required fields are missing in passwordless mode', async () => {
+                const formData = new URLSearchParams();
+                formData.append('email', 'test@example.com');
+                formData.append('registrationMode', 'passwordless');
+
+                const mockRequest = new Request('http://localhost/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(result).toEqual({ error: t('signup:allFieldsRequired') });
+                expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
+            });
+
+            it('should return error when passwordless authorize throws', async () => {
+                mockAuthorizePasswordless.mockRejectedValue(new Error('API Error 404: Not Found'));
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('registrationMode', 'passwordless');
+
+                const mockRequest = new Request('http://localhost/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(result).toHaveProperty('error');
+                expect(mockAuthorizePasswordless).toHaveBeenCalled();
+            });
+
+            it('should redirect to OTP page for password registration', async () => {
+                mockIsPasswordValid.mockReturnValue(true);
+                mockRegisterCustomer.mockResolvedValue({ success: true } as any);
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('password', 'Test123!');
+                formData.append('confirmPassword', 'Test123!');
+                formData.append('registrationMode', 'password');
+
+                const mockRequest = new Request('http://localhost/signup?returnUrl=/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
+                expect(mockRegisterCustomer).toHaveBeenCalledWith(mockContext, {
+                    customer: {
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        login: 'test@example.com',
+                        email: 'test@example.com',
+                    },
+                    password: 'Test123!',
+                });
+                expect(mockRequestOtp).toHaveBeenCalledWith(mockContext, { email: 'test@example.com' });
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    const location = result.headers.get('Location');
+                    const url = new URL(location as string, 'http://localhost');
+                    expect(url.searchParams.get('otp')).toBe('true');
+                    expect(url.searchParams.get('email')).toBe('test@example.com');
+                    expect(url.searchParams.get('returnUrl')).toBe('/checkout');
+                    expect(url.searchParams.get('registrationMode')).toBe('password');
+                }
+            });
+
+            it('should redirect to returnUrl when OTP request fails after password registration', async () => {
+                mockIsPasswordValid.mockReturnValue(true);
+                mockRegisterCustomer.mockResolvedValue({ success: true } as any);
+                mockRequestOtp.mockRejectedValue(new Error('OTP service unavailable'));
+
+                const formData = new URLSearchParams();
+                formData.append('firstName', 'John');
+                formData.append('lastName', 'Doe');
+                formData.append('email', 'test@example.com');
+                formData.append('password', 'Test123!');
+                formData.append('confirmPassword', 'Test123!');
+                formData.append('registrationMode', 'password');
+
+                const mockRequest = new Request('http://localhost/signup?returnUrl=/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString(),
+                });
+
+                const result = await action({
+                    request: mockRequest,
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    context: mockContext,
+                    unstable_pattern: 'signup',
+                });
+
+                expect(mockRegisterCustomer).toHaveBeenCalled();
+                expect(mockRequestOtp).toHaveBeenCalled();
+                expect(result).toBeInstanceOf(Response);
+                if (result instanceof Response) {
+                    expect(result.status).toBe(302);
+                    expect(result.headers.get('Location')).toBe('/checkout');
+                }
             });
         });
 
@@ -530,9 +979,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -563,9 +1012,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -602,9 +1051,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -639,9 +1088,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -694,11 +1143,17 @@ describe('signup route', () => {
             mockIsPasswordValid.mockReturnValue(true);
             mockRegisterCustomer.mockResolvedValue({ success: false, error: errorMessage } as any);
 
+            const WrappedComponent = () => <Signup loaderData={defaultLoaderData} />;
             const Stub = createRoutesStub([
                 {
                     path: '/',
-                    Component: Signup,
-                    action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
+                    Component: WrappedComponent,
+                    action: async ({ request }) =>
+                        action({
+                            request,
+                            params: { siteId: 'test-site', localeId: 'en-US' },
+                            context: mockContext,
+                        } as any),
                 },
             ]);
             render(
@@ -728,11 +1183,17 @@ describe('signup route', () => {
             const user = userEvent.setup();
             mockIsPasswordValid.mockReturnValue(true);
 
+            const WrappedSignup = () => <Signup loaderData={defaultLoaderData} />;
             const Stub = createRoutesStub([
                 {
                     path: '/',
-                    Component: Signup,
-                    action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
+                    Component: WrappedSignup,
+                    action: async ({ request }) =>
+                        action({
+                            request,
+                            params: { siteId: 'test-site', localeId: 'en-US' },
+                            context: mockContext,
+                        } as any),
                 },
             ]);
             render(
@@ -763,6 +1224,173 @@ describe('signup route', () => {
 
             // No error should be visible initially
             expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+        });
+
+        describe('OTP modal', () => {
+            it('should not show OTP modal on initial render', () => {
+                renderWithRoutesStub();
+
+                expect(screen.queryByTestId('otp-modal')).not.toBeInTheDocument();
+            });
+
+            it('should show OTP modal when loader returns showOTPModal:true', async () => {
+                renderWithRoutesStub({ ...defaultLoaderData, showOTPModal: true });
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+            });
+
+            it('should navigate to returnUrl when OTP modal is closed', async () => {
+                const user = userEvent.setup();
+
+                renderWithRoutesStub({ ...defaultLoaderData, showOTPModal: true, returnUrl: '/checkout' });
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                await user.click(screen.getByRole('button', { name: 'Close' }));
+
+                expect(mockNavigate).toHaveBeenCalledWith('/checkout');
+            });
+
+            it('should navigate to /signup instead of returnUrl when OTP modal is closed in passwordless mode', async () => {
+                const user = userEvent.setup();
+
+                renderWithRoutesStub({
+                    ...defaultLoaderData,
+                    showOTPModal: true,
+                    returnUrl: '/checkout',
+                    isPasswordlessEnabled: true,
+                    registrationMode: 'passwordless',
+                });
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                await user.click(screen.getByRole('button', { name: 'Close' }));
+
+                expect(mockNavigate).toHaveBeenCalledWith('/signup');
+            });
+
+            it('should pass /action/otp-verify URL to OTP modal for password registration', async () => {
+                renderWithRoutesStub({
+                    ...defaultLoaderData,
+                    showOTPModal: true,
+                    registrationMode: 'password',
+                });
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                expect(screen.getByTestId('otp-modal')).toHaveAttribute('data-verify-action-url', '/action/otp-verify');
+            });
+
+            it('should pass /action/verify-passwordless-otp URL to OTP modal for passwordless registration', async () => {
+                renderWithRoutesStub({
+                    ...defaultLoaderData,
+                    showOTPModal: true,
+                    registrationMode: 'passwordless',
+                });
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                expect(screen.getByTestId('otp-modal')).toHaveAttribute(
+                    'data-verify-action-url',
+                    '/action/verify-passwordless-otp'
+                );
+            });
+
+            it('should resend OTP via /action/otp-request for password registration', async () => {
+                const user = userEvent.setup();
+                const otpRequestAction = vi.fn(() => Response.json({ success: true }));
+
+                const loaderData = {
+                    ...defaultLoaderData,
+                    showOTPModal: true,
+                    email: 'test@example.com',
+                    registrationMode: 'password',
+                };
+                const WrappedComponent = () => <Signup loaderData={loaderData} />;
+                const Stub = createRoutesStub([
+                    {
+                        path: '/',
+                        Component: WrappedComponent,
+                    },
+                    {
+                        path: '/action/otp-request',
+                        action: otpRequestAction,
+                    },
+                ]);
+                render(
+                    <AllProvidersWrapper>
+                        <Stub initialEntries={['/']} />
+                    </AllProvidersWrapper>
+                );
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                await user.click(screen.getByRole('button', { name: 'Resend' }));
+
+                await waitFor(() => {
+                    expect(otpRequestAction).toHaveBeenCalled();
+                });
+
+                const actionArgs = (otpRequestAction.mock.calls as any)[0][0] as Route.ActionArgs;
+                const formData = await actionArgs.request.formData();
+                expect(formData.get('email')).toBe('test@example.com');
+            });
+
+            it('should resend OTP via POST to current page for passwordless registration', async () => {
+                const user = userEvent.setup();
+                const signupAction = vi.fn(() => Response.json({ success: true }));
+
+                const loaderData = {
+                    ...defaultLoaderData,
+                    showOTPModal: true,
+                    email: 'test@example.com',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    registrationMode: 'passwordless',
+                };
+                const WrappedComponent = () => <Signup loaderData={loaderData} />;
+                const Stub = createRoutesStub([
+                    {
+                        path: '/',
+                        Component: WrappedComponent,
+                        action: signupAction,
+                    },
+                ]);
+                render(
+                    <AllProvidersWrapper>
+                        <Stub initialEntries={['/']} />
+                    </AllProvidersWrapper>
+                );
+
+                await waitFor(() => {
+                    expect(screen.getByTestId('otp-modal')).toBeInTheDocument();
+                });
+
+                await user.click(screen.getByRole('button', { name: 'Resend' }));
+
+                await waitFor(() => {
+                    expect(signupAction).toHaveBeenCalled();
+                });
+
+                const actionArgs = (signupAction.mock.calls as any)[0][0] as Route.ActionArgs;
+                const formData = await actionArgs.request.formData();
+                expect(formData.get('email')).toBe('test@example.com');
+                expect(formData.get('firstName')).toBe('John');
+                expect(formData.get('lastName')).toBe('Doe');
+                expect(formData.get('registrationMode')).toBe('passwordless');
+            });
         });
     });
 });

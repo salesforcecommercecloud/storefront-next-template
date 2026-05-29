@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.forgot-password';
 import { useTranslation } from 'react-i18next';
-import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 
 // Components
 import { Link } from '@/components/link';
@@ -27,6 +28,7 @@ import { ForgotPasswordForm } from '@/components/forgot-password-form';
 // Lib
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { routes } from '@/route-paths';
 
 // Middleware
 import { getAuth, getPasswordResetToken } from '@/middlewares/auth.server';
@@ -38,17 +40,17 @@ type ForgotPasswordActionData = {
     email?: string;
 };
 
-export function loader({ context }: LoaderFunctionArgs): Response | void {
+export function loader({ context }: Route.LoaderArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);
     if (session.userType === 'registered') {
-        return redirect(buildUrlFromContext('/login', context));
+        return redirect(buildUrlFromContext(routes.login, context));
     }
 }
 
 // Server action required for authentication - password reset token generation must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-export async function action({ request, context }: ActionFunctionArgs): Promise<ForgotPasswordActionData> {
+export async function action({ request, context }: Route.ActionArgs): Promise<ForgotPasswordActionData> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
@@ -71,7 +73,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 }
 
 export default function ForgotPassword(): ReactElement {
-    const actionData = useActionData<ForgotPasswordActionData>();
+    const actionData = useActionData<typeof action>();
     const { t } = useTranslation('resetPassword');
 
     if (actionData?.success && actionData?.email) {
@@ -87,7 +89,7 @@ export default function ForgotPassword(): ReactElement {
 
                     <Card className="p-8 rounded-none shadow-none">
                         <div className="space-y-6">
-                            <Link to="/login">
+                            <Link to={routes.login}>
                                 <Button className="w-full cursor-pointer">{t('backToSignIn')}</Button>
                             </Link>
                         </div>

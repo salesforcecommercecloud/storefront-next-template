@@ -32,14 +32,6 @@ export const createCustomerProfileFormSchema = (t: TFunction) => {
         lastName: z.string().min(1, {
             message: t('account:profile.validation.lastNameRequired'),
         }),
-        email: z
-            .string()
-            .min(1, {
-                message: t('account:profile.validation.emailRequired'),
-            })
-            .email({
-                message: t('account:profile.validation.emailInvalid'),
-            }),
         phone: z
             .string()
             .optional()

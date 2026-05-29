@@ -15,28 +15,26 @@
  */
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import CheckoutPickup from './checkout-pickup';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
 
-const defaultMockSite = {
-    id: 'RefArch',
-    defaultLocale: 'en-US',
-    defaultCurrency: 'USD',
-    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-    supportedCurrencies: ['USD'],
-};
+const defaultMockSite = mockAltSiteObject;
 const defaultMockLocale =
     defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
     defaultMockSite.supportedLocales[0];
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <ConfigProvider config={mockConfig}>
-        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+        <SiteProvider
+            site={defaultMockSite}
+            locale={defaultMockLocale}
+            language={mockAltSiteObject.defaultLocale}
+            currency={mockAltSiteObject.defaultCurrency}>
             {children}
         </SiteProvider>
     </ConfigProvider>
@@ -56,7 +54,7 @@ vi.mock('react-i18next', () => ({
         return {
             t: (key: string) => key,
             i18n: {
-                language: 'en-US',
+                language: mockAltSiteObject.defaultLocale,
             },
         };
     },
@@ -256,7 +254,11 @@ describe('CheckoutPickup', () => {
 
         rerender(
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                <SiteProvider
+                    site={defaultMockSite}
+                    locale={defaultMockLocale}
+                    language={mockAltSiteObject.defaultLocale}
+                    currency={mockAltSiteObject.defaultCurrency}>
                     <CheckoutPickup
                         cart={cartWithNewStore}
                         productsByItemId={productsByItemId}

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-console */
 import { AxeBuilder } from '@axe-core/playwright';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
@@ -23,9 +24,14 @@ import {
     type A11yScanResults,
     type Baseline,
     type AxeViolation,
+    A11yBaselineError,
     WCAG_TAGS,
     getViolationCountsByRule,
     groupViolationsByImpact,
+    compareWithBaseline,
+    formatViolationReport,
+    formatBaselineFailure,
+    formatScanBanner,
 } from './a11y-report-utils';
 
 const { I } = inject();
@@ -169,4 +175,79 @@ export function collectResults(key: string, results: A11yScanResults): void {
     mkdirSync(RESULTS_DIR, { recursive: true });
     const filename = `${key.replace('/', '__')}.json`;
     writeFileSync(join(RESULTS_DIR, filename), JSON.stringify(results, null, 2), 'utf-8');
+}
+
+// =============================================================================
+// Scan orchestration helpers (shared across a11y spec files)
+// =============================================================================
+
+const isUpdateMode = process.env.A11Y_UPDATE_BASELINE === 'true';
+const isCollectMode = process.env.A11Y_COLLECT_RESULTS === 'true';
+
+/**
+ * Print the per-scan banner and return the detected viewport.
+ * Call this at the very start of each scenario — before any navigation or
+ * setup steps — so the banner appears in CI logs even when setup fails.
+ */
+export async function beginScan(pageKey: string): Promise<'desktop' | 'mobile'> {
+    const viewport = await getViewportKey();
+    console.log(`\n${formatScanBanner(pageKey, viewport)}`);
+    return viewport;
+}
+
+/**
+ * Run an axe scan and either update the baseline (update mode) or assert that
+ * no new violations have appeared since the last baseline commit.
+ *
+ * @param pageKey - Short identifier for the page, e.g. 'homepage'.
+ * @param viewport - Viewport key returned by {@link beginScan}.
+ */
+export async function scanAndAssert(pageKey: string, viewport: 'desktop' | 'mobile'): Promise<void> {
+    const results: A11yScanResults = await runAxeScan();
+    const key = `${pageKey}/${viewport}`;
+
+    if (isCollectMode) {
+        collectResults(key, results);
+    }
+
+    const baseline = loadBaseline();
+
+    // TODO: This read-modify-write of a11y-baseline.json is not safe for
+    // parallel workers — concurrent scans can overwrite each other's entries.
+    // CodeceptJS runs scenarios serially today, so this is latent tech debt
+    // inherited from the original spec. Safe fix: load once at BeforeSuite,
+    // accumulate updates in memory, and write once in AfterSuite.
+    if (isUpdateMode) {
+        baseline[key] = results.violationCounts;
+        saveBaseline(baseline);
+        console.log(`[A11Y] Updated baseline for ${key}`);
+        console.log(formatViolationReport(results));
+        return;
+    }
+
+    const comparison = compareWithBaseline(key, results.violationCounts, baseline, results.violations);
+
+    if (!comparison.passed) {
+        console.log(`\n${formatViolationReport(results)}`);
+        throw new A11yBaselineError(formatBaselineFailure(key, comparison, results));
+    }
+
+    const totalViolations = Object.values(results.violationCounts).reduce((a, b) => a + b, 0);
+
+    if (Object.keys(comparison.decreasedViolations).length > 0) {
+        console.log(`↓ ${key} — violations decreased, run pnpm a11y:update-baseline`);
+    } else {
+        console.log(
+            `✓ PASS: ${key} — ${totalViolations} violation${totalViolations !== 1 ? 's' : ''} (within baseline)`
+        );
+    }
+
+    const informationalCount =
+        Object.keys(comparison.informationalNewViolations).length +
+        Object.keys(comparison.informationalIncreasedViolations).length;
+    if (informationalCount > 0) {
+        console.log(
+            `  ⓘ ${informationalCount} moderate/minor rule${informationalCount !== 1 ? 's' : ''} exceeded baseline (not blocking — update with pnpm a11y:update-baseline)`
+        );
+    }
 }

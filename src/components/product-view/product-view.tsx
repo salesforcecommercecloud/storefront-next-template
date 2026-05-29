@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from './product-info';
 import ProductCartActions from '@/components/product-cart-actions';
 import ProductViewProvider from '@/providers/product-view';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
-import EstimatedDelivery from '@/components/estimated-delivery';
-import ReturnsAndWarranty from '@/components/returns-and-warranty';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import CollapsibleHtmlSection from '@/components/collapsible-section/collapsible-html-section';
-import CollapsibleSection from '@/components/collapsible-section';
-import ProductAdapterSection from '@/components/product-adapter-section';
-import Faq from '@/components/faq';
 import { useTranslation } from 'react-i18next';
-import { resolvePdpSections } from '@/lib/pdp-sections';
 import { UITarget } from '@/targets/ui-target';
 
 interface ProductViewProps {
@@ -64,7 +58,6 @@ export default function ProductView({ product }: ProductViewProps): ReactElement
     });
 
     const { t } = useTranslation('product');
-    const sections = resolvePdpSections(product);
 
     return (
         <ProductViewProvider product={product} mode="add">
@@ -95,21 +88,12 @@ export default function ProductView({ product }: ProductViewProps): ReactElement
                 <div className="order-2">
                     <ProductInfo product={product} />
                     <ProductCartActions product={product} />
-                    <ReturnsAndWarranty productId={product.id} />
-                    <EstimatedDelivery productId={product.id} />
-                    <Faq />
-                    {sections.length > 0 && (
-                        <div className="mt-4">
-                            {sections.map((section) => (
-                                <CollapsibleSection key={section.adapterMethod} label={t(section.labelKey)}>
-                                    <ProductAdapterSection
-                                        adapterMethod={section.adapterMethod}
-                                        productId={product.id}
-                                    />
-                                </CollapsibleSection>
-                            ))}
-                        </div>
-                    )}
+                    <UITarget targetId="sfcc.pdp.returnsWarranty" />
+                    {/* @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY */}
+                    <UITarget targetId="sfcc.pdp.estimatedDelivery" />
+                    {/* @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY */}
+                    <UITarget targetId="sfcc.pdp.faq" />
+                    <UITarget targetId="sfcc.pdp.collapsibles" />
                 </div>
             </div>
         </ProductViewProvider>

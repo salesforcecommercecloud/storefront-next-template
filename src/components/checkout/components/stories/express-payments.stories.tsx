@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import ExpressPayments from '../express-payments';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -54,11 +55,38 @@ const meta: Meta<typeof ExpressPayments> = {
     parameters: {
         ...checkoutStrictA11yParameters,
         layout: 'padded',
+        controls: { expanded: true },
         docs: {
             description: {
-                component:
-                    'Provides express checkout options including Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo. PayPal SDK is lazy-loaded when this component renders.',
+                component: `
+### ExpressPayments Component (PLACEHOLDER)
+
+**⚠️ IMPORTANT: This is a PLACEHOLDER component for UI demonstration only. It does not process real payments.**
+
+This component provides visual representations of express payment buttons (Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo) with configurable layout and separator. All buttons trigger alert messages instead of actual payment processing.
+
+**Current Implementation:**
+- Static payment buttons that trigger JavaScript alerts
+- No integration with real payment providers
+- No PayPal SDK or payment provider SDKs loaded
+- All buttons are always visible — in a real implementation, visibility would depend on device capabilities, geographic eligibility, and browser support
+- Suitable for UI mockups, design reviews, and wireframes only
+
+**Production Replacement:**
+Replace this component with actual payment provider integrations (Stripe, Adyen, PayPal SDK, etc.) before deploying to production. See the component file (\`express-payments.tsx\`) for detailed removal instructions, including translation keys to prune and parent components to update.
+
+**Where Used:**
+- Checkout page: \`src/components/checkout/checkout-form-page.tsx\`
+- Product page: \`src/components/product-cart-actions/index.tsx\`
+                `,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     tags: ['autodocs', 'interaction'],
@@ -71,22 +99,39 @@ const meta: Meta<typeof ExpressPayments> = {
     ],
     argTypes: {
         disabled: {
-            description: 'Whether all payment buttons should be disabled',
+            description: 'When `true`, all payment buttons are disabled and cannot be clicked.',
             control: 'boolean',
+            table: {
+                type: { summary: 'boolean' },
+                defaultValue: { summary: 'false' },
+            },
         },
         layout: {
-            description: 'Layout orientation for the payment buttons',
+            description:
+                'Layout orientation for the payment buttons. `horizontal` = responsive grid (1 col mobile → 3 cols tablet → 5 cols desktop). `vertical` = single stacked column.',
             control: 'radio',
             options: ['horizontal', 'vertical'],
+            table: {
+                type: { summary: "'horizontal' | 'vertical'" },
+                defaultValue: { summary: 'horizontal' },
+            },
         },
         separatorPosition: {
-            description: 'Position of the separator divider',
+            description: 'Position of the separator divider relative to the payment buttons.',
             control: 'radio',
             options: ['top', 'bottom'],
+            table: {
+                type: { summary: "'top' | 'bottom'" },
+                defaultValue: { summary: 'bottom' },
+            },
         },
         separatorText: {
-            description: 'Custom text for the separator divider',
+            description: 'Custom text rendered inside the separator divider.',
             control: 'text',
+            table: {
+                type: { summary: 'string' },
+                defaultValue: { summary: "'or continue below'" },
+            },
         },
     },
 };
@@ -98,11 +143,24 @@ export const Default: Story = {
     args: {
         disabled: false,
     },
+    parameters: {
+        docs: {
+            description: {
+                story: `Default rendering: all 5 express payment buttons (Apple Pay, Google Pay, Amazon Pay, PayPal, Venmo) in a horizontal responsive grid with the separator below.
+
+**Note:** All buttons are always visible in this placeholder. In a real integration with payment SDKs, visibility would depend on device capabilities (e.g. Apple Pay on supported devices), geographic eligibility (e.g. Venmo US-only), payment provider availability, and browser support.`,
+            },
+        },
+    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
         await expect(await canvas.findByRole('button', { name: /apple pay/i })).toBeInTheDocument();
+
+        // All 5 payment buttons should be present in the placeholder
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThanOrEqual(5);
 
         // Check for "Or" divider
         const orDivider = await canvas.findByText(/or/i);
@@ -123,30 +181,6 @@ export const Disabled: Story = {
         buttons.forEach((button) => {
             void expect(button).toBeDisabled();
         });
-    },
-};
-
-export const WithPayPalSDKLoading: Story = {
-    args: {
-        disabled: false,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        // Component should render even when PayPal SDK is loading
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
-    },
-};
-
-export const WithPayPalSDKError: Story = {
-    args: {
-        disabled: false,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        // Component should render even when PayPal SDK has errors
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
     },
 };
 
@@ -171,44 +205,6 @@ export const VerticalLayout: Story = {
         // Check for "Or" divider
         const orDivider = await canvas.findByText(/or/i);
         await expect(orDivider).toBeInTheDocument();
-    },
-};
-
-export const VenmoEligibility: Story = {
-    args: {
-        disabled: false,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Venmo button eligibility is determined by the PayPal SDK at runtime. 
-                
-**Venmo appears when:**
-- User is in the United States
-- Device is mobile (phone or tablet)
-- Browser supports Venmo integration
-- PayPal SDK detects eligibility
-
-**Venmo is hidden when:**
-- User is on desktop (most cases)
-- User is outside the US
-- Browser doesn't support Venmo
-- PayPal SDK reports not eligible
-
-This automatic eligibility check prevents showing an unusable payment option and avoids empty spacing in the layout.`,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // PayPal button should always be present
-        const buttons = canvas.getAllByRole('button');
-        await expect(buttons.length).toBeGreaterThan(0);
-
-        // Note: Venmo may or may not be visible depending on browser eligibility
-        // This is expected behavior based on PayPal SDK's runtime checks
     },
 };
 

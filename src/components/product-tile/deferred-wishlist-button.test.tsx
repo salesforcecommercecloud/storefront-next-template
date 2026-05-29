@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { WishlistButton } from '@/components/buttons/wishlist-button';
 import { DeferredWishlistButton } from './deferred-wishlist-button';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 type WishlistButtonProps = ComponentProps<typeof WishlistButton>;
 
@@ -49,10 +51,15 @@ const defaultProps: WishlistButtonProps = {
         productId: 'test-product',
         productName: 'Test Product',
     },
+    surface: 'plp',
     size: 'md',
     className: 'custom-class',
     tabIndex: -1,
 };
+
+function withProvider(ui: ReactNode) {
+    return <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>{ui}</WishlistProvider>;
+}
 
 describe('DeferredWishlistButton', () => {
     beforeEach(() => {
@@ -61,27 +68,47 @@ describe('DeferredWishlistButton', () => {
 
     describe('initial render (placeholder)', () => {
         test('renders a HeartIcon placeholder button', () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
             const button = screen.getByRole('button');
             expect(button).toBeInTheDocument();
         });
 
         test('passes size, className, and tabIndex to the placeholder HeartIcon', () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
             const button = screen.getByRole('button');
             expect(button).toHaveClass('custom-class');
             expect(button).toHaveAttribute('tabindex', '-1');
         });
 
         test('does not render the real WishlistButton before interaction', () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
             expect(screen.queryByTestId('real-wishlist-button')).not.toBeInTheDocument();
+        });
+
+        test('placeholder paints filled when product is already in the wishlist', () => {
+            render(
+                <WishlistProvider
+                    initialState={{
+                        customerId: 'cust-1',
+                        listId: 'list-1',
+                        itemsByProductId: new Map([['test-product', { itemId: 'item-1' }]]),
+                    }}>
+                    <DeferredWishlistButton {...defaultProps} />
+                </WishlistProvider>
+            );
+            // HeartIcon's aria-label flips from 'Add to wishlist' → 'Remove from wishlist' when filled.
+            expect(screen.getByRole('button', { name: 'Remove from wishlist' })).toBeInTheDocument();
+        });
+
+        test('placeholder paints empty when product is not in the wishlist', () => {
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
+            expect(screen.getByRole('button', { name: 'Add to wishlist' })).toBeInTheDocument();
         });
     });
 
     describe('lazy loading on pointer enter', () => {
         test('loads the real WishlistButton after pointerEnter', async () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
 
             const placeholder = screen.getByRole('button');
             fireEvent.pointerEnter(placeholder);
@@ -92,7 +119,7 @@ describe('DeferredWishlistButton', () => {
         });
 
         test('does not revert to placeholder after loading', async () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
 
             fireEvent.pointerEnter(screen.getByRole('button'));
 
@@ -108,7 +135,7 @@ describe('DeferredWishlistButton', () => {
 
     describe('Suspense fallback', () => {
         test('shows a HeartIcon fallback while the lazy component is loading', async () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
 
             // Before interaction — placeholder HeartIcon is rendered
             expect(screen.getByRole('button')).toBeInTheDocument();
@@ -125,7 +152,7 @@ describe('DeferredWishlistButton', () => {
 
     describe('prop forwarding', () => {
         test('forwards all props to the real WishlistButton once loaded', async () => {
-            render(<DeferredWishlistButton {...defaultProps} />);
+            render(withProvider(<DeferredWishlistButton {...defaultProps} />));
 
             fireEvent.pointerEnter(screen.getByRole('button'));
 
@@ -138,8 +165,9 @@ describe('DeferredWishlistButton', () => {
         test('works without optional props', () => {
             const minimalProps: WishlistButtonProps = {
                 product: { productId: 'minimal-product' },
+                surface: 'plp',
             };
-            expect(() => render(<DeferredWishlistButton {...minimalProps} />)).not.toThrow();
+            expect(() => render(withProvider(<DeferredWishlistButton {...minimalProps} />))).not.toThrow();
         });
     });
 });

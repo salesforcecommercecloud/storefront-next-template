@@ -17,19 +17,20 @@
 import 'reflect-metadata';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
-import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { MemoryRouter } from 'react-router';
+import type { ShopperExperience, ShopperSearch } from '@/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search.server';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { useAnalytics } from '@/hooks/use-analytics';
+import type { Route } from './+types/_app.search';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -143,9 +144,9 @@ vi.mock('@/components/region', async () => {
     };
 });
 
-// Mock ProductGrid component
+// Mock DeferredProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: function ProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
+    default: function DeferredProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
         return (
             <div data-testid="product-grid">
                 <div data-testid="critical-count" style={{ display: 'none' }}>
@@ -199,8 +200,12 @@ vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
+}));
+
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() => Promise.resolve(EMPTY_WISHLIST_STATE)),
 }));
 
 // Mock analytics with controllable mock functions
@@ -302,9 +307,13 @@ describe('SearchPage', () => {
 
     describe('loader', () => {
         test('should fetch search data and page with correct parameters', async () => {
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes&offset=0'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes&offset=0'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
 
             const result = await loader(args);
 
@@ -331,7 +340,7 @@ describe('SearchPage', () => {
         });
 
         test('should handle query parameters correctly', async () => {
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request(
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
                 ),
@@ -353,16 +362,16 @@ describe('SearchPage', () => {
         });
 
         test('should parse filters query param into initialFiltersOpen', async () => {
-            const openArgs: LoaderFunctionArgs = {
+            const openArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=open'),
                 context: mockContext,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 unstable_pattern: '/search',
             };
-            const closedArgs: LoaderFunctionArgs = {
+            const closedArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=closed'),
                 context: mockContext,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 unstable_pattern: '/search',
             };
 
@@ -374,9 +383,13 @@ describe('SearchPage', () => {
         });
 
         test('should split search results into critical and non-critical', async () => {
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
 
             await loader(args);
 
@@ -411,9 +424,13 @@ describe('SearchPage', () => {
             const partialResult = { ...mockSearchResult, hits: mockSearchResult.hits?.slice(0, 2) };
             (fetchSearchProducts as any).mockResolvedValue(partialResult);
 
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
             await loader(args);
 
             // Verify: Critical request asks for 4
@@ -447,9 +464,13 @@ describe('SearchPage', () => {
             (getConfig as any).mockReturnValue(mockConfigHighCritical);
             (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
 
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
             await loader(args);
 
             // Verify: Critical request is capped at limit (24), not using config.critical (30)
@@ -478,9 +499,13 @@ describe('SearchPage', () => {
             const emptyResult = { ...mockSearchResult, hits: [], total: 0 };
             (fetchSearchProducts as any).mockResolvedValue(emptyResult);
 
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
             await loader(args);
 
             // Verify: Critical request
@@ -513,9 +538,13 @@ describe('SearchPage', () => {
             (getConfig as any).mockReturnValue(mockConfigSmallLimit);
             (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
 
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
             await loader(args);
 
             // Verify: Critical request
@@ -548,9 +577,13 @@ describe('SearchPage', () => {
             (getConfig as any).mockReturnValue(mockConfigCriticalEqualsLimit);
             (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
 
-            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
-                unstable_pattern: '/search',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('https://example.com/search?q=shoes'),
+                mockContext,
+                {
+                    unstable_pattern: '/search',
+                }
+            );
             await loader(args);
 
             // Verify: Non-critical limit should be 0 or positive, never negative
@@ -577,6 +610,7 @@ describe('SearchPage', () => {
                 initialFiltersOpen: true,
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             const closedLoaderData: SearchPageData = {
@@ -611,41 +645,6 @@ describe('SearchPage', () => {
             });
         });
 
-        test('should not remount ProductGrid when only filters query param changes', async () => {
-            const user = userEvent.setup();
-            const loaderData: SearchPageData = {
-                searchTerm: 'shoes',
-                searchResultCritical: mockSearchResult,
-                searchResultNonCritical: Promise.resolve(mockSearchResult),
-                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
-                currency: 'USD',
-                locale: 'en-US',
-                initialFiltersOpen: false,
-                refine: [],
-                pageUrl: 'http://localhost/search',
-            };
-
-            render(
-                <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
-                    <AllProvidersWrapper>
-                        <SearchPage loaderData={loaderData} />
-                    </AllProvidersWrapper>
-                </MemoryRouter>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
-            });
-            const productGridBefore = screen.getByTestId('product-grid');
-
-            await user.click(screen.getAllByTestId('filters-button')[0]);
-
-            await waitFor(() => {
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
-            });
-            expect(screen.getByTestId('product-grid')).toBe(productGridBefore);
-        });
-
         test('should render search results', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
@@ -656,6 +655,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -694,6 +694,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -721,6 +722,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -746,6 +748,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -771,6 +774,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -796,6 +800,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -831,6 +836,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -869,6 +875,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -895,6 +902,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -920,6 +928,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             const { rerender } = render(
@@ -959,6 +968,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -985,6 +995,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1018,6 +1029,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1049,6 +1061,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1081,6 +1094,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1115,6 +1129,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1147,6 +1162,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1181,6 +1197,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1215,6 +1232,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             render(
@@ -1252,6 +1270,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 refine: [],
                 pageUrl: 'http://localhost/search',
+                wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
             };
 
             // Should render without errors even when analytics is null

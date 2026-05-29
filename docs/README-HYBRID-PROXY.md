@@ -68,13 +68,25 @@ PUBLIC__app__hybrid__enabled=true
 
 A JSON array of route patterns that belong to SFRA (the legacy backend). When a user clicks a `<Link>` to one of these routes, the client-side navigation middleware intercepts it and forces a full-page load. The browser then navigates to the URL normally, letting the CDN (eCDN in production) or the Vite proxy (local dev) route the request to SFRA.
 
-Supports exact paths and React Router-style parameterized routes:
+Supports three pattern forms:
+
+| Form        | Example            | Matches                                                                              | Does **not** match                  |
+| ----------- | ------------------ | ------------------------------------------------------------------------------------ | ----------------------------------- |
+| Exact path  | `/cart`            | `/cart` only                                                                         | `/cart/` or `/cart/anything`        |
+| Named param | `/product/:id`     | A single path segment in place of `:id` (e.g. `/product/123`)                        | `/product/123/details` (multi-segment) |
+| Wildcard    | `/categoryLv1/*`   | Any path content under the prefix, including `/` (e.g. `/categoryLv1/shoes/running`) | `/categoryLv1` (no trailing slash)  |
 
 ```bash
-PUBLIC__app__hybrid__legacyRoutes='["/cart", "/checkout", "/product/:id"]'
+PUBLIC__app__hybrid__legacyRoutes='["/cart", "/checkout", "/product/:id", "/categoryLv1/*"]'
 ```
 
-> **Keep this in sync with your eCDN routing rules.** Any path that is _not_ in `HYBRID_ROUTING_RULES` (i.e., it belongs to SFRA) and could be the target of a `<Link>` in Storefront Next should be listed here. If a route is missing from this list, React Router will attempt to render it client-side and show a 404 or error boundary instead of handing off to SFRA.
+Use `:name` when you need a single-segment placeholder (no `/` allowed). Use `*` when the legacy backend owns an entire subtree and you'd otherwise have to enumerate every URL underneath. The two can be combined — e.g. `/category/:cat/*` matches `/category/shoes/details/blue`. `*` may also appear in the middle of a pattern (e.g. `/files/*-thumb`); React Router itself only allows splats at the end, but this matcher does not enforce that.
+
+> **`/parent/*` does not match the bare `/parent`.** The trailing `/` in the pattern is required, so `/categoryLv1/*` matches `/categoryLv1/shoes` and `/categoryLv1/` but **not** `/categoryLv1`. If you need both, list `/categoryLv1` as a separate exact entry. Note that the eCDN regex example below (`^/categoryLv1.*`) _does_ match the bare path — so copy-pasting between the two configs gives divergent behavior at exactly the parent path. Either add the bare entry here or use `^/categoryLv1(/.*)?$` on the eCDN side to keep them aligned.
+
+> **The bare pattern `'*'`** matches any path (catch-all, regex `^.*$`). Use it deliberately — it's only useful when you want every navigation to fall through to the legacy backend.
+
+> **Keep this in sync with your eCDN routing rules.** Any path that is _not_ in `HYBRID_ROUTING_RULES` (i.e., it belongs to SFRA) and could be the target of a `<Link>` in Storefront Next should be listed here. If a route is missing from this list, React Router will attempt to render it client-side and show a 404 or error boundary instead of handing off to SFRA. The eCDN expression is plain regex, so a wildcard entry here typically corresponds to a `^/categoryLv1.*` pattern in `HYBRID_ROUTING_RULES`.
 
 ---
 
@@ -240,6 +252,8 @@ Hybrid auth requires that both Storefront Next and SFRA share the same session c
 
 ---
 
+---
+
 ## Gotchas and Pitfalls
 
 ### Routing rules out of sync with production eCDN
@@ -268,6 +282,10 @@ SFRA expects URLs in the format `/s/{siteId}/{locale}/path`. If the locale in th
 ### Compressed responses
 
 The proxy decompresses `gzip`, `brotli`, and `deflate` responses before rewriting URLs. If SFCC uses a compression format other than these three, body rewriting is skipped and you may see SFCC origin URLs in the response.
+
+### SFRA `plugin_redirect` returns 200 with Location
+
+SFRA's `plugin_redirect` cartridge sometimes responds with HTTP 200 and a `Location` header instead of a proper 3xx redirect. Browsers only follow `Location` on 3xx responses, so without intervention the proxied page renders blank. The hybrid proxy detects this case (status 200 + non-empty `Location`) and converts the response into a 302 with the rewritten (localhost) `Location`, dropping the upstream body. `Set-Cookie` headers are preserved through the conversion so session continuity is maintained. This affects local development only. eCDN does not normalize 200 + Location responses in production — if this response shape reaches shoppers, fix the SFRA cartridge or add an eCDN worker rule.
 
 ### This plugin only runs in development mode
 

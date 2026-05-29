@@ -17,8 +17,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { type ComponentType, Region, type RegionDesignMetadata } from './index';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import type { PageWithComponentData } from '@/lib/util/pageLoader.server';
+import type { ShopperExperience } from '@/scapi';
+import type { PageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import {
     useRegionContext,
     PageDesignerPageMetadataProvider,
@@ -234,7 +234,7 @@ describe('Region', () => {
         expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
     });
 
-    it('does NOT render errorElement for empty page region without fallbackOnEmpty', async () => {
+    it('renders errorElement for empty page region in non-design mode (renderRegionContent fallback)', async () => {
         const emptyRegion = { id: 'empty-region', components: [] };
         const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
         render(
@@ -245,8 +245,10 @@ describe('Region', () => {
             />
         );
 
+        // In non-design mode, renderRegionContent returns errorElement for any empty region —
+        // independent of fallbackOnEmpty (which only short-circuits when the region exists with no components).
         await waitFor(() => {
-            expect(screen.queryByTestId('fallback-banner')).not.toBeInTheDocument();
+            expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
         });
     });
 
@@ -746,6 +748,50 @@ describe('Region', () => {
                     expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
                     expect(screen.getByTestId('not-found-error')).toBeInTheDocument();
                 });
+            });
+        });
+    });
+
+    describe('Promise identity / stability', () => {
+        it('renders synchronously when page is a plain (non-thenable) value', () => {
+            // No await/waitFor — the resolved page should render in the same render pass,
+            // bypassing Suspense entirely. If Region wrapped the value in Promise.resolve,
+            // <Await> would suspend and the components would not be in the DOM yet.
+            render(<Region page={mockPage} regionId="test-region" fallbackElement={<div data-testid="loading" />} />);
+
+            expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+            expect(screen.getByTestId('component-component-2')).toBeInTheDocument();
+        });
+
+        it('renders null synchronously when page is null', () => {
+            const { container } = render(
+                <Region page={null} regionId="test-region" fallbackElement={<div data-testid="loading" />} />
+            );
+
+            expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+            expect(container.querySelector('[data-testid^="component-"]')).toBeNull();
+        });
+
+        it('shows fallback before resolution when page is a Promise', async () => {
+            let resolvePage: (value: ShopperExperience.schemas['Page']) => void = () => {};
+            const pendingPromise = new Promise<ShopperExperience.schemas['Page']>((resolve) => {
+                resolvePage = resolve;
+            });
+
+            render(
+                <Region page={pendingPromise} regionId="test-region" fallbackElement={<div data-testid="loading" />} />
+            );
+
+            // Promise hasn't resolved yet — Suspense should display the fallback.
+            expect(screen.getByTestId('loading')).toBeInTheDocument();
+            expect(screen.queryByTestId('component-component-1')).not.toBeInTheDocument();
+
+            resolvePage(mockPage);
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+                expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
             });
         });
     });

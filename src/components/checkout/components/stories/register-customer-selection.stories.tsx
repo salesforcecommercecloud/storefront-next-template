@@ -14,43 +14,12 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import RegisterCustomerSelection from '../register-customer-selection';
 import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
-
-const REGISTER_HARNESS_ATTR = 'data-register-harness';
-
-function RegisterStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logCheckboxChange = useMemo(() => action('register-checkbox-changed'), []);
-
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REGISTER_HARNESS_ATTR}]`));
-
-        const handleClick = (event: Event) => {
-            const target = event.target as Element;
-            const checkbox = target.closest('[role="checkbox"]');
-            if (!checkbox || !isInsideHarness(checkbox)) {
-                return;
-            }
-            logCheckboxChange({ checked: checkbox.getAttribute('aria-checked') !== 'true' });
-        };
-
-        document.addEventListener('click', handleClick, true);
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-        };
-    }, [logCheckboxChange]);
-
-    return (
-        <div ref={containerRef} {...{ [REGISTER_HARNESS_ATTR]: 'true' }} className="w-full max-w-2xl mx-auto p-6">
-            {children}
-        </div>
-    );
-}
 
 const meta: Meta<typeof RegisterCustomerSelection> = {
     title: 'CHECKOUT/Register Customer Selection',
@@ -67,24 +36,81 @@ A component that allows customers to opt-in to creating an account during checko
 ## Features
 
 - **Checkbox Selection**: Toggle to create account or continue as guest
-- **Toggle Card UI**: Uses ToggleCard component for consistent styling
-- **Callback Support**: Notifies parent when selection changes
-- **Summary View**: Shows current selection state
-
-## Usage
-
-\`\`\`tsx
-import RegisterCustomerSelection from '../register-customer-selection';
-
-function PaymentStep() {
-  const handleSaved = (shouldCreateAccount: boolean) => {
-    // Handle account creation preference
-  };
-
-  return <RegisterCustomerSelection onSaved={handleSaved} />;
-}
-\`\`\`
+- **OTP Verification**: On opt-in, submits the customer's email and opens an OTP modal to verify identity
+- **Sending State**: While the verification code is being sent, shows a status message and disables the checkbox
+- **Account Created State**: After successful OTP verification, replaces the checkbox with a confirmation banner and "Verified" badge
+- **Turnstile Support**: Optionally gated by Cloudflare Turnstile when enabled in config
                 `,
+            },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
+        },
+    },
+    decorators: [
+        (Story) => (
+            <div className="w-full max-w-2xl mx-auto p-6">
+                <Story />
+            </div>
+        ),
+    ],
+    argTypes: {
+        onSaved: {
+            description:
+                'Called with `true` after successful OTP verification, or `false` when the customer unchecks the checkbox or closes the OTP modal.',
+            table: {
+                type: { summary: '(shouldCreateAccount: boolean) => void | undefined' },
+            },
+        },
+        onRegistrationSuccess: {
+            description: 'Called after OTP verification succeeds — use to trigger post-registration side effects',
+            table: {
+                type: { summary: '() => void | undefined' },
+            },
+        },
+        savePaymentToProfile: {
+            control: 'boolean',
+            description:
+                'Whether the customer opted to save their payment method — passed through to registration logic',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        showToast: {
+            description:
+                'Optional toast callback — pass to display success/error notifications without bundling a toast library in this component',
+            table: {
+                type: {
+                    summary:
+                        '(message: string, type: "success" | "error", options?: { duration?: number }) => void | undefined',
+                },
+            },
+        },
+        defaultChecked: {
+            control: 'boolean',
+            description:
+                'Initial checked state — used in Storybook to show the expanded description without triggering fetcher logic',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        defaultAccountCreated: {
+            control: 'boolean',
+            description:
+                'Initial account created state — used in Storybook to show the confirmation banner without triggering OTP logic',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        defaultSubmitting: {
+            control: 'boolean',
+            description: 'Initial submitting state — used in Storybook to show the sending verification code state',
+            table: {
+                defaultValue: { summary: 'false' },
             },
         },
     },
@@ -94,22 +120,11 @@ export default meta;
 type Story = StoryObj<typeof RegisterCustomerSelection>;
 
 export const Default: Story = {
-    render: () => (
-        <RegisterStoryHarness>
-            <RegisterCustomerSelection />
-        </RegisterStoryHarness>
-    ),
+    args: {},
     parameters: {
         docs: {
             description: {
-                story: `
-Default state - checkbox is unchecked, customer will continue as guest.
-
-### Features:
-- Checkbox is unchecked by default
-- Shows "Continue as guest" in summary
-- ToggleCard in edit mode
-                `,
+                story: 'Default state — checkbox is unchecked, customer will continue as guest.',
             },
         },
     },
@@ -130,22 +145,11 @@ Default state - checkbox is unchecked, customer will continue as guest.
 };
 
 export const Checked: Story = {
-    render: () => (
-        <RegisterStoryHarness>
-            <RegisterCustomerSelection onSaved={action('account-creation-selected')} />
-        </RegisterStoryHarness>
-    ),
+    args: { onSaved: action('account-creation-selected'), defaultChecked: true },
     parameters: {
         docs: {
             description: {
-                story: `
-Interactive story demonstrating the checkbox click behavior.
-
-### Features:
-- Clicking checkbox triggers the registration validation flow
-- Component handles missing basket context gracefully
-- Checkbox and label remain interactive after click
-                `,
+                story: 'Checked state — checkbox is selected and the expanded description is visible.',
             },
         },
     },
@@ -155,33 +159,19 @@ Interactive story demonstrating the checkbox click behavior.
 
         const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
         await expect(checkbox).toBeInTheDocument();
-        await expect(checkbox).not.toBeChecked();
+        await expect(checkbox).toBeChecked();
 
-        await userEvent.click(checkbox);
-
-        await expect(checkbox).toBeInTheDocument();
-        const label = await canvas.findByText(/save for future use/i, {}, { timeout: 5000 });
-        await expect(label).toBeInTheDocument();
+        // Expanded description is visible when checked
+        await expect(canvas.getByText(/when you place your order, we create an account/i)).toBeInTheDocument();
     },
 };
 
-export const WithCallback: Story = {
-    render: () => (
-        <RegisterStoryHarness>
-            <RegisterCustomerSelection onSaved={action('register-callback')} />
-        </RegisterStoryHarness>
-    ),
+export const SendingVerificationCode: Story = {
+    args: { defaultSubmitting: true },
     parameters: {
         docs: {
             description: {
-                story: `
-Component with callback function to handle account creation preference.
-
-### Features:
-- Clicking checkbox triggers onSaved callback
-- Component handles the full registration validation flow
-- Checkbox remains interactive after the flow completes
-                `,
+                story: 'Checkbox is checked and the verification code is being sent — shows "Sending verification code..." text and the checkbox is disabled.',
             },
         },
     },
@@ -190,13 +180,34 @@ Component with callback function to handle account creation preference.
         const canvas = within(canvasElement);
 
         const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
-        await expect(checkbox).toBeInTheDocument();
-        await expect(checkbox).not.toBeChecked();
+        await expect(checkbox).toBeChecked();
+        await expect(checkbox).toBeDisabled();
 
-        await userEvent.click(checkbox);
+        await expect(canvas.getByText(/sending verification code/i)).toBeInTheDocument();
+    },
+};
 
-        await expect(checkbox).toBeInTheDocument();
-        const label = await canvas.findByText(/save for future use/i, {}, { timeout: 5000 });
-        await expect(label).toBeInTheDocument();
+export const AccountCreated: Story = {
+    args: { defaultAccountCreated: true },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Account successfully created after OTP verification — the checkbox is replaced by a confirmation banner with a "Verified" badge.',
+            },
+        },
+        a11y: {
+            config: {
+                rules: [{ id: 'color-contrast', enabled: false }],
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // No checkbox — replaced by confirmation banner
+        await expect(canvas.queryByRole('checkbox')).toBeNull();
+
+        await expect(canvas.getByText('Verified')).toBeInTheDocument();
     },
 };

@@ -19,8 +19,7 @@ import { action } from 'storybook/actions';
 import { useState, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 import { BonusProductModal, type BonusDiscountSlot } from '../index';
 import { Button } from '@/components/ui/button';
@@ -181,16 +180,15 @@ function BonusProductModalWrapper(): ReactElement {
     );
 }
 
-// Mock loaders for router
-const mockLoaders = {
-    productLoader: async () => mockTieProduct,
-};
-
 const meta: Meta<typeof BonusProductModal> = {
-    title: 'Components/BonusProductModal',
+    title: 'CART/Bonus Product Modal',
     component: BonusProductModal,
     parameters: {
         layout: 'centered',
+        // Override the global /resource/api/client/:resource loader (see .storybook/preview.tsx)
+        // so useScapiFetcher inside BonusProductModal resolves with the tie fixture that the
+        // play functions below assert against.
+        scapiMock: { data: mockTieProduct },
         docs: {
             description: {
                 component:
@@ -198,38 +196,9 @@ const meta: Meta<typeof BonusProductModal> = {
             },
         },
     },
-    // Note: 'skip-a11y' tag added because this component uses useScapiFetcher which requires
-    // proper API mocking setup (e.g., MSW) to work in test environments
-    tags: ['autodocs', 'skip-a11y'],
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = <Story {...(context.args as Record<string, unknown>)} />;
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                            loader: mockLoaders.productLoader,
-                        },
-                    ],
-                    {
-                        initialEntries: ['/'],
-                    }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
+    // 'skip-a11y' remains because the modal has known axe-core violations in the Dialog /
+    // product-info layout that are out of scope for this fix.
+    tags: ['autodocs', 'skip-a11y', 'interaction'],
 };
 
 export default meta;
@@ -246,38 +215,33 @@ export const Default: Story = {
         await expect(openButton).toBeInTheDocument();
         await userEvent.click(openButton);
 
-        // Check if modal content is visible
+        // Modal title — target the dialog title via its unique "of N selected"
+        // suffix since the product name also appears in the ProductInfo section.
         const documentBody = within(document.body);
-        const modalTitle = await documentBody.findByText(/striped silk tie/i, {}, { timeout: 5000 });
+        const modalTitle = await documentBody.findByRole(
+            'heading',
+            { name: /striped silk tie.*0 of 3 selected/i },
+            { timeout: 5000 }
+        );
         await expect(modalTitle).toBeInTheDocument();
 
-        // Check if variant swatches are present
+        // Variant swatches render with the product name in the accessible label.
+        // The modal auto-selects the first orderable variant on open
+        // (`computeInitialVariationValues` fallback #3), so Red is pre-checked.
         const redSwatch = await documentBody.findByRole('radio', { name: /red/i }, { timeout: 5000 });
         await expect(redSwatch).toBeInTheDocument();
-    },
-};
+        await expect(redSwatch).toBeChecked();
 
-export const WithVariantSelection: Story = {
-    render: () => <BonusProductModalWrapper />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Open the modal
-        const openButton = canvas.getByRole('button', { name: /open bonus product modal/i });
-        await userEvent.click(openButton);
-
-        const documentBody = within(document.body);
-
-        // Select a color variant
         const turquoiseSwatch = await documentBody.findByRole('radio', { name: /turquoise/i }, { timeout: 5000 });
-        await userEvent.click(turquoiseSwatch);
+        await expect(turquoiseSwatch).not.toBeChecked();
 
-        // Check if the swatch is selected
-        await expect(turquoiseSwatch).toBeChecked();
-
-        // Check if add to cart button is enabled (after variant selection)
+        // "Add to Cart" is enabled because a variant is already selected.
         const addToCartButton = await documentBody.findByRole('button', { name: /add to cart/i }, { timeout: 5000 });
         await expect(addToCartButton).toBeEnabled();
+
+        // Clicking turquoise flips the selection — verifies swatch toggle behaviour.
+        await userEvent.click(turquoiseSwatch);
+        await expect(turquoiseSwatch).toBeChecked();
+        await expect(redSwatch).not.toBeChecked();
     },
 };

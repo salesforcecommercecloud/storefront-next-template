@@ -15,7 +15,7 @@
  */
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { CarouselItem } from '@/components/ui/carousel';
 import { ProductTile, ProductTileProvider } from '@/components/product-tile';
 import DynamicImageProvider from '@/providers/dynamic-image';

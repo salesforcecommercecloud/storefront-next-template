@@ -15,8 +15,10 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import type React from 'react';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -69,13 +71,6 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
                 suggestionsDebounce: 300,
             },
         },
-        engagement: {
-            analytics: {
-                trackingConsent: {
-                    consentCategories: ['necessary', 'analytics', 'marketing', 'personalization'],
-                },
-            },
-        },
     }),
 }));
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -83,9 +78,17 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });

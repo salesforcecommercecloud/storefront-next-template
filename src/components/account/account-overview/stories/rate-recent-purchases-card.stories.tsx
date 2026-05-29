@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router';
 import { RateRecentPurchasesCard } from '../rate-recent-purchases-card';
 import type { Order } from '@/components/account/order-list';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import heroNewArrivals from '/images/hero-02.webp';
 
-const mockSite = mockConfig.commerce.sites[0];
-
+// Story fixtures omit `imageUrl` so thumbnails fall through to the "No Image" placeholder.
 const sampleOrder: Order = {
     orderNo: 'INV001',
     orderDate: '2024-09-14T10:30:00Z',
     status: 'shipped',
     total: 129.99,
-    currency: 'GBP',
+    currency: mockSiteObject.defaultCurrency,
     itemCount: 2,
     productItems: [
         {
             productId: '701643108633M',
             quantity: 1,
             productName: 'Charcoal Crewneck',
-            imageUrl: heroNewArrivals,
-            imageAlt: 'Charcoal crewneck sweater',
         },
         {
             productId: '701643108634M',
@@ -60,16 +55,21 @@ const meta: Meta<typeof RateRecentPurchasesCard> = {
         },
     },
     decorators: [
+        // Pattern 4: the global withRouter decorator already provides router
+        // context. Wrapping in <MemoryRouter> here triggers React Router's
+        // "You cannot render a <Router> inside another <Router>" invariant.
         (Story) => (
-            <MemoryRouter>
-                <ConfigWrapper>
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
-                        <div className="max-w-3xl">
-                            <Story />
-                        </div>
-                    </SiteProvider>
-                </ConfigWrapper>
-            </MemoryRouter>
+            <ConfigWrapper>
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <div className="max-w-3xl">
+                        <Story />
+                    </div>
+                </SiteProvider>
+            </ConfigWrapper>
         ),
     ],
 };

@@ -19,7 +19,7 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { loader } from './_app.account.store-preferences';
-import { createTestContext } from '@/lib/test-utils';
+import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -101,9 +101,9 @@ describe('Store Preferences page', () => {
 
             const result = await loader({
                 context,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: '/' as never,
+                unstable_pattern: UNSTABLE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });
@@ -121,9 +121,9 @@ describe('Store Preferences page', () => {
 
             const result = await loader({
                 context,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: '/' as never,
+                unstable_pattern: UNSTABLE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: mockStore, error: null });
@@ -141,9 +141,9 @@ describe('Store Preferences page', () => {
 
             const result = await loader({
                 context,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: '/' as never,
+                unstable_pattern: UNSTABLE_PATTERN,
             });
 
             expect(result.preferredStore).toBeNull();
@@ -165,9 +165,9 @@ describe('Store Preferences page', () => {
 
             const result = await loader({
                 context,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: '/' as never,
+                unstable_pattern: UNSTABLE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });

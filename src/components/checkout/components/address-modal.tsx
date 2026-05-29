@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
@@ -29,12 +29,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { AddressFormFields, AddressFormControl } from '@/components/address-form-fields';
-import { createShippingAddressSchema } from '@/lib/checkout-schemas';
+import { AddressFormFields } from '@/components/address-form-fields';
+import { FormInput } from '@/components/form-fields';
+import { createShippingAddressSchema } from '@/lib/checkout/schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
-import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
+import type { ShopperCustomers } from '@/scapi';
+import { stripCountryCode, extractCountryCode } from '@/lib/address/phone-utils';
 
 function createAddressModalSchema(
     t: TFunction,
@@ -154,8 +154,14 @@ export function AddressModal({
     );
 
     const form = useForm<Partial<ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string }>>({
-        // @ts-expect-error - zodResolver type mismatch with zod version
-        resolver: zodResolver(schema),
+        // Schema validates a stricter set of fields than `Partial<CustomerAddress>` exposes
+        // (e.g., `address1` is required by the schema but optional in `Partial<>`).
+        // The Resolver generic mismatch is intentional — at runtime the schema enforces
+        // the required fields. Cast to satisfy TS without polluting consumers with the
+        // schema's exact input type.
+        resolver: zodResolver(schema) as Resolver<
+            Partial<ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string }>
+        >,
         defaultValues: {
             addressId: defaultValues?.addressId || '',
             firstName: defaultValues?.firstName || '',
@@ -232,7 +238,7 @@ export function AddressModal({
                         className="text-base font-bold tracking-tight text-card-foreground">
                         {isEditMode ? t('addressModal.editTitle') : t('addressModal.title')}
                     </DialogTitle>
-                    <DialogDescription className="sr-only">
+                    <DialogDescription id="address-modal-desc" className="sr-only">
                         {isEditMode ? t('addressModal.editDescription') : t('addressModal.description')}
                     </DialogDescription>
                 </DialogHeader>
@@ -251,18 +257,16 @@ export function AddressModal({
                                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                                 {tAccount('addressForm.addressTitleLabel')}*
                                             </FormLabel>
-                                            <AddressFormControl>
-                                                <Input
-                                                    type="text"
-                                                    maxLength={256}
-                                                    placeholder={
-                                                        labelsAsPlaceholders
-                                                            ? `${tAccount('addressForm.addressTitleLabel')}*`
-                                                            : tAccount('addressForm.addressTitlePlaceholder')
-                                                    }
-                                                    {...field}
-                                                />
-                                            </AddressFormControl>
+                                            <FormInput
+                                                type="text"
+                                                maxLength={256}
+                                                placeholder={
+                                                    labelsAsPlaceholders
+                                                        ? `${tAccount('addressForm.addressTitleLabel')}*`
+                                                        : tAccount('addressForm.addressTitlePlaceholder')
+                                                }
+                                                {...field}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}

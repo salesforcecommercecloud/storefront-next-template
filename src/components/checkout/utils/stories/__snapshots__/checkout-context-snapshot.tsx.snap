@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CheckoutContext stories snapshot > Default story renders and matches snapshot 1`] = `
+exports[`CheckoutContext stories snapshot > CustomerProfileCheckoutWithDelivery story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"
   data-checkout-context-harness="true"
@@ -10,24 +10,50 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
   >
     <div>
       <h3
-        class="text-lg font-semibold mb-2"
+        class="text-sm font-semibold mb-2"
       >
         Checkout Context State
       </h3>
       <div
         class="space-y-2 text-sm"
       >
-        <div>
+        <div
+          data-testid="active-step"
+        >
           <strong>
-            Current Step:
+            Active Step:
           </strong>
            
           Contact Info
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (editingStep ?? step — what's visible to the shopper)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="current-step"
+        >
+          <strong>
+            Basket Step (step):
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (basket-derived, frozen while editing)
+          </span>
+        </div>
+        <div
+          data-testid="computed-step"
+        >
           <strong>
             Computed Step:
           </strong>
@@ -36,8 +62,15 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (furthest step with basket data)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="editing-step"
+        >
           <strong>
             Editing Step:
           </strong>
@@ -47,13 +80,22 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
           null
           )
         </div>
+        <div
+          data-testid="has-delivery-items"
+        >
+          <strong>
+            Has Delivery Items:
+          </strong>
+           
+          false
+        </div>
       </div>
     </div>
     <div
       class="flex gap-2 flex-wrap"
     >
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="default"
@@ -61,7 +103,7 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
         Go to Next Step
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -69,15 +111,15 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
         Go to Contact Info
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
       >
-        Go to Shipping
+        Go to Pickup
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -85,7 +127,15 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
         Go to Payment
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Place Order
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -97,7 +147,7 @@ exports[`CheckoutContext stories snapshot > Default story renders and matches sn
 </div>
 `;
 
-exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders and matches snapshot 1`] = `
+exports[`CheckoutContext stories snapshot > CustomerProfileCheckoutWithPickup story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"
   data-checkout-context-harness="true"
@@ -107,24 +157,50 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
   >
     <div>
       <h3
-        class="text-lg font-semibold mb-2"
+        class="text-sm font-semibold mb-2"
       >
         Checkout Context State
       </h3>
       <div
         class="space-y-2 text-sm"
       >
-        <div>
+        <div
+          data-testid="active-step"
+        >
           <strong>
-            Current Step:
+            Active Step:
           </strong>
            
           Contact Info
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (editingStep ?? step — what's visible to the shopper)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="current-step"
+        >
+          <strong>
+            Basket Step (step):
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (basket-derived, frozen while editing)
+          </span>
+        </div>
+        <div
+          data-testid="computed-step"
+        >
           <strong>
             Computed Step:
           </strong>
@@ -133,8 +209,15 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (furthest step with basket data)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="editing-step"
+        >
           <strong>
             Editing Step:
           </strong>
@@ -144,13 +227,22 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
           null
           )
         </div>
+        <div
+          data-testid="has-delivery-items"
+        >
+          <strong>
+            Has Delivery Items:
+          </strong>
+           
+          false
+        </div>
       </div>
     </div>
     <div
       class="flex gap-2 flex-wrap"
     >
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="default"
@@ -158,7 +250,7 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
         Go to Next Step
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -166,15 +258,15 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
         Go to Contact Info
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
       >
-        Go to Shipping
+        Go to Pickup
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -182,7 +274,15 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
         Go to Payment
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Place Order
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -194,7 +294,7 @@ exports[`CheckoutContext stories snapshot > WithCustomerProfile story renders an
 </div>
 `;
 
-exports[`CheckoutContext stories snapshot > WithNavigation story renders and matches snapshot 1`] = `
+exports[`CheckoutContext stories snapshot > GuestCheckoutWithDelivery story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"
   data-checkout-context-harness="true"
@@ -204,24 +304,50 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
   >
     <div>
       <h3
-        class="text-lg font-semibold mb-2"
+        class="text-sm font-semibold mb-2"
       >
         Checkout Context State
       </h3>
       <div
         class="space-y-2 text-sm"
       >
-        <div>
+        <div
+          data-testid="active-step"
+        >
           <strong>
-            Current Step:
+            Active Step:
           </strong>
            
           Contact Info
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (editingStep ?? step — what's visible to the shopper)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="current-step"
+        >
+          <strong>
+            Basket Step (step):
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (basket-derived, frozen while editing)
+          </span>
+        </div>
+        <div
+          data-testid="computed-step"
+        >
           <strong>
             Computed Step:
           </strong>
@@ -230,8 +356,15 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
            (
           0
           )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (furthest step with basket data)
+          </span>
         </div>
-        <div>
+        <div
+          data-testid="editing-step"
+        >
           <strong>
             Editing Step:
           </strong>
@@ -241,13 +374,22 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
           null
           )
         </div>
+        <div
+          data-testid="has-delivery-items"
+        >
+          <strong>
+            Has Delivery Items:
+          </strong>
+           
+          false
+        </div>
       </div>
     </div>
     <div
       class="flex gap-2 flex-wrap"
     >
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="default"
@@ -255,7 +397,7 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
         Go to Next Step
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -263,15 +405,15 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
         Go to Contact Info
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
       >
-        Go to Shipping
+        Go to Pickup
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -279,12 +421,314 @@ exports[`CheckoutContext stories snapshot > WithNavigation story renders and mat
         Go to Payment
       </button>
       <button
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Place Order
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
       >
         Exit Edit Mode
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutContext stories snapshot > GuestCheckoutWithPickup story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-checkout-context-harness="true"
+>
+  <div
+    class="space-y-4 p-6 border rounded"
+  >
+    <div>
+      <h3
+        class="text-sm font-semibold mb-2"
+      >
+        Checkout Context State
+      </h3>
+      <div
+        class="space-y-2 text-sm"
+      >
+        <div
+          data-testid="active-step"
+        >
+          <strong>
+            Active Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (editingStep ?? step — what's visible to the shopper)
+          </span>
+        </div>
+        <div
+          data-testid="current-step"
+        >
+          <strong>
+            Basket Step (step):
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (basket-derived, frozen while editing)
+          </span>
+        </div>
+        <div
+          data-testid="computed-step"
+        >
+          <strong>
+            Computed Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (furthest step with basket data)
+          </span>
+        </div>
+        <div
+          data-testid="editing-step"
+        >
+          <strong>
+            Editing Step:
+          </strong>
+           
+          None
+           (
+          null
+          )
+        </div>
+        <div
+          data-testid="has-delivery-items"
+        >
+          <strong>
+            Has Delivery Items:
+          </strong>
+           
+          false
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex gap-2 flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="default"
+      >
+        Go to Next Step
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Contact Info
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Pickup
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Payment
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Go to Place Order
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="outline"
+      >
+        Exit Edit Mode
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CheckoutContext stories snapshot > WithPinToStep story renders and matches snapshot 1`] = `
+<div
+  class="w-full max-w-4xl mx-auto p-6"
+  data-checkout-context-harness="true"
+>
+  <div
+    class="space-y-4 p-6 border rounded"
+  >
+    <div>
+      <h3
+        class="text-sm font-semibold mb-2"
+      >
+        Checkout Context State
+      </h3>
+      <div
+        class="space-y-2 text-sm"
+      >
+        <div
+          data-testid="active-step"
+        >
+          <strong>
+            Active Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (editingStep ?? step — what's visible to the shopper)
+          </span>
+        </div>
+        <div
+          data-testid="current-step"
+        >
+          <strong>
+            Basket Step (step):
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (basket-derived, frozen while editing)
+          </span>
+        </div>
+        <div
+          data-testid="computed-step"
+        >
+          <strong>
+            Computed Step:
+          </strong>
+           
+          Contact Info
+           (
+          0
+          )
+          <span
+            class="ml-2 text-muted-foreground text-xs"
+          >
+            (furthest step with basket data)
+          </span>
+        </div>
+        <div
+          data-testid="editing-step"
+        >
+          <strong>
+            Editing Step:
+          </strong>
+           
+          None
+           (
+          null
+          )
+        </div>
+        <div
+          data-testid="has-delivery-items"
+        >
+          <strong>
+            Has Delivery Items:
+          </strong>
+           
+          false
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex gap-2 flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Contact Info
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Pickup
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Shipping Address
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Shipping Method
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Payment
+      </button>
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        data-size="sm"
+        data-slot="button"
+        data-variant="secondary"
+      >
+        Pin to Place Order
       </button>
     </div>
   </div>

@@ -24,6 +24,8 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 const WISHLIST_HARNESS_ATTR = 'data-wishlist-harness';
 
@@ -77,9 +79,11 @@ function WishlistStoryHarness({ children }: { children: ReactNode }): ReactEleme
 
     return (
         <ConfigProvider config={configValue}>
-            <div ref={containerRef} {...{ [WISHLIST_HARNESS_ATTR]: 'true' }}>
-                {children}
-            </div>
+            <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                <div ref={containerRef} {...{ [WISHLIST_HARNESS_ATTR]: 'true' }}>
+                    {children}
+                </div>
+            </WishlistProvider>
         </ConfigProvider>
     );
 }
@@ -148,8 +152,8 @@ function ProductCard({ product }) {
 ## Sizes
 
 - **Small (\`sm\`)**: Compact size for tight spaces
-- **Medium (\`md\`)**: Standard size for most use cases
-- **Large (\`lg\`)**: Larger size for prominent placement
+- **Medium (\`md\`)**: Standard size for most use cases (default)
+- **Large (\`lg\`)**: Accepted by the type, but the outer button is fixed at \`w-9 h-9\`
 
 ## Accessibility
 
@@ -162,26 +166,24 @@ function ProductCard({ product }) {
             },
         },
     },
+    // Only the props that visibly change the canvas are exposed in the
+    // controls panel:
+    //   - `size` drives the inner heart-icon SVG width/height. NOTE: `lg`
+    //     renders only marginally larger than `md` because the outer button
+    //     in HeartIcon is fixed at `w-9 h-9` with `p-2` padding (~20×20 inner
+    //     space).
+    //   - `className` is appended to the outer button class list
+    //
+    // The remaining required/optional props are hidden because flipping them
+    // does not produce an observable change in the canvas:
+    //   - `product` / `variant` are passed to useWishlist as keys; never
+    //     rendered into the DOM
+    //   - `tabIndex` is a focus-management hook for the consumer
     argTypes: {
-        product: {
-            control: 'object',
-            description: 'The product to add/remove from wishlist',
-            table: {
-                type: { summary: 'ShopperSearch.schemas["ProductSearchHit"]' },
-            },
-        },
-        variant: {
-            control: 'object',
-            description: 'Optional variant of the product',
-            table: {
-                type: { summary: 'ShopperSearch.schemas["ProductSearchHit"]' },
-                defaultValue: { summary: 'undefined' },
-            },
-        },
         size: {
-            control: 'select',
+            control: { type: 'radio' },
             options: ['sm', 'md', 'lg'],
-            description: 'Size of the wishlist button',
+            description: 'Icon size — drives the inner heart SVG width/height classes',
             table: {
                 type: { summary: "'sm' | 'md' | 'lg'" },
                 defaultValue: { summary: "'md'" },
@@ -195,10 +197,15 @@ function ProductCard({ product }) {
                 defaultValue: { summary: 'undefined' },
             },
         },
+        product: { control: false, table: { disable: true } },
+        variant: { control: false, table: { disable: true } },
+        surface: { control: false, table: { disable: true } },
+        tabIndex: { control: false, table: { disable: true } },
     },
     args: {
         product: mockProductSearchItem,
         size: 'md',
+        surface: 'plp',
         className: 'static top-auto right-auto',
     },
     decorators: [
@@ -239,179 +246,6 @@ The default WishlistButton shows a medium-sized heart icon:
 - Product detail pages
 - Standard product listings
 - Most common wishlist scenarios
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
-
-        // Test button is enabled (not disabled since isLoading is false by default)
-        await expect(wishlistButton).not.toBeDisabled();
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const SmallSize: Story = {
-    args: {
-        product: mockProductSearchItem,
-        size: 'sm',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The small size WishlistButton is compact for tight spaces:
-
-### Features:
-- **Small size**: Compact heart icon
-- **Space efficient**: Takes minimal space
-- **Same functionality**: All wishlist features work the same
-- **Clean appearance**: Subtle but accessible
-
-### Use Cases:
-- Compact product cards
-- Dense product listings
-- Mobile interfaces
-- Space-constrained layouts
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
-
-        // Test button is enabled (not disabled since isLoading is false by default)
-        await expect(wishlistButton).not.toBeDisabled();
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const LargeSize: Story = {
-    args: {
-        product: mockProductSearchItem,
-        size: 'lg',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The large size WishlistButton is prominent for important placement:
-
-### Features:
-- **Large size**: Bigger heart icon for visibility
-- **Prominent placement**: Draws attention to wishlist feature
-- **Enhanced accessibility**: Easier to click and see
-- **Professional appearance**: Clear visual hierarchy
-
-### Use Cases:
-- Featured product sections
-- Product detail pages
-- Prominent wishlist placement
-- Enhanced user experience
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
-
-        // Test button is enabled (not disabled since isLoading is false by default)
-        await expect(wishlistButton).not.toBeDisabled();
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const WithVariant: Story = {
-    args: {
-        product: mockProductSearchItem,
-        variant: {
-            ...mockProductSearchItem,
-            productId: 'variant-123',
-            name: 'Product Name - Blue, Large',
-        },
-        size: 'md',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the WishlistButton with a product variant:
-
-### Features:
-- **Variant support**: Works with product variants
-- **Specific variant**: Wishlist tracks the specific variant
-- **Variant context**: Shows variant-specific information
-- **Same functionality**: All wishlist features work with variants
-
-### Use Cases:
-- Product variants (size, color, etc.)
-- Specific product configurations
-- Variant-specific wishlist tracking
-- Detailed product management
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
-
-        // Test button is enabled (not disabled since isLoading is false by default)
-        await expect(wishlistButton).not.toBeDisabled();
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const InWishlist: Story = {
-    args: {
-        product: mockProductSearchItem,
-        size: 'md',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the WishlistButton when the item is already in the wishlist:
-
-### Features:
-- **Filled heart**: Heart icon is filled/solid
-- **In wishlist state**: Visual indication that item is saved
-- **Remove functionality**: Click to remove from wishlist
-- **Clear feedback**: Obvious wishlist status
-
-### Visual State:
-- Heart icon is filled/solid
-- Clear indication of wishlist status
-- Hover effects still work
-- Click removes from wishlist
                 `,
             },
         },
@@ -499,130 +333,5 @@ This story simulates the full add-to-wishlist lifecycle:
         const filledButton = canvas.getByRole('button', { name: /remove from wishlist/i });
         await expect(filledButton).not.toBeDisabled();
         await expect(filledButton).not.toHaveAttribute('aria-busy');
-    },
-};
-
-export const DifferentProducts: Story = {
-    render: () => (
-        <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 border rounded-none relative">
-                <h4 className="font-medium mb-2">Standard Product</h4>
-                <p className="text-sm text-muted-foreground mb-2">Basic product item</p>
-                <p className="text-lg font-bold">$29.99</p>
-                <div className="absolute top-2 right-2">
-                    <WishlistButton product={mockProductSearchItem} size="sm" />
-                </div>
-            </div>
-
-            <div className="p-4 border rounded-none relative">
-                <h4 className="font-medium mb-2">Featured Product</h4>
-                <p className="text-sm text-muted-foreground mb-2">Premium product item</p>
-                <p className="text-lg font-bold">$99.99</p>
-                <div className="absolute top-2 right-2">
-                    <WishlistButton
-                        product={{
-                            ...mockProductSearchItem,
-                            productId: 'featured-product',
-                            name: 'Featured Product',
-                        }}
-                        size="sm"
-                    />
-                </div>
-            </div>
-        </div>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows multiple WishlistButtons with different products:
-
-### Multiple Products:
-- **Standard Product**: Basic product with wishlist button
-- **Featured Product**: Premium product with wishlist button
-- **Independent state**: Each button tracks its own product
-- **Consistent styling**: Same button design across products
-
-### Benefits:
-- Multiple products can be wishlisted independently
-- Consistent user experience
-- Clear product identification
-- Scalable wishlist functionality
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button interaction - get all buttons since there are multiple
-        const wishlistButtons = canvas.getAllByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButtons.length).toBeGreaterThan(0);
-
-        // Verify buttons are rendered (don't click if authentication is required)
-        // The buttons should be present even if authentication is needed
-        for (const button of wishlistButtons) {
-            await expect(button).toBeInTheDocument();
-        }
-
-        // Only test keyboard navigation if buttons are enabled
-        // Skip clicking to avoid authentication errors in test environment
-        if (wishlistButtons.length > 0) {
-            const firstButton = wishlistButtons[0];
-            if (firstButton instanceof HTMLButtonElement && !firstButton.disabled) {
-                await userEvent.tab();
-                // Don't press enter as it might trigger authentication requirement
-            }
-        }
-    },
-};
-
-export const CustomStyling: Story = {
-    args: {
-        product: mockProductSearchItem,
-        size: 'md',
-        className: 'text-red-500 hover:text-red-600',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the WishlistButton with custom styling:
-
-### Custom Features:
-- **Red color**: Custom red color for the heart icon
-- **Hover effects**: Darker red on hover
-- **Custom classes**: Demonstrates className prop usage
-- **Maintains functionality**: All wishlist features work the same
-
-### Styling Options:
-- Custom colors for brand consistency
-- Hover state customization
-- Size and spacing adjustments
-- Integration with design systems
-
-### Use Cases:
-- Brand-specific styling
-- Custom color schemes
-- Design system integration
-- Enhanced visual appeal
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
-
-        // Test button is enabled (not disabled since isLoading is false by default)
-        await expect(wishlistButton).not.toBeDisabled();
-
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
     },
 };

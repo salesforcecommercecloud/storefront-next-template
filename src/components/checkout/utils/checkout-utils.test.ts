@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { describe, expect, it } from 'vitest';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { CHECKOUT_STEPS, type CustomerProfile } from './checkout-context-types';
 import {
     computeFinalStepForReturningCustomer,
     computeStepFromBasket,
     getCompletedSteps,
+    hasAnyValidShippingMethod,
     shouldAutoAdvanceForReturningCustomer,
 } from './checkout-utils';
 
@@ -422,6 +423,69 @@ describe('Checkout Utils', () => {
 
             const result = computeFinalStepForReturningCustomer(basket, customerProfile, mockShipmentDistribution);
             expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
+        });
+    });
+
+    describe('hasAnyValidShippingMethod', () => {
+        it('returns false for undefined map', () => {
+            expect(hasAnyValidShippingMethod(undefined)).toBe(false);
+        });
+
+        it('returns false for empty map', () => {
+            expect(hasAnyValidShippingMethod({})).toBe(false);
+        });
+
+        it('returns false when shipment has empty applicableShippingMethods', () => {
+            expect(hasAnyValidShippingMethod({ me: { applicableShippingMethods: [] } })).toBe(false);
+        });
+
+        it('returns false when shipment has no applicableShippingMethods key', () => {
+            expect(hasAnyValidShippingMethod({ me: {} })).toBe(false);
+        });
+
+        it('returns false when methods exist but are invalid (missing id/name/price)', () => {
+            expect(
+                hasAnyValidShippingMethod({
+                    me: {
+                        applicableShippingMethods: [
+                            { name: 'Ground', price: 5 } as ShopperBasketsV2.schemas['ShippingMethod'],
+                        ],
+                    },
+                })
+            ).toBe(false);
+        });
+
+        it('returns false when price is NaN', () => {
+            expect(
+                hasAnyValidShippingMethod({
+                    me: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: NaN }] },
+                })
+            ).toBe(false);
+        });
+
+        it('returns true when at least one method has id, name, and numeric price', () => {
+            expect(
+                hasAnyValidShippingMethod({
+                    me: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: 5 }] },
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when free shipping (price 0) is valid', () => {
+            expect(
+                hasAnyValidShippingMethod({
+                    me: { applicableShippingMethods: [{ id: '002', name: 'Free', price: 0 }] },
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when any shipment in a multi-shipment map has a valid method', () => {
+            expect(
+                hasAnyValidShippingMethod({
+                    s1: { applicableShippingMethods: [] },
+                    s2: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: 5 }] },
+                })
+            ).toBe(true);
         });
     });
 });

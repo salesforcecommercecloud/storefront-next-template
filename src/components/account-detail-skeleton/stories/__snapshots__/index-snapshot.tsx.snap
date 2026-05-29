@@ -1,142 +1,140 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AccountDetailSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
+<div
+  class="space-y-5"
+>
   <div
-    class="space-y-5"
+    class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
+    data-slot="card"
   >
     <div
-      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
-      data-slot="card"
+      class="px-6 py-3"
+      data-slot="card-content"
     >
       <div
-        class="px-6 py-3"
-        data-slot="card-content"
+        class="bg-accent animate-pulse rounded-md h-6 w-40"
+        data-slot="skeleton"
+      />
+      <div
+        class="bg-accent animate-pulse rounded-md h-4 w-64 mt-1"
+        data-slot="skeleton"
+      />
+    </div>
+  </div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="mb-6 pb-4 border-b border-border space-y-1.5"
       >
         <div
-          class="bg-accent animate-pulse rounded-md h-6 w-40"
+          class="bg-accent animate-pulse rounded-md h-5 w-40"
           data-slot="skeleton"
         />
         <div
-          class="bg-accent animate-pulse rounded-md h-4 w-64 mt-1"
+          class="bg-accent animate-pulse rounded-md h-4 w-56"
           data-slot="skeleton"
         />
       </div>
-    </div>
-    <div
-      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
-      data-slot="card"
-    >
       <div
-        class="p-6"
-        data-slot="card-content"
+        class="grid grid-cols-1 sm:grid-cols-2 gap-6"
       >
         <div
-          class="mb-6 pb-4 border-b border-border space-y-1.5"
+          class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-40"
+            class="bg-accent animate-pulse rounded-md h-4 w-20"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-56"
+            class="bg-accent animate-pulse rounded-md h-4 w-28"
             data-slot="skeleton"
           />
         </div>
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 gap-6"
+          class="space-y-2"
         >
           <div
-            class="space-y-2"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-20"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-28"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-4 w-20"
+            data-slot="skeleton"
+          />
           <div
-            class="space-y-2"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-20"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-28"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-4 w-28"
+            data-slot="skeleton"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
           <div
-            class="space-y-2"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-20"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-28"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-4 w-20"
+            data-slot="skeleton"
+          />
           <div
-            class="space-y-2"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-20"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-28"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-4 w-28"
+            data-slot="skeleton"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-20"
+            data-slot="skeleton"
+          />
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-28"
+            data-slot="skeleton"
+          />
         </div>
       </div>
     </div>
+  </div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
+    data-slot="card"
+  >
     <div
-      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
-      data-slot="card"
+      class="p-6"
+      data-slot="card-content"
     >
       <div
-        class="p-6"
-        data-slot="card-content"
+        class="mb-6 pb-4 border-b border-border space-y-1.5"
       >
         <div
-          class="mb-6 pb-4 border-b border-border space-y-1.5"
+          class="bg-accent animate-pulse rounded-md h-5 w-36"
+          data-slot="skeleton"
+        />
+        <div
+          class="bg-accent animate-pulse rounded-md h-4 w-64"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-36"
+            class="bg-accent animate-pulse rounded-md h-4 w-16"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-64"
+            class="bg-accent animate-pulse rounded-md h-4 w-20"
             data-slot="skeleton"
           />
         </div>
         <div
-          class="flex items-center justify-between"
-        >
-          <div
-            class="space-y-2"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-16"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-20"
-              data-slot="skeleton"
-            />
-          </div>
-          <div
-            class="bg-accent animate-pulse rounded-md h-8 w-32"
-            data-slot="skeleton"
-          />
-        </div>
+          class="bg-accent animate-pulse rounded-md h-8 w-32"
+          data-slot="skeleton"
+        />
       </div>
     </div>
   </div>

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperConsents } from '@/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { createApiClients } from '@/lib/api-clients.server';
 
@@ -39,7 +38,7 @@ export async function getSubscriptions(
     context: LoaderFunctionArgs['context']
 ): Promise<ShopperConsents.schemas['ConsentSubscriptionResponse'] | null> {
     try {
-        const config = getConfig<AppConfig>(context);
+        const config = getConfig(context);
         const clients = createApiClients(context);
         const { site } = context.get(siteContext) as SiteContext;
         const { data } = await clients.shopperConsents.getSubscriptions({
@@ -70,7 +69,7 @@ export async function updateSubscriptionsBulk(
     context: LoaderFunctionArgs['context'],
     bodies: UpdateSubscriptionBody[]
 ): Promise<ShopperConsents.schemas['ConsentSubscriptionBulkResponse']> {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const clients = createApiClients(context);
     const { site } = context.get(siteContext) as SiteContext;
     const { data } = await clients.shopperConsents.updateSubscriptions({

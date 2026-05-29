@@ -20,7 +20,6 @@ This reference provides detailed documentation for all configuration options ava
   - [search](#search) - Search-specific settings
   - [performance](#performance) - Performance optimization settings
   - [engagement](#engagement) - Analytics and engagement adapters
-  - [Engagement analytics](./README-ENGAGEMENT-ANALYTICS.md) - Einstein / Active Data event mapping
   - [commerceAgent](#commerceagent) - Shopper Agent (Embedded Messaging / Agentforce)
   - [development](#development) - Development tools and features
 
@@ -575,12 +574,14 @@ PUBLIC__app__hybrid__enabled=true
 
 Type: `string[]` Optional | Default: `[]`
 
-Array of route patterns that should be handled by the legacy system when hybrid mode is enabled.
+Array of route patterns that should be handled by the legacy system when hybrid mode is enabled. Patterns may be exact paths, single-segment named params (`:name`), or multi-segment wildcards (`*`).
 
 Example:
 ```bash
-PUBLIC__app__hybrid__legacyRoutes='["/account", "/checkout"]'
+PUBLIC__app__hybrid__legacyRoutes='["/account", "/checkout", "/product/:id", "/categoryLv1/*"]'
 ```
+
+See the [Hybrid Proxy guide](./README-HYBRID-PROXY.md#public__app__hybrid__legacyroutes) for full pattern syntax (`:param`, `*`) and matching semantics.
 
 ---
 
@@ -590,7 +591,7 @@ Authentication configuration shared across all auth features. These settings app
 
 ### auth.otpLength
 
-Type: `number` | Default: `8`
+Type: `number` | Default: `6`
 
 The length of the OTP (One-Time Password) code used for authentication. This value is set by SLAS (Shopper Login and API Access Service) and is shared across all authentication features including passwordless login, password reset, WebAuthn, and passkey authentication.
 
@@ -598,7 +599,7 @@ The length of the OTP (One-Time Password) code used for authentication. This val
 
 Example:
 ```bash
-PUBLIC__app__auth__otpLength=8
+PUBLIC__app__auth__otpLength=6
 ```
 
 **Usage:** When implementing new authentication features (e.g., passkey login), use `config.auth.otpLength` instead of defining a separate `otpLength` property in the feature configuration. This ensures consistency and prevents configuration drift.
@@ -608,19 +609,6 @@ PUBLIC__app__auth__otpLength=8
 ## features
 
 Site feature flags that enable or disable specific functionality.
-
-### features.passwordlessLogin.enabled
-
-Type: `boolean` | Default: `false`
-
-Enables passwordless login functionality, allowing users to log in via email link without entering a password. Requires Marketing Cloud configuration for sending login emails. See [Marketing Cloud Configuration](./README-CONFIG.md#marketing-cloud-configuration-server-only).
-
-Example:
-```bash
-PUBLIC__app__features__passwordlessLogin__enabled=true
-```
-
----
 
 ### features.passwordlessLogin.mode
 
@@ -642,7 +630,7 @@ PUBLIC__app__features__passwordlessLogin__mode="email"
 
 Type: `string` Optional | Default: `'/passwordless-login-callback'`
 
-The URI path where users are redirected after clicking the passwordless login link in their email. Required when mode is `callback.
+The callback URI sent to SLAS when requesting a passwordless login. Required when mode is `callback`.
 
 ---
 
@@ -654,6 +642,43 @@ The URI path of the magic link. A magic link is a single-use URL that contains t
 
 ---
 
+### features.passwordlessLogin.skipWhenEmailVerificationDisabled
+
+Type: `boolean` Optional | Default: `true`
+
+Controls whether the checkout contact step calls SLAS `/passwordless/login` when the email-verification site preference is disabled. When `true` (default), the storefront skips the SLAS round-trip and routes the shopper directly to the standard login modal, since passwordless login on the storefront requires the preference to be enabled. Set to `false` to always call SLAS regardless of the preference.
+
+Example:
+```bash
+PUBLIC__app__features__passwordlessLogin__skipWhenEmailVerificationDisabled="false"
+```
+
+---
+
+### features.otpRequest.mode
+
+Type: `'email' | 'callback'` | Default: `'email'`
+
+Determines how OTP codes are delivered for email verification (e.g., during registration).
+
+- **`'email'`** (default): The system sends the OTP code email directly to the user.
+- **`'callback'`**: Uses a callback flow where SLAS calls your server's callback endpoint with the OTP details. This mode requires the `callbackUri` to be configured and registered for your SLAS client and is useful when using an external email or SMS provider.
+
+Example:
+```bash
+PUBLIC__app__features__otpRequest__mode="email"
+```
+
+---
+
+### features.otpRequest.callbackUri
+
+Type: `string` Optional | Default: `undefined`
+
+The callback URI sent to SLAS when requesting an OTP code. Required when mode is `callback`. Must be an absolute URL pointing to an external service (e.g., `https://example.com/otp-callback`).
+
+---
+
 ### features.resetPassword.mode
 
 Type: `'email' | 'callback'` | Default: `'email'`
@@ -661,7 +686,6 @@ Type: `'email' | 'callback'` | Default: `'email'`
 Determines how password reset tokens are delivered to users.
 
 - **`'email'`** (default): SLAS sends the password reset link email directly to the user.
-
 - **`'callback'`**: Uses a callback flow where SLAS calls your server's callback endpoint with the token and user information. This mode requires the `callbackUri` to be configured and registered for your SLAS client and is useful when using an external email or sms provider.
 
 Example:
@@ -675,7 +699,7 @@ PUBLIC__app__features__resetPassword__mode="email"
 
 Type: `string` Optional | Default: `'/reset-password-callback'`
 
-The URI path for the password reset callback handler. Required when mode is `callback.
+The callback URI sent to SLAS when requesting an password reset. Required when mode is `callback`.
 
 ---
 
@@ -1156,6 +1180,50 @@ PUBLIC__app__search__products__hits__critical=4
 
 ---
 
+### search.products.images.tile
+
+Type: `string` Optional | Default: `'medium'`
+
+The viewType the product tile reads for the hero image on PLPs. Drives the search
+filter (the SCAPI `imgTypes` query parameter is derived as the union of all
+role-named viewTypes here). A planned follow-up will also have the tile component
+itself read this value, eliminating drift between the search filter and the tile's
+image lookup.
+
+Set to `undefined` to opt this role out of the search filter. If you customize the
+tile to read a different viewType (e.g. `'large'`), update this value to match.
+
+Example:
+```bash
+PUBLIC__app__search__products__images__tile=large
+```
+
+---
+
+### search.products.images.swatch
+
+Type: `string` Optional | Default: `'swatch'`
+
+The viewType the swatch builder reads for color thumbnails on PLPs. Same role-named
+declaration pattern as `tile` above — feeds the SCAPI `imgTypes` filter; a planned
+follow-up will have the swatch builder itself read this value.
+
+Set to `undefined` to opt this role out of the search filter.
+
+Example:
+```bash
+PUBLIC__app__search__products__images__swatch=swatch
+```
+
+Both roles together control PLP image filtering. To disable filtering entirely and
+return the full imageGroups payload, set both to `undefined` or pass an empty
+`images: {}` config block. Only applies to `fetchSearchProducts` (search/category
+pages); PDP and cart fetches are unaffected. See
+[docs/README-IMAGES.md](./README-IMAGES.md#image-filtering-on-product-listing-pages)
+for the full pattern.
+
+---
+
 ## performance
 
 Performance optimization configuration.
@@ -1215,8 +1283,6 @@ When enabled, collects client-side performance metrics using the Performance API
 ## engagement
 
 Analytics and engagement adapter configuration.
-
-For how storefront analytics events (including **`commerce_agent_engagement`**) map to **Einstein** and **Active Data** APIs and reporting fields, see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md).
 
 Note: Engagement settings can't be overridden via `PUBLIC__` environment variables. To change these values, update `config.server.ts` directly. This restriction exists because engagement configuration affects build-time validation for analytics instrumentation.
 
@@ -1299,7 +1365,6 @@ Individual toggles for each Einstein event type. Available events:
 - `checkout_step` - Checkout step progression
 - `view_search_suggestion` - Search suggestion panel views
 - `click_search_suggestion` - Clicks on search suggestions
-- `commerce_agent_engagement` - Opens agentic commerce from the header or search assistant (see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement))
 
 Example:
 ```bash
@@ -1392,13 +1457,7 @@ The unique site identifier for Active Data.
 
 Type: `Record<string, boolean>`
 
-Individual toggles for each Active Data event type. Uses the same event types as Einstein (including `commerce_agent_engagement`; see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)).
-
----
-
-### Commerce agent engagement (`commerce_agent_engagement`)
-
-Behavior, Einstein **`viewPage`** / **`currentLocation`** mapping, Active Data **`sfn-cagent-surface`**, default toggles, and reporting notes: **[README-ENGAGEMENT-ANALYTICS.md — Commerce agent engagement](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)**.
+Individual toggles for each Active Data event type. Uses the same event types as Einstein.
 
 ---
 

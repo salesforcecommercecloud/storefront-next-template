@@ -16,7 +16,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { type ReactNode, useRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { SubCategoryContext, createSubCategoryStore, useSubCategory } from './context';
 import { createMockCategory } from './__tests__/data';
 

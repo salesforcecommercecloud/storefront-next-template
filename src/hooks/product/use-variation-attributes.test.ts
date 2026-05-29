@@ -26,10 +26,11 @@ import { renderHook } from '@testing-library/react';
 import { useVariationAttributes } from './use-variation-attributes';
 import { useSelectedVariations } from './use-selected-variations';
 import { useLocation } from 'react-router';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import type { ShopperProducts } from '@/scapi';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLocation: vi.fn(),
 }));
 
@@ -37,7 +38,7 @@ vi.mock('./use-selected-variations', () => ({
     useSelectedVariations: vi.fn(),
 }));
 
-vi.mock('@/lib/image-groups-utils', () => ({
+vi.mock('@/lib/product/image-groups-utils', () => ({
     findImageGroupBy: vi.fn(),
 }));
 

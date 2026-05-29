@@ -15,7 +15,7 @@
  */
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import StoreAddress from './address';
 
 const baseStore: ShopperStores.schemas['Store'] = {

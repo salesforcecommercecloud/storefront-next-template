@@ -15,51 +15,11 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProductBadges } from '../product-badges';
-// @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof ProductBadges> = {
     title: 'Components/ProductBadges',
@@ -70,20 +30,37 @@ const meta: Meta<typeof ProductBadges> = {
     },
     argTypes: {
         maxBadges: {
-            control: { type: 'number', min: 1, max: 10 },
-            description: 'Maximum number of badges to display',
+            control: { type: 'number', min: 0, max: 10 },
+            description: 'Maximum badges to display (caps the badgeDetails list)',
         },
         product: {
             control: 'object',
-            description: 'Product object containing badge properties',
+            description: 'Product object — c_isNew/c_isSale/c_isSpecial flags drive which badges show',
+        },
+        badgeDetails: {
+            control: 'object',
+            description:
+                'Override which product flags map to which badges. Falls back to runtime config when undefined',
+        },
+        variant: {
+            control: 'select',
+            options: ['default', 'horizontal', 'vertical'],
+            description: 'Layout variant of the badges container',
+        },
+        size: {
+            control: 'select',
+            options: ['default', 'small', 'medium', 'large'],
+            description: 'Size variant',
+        },
+        'aria-label': {
+            control: 'text',
+            description: 'Override the auto-generated "Product badges: {names}" group label',
         },
     },
     decorators: [
         (Story: React.ComponentType) => (
             <ConfigProvider config={mockConfig}>
-                <ActionLogger>
-                    <Story />
-                </ActionLogger>
+                <Story />
             </ConfigProvider>
         ),
     ],
@@ -92,6 +69,20 @@ const meta: Meta<typeof ProductBadges> = {
 export default meta;
 type Story = StoryObj<typeof ProductBadges>;
 
+/**
+ * Default — uses runtime `config.global.badges` (Sale + New) and
+ * `mockStandardProductHit` (which has all c_is* flags set to true).
+ * Renders 2 badges: New + Sale.
+ *
+ * Drive every other variant from the Controls panel:
+ *   - `maxBadges` — set to 1 to cap to a single badge, 0 to hide all
+ *     (note: when `badgeDetails` is unset, the runtime config has only
+ *     2 entries, so any `maxBadges >= 2` produces the same DOM)
+ *   - `badgeDetails` — pass a custom array (see WithBadgeOverride for
+ *     the 3-badge override demo)
+ *   - `variant` / `size` — see the layout/size variant catalog
+ *   - `aria-label` — override the auto-generated group label
+ */
 export const Default: Story = {
     args: {
         product: mockStandardProductHit,
@@ -100,16 +91,23 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Use queryByRole to safely check for existence without throwing
         const container = canvas.queryByRole('group');
-        // We only expect it to be in the document if it exists (i.e. badges are rendered)
         if (container) {
             await expect(container).toBeInTheDocument();
         }
     },
 };
 
-export const WithCustomBadges: Story = {
+/**
+ * Custom badge override — passes `badgeDetails` to bypass runtime config.
+ * With 3 entries (New + Sale + Special) and no `maxBadges` cap, all three
+ * render. Distinct from Default because Default's runtime config has
+ * only 2 entries.
+ *
+ * Set `maxBadges: 2` in the Controls panel to reproduce the prior
+ * `LimitedBadges` story (caps at 2 — same as Default's DOM).
+ */
+export const WithBadgeOverride: Story = {
     args: {
         product: mockStandardProductHit,
         badgeDetails: [
@@ -121,31 +119,9 @@ export const WithCustomBadges: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Use queryAllByText to check for badges
         const newBadges = canvas.queryAllByText('New');
         if (newBadges.length > 0) {
             await expect(newBadges[0]).toBeInTheDocument();
-        }
-    },
-};
-
-export const LimitedBadges: Story = {
-    args: {
-        product: mockStandardProductHit,
-        maxBadges: 2,
-        badgeDetails: [
-            { propertyName: 'c_isNew', label: 'New', color: 'green' },
-            { propertyName: 'c_isSale', label: 'Sale', color: 'red' },
-            { propertyName: 'c_isSpecial', label: 'Special', color: 'blue' },
-        ],
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const container = canvas.queryByRole('group');
-        if (container) {
-            // Count children that are badges
-            await expect(container.children.length).toBeLessThanOrEqual(2);
         }
     },
 };

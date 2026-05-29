@@ -42,7 +42,7 @@ import type { TFunction } from 'i18next';
 /**
  * CustomerProfileForm component that provides a form interface for editing customer profile information.
  *
- * This component renders a form for editing first name, last name, email, and phone number.
+ * This component renders a form for editing first name, last name, phone number, gender, and date of birth.
  * It handles form validation, submission, and displays appropriate success/error feedback through toasts.
  * The form automatically resets on successful submission. Success and error handling is managed
  * through the useFetch hook's onSuccess/onError callbacks.
@@ -58,7 +58,7 @@ import type { TFunction } from 'i18next';
  * ```tsx
  * // Basic usage with initial data and callbacks
  * <CustomerProfileForm
- *   initialData={{ firstName: 'John', lastName: 'Doe', email: 'john@example.com' }}
+ *   initialData={{ firstName: 'John', lastName: 'Doe' }}
  *   onSuccess={(formData) => console.log('Profile updated!', formData)}
  *   onError={(error) => console.error('Update failed:', error)}
  *   onCancel={() => setEditing(false)}
@@ -88,7 +88,6 @@ export const CustomerProfileForm = ({
         defaultValues: {
             firstName: initialData?.firstName || '',
             lastName: initialData?.lastName || '',
-            email: initialData?.email || '',
             phone: initialData?.phone || '',
             gender: initialData?.gender || '',
             birthday: initialData?.birthday || '',
@@ -107,7 +106,6 @@ export const CustomerProfileForm = ({
                 const formData: CustomerProfileFormData = {
                     firstName: (customer.firstName as string) || '',
                     lastName: (customer.lastName as string) || '',
-                    email: (customer.email as string) || (customer.login as string) || '',
                     phone: (customer.phoneHome as string) || (customer.phoneMobile as string) || '',
                     gender: customer.gender !== undefined ? String(customer.gender) : '',
                     birthday: (customer.birthday as string) || '',
@@ -142,22 +140,28 @@ export const CustomerProfileForm = ({
      * @param data - The validated form data containing profile information
      * @param data.firstName - The customer's first name
      * @param data.lastName - The customer's last name
-     * @param data.email - The customer's email address - READ-ONLY (until SLAS email verification is available)
      * @param data.phone - The customer's phone number (optional)
      * @param data.gender - The customer's gender (1=Male, 2=Female)
      * @param data.birthday - The customer's date of birth
      */
     const handleSubmit = form.handleSubmit((data) => {
-        // Prepare customer data in the format expected by Commerce SDK
-        // Only include fields that have values to avoid sending empty strings
-        // Note: email is read-only until SLAS email verification is available
-        const customerUpdateData: Record<string, string | number> = {
+        // Prepare customer data in the format expected by Commerce SDK.
+        // Submitting as JSON preserves typed values (e.g., `gender` as `number | null`)
+        // so the action route doesn't need ad-hoc per-field string→type coercion.
+        const customerUpdateData: Record<string, string | number | null> = {
             firstName: data.firstName,
             lastName: data.lastName,
         };
 
-        // Add optional fields if they have values
-        customerUpdateData.gender = data.gender ?? '';
+        // `gender` is optional on the SCAPI customer schema and typed as a number.
+        // Convert empty string to `null` to clear the field; otherwise parse to number.
+        // If parsing fails, send `null` rather than NaN.
+        if (data.gender === undefined || data.gender === '') {
+            customerUpdateData.gender = null;
+        } else {
+            const parsed = parseInt(data.gender, 10);
+            customerUpdateData.gender = Number.isNaN(parsed) ? null : parsed;
+        }
 
         // Phone is editable and optional - include if provided
         if (data.phone) {
@@ -169,7 +173,9 @@ export const CustomerProfileForm = ({
         // Now we no longer pass in an empty string, but skipping it instead.
         if (data.birthday) customerUpdateData.birthday = data.birthday;
 
-        // Submit the update request - response will be handled by useScapiFetcherEffect
+        // Plain-object payloads are submitted as JSON by useScapiFetcher's auto-detect,
+        // so typed values (numbers, nulls, booleans) survive the round-trip end-to-end
+        // without server-side per-field coercion. Response is handled by useScapiFetcherEffect.
         void updateFetcher.submit(customerUpdateData);
     });
 

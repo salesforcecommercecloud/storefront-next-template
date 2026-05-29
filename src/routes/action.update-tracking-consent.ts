@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunction } from 'react-router';
+import type { Route } from './+types/action.update-tracking-consent';
 import { refreshAccessToken, getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { TrackingConsent } from '@/types/tracking-consent';
@@ -32,7 +32,7 @@ import { getLogger } from '@/lib/logger.server';
  * 1. We need access to the refresh token from server-side auth context
  * 2. We need to set Set-Cookie HTTP headers, which can only be done server-side
  */
-export const action: ActionFunction = async ({ request, context }) => {
+export const action = async ({ request, context }: Route.ActionArgs) => {
     const logger = getLogger(context);
     const formData = await request.formData();
     const trackingConsentValue = formData.get('trackingConsent');

@@ -15,10 +15,9 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { createApiClients } from '@/lib/api-clients.server';
-import type { ShopperContext as ShopperContextNamespace } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperContext as ShopperContextNamespace } from '@/scapi';
 
 /**
  * ShopperContext request body type — uses the API schema directly.
@@ -65,7 +64,7 @@ export async function createShopperContext(
     }
 
     try {
-        const config = getConfig<AppConfig>(context);
+        const config = getConfig(context);
         const clients = createApiClients(context);
         const { site } = context.get(siteContext) as SiteContext;
 

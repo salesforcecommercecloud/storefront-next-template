@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 import type { ComponentProps } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { cn } from '@/lib/utils';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig, BadgeDetail } from '@/types/config';
+import type { BadgeDetail } from '@/types/config';
 import {
     productBadgesVariants,
     productBadgeSemanticVariants,
     type ProductBadgesVariantsProps,
 } from './product-badge-variants';
 import { Badge } from '@/components/ui/badge';
-import { getProductBadges } from '@/lib/product-badges';
+import { getProductBadges } from '@/lib/product/product-badges';
 
 /**
  * Product Badge Component - Wrapper around core Badge with semantic styling
@@ -92,7 +92,7 @@ const ProductBadges = ({
     'aria-label': ariaLabel,
     ...props
 }: ProductBadgesProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     // Use runtime config if badgeDetails not provided
     const finalBadgeDetails = badgeDetails ?? config.global.badges;
 

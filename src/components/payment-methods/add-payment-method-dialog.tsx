@@ -18,7 +18,7 @@ import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Plus, X, CreditCard } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -30,8 +30,8 @@ import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import { Form } from '@/components/ui/form';
 import { accountDestructiveAlertClasses } from '@/lib/account-action-styles';
-import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
-import { detectCardType } from '@/lib/payment-utils';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
+import { detectCardType } from '@/lib/payment/payment-utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type AddPaymentData = PaymentData & { saveAsDefault?: boolean };
@@ -170,9 +170,7 @@ export function AddPaymentMethodDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader className="mb-4">
-                    <DialogTitle
-                        className="font-semibold text-foreground"
-                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                    <DialogTitle className="text-lg font-semibold text-foreground">
                         {t('paymentMethods.addPaymentMethodTitle')}
                     </DialogTitle>
                 </DialogHeader>
@@ -210,7 +208,9 @@ export function AddPaymentMethodDialog({
                     </div>
 
                     <div className="pt-2">
-                        <Label className="text-sm font-medium mb-2 block">{t('paymentMethods.billingAddress')}</Label>
+                        <Label htmlFor="billing-address" className="text-sm font-medium mb-2 block">
+                            {t('paymentMethods.billingAddress')}
+                        </Label>
                         <div className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <NativeSelect
                                 id="billing-address"

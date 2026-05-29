@@ -70,7 +70,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="given-name"
                                     placeholder={t('profile.firstNamePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -93,7 +93,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="family-name"
                                     placeholder={t('profile.lastNamePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -103,29 +103,8 @@ export function CustomerProfileFields({
                 />
             </div>
 
-            {/* Email and Phone Row (email is read-only until SLAS email verification is available) */}
+            {/* Phone and Gender Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Email Field */}
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-sm font-medium text-foreground">{t('profile.email')}</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="email"
-                                    autoComplete="email"
-                                    readOnly
-                                    tabIndex={-1}
-                                    className="rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-                                    {...field}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
-
                 {/* Phone Number Field */}
                 <FormField
                     control={form.control}
@@ -140,7 +119,7 @@ export function CustomerProfileFields({
                                     type="tel"
                                     autoComplete="tel"
                                     placeholder={t('profile.phonePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -148,10 +127,7 @@ export function CustomerProfileFields({
                         </FormItem>
                     )}
                 />
-            </div>
 
-            {/* Gender and Date of Birth Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Gender Field */}
                 <FormField
                     control={form.control}
@@ -161,7 +137,7 @@ export function CustomerProfileFields({
                             <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
                             <FormControl>
                                 <NativeSelect
-                                    className="w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="w-full rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     value={field.value || ''}
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
@@ -179,7 +155,10 @@ export function CustomerProfileFields({
                         </FormItem>
                     )}
                 />
+            </div>
 
+            {/* Date of Birth Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Date of Birth Field */}
                 <FormField
                     control={form.control}
@@ -193,7 +172,7 @@ export function CustomerProfileFields({
                                 <Input
                                     type="date"
                                     autoComplete="bday"
-                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     aria-label={t('profile.dateOfBirth')}
                                     {...field}
                                 />

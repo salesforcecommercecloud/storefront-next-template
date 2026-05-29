@@ -28,6 +28,7 @@ const mockFetcher = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useFetcher: vi.fn(() => mockFetcher),
 }));
 
@@ -129,6 +130,7 @@ describe('useScapiFetcher', () => {
             expect(mockFetcher.submit).toHaveBeenCalledWith(submitData, {
                 method: 'POST',
                 action: '/resource/api/client/WyJzaG9wcGVyQ3VzdG9tZXJzIiwidXBkYXRlQ3VzdG9tZXIiLHsicGFyYW1zIjp7InBhdGgiOnsib3JnYW5pemF0aW9uSWQiOiJvcmctMTIzIiwiY3VzdG9tZXJJZCI6InRlc3QifSwicXVlcnkiOnsic2l0ZUlkIjoic2l0ZS0xMjMifX0sImJvZHkiOnt9fV0=',
+                encType: 'application/json',
             });
         });
 
@@ -167,6 +169,7 @@ describe('useScapiFetcher', () => {
             expect(mockFetcher.submit).toHaveBeenCalledWith(submitData, {
                 method: 'POST',
                 action: '/resource/api/client/WyJzaG9wcGVyQ3VzdG9tZXJzIiwidXBkYXRlQ3VzdG9tZXIiLHsicGFyYW1zIjp7InBhdGgiOnsib3JnYW5pemF0aW9uSWQiOiJvcmctMTIzIiwiY3VzdG9tZXJJZCI6InRlc3QifSwicXVlcnkiOnsic2l0ZUlkIjoic2l0ZS0xMjMifX0sImJvZHkiOnt9fV0=',
+                encType: 'application/json',
             });
         });
 
@@ -190,6 +193,7 @@ describe('useScapiFetcher', () => {
                 {
                     method: 'POST',
                     action: '/resource/api/client/WyJzaG9wcGVyQ3VzdG9tZXJzIiwidXBkYXRlQ3VzdG9tZXIiLHsicGFyYW1zIjp7InBhdGgiOnsib3JnYW5pemF0aW9uSWQiOiJvcmctMTIzIiwiY3VzdG9tZXJJZCI6InRlc3QifSwicXVlcnkiOnsic2l0ZUlkIjoic2l0ZS0xMjMifX0sImJvZHkiOnt9fV0=',
+                    encType: 'application/json',
                 }
             );
         });
@@ -214,6 +218,7 @@ describe('useScapiFetcher', () => {
                 {
                     method: 'POST',
                     action: '/resource/api/client/WyJzaG9wcGVyQ3VzdG9tZXJzIiwidXBkYXRlQ3VzdG9tZXIiLHsicGFyYW1zIjp7InBhdGgiOnsib3JnYW5pemF0aW9uSWQiOiJvcmctMTIzIiwiY3VzdG9tZXJJZCI6InRlc3QifSwicXVlcnkiOnsic2l0ZUlkIjoic2l0ZS0xMjMifX0sImJvZHkiOnt9fV0=',
+                    encType: 'application/json',
                 }
             );
         });
@@ -238,8 +243,53 @@ describe('useScapiFetcher', () => {
                 {
                     method: 'POST',
                     action: '/resource/api/client/WyJzaG9wcGVyQ3VzdG9tZXJzIiwidXBkYXRlQ3VzdG9tZXIiLHsicGFyYW1zIjp7InBhdGgiOnsib3JnYW5pemF0aW9uSWQiOiJvcmctMTIzIiwiY3VzdG9tZXJJZCI6InRlc3QifSwicXVlcnkiOnsic2l0ZUlkIjoic2l0ZS0xMjMifX0sImJvZHkiOnt9fV0=',
+                    encType: 'application/json',
                 }
             );
+        });
+
+        it('should NOT auto-encode JSON when payload is FormData (passes through as form-urlencoded)', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'updateCustomer', {
+                    params: {
+                        path: { organizationId: 'org-123', customerId: 'test' },
+                        query: { siteId: 'site-123' },
+                    },
+                    body: {},
+                })
+            );
+
+            const formData = new FormData();
+            formData.append('email', 'new@example.com');
+
+            act(() => {
+                // FormData payload — submit() at runtime handles it via auto-detect, but the
+                // hook's body generic types it as the SCAPI shape, so cast to bypass.
+                void result.current.submit(formData as unknown as Record<string, unknown>);
+            });
+
+            // No encType on the call → react-router falls back to its default form encoding.
+            const opts = mockFetcher.submit.mock.calls[0][1];
+            expect(opts).not.toHaveProperty('encType');
+        });
+
+        it('should let callers override the auto-detected encType via opts', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'updateCustomer', {
+                    params: {
+                        path: { organizationId: 'org-123', customerId: 'test' },
+                        query: { siteId: 'site-123' },
+                    },
+                    body: {},
+                })
+            );
+
+            act(() => {
+                void result.current.submit({ email: 'new@example.com' }, { encType: 'multipart/form-data' });
+            });
+
+            const opts = mockFetcher.submit.mock.calls[0][1];
+            expect(opts.encType).toBe('multipart/form-data');
         });
     });
 

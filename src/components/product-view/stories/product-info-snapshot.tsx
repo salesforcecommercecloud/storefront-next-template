@@ -15,81 +15,58 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-
+// Use partial mocks (importOriginal) so RouterProvider / createMemoryRouter
+// keep their real implementations — the story decorator wraps content in a
+// MemoryRouter and the previous "wholesale replacement" mock dropped the
+// router subtree, producing null snapshots for every story (W-22451618).
 const fetcherMock = {
     data: null,
     state: 'idle',
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
+    submit: vi.fn(),
+    Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
+    load: vi.fn(),
 };
 
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    createCookie: vi.fn().mockImplementation((name) => ({ name, parse: vi.fn(), serialize: vi.fn() })),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    useInRouterContext: () => false,
-    // Add missing Form component
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-    // Add missing createMemoryRouter
-    createMemoryRouter: vi.fn().mockImplementation(() => ({
-        navigate: vi.fn(),
-        state: { location: { pathname: '/', search: '', hash: '', state: null } },
-    })),
-    // Add missing RouterProvider
-    RouterProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
     return {
         ...actual,
         useFetcher: () => fetcherMock,
         useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        useInRouterContext: () => false,
-        // Add missing createMemoryRouter
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/', search: '', hash: '', state: null } },
-        })),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
     };
 });
+
+// Avoid the toast provider — components only need a no-op `addToast`.
 vi.mock('@/components/toast', () => ({
-    useToast: () => ({
-        addToast: () => {},
+    useToast: () => ({ addToast: () => {} }),
+}));
+
+// BOPIS extension reads StoreLocatorProvider via `useStoreLocator`. The
+// extension provider isn't part of the snapshot story decorator, so stub it.
+// (Same approach as product-view-snapshot.tsx.)
+vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
+    useStoreLocator: () => ({ selectedStoreInfo: null }),
+}));
+
+// `useProductActions` reaches into useNavigate → useConfig and useAnalytics →
+// useAuth/useSite — none of which are wired in the snapshot harness. Stub the
+// hook with a shape ProductInfo consumes so the rendered DOM matches a real PDP.
+vi.mock('@/hooks/product/use-product-actions', () => ({
+    useProductActions: () => ({
+        isAddingToOrUpdatingCart: false,
+        isAddingToWishlist: false,
+        canAddToCart: true,
+        handleAddToCart: () => Promise.resolve(),
+        handleAddToWishlist: () => Promise.resolve(),
+        handleProductSetAddToCart: () => Promise.resolve(),
+        handleProductBundleAddToCart: () => Promise.resolve(),
+        quantity: 1,
+        setQuantity: () => {},
+        stockLevel: 50,
+        maxQuantity: undefined,
+        isOutOfStock: false,
+        mode: 'add' as const,
+        basketPickupStore: undefined,
     }),
 }));
 

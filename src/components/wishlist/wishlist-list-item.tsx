@@ -15,20 +15,22 @@
  */
 import { lazy, Suspense, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
+import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 import { Link } from '@/components/link';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
-import { createProductUrl, getDisplayVariationValues, requiresVariantSelection } from '@/lib/product-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { toImageUrl } from '@/lib/images/dynamic-image';
+import { createProductUrl, getDisplayVariationValues, requiresVariantSelection } from '@/lib/product/product-utils';
 import { useToast } from '@/components/toast';
+import { useAnalytics } from '@/hooks/use-analytics';
 import InventoryMessage from '@/components/inventory-message';
 import ProductPrice from '@/components/product-price';
 import { Button } from '@/components/ui/button';
 import { useProductActions } from '@/hooks/product/use-product-actions';
+import { resourceRoutes } from '@/route-paths';
 
 // Lazy-load the modal so it only enters the bundle when a shopper actually opens it
 const CartItemModal = lazy(() =>
@@ -53,10 +55,11 @@ interface WishlistListItemProps {
  */
 export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistListItemProps): ReactElement {
     const { t } = useTranslation('product');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { currency } = useSite();
     const { addToast } = useToast();
-    const removeFetcher = useFetcher<{ success: boolean; error?: { code: string; message: string } }>();
+    const { trackWishlistItemRemoved } = useAnalytics();
+    const removeFetcher = useFetcher<typeof wishlistRemoveAction>();
     const hasHandledRemoveResponse = useRef(false);
 
     // When SCAPI returns the product by its variant ID, the product itself has type.variant = true
@@ -134,6 +137,16 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
             if (result?.success) {
                 hasHandledRemoveResponse.current = true;
                 addToast(t('removedFromWishlist'), 'success');
+
+                // Emit analytics event on successful remove
+                const productId = wishlistItem.productId;
+                if (productId) {
+                    void trackWishlistItemRemoved({
+                        surface: 'wishlist-page',
+                        productId,
+                    });
+                }
+
                 if (wishlistItem.id) {
                     onRemove(wishlistItem.id);
                 }
@@ -145,11 +158,23 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
         if (removeFetcher.state === 'submitting') {
             hasHandledRemoveResponse.current = false;
         }
-    }, [removeFetcher.state, removeFetcher.data, addToast, onRemove, wishlistItem.id, t]);
+    }, [
+        removeFetcher.state,
+        removeFetcher.data,
+        addToast,
+        onRemove,
+        wishlistItem.id,
+        wishlistItem.productId,
+        t,
+        trackWishlistItemRemoved,
+    ]);
 
     const handleRemove = () => {
         if (removeFetcher.state !== 'idle' || !wishlistItem.id) return;
-        void removeFetcher.submit({ itemId: wishlistItem.id }, { method: 'POST', action: '/action/wishlist-remove' });
+        void removeFetcher.submit(
+            { itemId: wishlistItem.id },
+            { method: 'POST', action: resourceRoutes.wishlistRemove }
+        );
     };
 
     const isRemoving = removeFetcher.state !== 'idle';

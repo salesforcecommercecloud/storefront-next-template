@@ -17,7 +17,7 @@ import type React from 'react';
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -25,9 +25,10 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import BonusProductSelection from './bonus-product-selection';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import { resourceRoutes } from '@/route-paths';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // ============================================================================
 // Mocks
@@ -37,7 +38,7 @@ const mockSite = mockConfig.commerce.sites[0];
 vi.mock('react-i18next', () => ({
     useTranslation: () => {
         const { t } = getTranslation();
-        return { t, i18n: { language: 'en-US' } };
+        return { t, i18n: { language: mockSiteObject.defaultLocale } };
     },
 }));
 
@@ -59,7 +60,7 @@ vi.mock('@/components/toast', () => ({
 
 // Mock bonus-product-utils
 // Default: all slots filled (for existing tests)
-vi.mock('@/lib/bonus-product-utils', () => ({
+vi.mock('@/lib/cart/bonus-product-utils', () => ({
     getBonusProductCountsForPromotion: vi.fn(() => ({
         selectedBonusItems: 3,
         maxBonusItems: 3,
@@ -70,7 +71,7 @@ vi.mock('@/lib/bonus-product-utils', () => ({
 const mockRequiresVariantSelection = vi.fn();
 const mockGetPrimaryProductImageUrl = vi.fn();
 const mockIsRuleBasedPromotion = vi.fn();
-vi.mock('@/lib/product-utils', () => ({
+vi.mock('@/lib/product/product-utils', () => ({
     requiresVariantSelection: (product: any) => mockRequiresVariantSelection(product),
     getPrimaryProductImageUrl: (product: any) => mockGetPrimaryProductImageUrl(product),
     isRuleBasedPromotion: (bonusItem: any) => mockIsRuleBasedPromotion(bonusItem),
@@ -187,7 +188,11 @@ function renderWithRouter(ui: React.ReactElement) {
             {
                 path: '/',
                 element: (
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         {ui}
                     </SiteProvider>
                 ),
@@ -283,7 +288,7 @@ describe('BonusProductSelection', () => {
 
         test('displays promotion title with selection count from API', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 1,
                 maxBonusItems: 3,
@@ -327,7 +332,7 @@ describe('BonusProductSelection', () => {
     describe('Product Selection Flow', () => {
         test('variants add directly to cart; masters open modal', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -372,7 +377,7 @@ describe('BonusProductSelection', () => {
             // Variant should add directly to cart
             expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
             expect(props.onProductSelect).not.toHaveBeenCalled();
 
@@ -390,7 +395,7 @@ describe('BonusProductSelection', () => {
 
         test('opens modal when clicking Select on a variant product', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -414,7 +419,7 @@ describe('BonusProductSelection', () => {
 
         test('adds directly to cart when clicking Select on a standard product', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -435,7 +440,7 @@ describe('BonusProductSelection', () => {
             // Should submit to fetcher
             expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
 
             // Verify FormData contains correct bonusItems
@@ -487,7 +492,7 @@ describe('BonusProductSelection', () => {
             const props = getDefaultProps();
 
             // Mock max items reached
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 3,
                 maxBonusItems: 3,
@@ -519,7 +524,7 @@ describe('BonusProductSelection', () => {
             mockRequiresVariantSelection.mockReturnValue(false);
 
             // Mock counts to ensure button is not disabled
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -552,7 +557,7 @@ describe('BonusProductSelection', () => {
             mockRequiresVariantSelection.mockReturnValue(false);
 
             // Mock counts to ensure button is not disabled
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -650,7 +655,7 @@ describe('BonusProductSelection', () => {
     describe('Rule-Based and Combined Products', () => {
         test('renders rule-based products when promotion is rule-based', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -695,7 +700,7 @@ describe('BonusProductSelection', () => {
 
         test('combines list-based and rule-based products when both exist', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 5,
@@ -744,7 +749,7 @@ describe('BonusProductSelection', () => {
 
         test('deduplicates products appearing in both list-based and rule-based', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 5,
@@ -816,7 +821,7 @@ describe('BonusProductSelection', () => {
 
         test('uses disBaseLink for rule-based product images when available', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -855,7 +860,7 @@ describe('BonusProductSelection', () => {
 
         test('falls back to link for rule-based product images when disBaseLink is not available', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -893,7 +898,7 @@ describe('BonusProductSelection', () => {
 
         test('handles rule-based products with missing image gracefully', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,
@@ -929,7 +934,7 @@ describe('BonusProductSelection', () => {
 
         test('filters out rule-based products with missing productId and id', async () => {
             // Override mock to have slots available
-            const { getBonusProductCountsForPromotion } = await import('@/lib/bonus-product-utils');
+            const { getBonusProductCountsForPromotion } = await import('@/lib/cart/bonus-product-utils');
             vi.mocked(getBonusProductCountsForPromotion).mockReturnValue({
                 selectedBonusItems: 0,
                 maxBonusItems: 3,

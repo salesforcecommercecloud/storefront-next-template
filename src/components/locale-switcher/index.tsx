@@ -19,15 +19,15 @@ import { useFetcher, useLocation } from 'react-router';
 
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { buildUrl, resolvePrefix, sanitizePrefix, useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { buildUrl, resolvePrefix, stripPathPrefix, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+import { resourceRoutes } from '@/route-paths';
 
 export default function LocaleSwitcher(): ReactElement {
     const id = useId();
     const { t, i18n } = useTranslation('localeSwitcher');
     const fetcher = useFetcher();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { site } = useSite();
 
     // Show only languages the app has translations for AND the current site supports.
@@ -45,9 +45,9 @@ export default function LocaleSwitcher(): ReactElement {
         // Strip the current prefix (e.g. /global/en-GB) to get the bare path,
         // then rebuild with the new locale to avoid double-prefixing.
         const currentPrefix = config.url?.prefix
-            ? resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef })
+            ? resolvePrefix({ prefix: config.url.prefix, params: { siteId: siteRef, localeId: localeRef } })
             : '';
-        const barePath = sanitizePrefix(location.pathname, currentPrefix) || '/';
+        const barePath = stripPathPrefix({ pathname: location.pathname, prefix: currentPrefix }) || '/';
 
         const pathname = buildUrl({
             to: barePath,
@@ -67,7 +67,7 @@ export default function LocaleSwitcher(): ReactElement {
         // with the new locale.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
         window.location.href = pathname;
     };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ComponentProps } from 'react';
-import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperExperience } from '@/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { ComponentType } from '@/components/region';
 import { Link } from '@/components/link';
@@ -23,11 +23,11 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { cn } from '@/lib/utils';
 import { carouselItemImageWidths } from '@/components/carousel-section';
 import { DynamicImage } from '@/components/dynamic-image';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-01.webp';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
+import { routes, routeHref } from '@/route-paths';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { loader } from './loaders';
@@ -94,7 +94,7 @@ export default function PopularCategory({
     ...rest
 }: PopularCategoryProps) {
     const { t } = useTranslation('home');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Use data from loader (Page Designer) or category prop (programmatic use)
     // If category is a string, it's from Page Designer and we should ignore it (wait for loader data)
@@ -119,7 +119,7 @@ export default function PopularCategory({
 
     return (
         <Link
-            to={`/category/${finalCategoryId}`}
+            to={routeHref(routes.category, { categoryId: finalCategoryId })}
             className={cn(
                 'block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 className
@@ -141,7 +141,7 @@ export default function PopularCategory({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end">
                         <div>
-                            <h3 className="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight">
+                            <h3 className="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1">
                                 {finalName}
                             </h3>
                             {finalDescription && <p className="text-sm text-white/90">{finalDescription}</p>}

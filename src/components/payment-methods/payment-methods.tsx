@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useRevalidator, useFetcher } from 'react-router';
+import type { action as paymentMethodAddAction } from '@/routes/action.payment-method-add';
+import type { action as paymentMethodRemoveAction } from '@/routes/action.payment-method-remove';
+import type { action as paymentMethodSetDefaultAction } from '@/routes/action.payment-method-set-default';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PaymentMethodCard, type PaymentMethod } from './payment-method-card';
@@ -23,8 +26,9 @@ import { RemovePaymentMethodDialog } from './remove-payment-method-dialog';
 import { AddPaymentMethodDialog } from './add-payment-method-dialog';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
-import { getLastFourDigits } from '@/lib/payment-utils';
+import { getLastFourDigits } from '@/lib/payment/payment-utils';
 import { UITarget } from '@/targets/ui-target';
+import { resourceRoutes } from '@/route-paths';
 
 export interface PaymentMethodsProps {
     customer: ShopperCustomers.schemas['Customer'] | null;
@@ -66,7 +70,9 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
 
-    const paymentFetcher = useFetcher<{ success: boolean; error?: string }>();
+    const paymentFetcher = useFetcher<
+        typeof paymentMethodAddAction | typeof paymentMethodRemoveAction | typeof paymentMethodSetDefaultAction
+    >();
     const previousFetcherStateRef = useRef(paymentFetcher.state);
     const currentIntentRef = useRef<string | null>(null);
 
@@ -88,7 +94,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
 
     const handleAddSubmitForm = (formData: FormData) => {
         currentIntentRef.current = 'add';
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-add' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodAdd });
     };
 
     const handleRemoveClick = (method: PaymentMethod) => {
@@ -105,7 +111,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
         currentIntentRef.current = 'delete';
         const formData = new FormData();
         formData.append('paymentInstrumentId', paymentInstrumentId);
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-remove' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodRemove });
     };
 
     const handleSetDefault = (method: PaymentMethod) => {
@@ -113,7 +119,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
         currentIntentRef.current = 'setDefault';
         const formData = new FormData();
         formData.append('paymentInstrumentId', method.id);
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-set-default' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodSetDefault });
     };
 
     useEffect(() => {
@@ -122,7 +128,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
 
         if (stateChanged && paymentFetcher.state === 'idle' && paymentFetcher.data) {
             const intent = currentIntentRef.current;
-            const { success } = paymentFetcher.data as { success?: boolean };
+            const { success } = paymentFetcher.data;
 
             const intentHandlers: Record<string, () => void> = {
                 delete: () => {
@@ -156,9 +162,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
             {/* Page Header */}
             <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
-                    <h1
-                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                        tabIndex={0}>
+                    <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('navigation.paymentMethods')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.pageSubtitle')}</p>
@@ -186,7 +190,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
                             <div className="py-8 text-center">
                                 <div className="flex flex-col items-center gap-4">
                                     <div className="text-muted-foreground">
-                                        <p className="text-lg font-medium">
+                                        <p className="text-sm font-medium">
                                             {t('paymentMethods.noSavedPaymentMethods')}
                                         </p>
                                         <p className="text-sm mt-1">{t('paymentMethods.empty')}</p>

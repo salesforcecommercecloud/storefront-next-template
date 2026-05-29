@@ -15,8 +15,8 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Link } from '@/components/link';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { createProductUrl, getImagesForColor } from '@/lib/product-utils';
+import type { ShopperSearch } from '@/scapi';
+import { createProductUrl, getImagesForColor } from '@/lib/product/product-utils';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { ProductImage } from './product-image';
 import ImageNavArrows from '@/components/image-nav-arrows';

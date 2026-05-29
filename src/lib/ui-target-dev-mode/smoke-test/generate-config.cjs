@@ -20,9 +20,14 @@
  * Additively syncs target-config.json with UITarget usages in the codebase.
  *
  * Rules:
- *   - NEW targets (not yet in config) → added with hint set to the current git branch name
+ *   - NEW targets (not yet in config) → added with hint derived from the targetId's page area
  *   - EXISTING targets               → hint and all fields preserved exactly as-is
  *   - REMOVED targets (gone from src) → pruned from config
+ *
+ * Hint derivation: targetIds follow a `<area>.<feature>.<slot>` convention (e.g.
+ * `pdp.reviews.list`, `cart.shipping.deliveryEstimate`). The hint is the first
+ * dotted segment, except for `sfcc.<area>.…` targets where it's the second
+ * segment, since `sfcc` is a vendor-namespace prefix rather than a page area.
  *
  * This means target-config.json only diffs when UITargets are actually added or removed.
  * Hints are set once at creation time and never overwritten automatically.
@@ -32,7 +37,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const searchPath = path.join(__dirname, '../../../../src');
 const outputDir = path.join(__dirname, '../../../extensions/ui-target-smoke-test');
@@ -45,6 +49,19 @@ const TARGET_ID_PATTERN = /targetId="([^"]+)"/g;
 const EXCLUDED_DIRS = new Set(['ui-target-dev-mode', 'ui-target-smoke-test']);
 
 const SMOKE_TEST_PATH = 'extensions/ui-target-smoke-test/components/generic-marker.tsx';
+
+/**
+ * Derive a page-area label from a targetId for use as a hint in the dev overlay.
+ * The dev overlay groups targets by hint, so it should reflect the surface the
+ * target lives on, not branch or PR metadata.
+ */
+function deriveHint(targetId) {
+    const parts = targetId.split('.');
+    if (parts[0] === 'sfcc' && parts.length > 1) {
+        return parts[1];
+    }
+    return parts[0];
+}
 
 /**
  * Recursively collect all UITarget IDs in source files.
@@ -82,26 +99,11 @@ function loadExisting() {
     }
 }
 
-/**
- * Get the current git branch name. Falls back to 'unknown' if git is unavailable.
- */
-function getBranchName() {
-    try {
-        return execSync('git rev-parse --abbrev-ref HEAD', {
-            encoding: 'utf-8',
-            stdio: ['pipe', 'pipe', 'pipe'],
-        }).trim();
-    } catch {
-        return 'unknown';
-    }
-}
-
 try {
     console.log('🔍 Scanning codebase for UITarget usages...');
 
     const foundIds = collectTargetIds(searchPath);
     const existing = loadExisting();
-    const branchName = getBranchName();
 
     const added = [];
     const removed = [];
@@ -117,7 +119,8 @@ try {
             return {
                 targetId,
                 path: SMOKE_TEST_PATH,
-                hint: branchName,
+                hint: deriveHint(targetId),
+                order: 999,
             };
         });
 
@@ -132,8 +135,8 @@ try {
 
     console.log(`✅ Synced target-config.json (${components.length} total entries)`);
     if (added.length) {
-        console.log(`   ➕ Added ${added.length} new targets (hint: "${branchName}"):`);
-        added.forEach((id) => console.log(`      • ${id}`));
+        console.log(`   ➕ Added ${added.length} new targets:`);
+        added.forEach((id) => console.log(`      • ${id} (hint: "${deriveHint(id)}")`));
     }
     if (removed.length) {
         console.log(`   ➖ Removed ${removed.length} stale targets:`);

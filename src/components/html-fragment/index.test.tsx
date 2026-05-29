@@ -77,7 +77,7 @@ describe('HtmlFragment', () => {
     });
 
     test('className override takes precedence over contentType', () => {
-        const customClassName = 'custom-class text-lg';
+        const customClassName = 'custom-class text-sm';
         const { container } = renderHtmlFragment({
             content: '<ul><li>Item</li></ul>',
             contentType: 'bulleted-list',
@@ -86,7 +86,7 @@ describe('HtmlFragment', () => {
 
         const contentDiv = container.querySelector('.custom-class');
         expect(contentDiv).toBeInTheDocument();
-        expect(contentDiv).toHaveClass('text-lg');
+        expect(contentDiv).toHaveClass('text-sm');
     });
 
     test('renders empty content gracefully', () => {

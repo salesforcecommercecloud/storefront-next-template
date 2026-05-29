@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
 export type FilterValue = NonNullable<ShopperSearch.schemas['ProductSearchRefinement']['values']>[0];
 

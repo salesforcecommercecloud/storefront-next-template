@@ -15,60 +15,14 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductItem from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
-
-// We need to mock useItemFetcherLoading.
-// Since we can't easily mock imports in stories without test-runner hooks,
-// we will assume it returns false by default (which it should if no fetchers are active).
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                event.preventDefault();
-                event.stopPropagation();
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const mockSite = mockSiteObject;
 
 const meta: Meta<typeof ProductItem> = {
     title: 'Components/ProductItem',
@@ -106,12 +60,14 @@ A component that displays individual product information in cart or summary view
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
-                    <ActionLogger>
-                        <div className="max-w-2xl mx-auto">
-                            <Story />
-                        </div>
-                    </ActionLogger>
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <div className="max-w-2xl mx-auto">
+                        <Story />
+                    </div>
                 </SiteProvider>
             </ConfigProvider>
         ),
@@ -128,7 +84,7 @@ const mockProductItem = {
     quantity: 1,
     price: 99.99,
     priceAfterItemDiscount: 99.99,
-    productName: mockStandardProductOrderable.product.name,
+    productName: mockStandardProductOrderable.product.name ?? '',
     shortDescription: mockStandardProductOrderable.product.shortDescription,
 };
 
@@ -370,5 +326,99 @@ A choice-based bonus product that allows users to select from multiple bonus opt
         await expect(productLink).toBeInTheDocument();
         await userEvent.click(productLink);
         // Link should be interactive
+    },
+};
+
+export const NoProductItem: Story = {
+    args: {
+        productItem: undefined,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Product data not available')).toBeInTheDocument();
+    },
+};
+
+export const LongProductName: Story = {
+    args: {
+        productItem: {
+            ...mockProductItem,
+            productName:
+                "Women's Premium Extra-Fine Italian Merino Wool Blend Long-Sleeve Quarter-Zip Sweater with Elbow Patches and Reinforced Stitching",
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const link = canvas.getByRole('link', { name: /Women's Premium Extra-Fine/i });
+        await expect(link).toBeInTheDocument();
+    },
+};
+
+export const MissingImages: Story = {
+    args: {
+        productItem: {
+            ...mockProductItem,
+            imageGroups: [],
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+        // Image fallback renders a grey placeholder div (no img element)
+        const img = canvas.queryByRole('img');
+        await expect(img).not.toBeInTheDocument();
+    },
+};
+
+export const DiscountedPrice: Story = {
+    args: {
+        productItem: {
+            ...mockProductItem,
+            price: 79.99,
+            basePrice: 99.99,
+            priceAfterItemDiscount: 79.99,
+            quantity: 1,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+    },
+};
+
+export const MultipleQuantity: Story = {
+    args: {
+        productItem: {
+            ...mockProductItem,
+            quantity: 3,
+            price: 99.99,
+            priceAfterItemDiscount: 299.97,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductItem.productName)).toBeInTheDocument();
+        // Shows "each" price for multi-quantity items
+        await expect(canvas.getByText(/each/i)).toBeInTheDocument();
+    },
+};
+
+export const WithInventoryMessage: Story = {
+    args: {
+        productItem: {
+            ...mockProductItem,
+            showInventoryMessage: true,
+            inventoryMessage: 'Only 2 left in stock — order soon',
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Only 2 left in stock — order soon')).toBeInTheDocument();
     },
 };

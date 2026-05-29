@@ -15,10 +15,10 @@
  */
 import { Link } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const MAX_VISIBLE_INDICATOR_COUNT = 99;
 
@@ -59,11 +59,15 @@ export function ProductTileSwatches({
     maxSwatches,
     productHref,
 }: ProductTileSwatchesProps) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
+    const { t } = useTranslation('product');
     const overflowCount = totalColorCount - maxSwatches;
 
     return (
-        <div aria-label="Available colors" className="flex items-center gap-1 mb-2 relative z-20 flex-wrap">
+        <div
+            role="group"
+            aria-label={t('swatches.availableColors')}
+            className="flex items-center gap-1 mb-2 relative z-20 flex-wrap">
             {colorValues.map(({ value, name: valueName, href, swatch }) => {
                 const isSelected = selectedAttributeValue === value;
 
@@ -73,7 +77,7 @@ export function ProductTileSwatches({
                         to={href}
                         onMouseEnter={() => onSwatchHover(value)}
                         onClick={onSwatchClick}
-                        aria-label={`View ${productName} in ${valueName}`}
+                        aria-label={t('swatches.viewProductInColor', { productName, colorName: valueName })}
                         aria-current={isSelected ? 'true' : undefined}
                         tabIndex={-1}
                         className={cn(
@@ -104,8 +108,10 @@ export function ProductTileSwatches({
                     onClick={onSwatchClick}
                     tabIndex={-1}
                     className="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
-                    title={`+${Math.min(overflowCount, MAX_VISIBLE_INDICATOR_COUNT)} more`}
-                    aria-label={`View all ${totalColorCount} colors for ${productName}`}>
+                    title={t('swatches.moreColorsTitle', {
+                        count: Math.min(overflowCount, MAX_VISIBLE_INDICATOR_COUNT),
+                    })}
+                    aria-label={t('swatches.viewAllColors', { count: totalColorCount, productName })}>
                     <svg width="7" height="7" viewBox="0 0 7 7" fill="none" className="shrink-0">
                         <path
                             d="M6.41667 2.97917V3.4375C6.41667 3.56407 6.31406 3.66667 6.1875 3.66667H3.66667V6.1875C3.66667 6.31406 3.56407 6.41667 3.4375 6.41667H2.97917C2.8526 6.41667 2.75 6.31406 2.75 6.1875V3.66667H0.229167C0.102601 3.66667 0 3.56407 0 3.4375V2.97917C0 2.8526 0.102601 2.75 0.229167 2.75H2.75V0.229167C2.75 0.102601 2.8526 0 2.97917 0H3.4375C3.56407 0 3.66667 0.102601 3.66667 0.229167V2.75H6.1875C6.31406 2.75 6.41667 2.8526 6.41667 2.97917Z"

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type ReactNode, type ComponentType } from 'react';
 import { type useLoaderData, type useActionData, useLocation, type useParams, type useMatches } from 'react-router';
 import withSuspense from '@/components/with-suspense';
@@ -29,7 +28,7 @@ type LoaderDataProp<TLoaderData> = [TLoaderData] extends [undefined]
     : /** Loader data from the route's loader function */
       { loaderData: ReturnType<typeof useLoaderData<TLoaderData>> };
 
-export type RouteComponentProps<TLoaderData = any> = LoaderDataProp<TLoaderData> & {
+export type RouteComponentProps<TLoaderData = unknown> = LoaderDataProp<TLoaderData> & {
     /** Action data from the route's action function */
     actionData?: ReturnType<typeof useActionData>;
     /** Route parameters from the URL */
@@ -69,7 +68,7 @@ export type RouteComponentProps<TLoaderData = any> = LoaderDataProp<TLoaderData>
  * });
  * ```
  */
-export function createPage<TLoaderData = any>(config: {
+export function createPage<TLoaderData = unknown>(config: {
     /** The component to render when data is loaded */
     component: ComponentType<RouteComponentProps<TLoaderData>>;
     /** Fallback component to show while loading */
@@ -108,6 +107,10 @@ export function createPage<TLoaderData = any>(config: {
         const loaderData = props.loaderData;
         const location = useLocation();
         const pageKey = getPageKey?.(loaderData) ?? `${location.pathname}${location.search}${location.hash}`;
+        // The conditional `LoaderDataProp<TLoaderData>` produces a structural prop type that
+        // does not match the spread shape after generic instantiation. The runtime is valid;
+        // this cast bridges the generic-HOC type boundary.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const content = <ComponentWithSuspense {...(props as any)} />;
 
         if (pageKey) {

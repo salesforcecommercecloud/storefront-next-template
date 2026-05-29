@@ -15,16 +15,18 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { isValidElement } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { createTestContext, createLoaderArgs } from '@/lib/test-utils';
 import { loader } from './_app.account.overview';
+import type { Route } from './+types/_app.account.overview';
 
-let capturedOverviewProps: { customer?: any; ordersPromise?: any } = {};
+let capturedOverviewProps: { customer?: any; ordersPromise?: any; recommendationsSlot?: any } = {};
 
 vi.mock('@/components/account/account-overview', () => ({
-    AccountOverview: (props: { customer?: any; ordersPromise?: any }) => {
+    AccountOverview: (props: { customer?: any; ordersPromise?: any; recommendationsSlot?: any }) => {
         capturedOverviewProps = props;
         return <div data-testid="account-overview" />;
     },
@@ -43,8 +45,20 @@ vi.mock('@/lib/api/order.server', () => ({
     fetchCustomerOrders: (...args: any[]) => mockFetchCustomerOrders(...args),
 }));
 
+const mockFetchEnrichedRecommendations = vi.fn();
+
+vi.mock('@/lib/product/recommendations.server', () => ({
+    fetchProductRecommendations: (...args: any[]) => mockFetchEnrichedRecommendations(...args),
+}));
+
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(() => ({ customerId: 'cust-123' })),
+}));
+
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
 }));
 
 const mockCustomer = {
@@ -69,12 +83,13 @@ describe('Account Overview page', () => {
         vi.clearAllMocks();
         capturedOverviewProps = {};
         mockFetchCustomerOrders.mockReturnValue(Promise.resolve(mockOrdersResult));
+        mockFetchEnrichedRecommendations.mockReturnValue(Promise.resolve({ recs: [] }));
     });
 
     describe('loader', () => {
         test('fetches the 5 most recent orders for the authenticated customer', async () => {
             const context = createTestContext();
-            const args = createLoaderArgs(new Request('http://localhost/account/overview'), context, {
+            const args = createLoaderArgs<Route.LoaderArgs>(new Request('http://localhost/account/overview'), context, {
                 unstable_pattern: '/account/overview',
             });
 
@@ -89,6 +104,28 @@ describe('Account Overview page', () => {
 
             const orders = await result.ordersPromise;
             expect(orders).toEqual(mockOrdersResult);
+        });
+
+        test('defers curated recommendations promise (EMPTY_SEARCH_RESULTS_MOST_VIEWED)', async () => {
+            const context = createTestContext({ currency: 'USD' });
+            const request = new Request('http://localhost/account/overview');
+            const args = createLoaderArgs<Route.LoaderArgs>(request, context, {
+                unstable_pattern: '/account/overview',
+            });
+
+            const result = loader(args);
+
+            expect(result.curatedRecommendationsPromise).toBeInstanceOf(Promise);
+            await result.curatedRecommendationsPromise;
+            expect(mockFetchEnrichedRecommendations).toHaveBeenCalledTimes(1);
+            const [firstArg, opts] = mockFetchEnrichedRecommendations.mock.calls[0] as [
+                unknown,
+                { name: string; currency?: string; products?: unknown[] },
+            ];
+            expect(firstArg).toMatchObject({ context, request });
+            expect(opts.name).toBe('products-in-all-categories');
+            expect(opts.currency).toBe('USD');
+            expect(opts.products).toBeUndefined();
         });
     });
 
@@ -107,6 +144,12 @@ describe('Account Overview page', () => {
                                 element: <AccountOverviewRoute />,
                                 loader: () => ({
                                     ordersPromise: Promise.resolve(mockOrdersResult),
+                                    wishlistInitialState: Promise.resolve({
+                                        customerId: null,
+                                        listId: null,
+                                        itemsByProductId: new Map(),
+                                    }),
+                                    curatedRecommendationsPromise: Promise.resolve({ recs: [] }),
                                 }),
                             },
                         ],
@@ -131,6 +174,9 @@ describe('Account Overview page', () => {
 
             expect(capturedOverviewProps.customer).toEqual(mockCustomer);
             expect(capturedOverviewProps.ordersPromise).toBeDefined();
+            // Recommendations are passed via slot composition rather than a promise prop —
+            // the route owns the recommender selection, title, and card chrome.
+            expect(isValidElement(capturedOverviewProps.recommendationsSlot)).toBe(true);
         });
 
         test('shows the account dashboard for a guest with no customer data', async () => {

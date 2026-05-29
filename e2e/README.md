@@ -39,6 +39,8 @@ Copy the environment template from the `e2e` directory:
 cp e2e/.env.sample e2e/.env
 ```
 
+> **Note:** `.env.sample` configures the CodeceptJS test runner only. The storefront app's SCAPI creds, MRT vars, hybrid proxy settings, etc. live in `../.env.default` — see [`../docs/README-CONFIG.md`](../docs/README-CONFIG.md) for the full reference.
+
 Key variables in `.env`:
 
 | Variable | Default | Description |

@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { RegionWrapper } from './region-wrapper';
 import type { RegionDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 
 vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
     usePageDesignerMode: vi.fn(() => ({ isDesignMode: false, isPreviewMode: false })),

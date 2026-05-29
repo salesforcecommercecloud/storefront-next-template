@@ -2,7 +2,7 @@
 
 ## Dynamic Imaging Service (DIS)
 
-Salesforce Commerce Cloud's [Dynamic Imaging Service](https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5) (DIS) is an image transformation service that optimizes images on-the-fly. Instead of storing pre-generated image variants, DIS transforms images at request time based on URL parameters. CDNs in front of DIS can then cache the transformed results at the edge.
+Salesforce B2C Commerce's [Dynamic Imaging Service](https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5) (DIS) is an image transformation service that optimizes images on-the-fly. Instead of storing pre-generated image variants, DIS transforms images at request time based on URL parameters. CDNs in front of DIS can then cache the transformed results at the edge.
 
 ### Why Use DIS
 
@@ -14,14 +14,14 @@ Images are typically the single largest contributor to page weight. Unoptimized 
 
 ### DIS URL Anatomy
 
-The application rewrites static Commerce Cloud image URLs into DIS URLs with transformation parameters:
+Storefront Next rewrites static B2C Commerce image URLs into DIS URLs with transformation parameters:
 
 ```
 Original (static asset):
-https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/.../image.jpg
+https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/.../image.jpg
 
 DIS URL:
-https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-catalog/default/.../image.webp?sfrm=jpg&sw=720&sh=480&q=70
+https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/.../image.webp?sfrm=jpg&sw=720&sh=480&q=70
         └─────────────── DIS Host ──────────────┘           └ Realm ┘                                                       └─ Format(s) ─┘└──── Params ────┘
 ```
 
@@ -51,11 +51,11 @@ DIS behavior is controlled via `config.server.ts` under the `images` key:
 
 ```typescript
 images: {
-    quality: 70,            // Default DIS quality (1-100)
-    formats: ['webp'],      // Target format(s) for <source> elements
-    fallbackFormat: 'jpg',  // Format for the <img> fallback src
-    host: DIS_DEFAULT_HOST, // DIS endpoint URL
-    enableDis: true,        // Master switch to enable/disable DIS
+  quality: 70,            // Default DIS quality (1-100)
+  formats: ['webp'],      // Target format(s) for <source> elements
+  fallbackFormat: 'jpg',  // Format for the <img> fallback src
+  host: DIS_DEFAULT_HOST, // DIS endpoint URL
+  enableDis: true,        // Master switch to enable/disable DIS
 }
 ```
 
@@ -74,6 +74,36 @@ PUBLIC__app__images__host=https://edge.dis.commercecloud.salesforce.com
 
 When `enableDis` is `false` (e.g., in workspace environments), the image system falls back to serving static assets directly. Format conversion, server-side resizing, and `<source>` generation are all skipped.
 
+## Image Filtering on Product Listing Pages
+
+Search responses (`fetchSearchProducts`) include an `imageGroups` array on every hit. By default SCAPI returns every imageGroup for every variant, which on variant-heavy catalogs can be the dominant contributor to PLP payload size — most of those images are never rendered.
+
+The template restricts the response via SCAPI's [`imgTypes` query parameter](https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-search?meta=productSearch) using `config.server.ts`:
+
+```typescript
+search: {
+  products: {
+    images: {
+      tile: 'medium',
+      swatch: 'swatch',
+    },
+  },
+}
+```
+
+Each role names the viewType a specific consumer reads — `tile` for the product tile hero, `swatch` for the color thumbnails. The search filter derives its `imgTypes` query parameter as the union of these values (deduplicated and joined with `,`), so adding a new role automatically widens the filter. Setting a role to `undefined` opts that role out; setting all roles to `undefined` (or providing an empty `images: {}`) disables filtering entirely and returns the full payload. `imgTypes` requires `expand=images` and `allImages=true`; both are set by `fetchSearchProducts`.
+
+Implementation: [src/lib/api/search.server.ts](../src/lib/api/search.server.ts). Full config reference: [docs/README-CONFIG-OPTIONS.md](./README-CONFIG-OPTIONS.md#searchproductsimagestile).
+
+### Keeping role-named values aligned with consumers
+
+If you customize the product tile to read a different viewType (e.g. switch the hero from `medium` to `large`), you must update the matching role here — otherwise the tile will receive empty image arrays for the unrequested viewType. The OOTB consumers that should eventually read from these declarations are:
+
+- `tile` → [src/components/product-image/index.tsx](../src/components/product-image/index.tsx) (currently hardcodes `'medium'`)
+- `swatch` → [src/lib/product/product-utils.ts](../src/lib/product/product-utils.ts) (`buildImageSwatchData`, currently hardcodes `'swatch'`)
+
+The hardcoded strings in those consumers are tracked for a follow-up cleanup that will derive them from these same role-named declarations, eliminating drift.
+
 ## `<DynamicImage>` Component
 
 `<DynamicImage>` is a responsive image component that generates an optimized `<picture>` element with DIS-powered `<source>` elements and responsive preloading via React 19's [`preload()`](https://react.dev/reference/react-dom/preload) API.
@@ -88,9 +118,9 @@ import { DynamicImage } from '@/components/dynamic-image';
 
 ```jsx
 <DynamicImage
-    src="https://example.com/image.jpg"
-    alt="Product photo"
-    widths={[400, 800, 1200]}
+  src="https://example.com/image.jpg"
+  alt="Product photo"
+  widths={[400, 800, 1200]}
 />
 ```
 
@@ -151,20 +181,20 @@ Use fixed px widths when the image container has a predetermined size (e.g., car
 
 Use vw-based widths when the image scales with the viewport (e.g., product grids, hero banners).
 
-### Server-Side Cropping with Heights
+### Server-Side Scaling with Heights
 
-The `heights` prop enables DIS server-side cropping via the `sh` parameter. When provided alongside `widths`, it defines the exact crop box on the DIS server, giving you precise aspect ratio control across responsive breakpoints.
+The `heights` prop enables DIS server-side scaling via the `sh` parameter. When provided alongside `widths`, it defines exact output dimensions, giving you precise aspect ratio control across responsive breakpoints.
 
 ```jsx
 // 4:3 aspect ratio maintained across all breakpoints
 <DynamicImage
-    src="https://example.com/image.jpg[?sw={width}&sh={height}]"
-    widths={[400, 800, 1200]}
-    heights={[300, 600, 900]}
+  src="https://example.com/image.jpg[?sw={width}&sh={height}]"
+  widths={[400, 800, 1200]}
+  heights={[300, 600, 900]}
 />
 ```
 
-DIS crops the image to the exact `sw` x `sh` box, then scales accordingly. Both values are multiplied by the DPR factor. At 2x, `widths={[400]}` and `heights={[300]}` generates srcSet entries for `sw=400&sh=300` (1x) and `sw=800&sh=600` (2x).
+Both values are multiplied by the DPR factor. At 2x, `widths={[400]}` and `heights={[300]}` generates srcSet entries for `sw=400&sh=300` (1x) and `sw=800&sh=600` (2x).
 
 `heights` supports the same formats as `widths` (arrays, objects with breakpoint keys, comma-separated strings for Page Designer).
 
@@ -191,11 +221,11 @@ In practice, the PDP image gallery uses conditional priority to eagerly load the
 
 ```jsx
 <DynamicImage
-    src={`${selectedImage.src}[?sw={width}]`}
-    alt={selectedImage.alt || imageAltFallback}
-    widths={['100vw', '680px']}
-    loading={eager ? 'eager' : 'lazy'}
-    priority={eager ? 'high' : undefined}
+  src={`${selectedImage.src}[?sw={width}]`}
+  alt={selectedImage.alt || imageAltFallback}
+  widths={['100vw', '680px']}
+  loading={eager ? 'eager' : 'lazy'}
+  priority={eager ? 'high' : undefined}
 />
 ```
 
@@ -217,11 +247,11 @@ The provider deliberately exposes **two different interfaces**, one for the oute
 
 ```typescript
 value: {
-    sources?: Set<string>;                                       // Shared source registry
-    widths?: DynamicImageDimensions;                             // Responsive widths for all nested images
-    heights?: DynamicImageDimensions;                            // Responsive heights for all nested images
-    addSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to register an image
-    hasSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to determine importance
+  sources?: Set<string>;                                       // Shared source registry
+  widths?: DynamicImageDimensions;                             // Responsive widths for all nested images
+  heights?: DynamicImageDimensions;                            // Responsive heights for all nested images
+  addSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to register an image
+  hasSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to determine importance
 }
 ```
 
@@ -231,10 +261,10 @@ The container receives the raw `Set<string>` alongside each `src`, giving it ful
 
 ```typescript
 {
-    addSource: (src: string) => boolean;   // Register this image (Set is hidden)
-    hasSource: (src: string) => boolean;   // Is this image important?
-    widths: DynamicImageDimensions | undefined;
-    heights: DynamicImageDimensions | undefined;
+  addSource: (src: string) => boolean;   // Register this image (Set is hidden)
+  hasSource: (src: string) => boolean;   // Is this image important?
+  widths: DynamicImageDimensions | undefined;
+  heights: DynamicImageDimensions | undefined;
 }
 ```
 
@@ -248,24 +278,24 @@ The product grid splits tiles into critical (above-the-fold) and non-critical (b
 
 ```jsx
 const responsiveImageWidths = [
-    '40vw', // base: 2 columns
-    '25vw', // sm: 3 columns
-    '18vw', // md: 4 columns
-    '14vw', // lg: 4 columns with refinement panel
-    '16vw', // xl: 4 columns with refinement panel
-    '16vw', // 2xl: 4 columns with refinement panel
+  '40vw', // base: 2 columns
+  '25vw', // sm: 3 columns
+  '18vw', // md: 4 columns
+  '14vw', // lg: 4 columns with refinement panel
+  '16vw', // xl: 4 columns with refinement panel
+  '16vw', // 2xl: 4 columns with refinement panel
 ];
 
 // Critical tiles: all images are high priority
 const hasSource = useCallback(() => true, []);
 
 <DynamicImageProvider value={{ hasSource, widths: responsiveImageWidths }}>
-    {criticalProducts.map(product => <ProductTile ... />)}
+  {criticalProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 
 // Non-critical tiles: no hasSource → all images default to lazy
 <DynamicImageProvider value={{ widths: responsiveImageWidths }}>
-    {nonCriticalProducts.map(product => <ProductTile ... />)}
+  {nonCriticalProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 ```
 
@@ -275,13 +305,13 @@ Alternatively, a single provider can achieve the same result. Because `hasSource
 
 ```jsx
 const addSource = useCallback((src, sources) => {
-    if (sources.size < 4) { sources.add(src); return true; }
-    return false;
+  if (sources.size < 4) { sources.add(src); return true; }
+  return false;
 }, []);
 const hasSource = useCallback((src, sources) => sources.has(src), []);
 
 <DynamicImageProvider value={{ addSource, hasSource, widths: responsiveImageWidths }}>
-    {allProducts.map(product => <ProductTile ... />)}
+  {allProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 ```
 
@@ -291,7 +321,7 @@ The first four tiles to call `addSource` get registered; subsequent tiles are ig
 
 Inside each product tile, the `ProductImageContainer` uses `addSource` to register whichever image URL is currently selected (which depends on the active color swatch). This is where the two-step contract matters: the tile doesn't decide importance, it just registers. The grid's `hasSource` decides.
 
-```tsx
+```jsx
 const imageContext = useDynamicImageContext();
 
 // Register the current image URL (resolved from the selected color variant)
@@ -305,18 +335,18 @@ A more selective container could supply a `hasSource` that checks whether a spec
 
 ## Dynamic Image Utility Functions
 
-The `@/lib/dynamic-image` module exports lower-level utilities for working with DIS URLs outside the `<DynamicImage>` component.
+The `@/lib/images/dynamic-image` module exports lower-level utilities for working with DIS URLs outside the `<DynamicImage>` component.
 
 ### `toImageUrl()`
 
 Converts an image URL to a DIS-optimized URL with graceful fallback. Safe to use with any image URL; returns the original if transformation isn't possible.
 
 ```typescript
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 
 // SFCC URL → DIS WebP
-toImageUrl({ src: 'https://zzrf-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
-// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/.../image.webp?sfrm=jpg&q=70'
+toImageUrl({ src: 'https://demo-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&q=70'
 
 // Non-SFCC URL → returned as-is (fallback)
 toImageUrl({ src: 'https://example.com/image.jpg', config })
@@ -329,11 +359,27 @@ Use this when rendering images outside of `<DynamicImage>`, for example category
 
 Strict variant that only handles SFCC URLs. Returns `undefined` if the URL can't be converted (non-SFCC host, missing realm, missing DIS config). Use this when you need to know definitively whether DIS transformation succeeded.
 
+Recognized SFCC hostnames are `*.commercecloud.salesforce.com`, `*.demandware.net`, and `*.my.cc.salesforce.com`. The realm is derived from the first subdomain (e.g. `demo-001` → `DEMO_001`).
+
 ```typescript
-import { toDisImageUrl } from '@/lib/dynamic-image';
+import { toDisImageUrl } from '@/lib/images/dynamic-image';
 
 toDisImageUrl({ src: sfccUrl, options: { width: 720, height: 480, quality: 80 }, config })
-// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/.../image.webp?sfrm=jpg&sw=720&sh=480&q=80'
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&sw=720&sh=480&q=80'
+```
+
+### `toDisBaseUrl()`
+
+Rewrites a raw SFCC static image URL into a DIS-hosted URL by inserting the `/dw/image/v2/{realm}/` prefix and switching to the configured DIS host. Unlike `toDisImageUrl()`, it **preserves the original file extension and query string** — it does not perform format conversion or append DIS transformation parameters (`sfrm`, `q`, `sw`, `sh`). Use this when downstream code (e.g. `getResponsivePictureAttributes`) handles per-breakpoint format/query generation and just needs a clean DIS-hosted base URL.
+
+```typescript
+import { toDisBaseUrl } from '@/lib/images/dynamic-image';
+
+toDisBaseUrl({
+  src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
+  config,
+})
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/.../image.jpg'
 ```
 
 ### `transformHtmlImageUrls()`
@@ -341,7 +387,7 @@ toDisImageUrl({ src: sfccUrl, options: { width: 720, height: 480, quality: 80 },
 Batch-transforms all `<img>` tags in an HTML string to use DIS URLs. Useful for rich text content from SCAPI or Page Designer that contains embedded images.
 
 ```typescript
-import { transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 
 const html = '<p>Text</p><img src="/on/demandware.static/.../banner.jpg" alt="Sale">';
 const optimized = transformHtmlImageUrls(html, config);
@@ -353,7 +399,7 @@ const optimized = transformHtmlImageUrls(html, config);
 Replaces the file extension in an image URL and adds the `sfrm` parameter to track the original format. Used internally by the component, but available for custom image handling.
 
 ```typescript
-import { replaceImageFormat } from '@/lib/dynamic-image';
+import { replaceImageFormat } from '@/lib/images/dynamic-image';
 
 replaceImageFormat('https://example.com/image.jpg?sw=460&q=60')
 // → 'https://example.com/image.webp?sw=460&q=60&sfrm=jpg'
@@ -383,14 +429,14 @@ Use this fallback order consistently for product images:
 1. SCAPI image alt (`image.alt`)
 2. Product name (`productName` / `name`)
 3. Localized generic fallback (for example `t('common:productImageAlt')`)
-4. Hardcoded English fallback as a final safety net (for example `'Product Image'`)
+4. Non-localized English fallback as a final safety net (for example `'Product Image'`)
 
 Use explicit `||` fallback chains in components to preserve this order.
 
 ### Rules
 
 - Always provide an `alt` attribute on rendered `<img>` elements.
-- Use localized strings for generic fallback alt text, then a hardcoded English fallback as the last fallback.
+- Use localized strings for generic fallback alt text, then a hardcoded English fallback as the last resort.
 - Decorative images must set `alt=""` when the image is purely decorative and has no meaningful text equivalent.
 
 ### Why This Exists

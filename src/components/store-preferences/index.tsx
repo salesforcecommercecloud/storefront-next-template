@@ -32,7 +32,7 @@ export default function StorePreferences(): ReactElement {
             {/* Store Preferences Header */}
             <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
-                    <h1 className="text-lg-xl font-semibold text-foreground mb-1" tabIndex={0}>
+                    <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('storePreferences.title')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('storePreferences.subtitle')}</p>

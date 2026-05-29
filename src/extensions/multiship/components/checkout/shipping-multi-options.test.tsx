@@ -20,7 +20,7 @@ import type { ReactNode } from 'react';
 import ShippingMultiOptions from './shipping-multi-options';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <ConfigProvider config={mockConfig}>{children}</ConfigProvider>

@@ -22,76 +22,6 @@ import { initReactI18next } from 'react-i18next';
 import resources from '@/locales';
 import 'vitest-localstorage-mock';
 
-// Mock static asset imports that fail on Windows due to absolute path resolution
-// Windows converts '/path' to 'file:///path' which is invalid (missing drive letter)
-vi.mock('/favicon.ico', () => ({ default: '/favicon.ico' }));
-vi.mock('/images/GoogleMaps_Logo_Gray_4x.png', () => ({ default: '/images/GoogleMaps_Logo_Gray_4x.png' }));
-vi.mock('/images/logo.svg', () => ({ default: '/images/logo.svg' }));
-// Market Street hero images (default theme)
-vi.mock('/images/hero-01.webp', () => ({
-    default: '/images/hero-01.webp',
-}));
-vi.mock('/images/hero-02.webp', () => ({
-    default: '/images/hero-02.webp',
-}));
-vi.mock('/images/hero-03.webp', () => ({
-    default: '/images/hero-03.webp',
-}));
-vi.mock('/images/hero-04.webp', () => ({
-    default: '/images/hero-04.webp',
-}));
-// Foundations theme images
-vi.mock('/images/foundations/hero-carousel/hero-cube.webp', () => ({
-    default: '/images/foundations/hero-carousel/hero-cube.webp',
-}));
-vi.mock('/images/foundations/hero-carousel/hero-new-arrivals.webp', () => ({
-    default: '/images/foundations/hero-carousel/hero-new-arrivals.webp',
-}));
-vi.mock('/images/foundations/foundations-logo.svg', () => ({
-    default: '/images/foundations/foundations-logo.svg',
-}));
-vi.mock('/images/black-cube-photo.svg', () => ({
-    default: '/images/black-cube-photo.svg',
-}));
-vi.mock('/images/home-office-setup.svg', () => ({
-    default: '/images/home-office-setup.svg',
-}));
-vi.mock('/images/living-room.svg', () => ({
-    default: '/images/living-room.svg',
-}));
-vi.mock('/images/shelf-display.svg', () => ({
-    default: '/images/shelf-display.svg',
-}));
-// Payment logos - return data URLs to match Vite's test environment behavior
-vi.mock('/images/amazon-pay-logo.png', () => ({
-    default: '/images/amazon-pay-logo.png',
-}));
-vi.mock('/images/apple-pay-logo.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-vi.mock('/images/google-pay-logo.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-vi.mock('/images/paypal.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-vi.mock('/images/venmo.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-// App store badge SVGs (added in PR #1272) - return data URLs to match Vite's test environment behavior
-vi.mock('/images/app-store-badge.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg==',
-}));
-vi.mock('/images/google-play-badge.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg==',
-}));
-
 // Clear engagement-related PUBLIC__ env vars before any modules load
 // The engagement config is protected from env var overrides, so these must be cleared
 // to prevent defineConfig from throwing during module initialization
@@ -126,6 +56,37 @@ beforeAll(() => {
         });
     }
 });
+
+// Mock useAnalytics hook globally for all tests
+// Individual tests can override this if they need specific behavior
+//
+// TRADE-OFF: This global mock means components that should call tracking functions but don't
+// will pass tests silently. Missing track calls are only caught via:
+// 1. Storybook interaction tests (if the story exercises the analytics path)
+// 2. Production telemetry (if monitoring alerts on missing events)
+//
+// Tests that need to assert on specific track-function calls must use vi.unmock('@/hooks/use-analytics')
+// in a beforeEach block, then provide their own mock implementation that can be spied on.
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackViewPage: vi.fn(),
+        trackViewProduct: vi.fn(),
+        trackCartItemAdd: vi.fn(),
+        trackCheckoutStart: vi.fn(),
+        trackCheckoutStep: vi.fn(),
+        trackViewSearch: vi.fn(),
+        trackViewCategory: vi.fn(),
+        trackClickProductInCategory: vi.fn(),
+        trackClickProductInSearch: vi.fn(),
+        trackViewSearchSuggestions: vi.fn(),
+        trackClickSearchSuggestion: vi.fn(),
+        trackWishlistItemAdded: vi.fn(),
+        trackWishlistItemRemoved: vi.fn(),
+        trackWishlistViewed: vi.fn(),
+        trackWishlistItemMerged: vi.fn(),
+        trackWishlistMerged: vi.fn(),
+    }),
+}));
 
 // Mock getI18nextInstance to return an i18next instance for server actions
 // Individual tests can override this if needed

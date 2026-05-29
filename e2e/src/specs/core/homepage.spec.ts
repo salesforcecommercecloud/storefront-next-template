@@ -31,7 +31,8 @@ Scenario('Homepage loads and sets SFCC cookies', async () => {
     await storefrontPage.validateSFCCCookies();
 })
     .tag('@homepage')
-    .tag('@cookies');
+    .tag('@cookies')
+    .tag('@smoke');
 
 Scenario('Homepage displays product tiles', async () => {
     // Navigate to the storefront homepage
@@ -47,4 +48,5 @@ Scenario('Homepage displays product tiles', async () => {
     expect(productCount, 'Should have product tiles on homepage').to.be.greaterThan(0);
 })
     .tag('@homepage')
-    .tag('@products');
+    .tag('@products')
+    .tag('@smoke');

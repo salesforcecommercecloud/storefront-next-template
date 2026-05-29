@@ -57,18 +57,63 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-skeleton/index',
     'product-tile/index',
     'product-view/index',
-    'theme-switcher/components/footer/index',
     'store-locator/components/footer/index',
+    // Thin async wrapper (Suspense/Await) and barrel re-export, no visual rendering of their own
+    'product-grid/deferred',
+    'product-grid/index',
+    'product-recommendations/deferred',
+    // Barrel re-export — `customer-reviews-section.tsx` (the implementation) has its own story.
+    'ratings-reviews/components/customer-reviews-section/index',
+    // Extension UITarget wrappers — thin Suspense/Await wrappers that pull deferred data
+    // from `useRouteLoaderData`. Underlying section components have their own stories.
+    'customer-preferences/components/target/preferences-target',
+    'bnpl/components/target/bnpl-target',
+    'ratings-reviews/components/target/order-line-review-target',
+    'ratings-reviews/components/target/reviews-section-target',
+    'ratings-reviews/components/target/reviews-summary-target',
+    // Tiny per-line context provider used to forward props through a UITarget boundary.
+    'ratings-reviews/components/order-line-review-context',
+    'product-content/components/target/returns-and-warranty-target',
+    'product-content/components/target/faq-target',
+    'product-content/components/target/pdp-collapsibles-target',
+    'shipping-delivery/components/target/estimated-delivery-target',
+    // Hook that returns a lazy-loaded slot — not a standalone visual component
+    'bopis/components/delivery-options/use-shipping-calculator',
+    // Wraps Sonner's <Toaster> to apply app-level config; no visual content of its own.
+    'toast/app-toaster',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',
     'region/index',
     'region/region-wrapper',
+    // Tiny error-boundary fallback components consumed via React Router's `errorElement` —
+    // depend on `useAsyncError()` which only resolves inside an `<Await>` boundary, so a
+    // standalone story is awkward and offers little value beyond the unit test
+    'cart/cart-load-error',
+    // Mock-based composite story deleted — real component has deep hook deps, sub-components have own stories
+    'checkout/checkout-form-page',
+    // Cart item modal sub-containers — internal mode-router targets composed inside
+    // `cart-item-modal/index.tsx` and exercised by the parent `cart-item-modal` story.
+    // No external importers; unit tests cover the mode-routing logic.
+    'cart-item-modal/add-container',
+    'cart-item-modal/edit-container',
+    'cart-item-modal/view',
+    // Internal implementation of the public `navigation-menu/index.tsx` —
+    // exercised via the index story; not a public component.
+    'navigation-menu/impl',
+    // Storybook-only utility (renders nothing visible), covered by unit test
+    'checkout/storybook/checkout-action-logger',
     // These are basically wrappers around other components, so no value in having storybook stories for them
     'checkout/components/checkout-skeletons',
     'customer-address-form/customer-address-fields',
+    // Barrel re-export — `form.tsx` (the real component) has its own story.
+    'customer-address-form/index',
     'customer-profile-form/form',
     'customer-profile-form/index',
+    // Barrel re-export — `payment-methods.tsx` (the real component) has its own story.
+    'payment-methods/index',
+    'email-update-form/form',
+    'email-update-form/index',
     'forgot-password-form/form',
     'header/cart-badge-icon',
     'header/user-actions/user-menu',
@@ -77,6 +122,14 @@ const EXCLUDED_COMPONENTS = new Set([
     'password-update-form/index',
     'promo-code-form/index',
     'signup-form/form',
+    // Footer sub-components — composed inside `footer/index` and exercised by the Footer stories.
+    'footer/checkout-footer',
+    'footer/legal-links',
+    'footer/main-footer',
+    'footer/newsletter-section',
+    'footer/policy-links',
+    'footer/social-icons',
+    'footer/switchers',
 ]);
 // Ensure OUTPUT DIR exists
 if (!fs.existsSync(OUTPUT_DIR)) {

@@ -23,7 +23,6 @@ import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
-import type { AppConfig } from '@/types/config';
 
 /**
  * Site-context-aware `useNavigate`. An enhanced version of React Router's useNavigate hook.
@@ -37,7 +36,7 @@ import type { AppConfig } from '@/types/config';
  */
 export function useNavigate() {
     const routerNavigate = useRouterNavigate();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     return useCallback(

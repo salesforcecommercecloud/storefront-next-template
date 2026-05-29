@@ -20,7 +20,7 @@ import { ShoppingCart } from 'lucide-react';
 import { Link } from '@/components/link';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperProducts } from '@/scapi';
 /** Basket or Order – OrderSummary displays totals for both (e.g. cart and order details). */
 export type OrderSummaryBasket = ShopperBasketsV2.schemas['Basket'] | ShopperOrders.schemas['Order'];
 
@@ -40,6 +40,9 @@ import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
+import type { CartInventoryValidationResult } from '@/lib/cart/inventory-validation';
+import { CartInventoryErrorBanner } from '@/components/cart/cart-inventory-error-banner';
+import { routes } from '@/route-paths';
 
 /**
  * Props for the OrderSummary component
@@ -70,11 +73,13 @@ interface OrderSummaryProps {
     showHeading?: boolean;
     itemsExpanded?: boolean;
     isEstimate?: boolean;
+    showTotal?: boolean;
     productsByItemId?: Record<string, ShopperProducts.schemas['Product']>;
     onEditCart?: () => void;
     showCheckoutAction?: boolean;
     onSelectBonusProducts?: () => void;
     className?: string;
+    inventoryValidation?: CartInventoryValidationResult;
 }
 
 /**
@@ -131,7 +136,7 @@ function CartItemsSummary({
                         />
                         {/* Edit Cart link: navigates to cart page with optional callback */}
                         <Link
-                            to="/cart"
+                            to={routes.cart}
                             onClick={onEditCart}
                             className={buttonVariants({ variant: 'link', className: 'w-full justify-center' })}>
                             {t('items.editCart')}
@@ -157,6 +162,7 @@ interface SummaryBodyContentProps {
     shippingPromotionAdjustments: Array<{ priceAdjustmentId?: string; itemText?: string }>;
     renderShippingInfo: () => ReactElement;
     isEstimate: boolean;
+    showTotal: boolean;
     showPromoCodeForm: boolean;
 }
 
@@ -174,6 +180,7 @@ function SummaryBodyContent({
     shippingPromotionAdjustments,
     renderShippingInfo,
     isEstimate,
+    showTotal,
     showPromoCodeForm,
 }: SummaryBodyContentProps): ReactElement {
     return (
@@ -190,7 +197,7 @@ function SummaryBodyContent({
             )}
 
             {/* Order Summary Details */}
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2">
                 {/* Subtotal */}
                 <UITarget targetId="sfcc.orderSummary.subtotal.before" />
                 <UITarget targetId="sfcc.orderSummary.subtotal">
@@ -209,9 +216,11 @@ function SummaryBodyContent({
                         ...(basket.orderPriceAdjustments ?? []),
                         ...(basket.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
                     ].map((adjustment) => (
-                        <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
-                            <span>{adjustment.itemText}</span>
-                            <span className="text-success text-xs font-semibold">
+                        <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center gap-2">
+                            <span className="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                                {adjustment.itemText}
+                            </span>
+                            <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
                                 {formatCurrency(adjustment.price ?? 0, i18nLanguage, currency)}
                             </span>
                         </div>
@@ -247,35 +256,45 @@ function SummaryBodyContent({
                 </UITarget>
                 <UITarget targetId="sfcc.orderSummary.shipping.after" />
 
-                {/* Tax */}
-                <UITarget targetId="sfcc.orderSummary.tax.before" />
-                <UITarget targetId="sfcc.orderSummary.tax">
-                    <UITarget targetId="sfcc.orderSummary.tax.line">
-                        <div className="flex justify-between items-center">
-                            <span>{t('summary.tax')}</span>
-                            {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
-                                <span>{formatCurrency(basket.taxTotal, i18nLanguage, currency)}</span>
-                            ) : (
-                                <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
-                            )}
-                        </div>
-                    </UITarget>
-                </UITarget>
-                <UITarget targetId="sfcc.orderSummary.tax.after" />
+                {/* Tax — hidden for gross taxation since tax is already included in prices */}
+                {basket.taxation !== 'gross' && (
+                    <>
+                        <UITarget targetId="sfcc.orderSummary.tax.before" />
+                        <UITarget targetId="sfcc.orderSummary.tax">
+                            <UITarget targetId="sfcc.orderSummary.tax.line">
+                                <div className="flex justify-between items-center">
+                                    <span>{t('summary.tax')}</span>
+                                    {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
+                                        <span>{formatCurrency(basket.taxTotal, i18nLanguage, currency)}</span>
+                                    ) : (
+                                        <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
+                                    )}
+                                </div>
+                            </UITarget>
+                        </UITarget>
+                        <UITarget targetId="sfcc.orderSummary.tax.after" />
+                    </>
+                )}
 
                 {/* Total */}
-                <UITarget targetId="sfcc.orderSummary.total.before" />
-                <UITarget targetId="sfcc.orderSummary.total">
-                    <div className="flex justify-between items-center">
-                        <span className="font-bold">
-                            {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
-                        </span>
-                        <span className="font-bold">
-                            {formatCurrency(basket?.orderTotal || basket?.productTotal || 0, i18nLanguage, currency)}
-                        </span>
-                    </div>
-                </UITarget>
-                <UITarget targetId="sfcc.orderSummary.total.after" />
+                {showTotal && (
+                    <>
+                        <UITarget targetId="sfcc.orderSummary.total.before" />
+                        <UITarget targetId="sfcc.orderSummary.total">
+                            <div className="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground">
+                                <span>{isEstimate ? t('summary.estimatedTotal') : t('summary.total')}</span>
+                                <span>
+                                    {formatCurrency(
+                                        basket?.orderTotal ?? basket?.productTotal ?? 0,
+                                        i18nLanguage,
+                                        currency
+                                    )}
+                                </span>
+                            </div>
+                        </UITarget>
+                        <UITarget targetId="sfcc.orderSummary.total.after" />
+                    </>
+                )}
             </div>
 
             <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
@@ -320,11 +339,13 @@ export default function OrderSummary({
     showHeading = true,
     itemsExpanded = false,
     isEstimate = false,
+    showTotal = true,
     productsByItemId = {},
     onEditCart,
     showCheckoutAction,
     onSelectBonusProducts,
     className,
+    inventoryValidation,
 }: OrderSummaryProps): ReactElement {
     const { t, i18n } = useTranslation('cart');
     const { currency } = useSite();
@@ -371,13 +392,35 @@ export default function OrderSummary({
                 shippingPromotionAdjustments={shippingPromotionAdjustments}
                 renderShippingInfo={renderShippingInfo}
                 isEstimate={isEstimate}
+                showTotal={showTotal}
                 showPromoCodeForm={showPromoCodeForm}
             />
             {showCheckoutAction && (
                 <>
                     <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
-                    <Button asChild className="w-full text-sm mt-2">
-                        <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+
+                    {/* Inventory error banner */}
+                    {inventoryValidation && (
+                        <CartInventoryErrorBanner
+                            issues={inventoryValidation.itemsExceedingInventory}
+                            className="mt-2"
+                            id="cart-inventory-error-desktop"
+                        />
+                    )}
+
+                    <Button
+                        asChild={!(inventoryValidation?.hasInventoryIssues ?? false)}
+                        className="w-full text-sm mt-2"
+                        disabled={inventoryValidation?.hasInventoryIssues ?? false}
+                        aria-disabled={inventoryValidation?.hasInventoryIssues ?? false}
+                        aria-describedby={
+                            inventoryValidation?.hasInventoryIssues ? 'cart-inventory-error-desktop' : undefined
+                        }>
+                        {inventoryValidation?.hasInventoryIssues ? (
+                            <span>{t('checkout.continueToCheckout')}</span>
+                        ) : (
+                            <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
+                        )}
                     </Button>
                     <UITarget targetId="sfcc.cart.payments.expressCheckout" />
 
@@ -403,7 +446,7 @@ export default function OrderSummary({
                                 variant="h2"
                                 as="h2"
                                 id={desktopHeadingId}
-                                className="text-base font-semibold text-foreground">
+                                className="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground">
                                 {t('summary.orderSummary')}
                             </Typography>
                             <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />

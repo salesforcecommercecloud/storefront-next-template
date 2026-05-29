@@ -60,9 +60,13 @@ describe('logging.server', () => {
     });
 
     describe('loggingMiddleware', () => {
-        it('sets a wrapped pino logger on loggerContext', async () => {
+        it('sets a wrapped pino logger on loggerContext and dataStoreLoggerContext', async () => {
             process.env.NODE_ENV = 'development';
             const { loggingMiddleware } = await importModule();
+            // Resolve context refs from the same module graph as the middleware, since vi.resetModules
+            // gives fresh symbol identities each iteration.
+            const { loggerContext } = await import('@/lib/logger.server');
+            const { dataStoreLoggerContext } = await import('@salesforce/storefront-next-runtime/data-store');
 
             const mockContext = {
                 get: vi.fn((ctx: unknown) => {
@@ -75,11 +79,19 @@ describe('logging.server', () => {
 
             await loggingMiddleware({ context: mockContext, request: new Request('http://localhost/') } as any, next);
 
-            expect(mockContext.set).toHaveBeenCalledTimes(1);
+            expect(mockContext.set).toHaveBeenCalledTimes(2);
             expect(next).toHaveBeenCalled();
 
-            // The second argument to set() is the wrapped logger
-            const logger = mockContext.set.mock.calls[0][1] as Record<string, unknown>;
+            const calls = mockContext.set.mock.calls;
+            const loggerCall = calls.find((c) => c[0] === loggerContext);
+            const sdkCall = calls.find((c) => c[0] === dataStoreLoggerContext);
+            if (!loggerCall || !sdkCall) {
+                throw new Error('expected loggingMiddleware to set both loggerContext and dataStoreLoggerContext');
+            }
+            // Same wrapped object handed to both contexts so SDK warnings flow through pino with the request bindings.
+            expect(loggerCall[1]).toBe(sdkCall[1]);
+
+            const logger = loggerCall[1] as Record<string, unknown>;
             expect(typeof logger.error).toBe('function');
             expect(typeof logger.warn).toBe('function');
             expect(typeof logger.info).toBe('function');
@@ -98,7 +110,7 @@ describe('logging.server', () => {
 
             await loggingMiddleware({ context: mockContext, request: new Request('http://localhost/') } as any, next);
 
-            expect(mockContext.set).toHaveBeenCalledTimes(1);
+            expect(mockContext.set).toHaveBeenCalledTimes(2);
             const logger = mockContext.set.mock.calls[0][1] as Record<string, unknown>;
             expect(typeof logger.info).toBe('function');
         });

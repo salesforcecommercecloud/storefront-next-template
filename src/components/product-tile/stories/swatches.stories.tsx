@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
+import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
 import { action } from 'storybook/actions';
+import { expect, within } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
 import { ProductTileSwatches } from '../swatches';
 
 const mockColorValues: DecoratedVariationAttributeValue[] = [
@@ -54,7 +56,7 @@ const mockColorValues: DecoratedVariationAttributeValue[] = [
 const meta: Meta<typeof ProductTileSwatches> = {
     title: 'Components/ProductTile/Swatches',
     component: ProductTileSwatches,
-    tags: ['autodocs'],
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
     },
@@ -65,10 +67,70 @@ const meta: Meta<typeof ProductTileSwatches> = {
             </div>
         ),
     ],
+    argTypes: {
+        colorValues: {
+            description: 'Decorated colour-attribute values rendered as `<Link>` swatches',
+            control: false,
+        },
+        selectedAttributeValue: {
+            description: 'Currently selected colour value — adds the `aria-current` ring on the matching swatch',
+            control: 'text',
+        },
+        productName: {
+            description: 'Product name interpolated into each swatch’s `aria-label`',
+            control: 'text',
+        },
+        totalColorCount: {
+            description: 'Total colour count before slicing — drives the `+N` overflow indicator',
+            control: { type: 'number', min: 0, max: 99 },
+        },
+        maxSwatches: {
+            description: 'Maximum visible swatches before the overflow indicator appears',
+            control: { type: 'number', min: 0, max: 10 },
+        },
+        productHref: {
+            description: 'Product URL used by the `+N` overflow indicator',
+            control: 'text',
+        },
+        onSwatchHover: {
+            description: 'Mouse-enter handler — fires for parent preview-image updates',
+            action: 'onSwatchHover',
+        },
+        onSwatchClick: {
+            description: 'Click handler — fires for analytics / parent callbacks',
+            action: 'onSwatchClick',
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof ProductTileSwatches>;
+
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes every leaf prop —
+ * `selectedAttributeValue`, `productName`, `totalColorCount`, `maxSwatches`,
+ * `productHref`. `colorValues` stays as a fixture (composite array). Toggle
+ * `maxSwatches` below `totalColorCount` to drive the overflow indicator from
+ * the panel.
+ */
+export const Playground: Story = {
+    args: {
+        colorValues: mockColorValues,
+        selectedAttributeValue: 'navy',
+        onSwatchHover: action('onSwatchHover'),
+        onSwatchClick: action('onSwatchClick'),
+        productName: 'Test Product',
+        totalColorCount: 5,
+        maxSwatches: 5,
+        productHref: '/product/test',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const group = canvas.getByRole('group');
+        await expect(group).toBeInTheDocument();
+    },
+};
 
 export const ColorSwatches: Story = {
     args: {
@@ -79,6 +141,14 @@ export const ColorSwatches: Story = {
         productName: 'Test Product',
         totalColorCount: 5,
         maxSwatches: 5,
+        productHref: '/product/test',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const links = canvas.getAllByRole('link');
+        // 5 colour swatches, no overflow indicator (maxSwatches === totalColorCount)
+        await expect(links.length).toBe(5);
     },
 };
 
@@ -91,6 +161,13 @@ export const ColorSwatchesWithOverflow: Story = {
         productName: 'Test Product',
         totalColorCount: 5,
         maxSwatches: 3,
+        productHref: '/product/test',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // 3 colour swatches + 1 overflow indicator (+2)
+        const overflow = canvasElement.querySelector('[title^="+2"]');
+        await expect(overflow).not.toBeNull();
     },
 };
 
@@ -103,6 +180,13 @@ export const NoSelection: Story = {
         productName: 'Test Product',
         totalColorCount: 5,
         maxSwatches: 5,
+        productHref: '/product/test',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // No swatch should have aria-current="true"
+        const selected = canvasElement.querySelector('a[aria-current="true"]');
+        await expect(selected).toBeNull();
     },
 };
 
@@ -115,5 +199,13 @@ export const NoSwatches: Story = {
         productName: 'Test Product',
         totalColorCount: 0,
         maxSwatches: 5,
+        productHref: '/product/test',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const group = canvas.getByRole('group');
+        // Container still renders, but no swatch links inside
+        await expect(group.querySelectorAll('a').length).toBe(0);
     },
 };

@@ -16,7 +16,7 @@
 import { type ElementType, type ImgHTMLAttributes, type SyntheticEvent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import type { DynamicImageDimensions } from '@/lib/dynamic-image';
+import type { DynamicImageDimensions } from '@/lib/images/dynamic-image';
 import { DynamicImage } from '@/components/dynamic-image';
 
 interface ProductImageProps {

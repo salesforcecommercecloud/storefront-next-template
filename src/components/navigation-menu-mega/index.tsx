@@ -23,16 +23,17 @@ import {
 } from 'react';
 import { NavLink } from '@/components/link';
 import { useNavigate } from '@/hooks/use-navigate';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toImageUrl, transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { toImageUrl, transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { useSubCategory } from '@/components/navigation-menu/context';
+import { routes, routeHref } from '@/route-paths';
 
 interface MobileMenuContextType {
     isOpen: boolean;
@@ -65,7 +66,7 @@ function CategoryBanner({
     category,
     ...props
 }: ComponentPropsWithoutRef<'a'> & { category: ShopperProducts.schemas['Category'] }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
     // Transform any image URLs in the HTML banner to use DIS with WebP optimization
@@ -73,7 +74,7 @@ function CategoryBanner({
 
     return (
         <NavigationMenuLink asChild>
-            <NavLink {...props} to={`/category/${category.id}`}>
+            <NavLink {...props} to={routeHref(routes.category, { categoryId: category.id })}>
                 {imageSrc ? (
                     <img
                         className="object-contain w-full max-w-full max-h-[512px]"
@@ -95,6 +96,90 @@ function hasSubcategories(category: ShopperProducts.schemas['Category']): boolea
         category.onlineSubCategoriesCount > 0 &&
         Array.isArray(category.categories) &&
         category.categories.length > 0
+    );
+}
+
+function MobileMenuCategory({
+    category: rawCategory,
+    expandedCategories,
+    onToggle,
+    onNavigate,
+}: {
+    category: ShopperProducts.schemas['Category'];
+    expandedCategories: Set<string>;
+    onToggle: (categoryId: string) => void;
+    onNavigate: () => void;
+}): ReactElement {
+    const { t } = useTranslation('header');
+    const enrichedCategory = useSubCategory(rawCategory.id);
+    const category = enrichedCategory ?? rawCategory;
+    const hasChildren = hasSubcategories(category);
+    const isExpanded = expandedCategories.has(category.id);
+
+    const renderSubcategoryLinks = (
+        subcategories: ShopperProducts.schemas['Category'][] | undefined,
+        level = 1
+    ): ReactElement[] =>
+        subcategories?.map((subcategory) => (
+            <li key={subcategory.id}>
+                <NavLink
+                    to={routeHref(routes.category, { categoryId: subcategory.id })}
+                    onClick={onNavigate}
+                    className={cn(
+                        'block py-2 text-sm font-medium hover:opacity-70 transition-opacity',
+                        level > 1 && 'text-header-foreground/80'
+                    )}>
+                    {subcategory.name}
+                </NavLink>
+                {subcategory.categories?.length ? (
+                    <ul className="pl-4 space-y-1">{renderSubcategoryLinks(subcategory.categories, level + 1)}</ul>
+                ) : null}
+            </li>
+        )) ?? [];
+
+    return (
+        <li>
+            <div className="flex items-center justify-between">
+                <NavLink
+                    to={routeHref(routes.category, { categoryId: category.id })}
+                    onClick={onNavigate}
+                    className="flex-1 py-3 text-base font-medium hover:opacity-70 transition-opacity">
+                    {category.name}
+                </NavLink>
+
+                {hasChildren && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onToggle(category.id)}
+                        className="ml-2 p-2 h-auto shrink-0 hover:bg-transparent hover:opacity-50 transition-opacity"
+                        aria-label={
+                            isExpanded
+                                ? t('collapseCategory', {
+                                      category: category.name,
+                                      defaultValue: `Collapse ${category.name}`,
+                                  })
+                                : t('expandCategory', {
+                                      category: category.name,
+                                      defaultValue: `Expand ${category.name}`,
+                                  })
+                        }
+                        aria-expanded={isExpanded}>
+                        <ChevronDown
+                            className={cn('size-5 transition-transform duration-200', {
+                                'rotate-180': isExpanded,
+                            })}
+                        />
+                    </Button>
+                )}
+            </div>
+
+            {hasChildren && isExpanded && (
+                <ul className="pl-4 pb-2 space-y-1 border-l border-header-foreground/10">
+                    {renderSubcategoryLinks(category.categories)}
+                </ul>
+            )}
+        </li>
     );
 }
 
@@ -125,67 +210,21 @@ export function MobileMenuDropdown(): ReactElement | null {
     return (
         <div
             className={cn(
-                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground border-b border-border shadow-lg z-40 max-h-[70vh] overflow-y-auto',
+                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground shadow-lg z-40 max-h-[70vh] overflow-y-auto',
                 { hidden: !context.isOpen }
             )}
             aria-hidden={!context.isOpen}>
             <nav className="px-4 py-4" aria-label={t('mobileNavigation', 'Mobile navigation menu')}>
                 <ul className="space-y-1">
-                    {context.categories.map((category) => {
-                        const hasChildren = hasSubcategories(category);
-                        const isExpanded = expandedCategories.has(category.id);
-
-                        return (
-                            <li key={category.id}>
-                                <div className="flex items-center justify-between">
-                                    {/* Parent category link */}
-                                    <NavLink
-                                        to={`/category/${category.id}`}
-                                        onClick={context.close}
-                                        className="flex-1 py-3 text-base font-medium hover:opacity-70 transition-opacity">
-                                        {category.name}
-                                    </NavLink>
-
-                                    {/* Expand/collapse button for categories with subcategories */}
-                                    {hasChildren && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => toggleCategory(category.id)}
-                                            className="ml-2 p-2 h-auto shrink-0 hover:bg-transparent hover:opacity-50 transition-opacity"
-                                            aria-label={
-                                                isExpanded
-                                                    ? t('collapseCategory', `Collapse ${category.name}`)
-                                                    : t('expandCategory', `Expand ${category.name}`)
-                                            }
-                                            aria-expanded={isExpanded}>
-                                            <ChevronDown
-                                                className={cn('size-5 transition-transform duration-200', {
-                                                    'rotate-180': isExpanded,
-                                                })}
-                                            />
-                                        </Button>
-                                    )}
-                                </div>
-
-                                {/* Subcategories list */}
-                                {hasChildren && isExpanded && (
-                                    <ul className="pl-4 pb-2 space-y-1">
-                                        {category.categories?.map((subcategory) => (
-                                            <li key={subcategory.id}>
-                                                <NavLink
-                                                    to={`/category/${subcategory.id}`}
-                                                    onClick={context.close}
-                                                    className="block py-2 text-sm hover:opacity-70 transition-opacity">
-                                                    {subcategory.name}
-                                                </NavLink>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </li>
-                        );
-                    })}
+                    {context.categories.map((category) => (
+                        <MobileMenuCategory
+                            key={category.id}
+                            category={category}
+                            expandedCategories={expandedCategories}
+                            onToggle={toggleCategory}
+                            onNavigate={context.close}
+                        />
+                    ))}
                 </ul>
             </nav>
         </div>
@@ -225,7 +264,7 @@ export default function ResponsiveNavigationMenu({
     // Handler for top-level category clicks
     const handleTopLevelClick = useCallback(
         (categoryId: string) => {
-            void navigate(`/category/${categoryId}`);
+            void navigate(routeHref(routes.category, { categoryId }));
         },
         [navigate]
     );
@@ -246,7 +285,7 @@ export default function ResponsiveNavigationMenu({
 
             return {
                 className: cn(
-                    'text-sm font-medium',
+                    'text-sm font-medium leading-5',
                     isSubcategory &&
                         'hover:!bg-transparent focus:!bg-transparent hover:!text-header-menu-foreground/60 focus:!text-header-menu-foreground/60 transition-colors'
                 ),
@@ -297,19 +336,16 @@ export default function ResponsiveNavigationMenu({
                                 delayDuration={0}
                                 propsViewport={() => ({
                                     className:
-                                        'rounded-none border-0 border-b border-border shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
+                                        'rounded-none border-0 shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
+                                    // Anchor the fixed panel to both viewport edges via `left: 0` + `right: 0`
+                                    // so its width matches the layout viewport, *excluding* the scrollbar gutter.
+                                    // Using `width: 100vw` instead would include the scrollbar and overshoot
+                                    // any in-flow content (e.g. the header) by the scrollbar's width.
                                     style: {
                                         position: 'fixed',
                                         top: 'var(--header-height)',
                                         left: 0,
-                                        width: '100vw',
-                                        maxWidth: '100vw',
-                                        // Subtle elevation tint: overlay the foreground color at low alpha on top of
-                                        // the menu background. This creates a one-step-lighter surface on dark themes
-                                        // and one-step-darker surface on light themes — automatically adapting to any
-                                        // theme (e.g. green header → tinted-green dropdown) without new tokens.
-                                        backgroundImage:
-                                            'linear-gradient(color-mix(in oklab, var(--header-menu-foreground) 5%, transparent), color-mix(in oklab, var(--header-menu-foreground) 5%, transparent))',
+                                        right: 0,
                                     },
                                 })}
                                 propsContentContainer={() => ({

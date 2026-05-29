@@ -170,6 +170,141 @@ Each `config.json` must adhere to the following schema:
 }
 ```
 
+## Action Hooks
+
+Action hooks let extensions run server-side logic at specific points in the checkout flow — for example, fraud screening after contact info is submitted, address verification, or payment tokenization before order placement.
+
+### Action Hooks vs SCAPI Hooks
+
+Action hooks and SCAPI hooks operate at different layers and are complementary:
+
+- **Action hooks** run in the **storefront (head)** during server action execution. Use them for logic that belongs in the presentation layer — fraud screening, address verification, payment tokenization/3DS, or enriching data between checkout steps. They have access to the React Router action context and can read/modify the response before it reaches the client.
+- **SCAPI hooks** run in the **Commerce Cloud backend** when SCAPI endpoints are called. Use them for logic that should apply regardless of which head (or headless client) is calling the API — order-level validations, inventory holds, pricing overrides, or backend workflow triggers.
+
+**Rule of thumb:** If the logic depends on the storefront UI flow or needs to gate a checkout step before/after an API call, use an action hook. If the logic should enforce a business rule at the API layer for all consumers, use an SCAPI hook.
+
+### How They Work
+
+Each checkout server action contains calls to `runHook(hookId, context)`. When your extension registers a handler for a given `hookId`, it runs as part of a **waterfall**: handlers execute in series (ordered by `order`), each receiving the previous handler's output. If no handlers are registered for a hook, the original context passes through unchanged.
+
+Handlers receive an `ActionHookContext` with:
+- `data` — the action's current data (e.g., basket, payment info, address)
+- `actionContext` — the React Router action context (for API access)
+
+Handlers can:
+- **Enrich**: Return modified `data` to add information for the next step
+- **Transform**: Return modified `data` to change values (e.g., filter shipping methods)
+- **Abort**: Throw an `ActionHookError` to stop the action and return a user-facing error
+
+### Registering Action Hooks
+
+Add an `actionHooks` array to your extension's `target-config.json`:
+
+```json
+{
+    "components": [],
+    "actionHooks": [
+        {
+            "hookId": "sfcc.checkout.fraud.afterSubmitContactInfo",
+            "handler": "extensions/my-extension/hooks/fraud-check.ts",
+            "order": 0
+        },
+        {
+            "hookId": "sfcc.checkout.payments.beforePlaceOrder",
+            "handler": "extensions/my-extension/hooks/tokenize-payment.ts",
+            "order": 0
+        }
+    ]
+}
+```
+
+When multiple extensions register handlers for the same `hookId`, they run in ascending `order`.
+
+### Writing a Handler
+
+A handler is a default-exported async function that receives the hook context and returns it (potentially modified):
+
+```typescript
+import type { ActionHookContext } from '@/targets/action-hook.server';
+import { ActionHookError } from '@/targets/action-hook.server';
+
+export default async function fraudCheck(context: ActionHookContext) {
+    const { data, actionContext } = context;
+
+    const result = await callFraudService(data.email);
+
+    if (result.blocked) {
+        // Throwing ActionHookError aborts the action with a user-facing message
+        throw new ActionHookError(
+            'Order cannot be processed. Please contact support.',
+            'sfcc.checkout.fraud.afterSubmitContactInfo',
+            'contactInfo'
+        );
+    }
+
+    // Return context to continue the action (modify data if needed)
+    return context;
+}
+```
+
+### Error Handling: Blocking vs Non-Blocking Hooks
+
+Hooks are classified by where they appear in the checkout flow:
+
+**Blocking hooks** (pre-order gates) — if the handler throws an unexpected error, the action fails. These hooks guard critical operations and must succeed before proceeding:
+- `sfcc.checkout.fraud.beforePlace`
+- `sfcc.checkout.payments.beforePlaceOrder`
+
+**Non-blocking hooks** (post-action enrichment) — if the handler throws an unexpected error, the action logs the error and continues. These hooks enrich or observe but should not prevent checkout:
+- `sfcc.checkout.fraud.afterSubmitContactInfo`
+- `sfcc.checkout.addressVerification.afterSubmitShippingAddress`
+- `sfcc.checkout.shipping.afterMethodsFetch`
+- `sfcc.checkout.shipping.afterMethodSelect`
+- `sfcc.checkout.payments.afterSubmitPayment`
+- `sfcc.checkout.payments.afterPlaceOrder`
+
+In both cases, throwing `ActionHookError` intentionally aborts the action with a user-facing error response. The blocking/non-blocking distinction only affects what happens when an *unexpected* error occurs.
+
+### Timeout and Per-Handler Isolation
+
+Each handler has a **5-second timeout**. If a handler exceeds this limit, it is treated the same as an unexpected error — the behavior depends on whether the hook is blocking or non-blocking.
+
+When multiple handlers are registered for the same hook ID, they run in series (waterfall). Error isolation is per-handler:
+
+- **Non-blocking hooks**: a failing handler is logged and skipped; the next handler receives the last successful context. The remaining handlers still run.
+- **Blocking hooks**: any handler failure (including timeout) immediately aborts the waterfall and fails the action.
+
+### Available Hook IDs
+
+| Hook ID | Server Action | Blocking | Description |
+|---------|---------------|----------|-------------|
+| `sfcc.checkout.fraud.afterSubmitContactInfo` | submit-contact-info | No | Fraud/identity checks after email and phone are saved |
+| `sfcc.checkout.addressVerification.afterSubmitShippingAddress` | submit-shipping-address | No | Address verification after shipping address is saved |
+| `sfcc.checkout.shipping.afterMethodsFetch` | submit-shipping-address | No | Enrich or filter shipping methods after fetch |
+| `sfcc.checkout.shipping.afterMethodSelect` | submit-shipping-options | No | Post-processing after shipping method selection |
+| `sfcc.checkout.payments.afterSubmitPayment` | submit-payment | No | Post-processing after payment instrument is added (e.g., tokenization) |
+| `sfcc.checkout.fraud.beforePlace` | place-order | Yes | Fraud gate before order creation |
+| `sfcc.checkout.payments.beforePlaceOrder` | place-order | Yes | Payment gate before order creation (e.g., 3DS verification) |
+| `sfcc.checkout.payments.afterPlaceOrder` | place-order | No | Post-order processing (e.g., capture, analytics) |
+
+### Build-Time Optimization
+
+Action hooks use a **virtual module** (`virtual:action-hooks`) generated by the Vite plugin at build time. The plugin reads all `target-config.json` files, collects `actionHooks` entries, and generates a module that imports only the registered handlers. If no handlers are registered for any hook, the generated module is a no-op passthrough — no extension code is included in the bundle.
+
+### Testing with Action Hooks
+
+In Vitest, the virtual module is replaced by a mock alias (configured in `vite.config.ts`) that passes context through unchanged. To test your handler in isolation, import and call it directly:
+
+```typescript
+import myHandler from '@/extensions/my-extension/hooks/my-handler';
+
+test('handler enriches data', async () => {
+    const context = { data: { basket: mockBasket }, actionContext: {} };
+    const result = await myHandler(context);
+    expect(result.data.basket.customField).toBe('enriched');
+});
+```
+
 ## Adding an Extension
 
 1. Create a new subdirectory in `src/extensions/`.

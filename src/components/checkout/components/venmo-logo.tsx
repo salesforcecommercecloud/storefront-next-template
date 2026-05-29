@@ -18,9 +18,11 @@ import venmoLogo from '/images/venmo.svg';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Venmo Logo SVG Component
- * Official Venmo wordmark logo matching SDK button appearance
- * Uses local Venmo SVG file from public/images
+ * @feature-stub Express checkout buttons (Venmo logo)
+ * @status stub — no backend integration
+ *
+ * Venmo wordmark logo matching SDK button appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function VenmoLogo({
     className,

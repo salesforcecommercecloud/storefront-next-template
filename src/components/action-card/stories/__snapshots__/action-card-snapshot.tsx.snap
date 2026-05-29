@@ -1,11 +1,83 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ActionCard stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
+  data-slot="card"
+>
+  <div
+    class="px-6"
+    data-slot="card-content"
+  >
+    <div
+      class="space-y-2"
+    >
+      <h3
+        class="font-semibold text-sm"
+      >
+        John Doe
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        john.doe@example.com
+      </p>
+      <p
+        class="text-sm"
+      >
+        123 Main Street, Apt 4B
+      </p>
+      <p
+        class="text-sm"
+      >
+        New York, NY 10001
+      </p>
+    </div>
+  </div>
+  <div
+    class="flex items-center px-6 [.border-t]:pt-6 gap-4"
+    data-slot="card-footer"
+  >
+    <button
+      aria-label="Edit"
+      class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
+      data-size="sm"
+      data-slot="button"
+      data-variant="link"
+    >
+      Edit
+    </button>
+    <button
+      aria-label="Remove"
+      class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
+      data-size="sm"
+      data-slot="button"
+      data-variant="link"
+    >
+      Remove
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ActionCard stories snapshot > RemoveLoadingOverlay story renders and matches snapshot 1`] = `
 <div>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
     data-slot="card"
   >
+    <div
+      class="absolute inset-0 z-10 rounded-none bg-background/60"
+      data-testid="loading-spinner"
+    >
+      <div
+        class="flex h-full w-full items-center justify-center"
+      >
+        <div
+          class="animate-spin rounded-full border-2 border-border border-t-primary size-6"
+        />
+      </div>
+    </div>
     <div
       class="px-6"
       data-slot="card-content"
@@ -14,24 +86,14 @@ exports[`ActionCard stories snapshot > Default story renders and matches snapsho
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
-          John Doe
+          Pending Removal
         </h3>
         <p
-          class="text-sm text-muted-foreground"
-        >
-          john.doe@example.com
-        </p>
-        <p
           class="text-sm"
         >
-          123 Main Street, Apt 4B
-        </p>
-        <p
-          class="text-sm"
-        >
-          New York, NY 10001
+          Loading overlay is mounted while removal is in flight.
         </p>
       </div>
     </div>
@@ -41,7 +103,7 @@ exports[`ActionCard stories snapshot > Default story renders and matches snapsho
     >
       <button
         aria-label="Edit"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
         data-size="sm"
         data-slot="button"
         data-variant="link"
@@ -50,256 +112,7 @@ exports[`ActionCard stories snapshot > Default story renders and matches snapsho
       </button>
       <button
         aria-label="Remove"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Remove
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ActionCard stories snapshot > EditOnly story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
-    data-slot="card"
-  >
-    <div
-      class="px-6"
-      data-slot="card-content"
-    >
-      <div
-        class="space-y-2"
-      >
-        <h3
-          class="font-semibold text-lg"
-        >
-          Payment Method
-        </h3>
-        <p
-          class="text-sm text-muted-foreground"
-        >
-          •••• •••• •••• 4242
-        </p>
-        <p
-          class="text-sm"
-        >
-          Expires 12/25
-        </p>
-      </div>
-    </div>
-    <div
-      class="flex items-center px-6 [.border-t]:pt-6 gap-4"
-      data-slot="card-footer"
-    >
-      <button
-        aria-label="Edit"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Edit
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ActionCard stories snapshot > NoActions story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
-    data-slot="card"
-  >
-    <div
-      class="px-6"
-      data-slot="card-content"
-    >
-      <div
-        class="space-y-2"
-      >
-        <h3
-          class="font-semibold text-lg"
-        >
-          Information Card
-        </h3>
-        <p
-          class="text-sm text-muted-foreground"
-        >
-          This is a read-only information card
-        </p>
-        <p
-          class="text-sm"
-        >
-          No actions are available for this content
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ActionCard stories snapshot > RemoveOnly story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
-    data-slot="card"
-  >
-    <div
-      class="px-6"
-      data-slot="card-content"
-    >
-      <div
-        class="space-y-2"
-      >
-        <h3
-          class="font-semibold text-lg"
-        >
-          Saved Item
-        </h3>
-        <p
-          class="text-sm text-muted-foreground"
-        >
-          Product Name
-        </p>
-        <p
-          class="text-sm"
-        >
-          $29.99
-        </p>
-      </div>
-    </div>
-    <div
-      class="flex items-center px-6 [.border-t]:pt-6 gap-4"
-      data-slot="card-footer"
-    >
-      <button
-        aria-label="Remove"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Remove
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ActionCard stories snapshot > WithAsyncRemove story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
-    data-slot="card"
-  >
-    <div
-      class="px-6"
-      data-slot="card-content"
-    >
-      <div
-        class="space-y-2"
-      >
-        <h3
-          class="font-semibold text-lg"
-        >
-          Complex Item
-        </h3>
-        <p
-          class="text-sm text-muted-foreground"
-        >
-          This item requires server processing
-        </p>
-        <p
-          class="text-sm"
-        >
-          Removal may take a few seconds
-        </p>
-      </div>
-    </div>
-    <div
-      class="flex items-center px-6 [.border-t]:pt-6 gap-4"
-      data-slot="card-footer"
-    >
-      <button
-        aria-label="Edit"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Edit
-      </button>
-      <button
-        aria-label="Remove"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Remove
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ActionCard stories snapshot > WithCustomLabels story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative"
-    data-slot="card"
-  >
-    <div
-      class="px-6"
-      data-slot="card-content"
-    >
-      <div
-        class="space-y-2"
-      >
-        <h3
-          class="font-semibold text-lg"
-        >
-          Shipping Address
-        </h3>
-        <p
-          class="text-sm text-muted-foreground"
-        >
-          Default Address
-        </p>
-        <p
-          class="text-sm"
-        >
-          456 Oak Avenue
-        </p>
-        <p
-          class="text-sm"
-        >
-          Los Angeles, CA 90210
-        </p>
-      </div>
-    </div>
-    <div
-      class="flex items-center px-6 [.border-t]:pt-6 gap-4"
-      data-slot="card-footer"
-    >
-      <button
-        aria-label="Modify Address"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Edit
-      </button>
-      <button
-        aria-label="Delete Address"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-destructive hover:text-destructive/80 font-bold"
         data-size="sm"
         data-slot="button"
         data-variant="link"

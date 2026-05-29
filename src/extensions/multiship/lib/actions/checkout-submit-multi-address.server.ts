@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperBasketsV2, type ShopperCustomers } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { extractResponseError } from '@/lib/utils';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket.server';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils.server';
 import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer.server';
-import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address-utils';
+import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address/address-utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
+import { fetchShippingMethodsMapForBasket } from '@/lib/checkout/loaders.server';
 
 /**
  * Handle multi-shipment shipping address submission

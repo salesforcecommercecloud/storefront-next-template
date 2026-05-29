@@ -15,6 +15,8 @@
  */
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mockAltSiteObject } from '@/test-utils/config';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import ShopperAgent, { SHOPPER_AGENT_LOAD_EVENT } from './index';
 
 vi.mock('./shopper-agent-window', () => ({
@@ -41,7 +43,7 @@ const validConfig = {
     scriptSourceUrl: 'https://test.my.site.com/ESW/bootstrap.js',
     scrt2Url: 'https://test.salesforce-scrt.com',
     salesforceOrgId: '00Dxx0000000000',
-    siteId: 'RefArch',
+    siteId: mockAltSiteObject.id,
 };
 
 describe('ShopperAgent', () => {
@@ -59,7 +61,12 @@ describe('ShopperAgent', () => {
     });
 
     test('renders wrapper and ShopperAgentWindow when config is valid', async () => {
-        render(<ShopperAgent commerceAgentConfiguration={validConfig} locale="en-US" currency="USD" userId="user-1" />);
+        render(
+            <ShopperAgent commerceAgentConfiguration={validConfig} locale="en-US" currency="USD" userId="user-1" />,
+            {
+                wrapper: AllProvidersWrapper,
+            }
+        );
 
         await waitFor(() => {
             expect(screen.getByTestId('shopper-agent')).toBeInTheDocument();
@@ -69,7 +76,9 @@ describe('ShopperAgent', () => {
     });
 
     test('passes locale to ShopperAgentWindow', async () => {
-        render(<ShopperAgent commerceAgentConfiguration={validConfig} locale="en-GB" />);
+        render(<ShopperAgent commerceAgentConfiguration={validConfig} locale="en-GB" />, {
+            wrapper: AllProvidersWrapper,
+        });
 
         await waitFor(() => {
             expect(screen.getByTestId('shopper-agent')).toBeInTheDocument();
@@ -81,7 +90,9 @@ describe('ShopperAgent', () => {
         globalThis.requestIdleCallback = vi.fn(() => 1);
         globalThis.cancelIdleCallback = vi.fn();
 
-        render(<ShopperAgent commerceAgentConfiguration={validConfig} locale="en-US" />);
+        render(<ShopperAgent commerceAgentConfiguration={validConfig} locale="en-US" />, {
+            wrapper: AllProvidersWrapper,
+        });
 
         expect(screen.queryByTestId('shopper-agent')).not.toBeInTheDocument();
 

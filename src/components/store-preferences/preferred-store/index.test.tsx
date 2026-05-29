@@ -17,11 +17,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { useLoaderData, useNavigation } from 'react-router';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import PreferredStore from '.';
 
 // Mock react-router
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLoaderData: vi.fn(),
     useNavigation: vi.fn(() => ({ state: 'idle' })),
 }));

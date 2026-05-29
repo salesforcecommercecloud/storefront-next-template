@@ -17,54 +17,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Swatch } from '../swatch';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('swatch-click');
-        const logHover = action('swatch-hover');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            // Swatch might render as button or div with role radio
-            const swatch = target.closest('[role="radio"], button, a');
-            if (swatch) {
-                const label = swatch.getAttribute('aria-label') || swatch.textContent?.trim() || 'swatch';
-                const value = swatch.getAttribute('value') || '';
-                logClick({ label, value });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            const swatch = target.closest('[role="radio"], button, a');
-            if (swatch) {
-                const label = swatch.getAttribute('aria-label') || swatch.textContent?.trim() || 'swatch';
-                logHover({ label });
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        root.addEventListener('mouseover', handleMouseOver);
-
-        return () => {
-            root.removeEventListener('click', handleClick);
-            root.removeEventListener('mouseover', handleMouseOver);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof Swatch> = {
     title: 'SWATCH/Swatch',
@@ -79,13 +31,6 @@ const meta: Meta<typeof Swatch> = {
         },
     },
     tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
     argTypes: {
         children: {
             description: 'Content to render inside the swatch',
@@ -126,15 +71,40 @@ const meta: Meta<typeof Swatch> = {
             control: 'select',
             options: ['click', 'hover'],
         },
-        handleSelect: {
-            description: 'Callback when swatch is selected',
-            action: 'handleSelect',
-        },
+        handleSelect: { table: { disable: true } },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof Swatch>;
+
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes every prop the
+ * `Swatch` component reads — `value`, `label`, `selected`, `disabled`, `size`,
+ * `shape`, `mode`, `href`. Toggle them in the panel to drive every prop-driven
+ * visual state from a single bookmarkable URL. The dedicated stories below
+ * remain bookmarked entry points for the most common variants.
+ */
+export const Playground: Story = {
+    args: {
+        value: 'red',
+        label: 'Red',
+        selected: false,
+        disabled: false,
+        size: 'lg',
+        shape: 'color',
+        mode: 'click',
+        children: <div className="w-full h-full bg-red-500 rounded-full" />,
+        handleSelect: () => {},
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const swatch = canvas.getByRole('radio', { name: /red/i });
+        await expect(swatch).toBeInTheDocument();
+    },
+};
 
 export const Default: Story = {
     args: {
@@ -142,7 +112,7 @@ export const Default: Story = {
         label: 'Red',
 
         children: <div className="w-full h-full bg-red-500 rounded-full" />,
-        handleSelect: action('handleSelect'),
+        handleSelect: () => {},
         mode: 'click',
     },
     play: async ({ canvasElement }) => {
@@ -163,7 +133,7 @@ export const Selected: Story = {
         selected: true,
 
         children: <div className="w-full h-full bg-blue-500 rounded-full" />,
-        handleSelect: action('handleSelect'),
+        handleSelect: () => {},
         mode: 'click',
     },
     play: async ({ canvasElement }) => {
@@ -183,7 +153,7 @@ export const Disabled: Story = {
         disabled: true,
 
         children: <div className="w-full h-full bg-green-500 rounded-full" />,
-        handleSelect: action('handleSelect'),
+        handleSelect: () => {},
         mode: 'click',
     },
     play: async ({ canvasElement }) => {
@@ -202,7 +172,7 @@ export const Square: Story = {
         shape: 'label',
         size: 'lg',
         children: 'L',
-        handleSelect: action('handleSelect'),
+        handleSelect: () => {},
         mode: 'click',
     },
     play: async ({ canvasElement }) => {
@@ -240,7 +210,7 @@ export const HoverMode: Story = {
         label: 'Yellow',
 
         children: <div className="w-full h-full bg-yellow-500 rounded-full" />,
-        handleSelect: action('handleSelect'),
+        handleSelect: () => {},
         mode: 'hover',
     },
     play: async ({ canvasElement }) => {

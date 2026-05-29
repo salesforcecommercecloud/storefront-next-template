@@ -22,9 +22,9 @@ import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDown, Check } from 'lucide-react';
-import { getLastFourDigits } from '@/lib/payment-utils';
-import { formatAddress } from '@/lib/address-utils';
-import { getCardIcon } from '@/lib/card-icon-utils';
+import { getLastFourDigits } from '@/lib/payment/payment-utils';
+import { formatAddress } from '@/lib/address/address-utils';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
@@ -32,7 +32,7 @@ import type { CheckoutActionData } from '../types';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
-import type { PaymentData } from '@/lib/checkout-schemas';
+import type { PaymentData } from '@/lib/checkout/schemas';
 import { usePayment, isSameBillingAndShippingAddress } from './use-payment';
 
 interface PaymentProps {
@@ -101,7 +101,7 @@ export default function Payment({
     });
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
     );
 
     return (
@@ -118,7 +118,9 @@ export default function Payment({
                 showHeaderSeparator>
                 <ToggleCardEdit>
                     <Form {...form}>
-                        <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                        <form
+                            onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
+                            className="space-y-6 pt-2 pb-2">
                             <div className="space-y-4">
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods.before" />
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods">
@@ -178,7 +180,9 @@ export default function Payment({
                                                                             {cardTypeLabel}
                                                                         </span>
                                                                         {method.preferred && (
-                                                                            <Badge variant="info">
+                                                                            <Badge
+                                                                                variant="secondary"
+                                                                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
                                                                                 {t('payment.defaultBadge')}
                                                                             </Badge>
                                                                         )}
@@ -370,6 +374,7 @@ export default function Payment({
                                                         <PopoverContent
                                                             align="start"
                                                             sideOffset={4}
+                                                            aria-label={t('payment.selectAnAddress')}
                                                             className="w-[var(--radix-popover-trigger-width)] rounded-none border border-input bg-card p-0 shadow-md">
                                                             <div className="max-h-[108px] overflow-y-auto">
                                                                 {[...billingAddressOptions]
@@ -453,7 +458,7 @@ export default function Payment({
                                     </p>
                                     {hasSummaryExpiry && (
                                         <p className="text-sm font-normal leading-5 text-foreground">
-                                            {`Expires ${summaryExpiryMonth}/${summaryExpiryYear}`}
+                                            {`Expires ${summaryExpiryMonth}/${summaryExpiryYear.slice(-2)}`}
                                         </p>
                                     )}
                                     {!useDifferentBilling ||
@@ -464,9 +469,9 @@ export default function Payment({
                                         </p>
                                     ) : (
                                         <div className="text-sm font-normal leading-5 text-foreground">
-                                            <p>{`Billing: ${formatAddress(billingAddress).nameLine}`}</p>
-                                            <p>{formatAddress(billingAddress).streetLine}</p>
-                                            <p>{formatAddress(billingAddress).cityLine}</p>
+                                            <p>Billing:</p>
+                                            <p>{formatAddress(billingAddress).nameLine}</p>
+                                            <p>{formatAddress(billingAddress).addressLine}</p>
                                         </div>
                                     )}
                                 </>

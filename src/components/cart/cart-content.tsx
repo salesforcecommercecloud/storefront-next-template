@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, lazy, Suspense, type ReactElement } from 'react';
+import { useState, useLayoutEffect, lazy, Suspense, type ReactElement, type ReactNode } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';
@@ -28,6 +28,8 @@ import OrderSummary from '@/components/order-summary';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
@@ -40,7 +42,15 @@ import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/c
 import { UITarget } from '@/targets/ui-target';
 
 // utils
-import { isStandardProduct, isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
+import {
+    isStandardProduct,
+    isBonusProduct,
+    isRuleBasedPromotion,
+    type EnrichedProductItem,
+} from '@/lib/product/product-utils';
+import { useCartInventoryValidation } from '@/lib/cart/inventory-validation';
+import { CartInventoryErrorBanner } from './cart-inventory-error-banner';
+import { routes } from '@/route-paths';
 
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
@@ -60,6 +70,7 @@ const LazyCartItemAddToWishlistButton = lazy(() =>
  * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Item ID to product mapping
  * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotion ID to promotion mapping
  * @property {string[]} [wishlistProductIds] - Product IDs in the shopper wishlist (from cart loader) for line-level wishlist state after refresh
+ * @property {ReactNode} [recommendationsSlot] - Below-the-fold recommendations region; the route owns recommender selection, i18n, and promise pinning
  */
 interface CartContentProps {
     basket: ShopperBasketsV2.schemas['Basket'] | undefined;
@@ -67,6 +78,7 @@ interface CartContentProps {
     bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     wishlistProductIds?: readonly string[];
+    recommendationsSlot?: ReactNode;
 }
 
 /**
@@ -89,10 +101,9 @@ export default function CartContent({
     bonusProductsById,
     promotions,
     wishlistProductIds = [],
+    recommendationsSlot,
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
-    // @sfdc-extension-line SFDC_EXT_BOPIS
-    const { t: tBopis } = useTranslation('extBopis');
 
     // Calculate total item count for page heading
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
@@ -114,9 +125,13 @@ export default function CartContent({
     const pickupItems = filterPickupProductItems(basket);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    // Sync cart page loader basket into basket context
+    // Validate cart-wide inventory for checkout button state
+    const inventoryValidation = useCartInventoryValidation(basket, productsByItemId);
+
+    // Sync cart page loader basket into basket context pre-paint, so descendants like CartDeliveryOption observe the
+    // hydrated basket on the first painted frame
     const updateBasket = useBasketUpdater();
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (basket?.basketId) {
             updateBasket(basket);
         }
@@ -124,7 +139,7 @@ export default function CartContent({
 
     // Check if cart is empty using the basket prop from loader data
     if (!basket?.productItems?.length) {
-        return <CartEmpty isRegistered={false} />;
+        return <CartEmpty />;
     }
 
     let deliveryItems = basket?.productItems || [];
@@ -182,6 +197,37 @@ export default function CartContent({
         );
     };
 
+    /**
+     * Gift checkbox rendered at the end of each cart line-item's right column (layout only).
+     * Not persisted: no SCAPI / basket update is wired yet.
+     * Wire to updateItemInBasket (or equivalent) when line-level gift is supported — see e2e/specs/checkout/gift-message.spec.md.
+     * "Learn more" is a non-navigating control until a destination (e.g. modal or policy page) is defined.
+     */
+    function CartLineItemGift(product: EnrichedProductItem): ReactElement | undefined {
+        if (!product.itemId || isBonusProduct(product)) {
+            return undefined;
+        }
+        const fieldId = `cart-gift-${product.itemId}`;
+        return (
+            <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 md:justify-end">
+                <Checkbox id={fieldId} />
+                <div className="flex flex-wrap items-center gap-1">
+                    <Label
+                        htmlFor={fieldId}
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer">
+                        {t('lineItem.giftLabel')}
+                    </Label>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 p-0 h-auto shadow-none">
+                        {t('lineItem.giftLearnMore')}
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     // Per-line pickup vs delivery (BOPIS). Defined only inside the extension block so a
     // storefront that strips SFDC_EXT_BOPIS does not reference CartDeliveryOption after its import is removed.
     let cartDeliveryActions: ((product: EnrichedProductItem) => ReactElement) | undefined = undefined;
@@ -214,8 +260,25 @@ export default function CartContent({
                             />
                         </OrderSummaryMobileAccordion>
                         <div className="px-[var(--cart-summary-px)] py-4">
-                            <Button asChild className="w-full text-sm">
-                                <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                            {/* Inventory error banner */}
+                            <CartInventoryErrorBanner
+                                issues={inventoryValidation.itemsExceedingInventory}
+                                className="mb-3"
+                                id="cart-inventory-error-mobile"
+                            />
+                            <Button
+                                asChild={!inventoryValidation.hasInventoryIssues}
+                                className="w-full text-sm"
+                                disabled={inventoryValidation.hasInventoryIssues}
+                                aria-disabled={inventoryValidation.hasInventoryIssues}
+                                aria-describedby={
+                                    inventoryValidation.hasInventoryIssues ? 'cart-inventory-error-mobile' : undefined
+                                }>
+                                {inventoryValidation.hasInventoryIssues ? (
+                                    <span>{t('checkout.continueToCheckout')}</span>
+                                ) : (
+                                    <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
+                                )}
                             </Button>
                             <UITarget targetId="sfcc.cart.payments.expressCheckout" />
                         </div>
@@ -242,6 +305,7 @@ export default function CartContent({
                                         bonusDiscountLineItems={bonusDiscountItems}
                                         secondaryActions={cartSecondaryActions}
                                         deliveryActions={cartDeliveryActions}
+                                        lineItemExtra={CartLineItemGift}
                                         isPickup={true}
                                     />
                                 </div>
@@ -252,16 +316,6 @@ export default function CartContent({
                         {deliveryItems.length > 0 && (
                             <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
                                 <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
-                                {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
-                                {pickupItems.length > 0 && (
-                                    <h2 className="text-lg font-semibold mb-4">
-                                        {tBopis('cart.deliveryItemsHeading', {
-                                            deliveryCount: deliveryItems.length,
-                                            count: basket?.productItems?.length ?? 0,
-                                        })}
-                                    </h2>
-                                )}
-                                {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                                 <ProductItemsList
                                     promotions={promotions}
                                     productItems={deliveryItems}
@@ -269,6 +323,7 @@ export default function CartContent({
                                     bonusDiscountLineItems={bonusDiscountItems}
                                     secondaryActions={cartSecondaryActions}
                                     deliveryActions={cartDeliveryActions}
+                                    lineItemExtra={CartLineItemGift}
                                 />
                             </div>
                         )}
@@ -281,6 +336,7 @@ export default function CartContent({
                             productsByItemId={productsByItemId}
                             showPromoCodeForm={true}
                             showCheckoutAction={true}
+                            inventoryValidation={inventoryValidation}
                         />
                         <UITarget targetId="sfcc.cart.bnpl.message" />
                     </div>
@@ -320,6 +376,8 @@ export default function CartContent({
                         })}
                     </Suspense>
                 )}
+
+                {recommendationsSlot}
 
                 {selectedBonusProduct &&
                     (() => {

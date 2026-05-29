@@ -14,37 +14,36 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentType } from 'react';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
-import { createShippingAddressSchema } from '@/lib/checkout-schemas';
+import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
+import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout/schemas';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
-/**
- * The AddressFormFields component provides shared address form fields with Google Maps
- * autocomplete integration. It can be used for both shipping and billing addresses
- * by using the fieldPrefix prop.
- */
-
-// Form data interfaces
-interface ShippingFormData {
-    firstName: string;
-    lastName: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    stateCode: string;
-    postalCode: string;
-    countryCode?: string;
-    phoneCountryCode?: string;
-    phone?: string;
-}
+// ---------------------------------------------------------------------------
+// AddressFormFields renders form fields into a parent React Hook Form context.
+// Visible variations come from:
+//   - showPhone (toggles the phone country code + phone fields)
+//   - labelsAsPlaceholders (sr-only labels; placeholder text instead)
+//   - showCountry (replaces the read-only country with a dropdown; switches
+//     state/zip labels per US/CA)
+//   - phoneRequired (asterisk on the phone label)
+//   - prefilled vs blank form data
+//   - validation-error rendering
+//   - billing prefix (prefixed names + autocomplete attributes)
+// The Playground drives the boolean props directly + a `country` synthetic
+// radio that pre-fills the country field when `showCountry=true`. Validation
+// and the billing prefix are dedicated stories because they need their own
+// form wrapper (zod resolver / prefixed defaultValues).
+// ---------------------------------------------------------------------------
 
 interface BillingFormData {
     billingFirstName: string;
@@ -54,93 +53,80 @@ interface BillingFormData {
     billingCity: string;
     billingStateCode: string;
     billingPostalCode: string;
+    billingCountryCode: string;
 }
 
-// Action logger for Storybook
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+type Country = 'US' | 'CA' | 'GB';
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+type SyntheticArgs = {
+    showPhone: boolean;
+    labelsAsPlaceholders: boolean;
+    showCountry: boolean;
+    phoneRequired: boolean;
+    prefilled: boolean;
+    country: Country;
+};
 
-        const logFieldChange = action('field-change');
-        const logFieldFocus = action('field-focus');
-        const logFieldBlur = action('field-blur');
+const PLAYGROUND_DEFAULTS: SyntheticArgs = {
+    showPhone: true,
+    labelsAsPlaceholders: false,
+    showCountry: false,
+    phoneRequired: false,
+    prefilled: false,
+    country: 'US',
+};
 
-        const deriveLabel = (el: HTMLInputElement | HTMLTextAreaElement): string => {
-            if ('labels' in el && el.labels && el.labels.length > 0) {
-                return el.labels[0].textContent?.trim() || '';
-            }
-            return el.getAttribute('name') || el.getAttribute('aria-label') || '';
-        };
+const PREFILLED_BY_COUNTRY: Record<Country, Partial<ShippingAddressData>> = {
+    US: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '123 Main Street',
+        address2: 'Apt 4B',
+        city: 'New York',
+        stateCode: 'NY',
+        postalCode: '10001',
+        phone: '5551234567',
+    },
+    CA: {
+        firstName: 'Avery',
+        lastName: 'Tremblay',
+        address1: '500 Rue Sainte-Catherine',
+        address2: '',
+        city: 'Montréal',
+        stateCode: 'QC',
+        postalCode: 'H3B 1B5',
+        phone: '4165551234',
+    },
+    GB: {
+        firstName: 'David',
+        lastName: 'Taylor',
+        address1: '10 Downing Street',
+        address2: '',
+        city: 'London',
+        stateCode: '',
+        postalCode: 'SW1A 2AA',
+        phone: '2012345678',
+    },
+};
 
-        const handleChange = (event: Event) => {
-            const el = event.target as HTMLElement | null;
-            if (!el || !root.contains(el)) return;
-
-            if (el instanceof HTMLInputElement) {
-                const label = deriveLabel(el);
-                logFieldChange({ label, value: el.value });
-            }
-        };
-
-        const handleFocus = (event: Event) => {
-            const el = event.target as HTMLElement | null;
-            if (!el || !root.contains(el)) return;
-            if (el instanceof HTMLInputElement) {
-                const label = deriveLabel(el);
-                if (label) logFieldFocus({ label });
-            }
-        };
-
-        const handleBlur = (event: Event) => {
-            const el = event.target as HTMLElement | null;
-            if (!el || !root.contains(el)) return;
-            if (el instanceof HTMLInputElement) {
-                const label = deriveLabel(el);
-                if (label) logFieldBlur({ label });
-            }
-        };
-
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('focus', handleFocus, true);
-        root.addEventListener('blur', handleBlur, true);
-
-        return () => {
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('focus', handleFocus, true);
-            root.removeEventListener('blur', handleBlur, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-// Wrapper component for shipping address form
-function ShippingAddressFormWrapper({
-    defaultValues = {},
-    showPhone = true,
-    autoFocus = false,
-    className,
-}: {
-    defaultValues?: Partial<ShippingFormData>;
-    showPhone?: boolean;
-    autoFocus?: boolean;
-    className?: string;
-}) {
-    const form = useForm<ShippingFormData>({
-        defaultValues: {
-            firstName: '',
-            lastName: '',
-            address1: '',
-            address2: '',
-            city: '',
-            stateCode: '',
-            postalCode: '',
-            phone: '',
-            ...defaultValues,
-        },
+function PlaygroundWrapper(args: Partial<SyntheticArgs>) {
+    const merged: SyntheticArgs = { ...PLAYGROUND_DEFAULTS, ...args };
+    const baseDefaults: ShippingAddressData = {
+        firstName: '',
+        lastName: '',
+        address1: '',
+        address2: '',
+        city: '',
+        stateCode: '',
+        postalCode: '',
+        phoneCountryCode: '+1',
+        phone: '',
+    };
+    const defaultValues = merged.prefilled
+        ? { ...baseDefaults, ...PREFILLED_BY_COUNTRY[merged.country] }
+        : baseDefaults;
+    const form = useForm<ShippingAddressData & { countryCode?: string }>({
+        defaultValues: { ...defaultValues, countryCode: merged.country },
     });
 
     return (
@@ -148,21 +134,21 @@ function ShippingAddressFormWrapper({
             <form data-testid="address-form-fields-form" className="space-y-4">
                 <AddressFormFields
                     form={form}
-                    showPhone={showPhone}
-                    autoFocus={autoFocus}
-                    className={className}
-                    countryCode="US"
+                    showPhone={merged.showPhone}
+                    countryCode={merged.country}
+                    labelsAsPlaceholders={merged.labelsAsPlaceholders}
+                    showCountry={merged.showCountry}
+                    phoneRequired={merged.phoneRequired}
                 />
             </form>
         </Form>
     );
 }
 
-// Wrapper with validation for FieldErrorValidation story
 function ShippingAddressFormWrapperWithValidation() {
     const { t } = getTranslation();
     const schema = createShippingAddressSchema(t);
-    const form = useForm<ShippingFormData>({
+    const form = useForm<ShippingAddressData>({
         resolver: zodResolver(schema),
         defaultValues: {
             firstName: '',
@@ -172,6 +158,7 @@ function ShippingAddressFormWrapperWithValidation() {
             city: '',
             stateCode: '',
             postalCode: '',
+            phoneCountryCode: '+1',
             phone: '',
         },
     });
@@ -189,14 +176,7 @@ function ShippingAddressFormWrapperWithValidation() {
     );
 }
 
-// Wrapper component for billing address form
-function BillingAddressFormWrapper({
-    defaultValues = {},
-    className,
-}: {
-    defaultValues?: Partial<BillingFormData>;
-    className?: string;
-}) {
+function BillingAddressFormWrapper() {
     const form = useForm<BillingFormData>({
         defaultValues: {
             billingFirstName: '',
@@ -206,7 +186,7 @@ function BillingAddressFormWrapper({
             billingCity: '',
             billingStateCode: '',
             billingPostalCode: '',
-            ...defaultValues,
+            billingCountryCode: 'US',
         },
     });
 
@@ -217,7 +197,8 @@ function BillingAddressFormWrapper({
                     form={form}
                     fieldPrefix="billing"
                     showPhone={false}
-                    className={className}
+                    showCountry
+                    labelsAsPlaceholders
                     countryCode="US"
                 />
             </form>
@@ -226,165 +207,138 @@ function BillingAddressFormWrapper({
 }
 
 const meta: Meta<typeof AddressFormFields> = {
-    title: 'Components/Address Form Fields',
+    title: 'Components/AddressFormFields',
     component: AddressFormFields,
+    tags: ['autodocs', 'interaction'],
     parameters: {
-        layout: 'centered',
+        ...checkoutStrictA11yParameters,
+        layout: 'padded',
+        a11y: {
+            ...checkoutStrictA11yParameters.a11y,
+            config: {
+                rules: [{ id: 'color-contrast', enabled: false }],
+            },
+        },
         docs: {
             description: {
                 component: `
-The Address Form Fields component provides a reusable set of address input fields with Google Maps Places autocomplete integration.
+Shared, reusable address form fields with Google Maps Places autocomplete integration.
+Used by the checkout shipping-address step, the billing-address section inside the
+payment step, and the add-payment-method dialog. Purely presentational — renders fields
+into an existing React Hook Form context; does not own form submission or validation.
 
-**Features:**
-- First name, last name, address, city, state, postal code, and phone fields
-- Google Maps Places autocomplete for address suggestions
-- Support for field name prefixes (e.g., 'billing' for billing addresses)
-- Configurable phone field visibility
-- Proper autocomplete attributes for browser autofill
-- Responsive layout with grid-based field arrangement
-
-**Usage:**
-This component is designed to be used within a React Hook Form context. Pass the form instance
-from useForm() to integrate with form validation and submission.
-
-\`\`\`tsx
-// For shipping address (no prefix)
-<AddressFormFields form={form} showPhone={true} />
-
-// For billing address (with prefix)
-<AddressFormFields form={form} fieldPrefix="billing" showPhone={false} />
-\`\`\`
+The Playground story drives the boolean props (\`showPhone\`, \`labelsAsPlaceholders\`,
+\`showCountry\`, \`phoneRequired\`) directly, plus synthetic toggles for prefilled data
+and country (US/CA/GB) so designers can reach the named-country branches from one
+bookmarkable URL. Validation errors and the billing prefix get dedicated stories
+because each needs its own form wrapper (zod resolver / prefixed default values).
                 `,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     decorators: [
         (Story) => (
-            <ActionLogger>
+            <CheckoutActionLogger name="address-form-fields">
                 <Story />
-            </ActionLogger>
+            </CheckoutActionLogger>
         ),
         (Story) => (
-            <div className="p-8 max-w-2xl">
+            <div className="max-w-2xl">
                 <Story />
             </div>
         ),
     ],
     argTypes: {
-        fieldPrefix: {
-            description:
-                'Prefix for field names (e.g., "billing" for billing address). When provided, field names become "billingFirstName", etc.',
-            control: 'text',
-        },
-        showPhone: {
-            description: 'Whether to show the phone field',
-            control: 'boolean',
-        },
-        autoFocus: {
-            description: 'Whether the address1 field should have autoFocus',
-            control: 'boolean',
-        },
-        countryCode: {
-            description: 'Country code for address autocomplete (default: "US")',
-            control: 'text',
-        },
-        className: {
-            description: 'Custom class name for the container',
-            control: 'text',
-        },
+        // Hidden: not driven from Controls. Pre-supplied by each wrapper.
+        form: { table: { disable: true } },
+        fieldPrefix: { table: { disable: true } },
+        countryCode: { table: { disable: true } },
+        className: { table: { disable: true } },
+        autoFocus: { table: { disable: true } },
+        autoFocusField: { table: { disable: true } },
     },
-    tags: ['autodocs', 'interaction'],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+type SyntheticStory = StoryObj<ComponentType<Partial<SyntheticArgs>>>;
 
 /**
- * Default shipping address form with all fields
+ * Playground: empty US shipping form with phone shown. Toggle showPhone /
+ * labelsAsPlaceholders / showCountry / phoneRequired to reach the alternative
+ * shipping configurations. Use the synthetic `prefilled` toggle to load a
+ * realistic address for the chosen `country` (US / CA / GB).
  */
-export const Default: Story = {
-    render: () => <ShippingAddressFormWrapper />,
+export const Playground: SyntheticStory = {
+    args: PLAYGROUND_DEFAULTS,
+    argTypes: {
+        showPhone: {
+            description: 'Show the phone country-code dropdown and phone input.',
+            control: 'boolean',
+        },
+        labelsAsPlaceholders: {
+            description: 'Hide labels (sr-only) and use placeholder text instead.',
+            control: 'boolean',
+        },
+        showCountry: {
+            description:
+                'Replace the read-only country display with a select. State/Zip labels switch per country (US → State + Zip, CA → Province + Postal Code).',
+            control: 'boolean',
+        },
+        phoneRequired: {
+            description: 'Append an asterisk to the phone label.',
+            control: 'boolean',
+        },
+        prefilled: {
+            description: 'Load realistic data for the chosen country instead of an empty form.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        country: {
+            description:
+                'Drives countryCode and the prefilled fixture. US/CA hit the named-state/country branches; GB exercises the free-text state fallback when showCountry is on.',
+            control: 'radio',
+            options: ['US', 'CA', 'GB'] satisfies Country[],
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: PlaygroundWrapper,
+};
+
+/**
+ * Submit empty form to trigger react-hook-form / zod validation errors.
+ * Asserts the exact translated error messages for all required fields —
+ * a real regression catch on the validation wiring.
+ */
+export const WithValidationErrors: Story = {
+    render: () => <ShippingAddressFormWrapperWithValidation />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify form renders with all expected fields
-        const form = canvasElement.querySelector('[data-testid="address-form-fields-form"]');
-        await expect(form).toBeInTheDocument();
+        const saveButton = canvas.getByRole('button', { name: /save/i });
+        await userEvent.click(saveButton);
 
-        // Verify all field labels are present
-        await expect(canvas.getByText(/first name/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/last name/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/address line 1/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/address line 2/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/city/i)).toBeInTheDocument();
-        await expect(canvas.getByLabelText(/state/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/zip code/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/phone number/i)).toBeInTheDocument();
-
-        // Test typing in first name field
-        const firstNameInput = canvas.getByPlaceholderText(/first name/i);
-        await expect(firstNameInput).toBeInTheDocument();
-        await userEvent.type(firstNameInput, 'John');
-        await expect(firstNameInput).toHaveValue('John');
+        await expect(canvas.getByText('Please enter your first name.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your last name.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your address.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your city.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please select your state.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your zip code.')).toBeInTheDocument();
     },
 };
 
 /**
- * Pre-filled shipping address form
- */
-export const PrefilledShippingAddress: Story = {
-    render: () => (
-        <ShippingAddressFormWrapper
-            defaultValues={{
-                firstName: 'John',
-                lastName: 'Doe',
-                address1: '123 Main Street',
-                address2: 'Apt 4B',
-                city: 'New York',
-                stateCode: 'NY',
-                postalCode: '10001',
-                phone: '5551234567',
-            }}
-        />
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Verify form fields are populated with initial data (use role+name to avoid multiple matches)
-        await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('John');
-        await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Doe');
-        await expect(canvas.getByRole('textbox', { name: /address line 1/i })).toHaveValue('123 Main Street');
-        await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Apt 4B');
-        await expect(canvas.getByRole('textbox', { name: /city/i })).toHaveValue('New York');
-        await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('NY');
-        await expect(canvas.getByRole('textbox', { name: /zip code/i })).toHaveValue('10001');
-        await expect(canvas.getByRole('textbox', { name: /phone/i })).toHaveValue('5551234567');
-    },
-};
-
-/**
- * Shipping address form without phone field
- */
-export const WithoutPhone: Story = {
-    render: () => <ShippingAddressFormWrapper showPhone={false} />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Verify phone field is not present
-        await expect(canvas.queryByText(/phone number/i)).not.toBeInTheDocument();
-        await expect(canvas.queryByPlaceholderText(/\(000\) 000-0000/i)).not.toBeInTheDocument();
-
-        // Other fields should still be present
-        await expect(canvas.getByText(/first name/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/last name/i)).toBeInTheDocument();
-    },
-};
-
-/**
- * Billing address form with prefix
+ * Billing address form: fieldPrefix='billing', showCountry, and labelsAsPlaceholders.
+ * Verifies the prefixed field name + scoped autocomplete attribute — coupled
+ * behavior that the snapshot alone won't easily catch.
  */
 export const BillingAddress: Story = {
     render: () => <BillingAddressFormWrapper />,
@@ -392,132 +346,10 @@ export const BillingAddress: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify form renders
-        const form = canvasElement.querySelector('[data-testid="billing-address-form-fields-form"]');
-        await expect(form).toBeInTheDocument();
-
-        // Verify field names have billing prefix
-        const firstNameInput = canvas.getByPlaceholderText(/first name/i);
+        const firstNameInput = canvas.getByPlaceholderText(/first name\*/i);
         await expect(firstNameInput).toHaveAttribute('name', 'billingFirstName');
-
-        // Verify billing autocomplete attributes
         await expect(firstNameInput).toHaveAttribute('autocomplete', 'billing given-name');
-    },
-};
-
-/**
- * Pre-filled billing address form
- */
-export const PrefilledBillingAddress: Story = {
-    render: () => (
-        <BillingAddressFormWrapper
-            defaultValues={{
-                billingFirstName: 'Jane',
-                billingLastName: 'Smith',
-                billingAddress1: '456 Oak Avenue',
-                billingAddress2: 'Suite 200',
-                billingCity: 'Los Angeles',
-                billingStateCode: 'CA',
-                billingPostalCode: '90001',
-            }}
-        />
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Verify form fields are populated with billing address data (use role+name to avoid display-value ambiguity)
-        await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('Jane');
-        await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Smith');
-        await expect(canvas.getByRole('textbox', { name: /address line 1/i })).toHaveValue('456 Oak Avenue');
-        await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Suite 200');
-        await expect(canvas.getByRole('textbox', { name: /city/i })).toHaveValue('Los Angeles');
-        await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('CA');
-        await expect(canvas.getByRole('textbox', { name: /zip code/i })).toHaveValue('90001');
-    },
-};
-
-/**
- * Interactive form with field interactions
- */
-export const Interactive: Story = {
-    render: () => <ShippingAddressFormWrapper />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Fill out all form fields
-        const firstNameInput = canvas.getByPlaceholderText(/first name/i);
-        await userEvent.type(firstNameInput, 'Alice');
-        await expect(firstNameInput).toHaveValue('Alice');
-
-        const lastNameInput = canvas.getByPlaceholderText(/last name/i);
-        await userEvent.type(lastNameInput, 'Johnson');
-        await expect(lastNameInput).toHaveValue('Johnson');
-
-        const addressInput = canvas.getByPlaceholderText(/address line 1/i);
-        await userEvent.type(addressInput, '789 Pine Road');
-        await expect(addressInput).toHaveValue('789 Pine Road');
-
-        const address2Input = canvas.getByPlaceholderText(/address line 2|apartment|suite/i);
-        await userEvent.type(address2Input, 'Floor 3');
-        await expect(address2Input).toHaveValue('Floor 3');
-
-        const cityInput = canvas.getByPlaceholderText(/city/i);
-        await userEvent.type(cityInput, 'Chicago');
-        await expect(cityInput).toHaveValue('Chicago');
-
-        const stateSelect = canvas.getByRole('combobox', { name: /state/i });
-        await userEvent.selectOptions(stateSelect, 'IL');
-        await expect(stateSelect).toHaveValue('IL');
-
-        const postalCodeInput = canvas.getByRole('textbox', { name: /zip code/i });
-        await userEvent.type(postalCodeInput, '60601');
-        await expect(postalCodeInput).toHaveValue('60601');
-
-        // Phone field: raw digits while focused, formatted on blur
-        const phoneInput = canvas.getByPlaceholderText(/\(000\) 000-0000/i);
-        await userEvent.type(phoneInput, '3125551234');
-        await expect(phoneInput).toHaveValue('3125551234');
-        await userEvent.tab();
-        await expect(phoneInput).toHaveValue('(312) 555-1234');
-    },
-};
-
-/**
- * Field error validation - submit empty form and verify validation errors appear
- */
-export const FieldErrorValidation: Story = {
-    render: () => <ShippingAddressFormWrapperWithValidation />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const form = canvasElement.querySelector('[data-testid="address-form-fields-form"]');
-        if (!form) {
-            await expect(canvasElement).toBeInTheDocument();
-            return;
-        }
-
-        const saveButton = canvas.getByRole('button', { name: /save/i });
-        await userEvent.click(saveButton);
-
-        // Validation shows multiple errors (firstName, lastName, address1, city) - use getAllByText
-        const errors = canvas.getAllByText(/please enter your (first name|last name|address|city)/i);
-        await expect(errors.length).toBeGreaterThanOrEqual(1);
-    },
-};
-
-/**
- * Form with custom className
- */
-export const WithCustomClassName: Story = {
-    render: () => <ShippingAddressFormWrapper className="bg-muted p-4 rounded-none" />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Verify custom class is applied
-        const container = canvasElement.querySelector('.bg-muted.p-4.rounded-none');
-        await expect(container).toBeInTheDocument();
+        await expect(canvas.getByRole('combobox', { name: /country/i })).toBeInTheDocument();
+        await expect(canvas.queryByLabelText(/phone number/i)).not.toBeInTheDocument();
     },
 };

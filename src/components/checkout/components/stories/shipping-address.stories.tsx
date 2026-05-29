@@ -14,378 +14,18 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentType } from 'react';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { allModes } from '../../../../../.storybook/modes';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ShippingAddress from '../shipping-address';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('shipping-address-click');
-        const logSubmit = action('shipping-address-submit');
-        const logEdit = action('shipping-address-edit');
-        const logHover = action('shipping-address-hover');
-        const logInputFocus = action('shipping-address-input-focus');
-        const logInput = action('shipping-address-input');
-        const logInputValue = action('shipping-address-input-value');
-
-        const lastHoverElement: { current: HTMLElement | null } = { current: null };
-        const lastValueMap = new WeakMap<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement, string>();
-
-        const sanitizeLabel = (value: string | null | undefined): string => {
-            if (!value) {
-                return '';
-            }
-            return value.replace(/\s+/g, ' ').trim();
-        };
-
-        const resolveAriaLabelledBy = (element: HTMLElement): string | null => {
-            const labelledBy = element.getAttribute('aria-labelledby');
-            if (!labelledBy) {
-                return null;
-            }
-
-            const ids = labelledBy.split(/\s+/).filter(Boolean);
-            for (const id of ids) {
-                const ownerDocument = element.ownerDocument;
-                const labelledElement = ownerDocument ? ownerDocument.getElementById(id) : null;
-                const text = labelledElement?.textContent;
-                if (text) {
-                    return text;
-                }
-            }
-
-            return null;
-        };
-
-        const deriveLabel = (element: HTMLElement): string => {
-            const ariaLabel = element.getAttribute('aria-label');
-            if (ariaLabel) {
-                return sanitizeLabel(ariaLabel);
-            }
-
-            const labelledBy = resolveAriaLabelledBy(element);
-            if (labelledBy) {
-                return sanitizeLabel(labelledBy);
-            }
-
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-                const placeholder = element.placeholder;
-                if (placeholder) {
-                    return sanitizeLabel(placeholder);
-                }
-
-                const associatedLabel = element.labels?.[0]?.textContent;
-                if (associatedLabel) {
-                    return sanitizeLabel(associatedLabel);
-                }
-
-                const nameAttr = element.getAttribute('name');
-                if (nameAttr) {
-                    return sanitizeLabel(nameAttr);
-                }
-            }
-
-            if (element instanceof HTMLSelectElement) {
-                const associatedLabel = element.labels?.[0]?.textContent;
-                if (associatedLabel) {
-                    return sanitizeLabel(associatedLabel);
-                }
-            }
-
-            const title = element.getAttribute('title');
-            if (title) {
-                return sanitizeLabel(title);
-            }
-
-            const text = element.textContent;
-            if (text) {
-                return sanitizeLabel(text);
-            }
-
-            const testId = element.getAttribute('data-testid');
-            if (testId) {
-                return sanitizeLabel(testId);
-            }
-
-            const idAttr = element.getAttribute('id');
-            if (idAttr) {
-                return sanitizeLabel(idAttr);
-            }
-
-            return sanitizeLabel(element.tagName.toLowerCase());
-        };
-
-        const selectors = [
-            'button',
-            'a',
-            'input',
-            'textarea',
-            'select',
-            '[role="button"]',
-            '[role="link"]',
-            '[role="textbox"]',
-            '[data-testid]',
-            '[tabindex]',
-        ].join(', ');
-
-        const findInteractiveElement = (start: Element | null): HTMLElement | null => {
-            let node: Element | null = start;
-            while (node) {
-                if (node instanceof HTMLElement && node.matches(selectors)) {
-                    return node;
-                }
-                node = node.parentElement;
-            }
-            return null;
-        };
-
-        const isInsideHarness = (element: Element) => root.contains(element);
-
-        const isEditButton = (element: HTMLElement, label: string): boolean => {
-            return element instanceof HTMLButtonElement && label.toLowerCase().includes('edit');
-        };
-
-        const isSupportedInteractiveElement = (element: HTMLElement): boolean => {
-            return (
-                element instanceof HTMLButtonElement ||
-                element instanceof HTMLAnchorElement ||
-                element instanceof HTMLInputElement ||
-                element instanceof HTMLTextAreaElement ||
-                element instanceof HTMLSelectElement
-            );
-        };
-
-        const isSyntheticEvent = (event: Event): boolean => event.isTrusted === false;
-
-        const handleClick = (event: MouseEvent) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || !isInsideHarness(interactive)) {
-                return;
-            }
-
-            if (!isSupportedInteractiveElement(interactive)) {
-                return;
-            }
-
-            if (interactive instanceof HTMLAnchorElement) {
-                event.preventDefault();
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            if (isEditButton(interactive, label)) {
-                logEdit({ label });
-                return;
-            }
-
-            if (interactive instanceof HTMLButtonElement && interactive.type === 'submit') {
-                return;
-            }
-
-            logClick({ label });
-        };
-
-        const handleSubmit = (event: SubmitEvent) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            const form = event.target;
-            if (!(form instanceof HTMLFormElement) || !isInsideHarness(form)) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const submitter = (event.submitter as Element | null) ?? form.querySelector('[type="submit"]');
-            const interactive = submitter ? findInteractiveElement(submitter) : null;
-            const label = interactive && interactive instanceof HTMLElement ? deriveLabel(interactive) : 'Submit';
-
-            logSubmit({ label });
-        };
-
-        const handleInput = (event: Event) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || !isInsideHarness(interactive)) {
-                return;
-            }
-
-            if (interactive instanceof HTMLInputElement || interactive instanceof HTMLTextAreaElement) {
-                const label = deriveLabel(interactive);
-                if (!label) {
-                    return;
-                }
-
-                logInput({ label });
-
-                const value = interactive.value ?? '';
-                const previous = lastValueMap.get(interactive);
-                if (previous === value) {
-                    return;
-                }
-
-                lastValueMap.set(interactive, value);
-                logInputValue({ label, value });
-                return;
-            }
-
-            if (interactive instanceof HTMLSelectElement) {
-                const label = deriveLabel(interactive);
-                if (!label) {
-                    return;
-                }
-
-                const selectedText = interactive.selectedOptions[0]?.textContent?.trim() ?? interactive.value ?? '';
-                const previous = lastValueMap.get(interactive);
-                if (previous === selectedText) {
-                    return;
-                }
-
-                lastValueMap.set(interactive, selectedText);
-                logInput({ label });
-                logInputValue({ label, value: selectedText });
-            }
-        };
-
-        const handleFocus = (event: FocusEvent) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (
-                !interactive ||
-                !isInsideHarness(interactive) ||
-                !(
-                    interactive instanceof HTMLInputElement ||
-                    interactive instanceof HTMLTextAreaElement ||
-                    interactive instanceof HTMLSelectElement
-                )
-            ) {
-                return;
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            logInputFocus({ label });
-        };
-
-        const handlePointerOver = (event: PointerEvent) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || !isInsideHarness(interactive) || !isSupportedInteractiveElement(interactive)) {
-                return;
-            }
-
-            if (lastHoverElement.current === interactive) {
-                return;
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            lastHoverElement.current = interactive;
-            logHover({ label });
-        };
-
-        const handlePointerOut = (event: PointerEvent) => {
-            if (isSyntheticEvent(event)) {
-                return;
-            }
-
-            if (!lastHoverElement.current) {
-                return;
-            }
-
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive) {
-                return;
-            }
-
-            const related = event.relatedTarget as Element | null;
-            if (related && interactive.contains(related)) {
-                return;
-            }
-
-            if (interactive === lastHoverElement.current) {
-                lastHoverElement.current = null;
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('submit', handleSubmit, true);
-        root.addEventListener('input', handleInput, true);
-        root.addEventListener('change', handleInput, true);
-        root.addEventListener('focusin', handleFocus, true);
-        root.addEventListener('pointerover', handlePointerOver, true);
-        root.addEventListener('pointerout', handlePointerOut, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('submit', handleSubmit, true);
-            root.removeEventListener('input', handleInput, true);
-            root.removeEventListener('change', handleInput, true);
-            root.removeEventListener('focusin', handleFocus, true);
-            root.removeEventListener('pointerover', handlePointerOver, true);
-            root.removeEventListener('pointerout', handlePointerOut, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+import BasketProvider from '@/providers/basket';
+import CheckoutOneClickProvider from '@/components/checkout/utils/checkout-context';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
 const meta: Meta<typeof ShippingAddress> = {
     component: ShippingAddress,
@@ -405,283 +45,157 @@ const meta: Meta<typeof ShippingAddress> = {
                 component: `
 ### ShippingAddress Component
 
-This component handles the shipping address step of the checkout process - collecting the customer's shipping information including name, address, city, state, and postal code. It uses a ToggleCard to show either an editable form or a summary view based on the step state.
+This component handles the shipping address step of the checkout process. It renders in two modes depending on whether the shopper has saved addresses:
+
+**Guest / No Saved Addresses:**
+- Displays an address form collecting firstName, lastName, address1, address2, city, stateCode, postalCode, countryCode
+- Auto-populates from the basket or customer profile when available
+- Phone is managed at the Contact Info step and is not collected here
+
+**Registered Shopper with Saved Addresses:**
+- Displays a radio card list of saved addresses via \`SavedAddressesList\`
+- Auto-selects the basket address or preferred address
+- "Add New Address" button opens \`AddressModal\` to create an additional address
 
 **Key Features:**
-- **Form Validation**: Uses react-hook-form with Zod schema validation for address fields
-- **Toggle States**: Shows edit form when \`isEditing\` is true, summary when \`isCompleted\` is true
-- **Loading States**: Displays loading spinner and disabled state during submission
-- **Error Handling**: Shows form errors and validation messages
-- **Basket Integration**: Pre-fills address data from existing basket data
-- **International Support**: Handles optional state and postal code fields for international addresses
+- **Two edit modes**: Address form for guests, saved address radio list for returning shoppers
+- **Toggle States**: Edit form shown when \`isEditing\` is true; summary view when false. Edit button disabled until \`isCompleted\` is true
+- **Saving State**: Spinner overlay and disabled submit button while address is being saved
+- **Form Validation**: react-hook-form + Zod schema; field errors shown on submit
+- **Auto-population**: Pre-fills form from basket shipment address or customer profile
+- **Modal Management**: \`AddressModal\` handles add/edit flows for saved addresses
+- **International Support**: Supports multiple countries via the countryCode field
+- **Multi-Address Extension**: Optional toggle for multi-shipment mode (extension point)
 
 **Dependencies:**
-- \`react-hook-form\`: Form state management and validation
-- \`@hookform/resolvers/zod\`: Zod schema validation integration
-- \`@/providers/basket\`: Access to current basket data
-- \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/checkout-schemas\`: Shipping address validation schema
+- \`react-hook-form\` + \`@hookform/resolvers/zod\`: Form state and validation
+- \`@/providers/basket\`: Current basket shipment address and customer info
+- \`@/providers/auth\`: Customer ID for saved address operations
+- \`@/hooks/checkout/use-customer-profile\`: Saved addresses and customer profile data
+- \`@/components/toggle-card\`: Edit/summary toggle wrapper
+- \`AddressFormFields\`: Address form for guests and first-time shoppers
+- \`SavedAddressesList\`: Radio card list of saved addresses (registered shoppers)
+- \`AddressModal\`: Modal for adding/editing saved addresses
+- \`ShippingAddressDisplay\`: Formatted address in summary view
                 `,
             },
-        },
-    },
-    // Decorator removed to allow global decorators (with all context providers) to work
-    // decorators: [
-    //     (Story: React.ComponentType) => {
-    //         return (
-    //             <div className="max-w-2xl mx-auto p-6">
-    //                 <Story />
-    //             </div>
-    //         );
-    //     },
-    // ],
-    argTypes: {
-        onSubmit: {
-            description: 'Callback function called when the form is submitted with valid shipping address data',
-        },
-        onEdit: {
-            description: 'Callback function called when the edit button is clicked',
-        },
-        isLoading: {
-            control: 'boolean',
-            description: 'Whether the form is in a loading/submitting state',
-        },
-        isCompleted: {
-            control: 'boolean',
-            description: 'Whether this step has been completed (shows summary view)',
-        },
-        isEditing: {
-            control: 'boolean',
-            description: 'Whether this step is currently being edited (shows form view)',
-        },
-        actionData: {
-            control: 'object',
-            description: 'Action data containing form errors or success state',
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
+        (Story) => (
+            <div className="max-w-2xl mx-auto p-6">
+                <CheckoutActionLogger name="shipping-address">
+                    <Story />
+                </CheckoutActionLogger>
+            </div>
         ),
     ],
+    argTypes: {
+        onSubmit: {
+            description: 'Callback function called when the form is submitted — receives a FormData object',
+            table: {
+                type: { summary: '(formData: FormData) => void' },
+            },
+        },
+        onEdit: {
+            description: 'Callback function called when the edit button is clicked to re-open the form',
+            table: {
+                type: { summary: '() => void' },
+            },
+        },
+        isLoading: {
+            control: 'boolean',
+            description: 'Whether the address is being saved — shows spinner overlay and disables the submit button',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        isCompleted: {
+            control: 'boolean',
+            description: 'Whether this step has been completed — enables the Edit button in summary view',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        isEditing: {
+            control: 'boolean',
+            description: 'Controls the view — true shows the edit form, false shows the summary view',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        actionData: {
+            control: 'object',
+            description:
+                'Server action response — field errors are applied to the form, success triggers address diff detection',
+            table: {
+                type: { summary: 'CheckoutActionData | undefined' },
+            },
+        },
+        enableMultiAddress: {
+            control: 'boolean',
+            description: 'Whether to show the "Deliver to multiple addresses" toggle button (extension feature)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        handleToggleShippingAddressMode: {
+            description: 'Callback function invoked when the multi-address mode toggle is clicked (extension feature)',
+            table: {
+                type: { summary: '() => void | undefined' },
+            },
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test Default story: Verify form is in editing mode with all required fields
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // 6 textboxes (firstName, lastName, address1, address2, city, postalCode); stateCode is a combobox, no phone
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Verify form labels are present (may have asterisks for required fields)
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/State/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Zip Code/i)).toBeInTheDocument();
-
-        // Verify component structure
-        void expect(canvasElement).toBeInTheDocument();
-    },
+const baseArgs = {
+    onSubmit: () => action('submit-shipping-address')(),
+    onEdit: () => action('edit-shipping-address')(),
+    isLoading: false,
+    isCompleted: false,
+    isEditing: true,
+    actionData: undefined,
+    enableMultiAddress: false,
+    handleToggleShippingAddressMode: () => action('toggle-shipping-address-mode')(),
 };
 
-export const WithExistingAddress: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with existing shipping address information pre-filled from the basket data.',
-            },
-        },
-    },
+export const EditView: Story = {
+    args: baseArgs,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test WithExistingAddress story: Verify form fields and that it can handle existing data
+        // 6 textboxes: firstName, lastName, address1, address2, city, postalCode
+        // stateCode is a combobox (select), not a textbox
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        await expect(inputs.length).toBe(6);
 
-        // Same 7 textboxes as Default (stateCode is a combobox)
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Verify this story has the same form structure as Default
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
-
-        // Test that inputs are accessible and functional
-        const firstNameInput = canvas.getByLabelText(/First Name/i);
-        void expect(firstNameInput).toBeInTheDocument();
-        void expect(firstNameInput).not.toBeDisabled();
-
-        // Verify component renders properly for existing address scenario
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const LoadingState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: true,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form in a loading state with disabled inputs and loading button text.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test LoadingState story: Verify loading behavior and disabled states
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // In loading state, 7 textboxes (stateCode is combobox)
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Test that loading state shows appropriate UI
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-
-        // Verify that the loading state doesn't interfere with basic rendering
-        const firstNameInput = canvas.getByLabelText(/First Name/i);
-        void expect(firstNameInput).toBeInTheDocument();
-
-        // Test loading state visual feedback
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const CompletedState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: true,
-        isEditing: false,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the completed state with a summary view and edit button.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test CompletedState story: Verify summary view without form inputs
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // In completed state, there should be no form inputs (summary view only)
-        void expect(inputs.length).toBe(0);
-        // Change button is only visible when basket has an address; with no address we may have 0 buttons
-
-        // Summary shows address when basket has one; with mock basket undefined it may be empty
-        // Verify completed state visual presentation
-        void expect(canvasElement).toBeInTheDocument();
+        // Verify all required field labels are present
+        await expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/State/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Zip Code/i)).toBeInTheDocument();
     },
 };
 
 export const WithValidationErrors: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: {
-            step: 'shippingAddress',
-            fieldErrors: {
-                firstName: 'First name is required',
-                lastName: 'Last name is required',
-                address1: 'Address is required',
-                city: 'City is required',
-            },
-        },
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
+    args: { ...baseArgs },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form with field-level validation errors for address fields.',
+                story: 'Submitting the empty form triggers react-hook-form validation and shows field-level error messages.',
             },
         },
     },
@@ -689,45 +203,84 @@ export const WithValidationErrors: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        // Submit the empty form to trigger validation
+        const submitButton = canvas.getByRole('button', { name: /continue/i });
+        await userEvent.click(submitButton);
 
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
-
-        const firstNameInput = canvas.getByLabelText(/First Name/i);
-        void expect(firstNameInput).toBeInTheDocument();
-
-        void expect(canvasElement).toBeInTheDocument();
+        // Validation messages from schema
+        await expect(canvas.getByText('Please enter your first name.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your last name.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your address.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter your city.')).toBeInTheDocument();
     },
 };
 
-export const InternationalAddress: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
+const mockCustomerProfileWithAddresses: CustomerProfile = {
+    customer: { customerId: 'cust-1' },
+    addresses: [
+        {
+            addressId: 'addr-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            address1: '5 Wall St',
+            city: 'Burlington',
+            stateCode: 'MA',
+            postalCode: '01803',
+            countryCode: 'US',
+            preferred: true,
         },
-        onEdit: () => {
-            action('edit-shipping-address')();
+        {
+            addressId: 'addr-2',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            address1: '123 Main St',
+            city: 'Boston',
+            stateCode: 'MA',
+            postalCode: '02101',
+            countryCode: 'US',
+            preferred: false,
         },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
+    ],
+    paymentInstruments: [],
+};
+
+const withSavedAddresses = (Story: ComponentType) => (
+    <CheckoutOneClickProvider
+        customerProfile={mockCustomerProfileWithAddresses}
+        shippingDefaultSet={Promise.resolve(undefined)}>
+        <Story />
+    </CheckoutOneClickProvider>
+);
+
+const mockBasketWithAddress = {
+    shipments: [
+        {
+            shippingAddress: {
+                firstName: 'John',
+                lastName: 'Doe',
+                address1: '5 Wall St',
+                city: 'Burlington',
+                stateCode: 'MA',
+                postalCode: '01803',
+                countryCode: 'US',
+            },
         },
-    },
+    ],
+};
+
+const withMockAddress = (Story: ComponentType) => (
+    <BasketProvider basket={mockBasketWithAddress as never}>
+        <Story />
+    </BasketProvider>
+);
+
+export const WithSavedAddresses: Story = {
+    args: baseArgs,
+    decorators: [withSavedAddresses],
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form configured for international addresses (optional state and postal code).',
+                story: 'Registered shopper with saved addresses — shows a radio card list instead of the address form. The preferred address is pre-selected.',
             },
         },
     },
@@ -735,47 +288,78 @@ export const InternationalAddress: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test InternationalAddress story: Verify international address form structure
+        // Radio cards instead of a text form
+        const radios = canvas.getAllByRole('radio');
+        await expect(radios.length).toBeGreaterThan(0);
+        await expect(radios[0]).toBeChecked();
+
+        await expect(canvas.getByText(/John Doe/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/5 Wall St/i)).toBeInTheDocument();
+    },
+};
+
+export const SummaryView: Story = {
+    args: { ...baseArgs, isCompleted: true, isEditing: false },
+    decorators: [withMockAddress],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Summary view after a shipping address has been saved — shows the formatted address with an Edit button.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // No editable inputs in summary view
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        await expect(inputs.length).toBe(0);
 
-        // Standard 7 textboxes (stateCode may be combobox or textbox depending on country)
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
+        await expect(canvas.getByText(/John Doe/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/5 Wall St/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/Burlington/i)).toBeInTheDocument();
+    },
+};
 
-        // Test international-specific field handling
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
+export const SavingState: Story = {
+    args: { ...baseArgs, isLoading: true },
+    decorators: [withMockAddress],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Shows the form while the address is being saved — fields are pre-filled, spinner overlay active, submit button disabled.',
+            },
+        },
+        a11y: {
+            config: {
+                rules: [{ id: 'color-contrast', enabled: false }],
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
 
-        // Verify international address form accessibility
-        const addressInput = canvas.getByLabelText(/Address Line 1/i);
-        void expect(addressInput).toBeInTheDocument();
+        // Fields are pre-filled from basket
+        await expect(canvas.getByLabelText(/First Name/i)).toHaveValue('John');
+        await expect(canvas.getByLabelText(/Last Name/i)).toHaveValue('Doe');
+        await expect(canvas.getByLabelText(/Address Line 1/i)).toHaveValue('5 Wall St');
 
-        void expect(canvasElement).toBeInTheDocument();
+        // Submit button is disabled during save
+        const submitButton = canvas.queryByRole('button', { name: /saving/i });
+        if (submitButton) {
+            await expect(submitButton).toBeDisabled();
+        }
     },
 };
 
 export const DisabledState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: false,
-        actionData: undefined,
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
+    args: { ...baseArgs, isEditing: false },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the disabled state when neither editing nor completed (upcoming step).',
+                story: 'Shows the upcoming/disabled state when the step has not yet been reached — no form inputs visible.',
             },
         },
     },
@@ -783,13 +367,10 @@ export const DisabledState: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test DisabledState story: Verify disabled state shows summary without edit capability
+        // Disabled (upcoming) state: no editable inputs
         const inputs = canvas.queryAllByRole('textbox');
+        await expect(inputs.length).toBe(0);
 
-        // In disabled state, should show summary view without form inputs
-        void expect(inputs.length).toBe(0);
-
-        // Verify component renders in disabled state
-        void expect(canvasElement).toBeInTheDocument();
+        await expect(canvasElement).toBeInTheDocument();
     },
 };

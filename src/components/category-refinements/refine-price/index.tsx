@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import PriceRangeInput from '@/components/price-range-input';
 import DefaultRefinement from '../refine-default';
 import type { RefinementProps } from '../types';

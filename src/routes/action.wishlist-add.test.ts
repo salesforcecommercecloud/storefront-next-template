@@ -17,21 +17,17 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.wishlist-add';
-import { createTestContext } from '@/lib/test-utils';
+import { createTestContext, expectStatus } from '@/lib/test-utils';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock dependencies
-const mockIsRegisteredCustomer = vi.fn();
 const mockGetAuth = vi.fn();
 const mockCreateApiClients = vi.fn();
 const mockExtractResponseError = vi.fn();
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: () => mockGetAuth(),
-}));
-
-vi.mock('@/lib/api/customer.server', () => ({
-    isRegisteredCustomer: () => mockIsRegisteredCustomer(),
 }));
 
 vi.mock('@/lib/api-clients.server', () => ({
@@ -71,57 +67,12 @@ vi.mock('@/lib/utils', async () => {
     };
 });
 
-// Helper to extract JSON from Response or DataWithResponseInit
+/** Extract the payload from a `data()`-wrapped response (or a plain Response). */
 async function extractResponseData(response: any): Promise<any> {
-    if (!response) {
-        return response;
-    }
-
-    // Handle Response objects (from Response.json())
-    if (response instanceof Response) {
-        return await response.json();
-    }
-
-    // Handle DataWithResponseInit (from data())
-    // In react-router, data() returns an object with the data as the first element
-    // or the data might be in a body property
-    if (response && typeof response === 'object') {
-        // Check if response has the data directly accessible
-        if (
-            'success' in response ||
-            ('body' in response && response.body && typeof response.body === 'object' && 'success' in response.body)
-        ) {
-            // Already has success property - might be the data
-            if ('success' in response) {
-                return response;
-            }
-            // Or check body
-            if ('body' in response && response.body && typeof response.body === 'object') {
-                if ('success' in response.body) {
-                    return response.body;
-                }
-                // Try to parse body as JSON string
-                if (typeof response.body === 'string') {
-                    try {
-                        return JSON.parse(response.body);
-                    } catch {
-                        return response.body;
-                    }
-                }
-            }
-        }
-
-        // Try to find json method
-        if ('json' in response && typeof response.json === 'function') {
-            try {
-                return await response.json();
-            } catch {
-                // Continue to other checks
-            }
-        }
-    }
-
-    // Fallback: return as-is
+    if (!response) return response;
+    if (response instanceof Response) return await response.json();
+    // `data()` returns DataWithResponseInit: { type: 'DataWithResponseInit', data: T, init?: ResponseInit }
+    if (typeof response === 'object' && 'data' in response) return response.data;
     return response;
 }
 
@@ -134,7 +85,6 @@ describe('action.wishlist-add', () => {
         vi.clearAllMocks();
 
         // Setup default mocks
-        mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetAuth.mockReturnValue({
             customerId: 'customer-123',
             userType: 'registered',
@@ -173,11 +123,11 @@ describe('action.wishlist-add', () => {
             if (productId) {
                 data.productId = productId;
             }
-            return createFormDataRequest('http://localhost/action/wishlist-add', 'POST', data);
+            return createFormDataRequest(`http://localhost${resourceRoutes.wishlistAdd}`, 'POST', data);
         };
 
         test('should return error for non-POST requests', async () => {
-            const request = new Request('http://localhost/action/wishlist-add', {
+            const request = new Request(`http://localhost${resourceRoutes.wishlistAdd}`, {
                 method: 'GET',
             });
             const args: ActionFunctionArgs = {
@@ -187,13 +137,11 @@ describe('action.wishlist-add', () => {
                 unstable_pattern: 'action/wishlist-add',
             };
 
-            const response = await action(args);
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const json = await response.json();
-            expect(json.success).toBe(false);
-            expect(json.error).toBeDefined();
-            expect(json.error.code).toBe('METHOD_NOT_ALLOWED');
+            const result = await action(args);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
+            expect(result.data.error?.code).toBe('METHOD_NOT_ALLOWED');
+            expectStatus(result, 405);
         });
 
         test('should return error when productId is missing', async () => {
@@ -231,8 +179,15 @@ describe('action.wishlist-add', () => {
             expect(json).toHaveProperty('error');
         });
 
-        test('should return error when user is not authenticated', async () => {
-            mockIsRegisteredCustomer.mockReturnValue(false);
+        test('should return error when session has no customerId', async () => {
+            // The auth-gate-by-userType was removed when guest support was added.
+            // The remaining session check rejects requests with no customerId at all
+            // (e.g. a torn-down session) — both guest (gcid) and registered (rcid)
+            // tokens supply customerId on a valid session.
+            mockGetAuth.mockReturnValue({
+                customerId: null,
+                userType: 'guest',
+            } as any);
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
@@ -242,7 +197,6 @@ describe('action.wishlist-add', () => {
             };
 
             const response = await action(args);
-            // data() returns DataWithResponseInit with data property
             let json: any;
             if (response instanceof Response) {
                 json = await response.json();
@@ -253,6 +207,48 @@ describe('action.wishlist-add', () => {
             }
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
+        });
+
+        test('should add to wishlist as a guest user (gcid customerId)', async () => {
+            // Guest sessions have userType='guest' and customerId=gcid.
+            // The action route accepts these the same as registered sessions —
+            // SCAPI's product-list endpoints accept guest tokens.
+            mockGetAuth.mockReturnValue({
+                customerId: 'guest-gcid-456',
+                userType: 'guest',
+            } as any);
+
+            const guestWishlist = {
+                id: 'guest-wl-1',
+                listId: 'guest-wl-1',
+                type: 'wish_list',
+                items: [],
+            };
+
+            mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
+                data: { data: [guestWishlist] },
+            });
+            mockShopperCustomers.getCustomerProductList.mockResolvedValue({
+                data: { ...guestWishlist, items: [{ id: 'item-1', productId: 'product-123' }] },
+            });
+            mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({});
+
+            const request = createRequest('product-123');
+            const args: ActionFunctionArgs = {
+                request,
+                context: mockContext,
+                params: {},
+                unstable_pattern: 'action/wishlist-add',
+            };
+
+            const response = await action(args);
+            const json = response instanceof Response ? await response.json() : (response as any).data;
+            expect(json.success).toBe(true);
+            expect(mockShopperCustomers.createCustomerProductListItem).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    params: { path: { customerId: 'guest-gcid-456', listId: 'guest-wl-1' } },
+                })
+            );
         });
 
         test('should successfully add product to existing wishlist', async () => {

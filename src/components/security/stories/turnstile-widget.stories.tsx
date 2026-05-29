@@ -82,24 +82,37 @@ const meta: Meta<typeof TurnstileWidget> = {
         docs: {
             description: {
                 component:
-                    'Cloudflare Turnstile widget placeholder. Stories mock `window.turnstile` so the real script is not loaded.',
+                    'Cloudflare Turnstile widget placeholder. Stories mock `window.turnstile` so the real script is not loaded. The visible delta of interest is enabled-vs-disabled — different modes (managed / non-interactive / invisible) render the same placeholder DOM under the mock.',
             },
         },
     },
     // Third-party widget host node uses role="presentation" in production; axe flags the placeholder.
     tags: ['autodocs', 'skip-a11y'],
+    argTypes: {
+        siteKey: { table: { disable: true } },
+        onSuccess: { table: { disable: true } },
+        onError: { table: { disable: true } },
+        onExpire: { table: { disable: true } },
+        onTimeout: { table: { disable: true } },
+        onBypass: { table: { disable: true } },
+        onRetryExhausted: { table: { disable: true } },
+        resetRef: { table: { disable: true } },
+        executeRef: { table: { disable: true } },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof TurnstileWidget>;
 
+const SHARED_ARGS = {
+    siteKey: '1x0000000000000000000000000000000AA',
+    onSuccess: action('onSuccess'),
+    onError: action('onError'),
+    onExpire: action('onExpire'),
+};
+
 export const Default: Story = {
-    args: {
-        siteKey: '1x0000000000000000000000000000000AA',
-        onSuccess: action('onSuccess'),
-        onError: action('onError'),
-        onExpire: action('onExpire'),
-    },
+    args: SHARED_ARGS,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const root = canvasElement.querySelector('[data-testid="turnstile-widget"]');
@@ -107,22 +120,12 @@ export const Default: Story = {
     },
 };
 
-export const ManagedMode: Story = {
-    args: {
-        ...Default.args,
-        mode: 'managed',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(canvasElement.querySelector('[data-testid="turnstile-widget"]')).toBeInTheDocument();
-    },
-};
-
+/**
+ * `enabled: false` — the component returns null. Locks in that the disable
+ * branch doesn't accidentally render the widget host element.
+ */
 export const Disabled: Story = {
-    args: {
-        ...Default.args,
-        enabled: false,
-    },
+    args: { ...SHARED_ARGS, enabled: false },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         await expect(canvasElement.querySelector('[data-testid="turnstile-widget"]')).not.toBeInTheDocument();

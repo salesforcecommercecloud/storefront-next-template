@@ -18,10 +18,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
 import SearchSuggestionsPopup from './suggestions-grid';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { getSitePrefix, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // Mock DynamicImage component
 vi.mock('@/components/dynamic-image', () => ({
@@ -43,7 +43,11 @@ vi.mock('@/hooks/use-analytics', () => ({
 const renderWithRouter = (ui: React.ReactElement) => {
     return render(
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <BrowserRouter>{ui}</BrowserRouter>
             </SiteProvider>
         </ConfigProvider>
@@ -88,7 +92,7 @@ describe('SearchSuggestionsPopup Component', () => {
 
         const productTiles = screen.getAllByTestId('product-tile');
         expect(productTiles).toHaveLength(4);
-        expect(productTiles[0]).toHaveAttribute('href', '/RefArchGlobal/en-GB/product/iphone-15-pro');
+        expect(productTiles[0]).toHaveAttribute('href', `${getSitePrefix()}/product/iphone-15-pro`);
     });
 
     it('should render images when provided and fallback when missing', () => {
@@ -139,7 +143,11 @@ describe('SearchSuggestionsPopup Component', () => {
         // Should not crash without callback
         rerender(
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <BrowserRouter>
                         <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={undefined} />
                     </BrowserRouter>

@@ -16,7 +16,7 @@
 import { useRef, useEffect } from 'react';
 import { useAuth } from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import {
     createEvent,
     getEventMediator,
@@ -28,7 +28,7 @@ import {
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { useTrackingConsent } from './use-tracking-consent';
 
@@ -96,7 +96,7 @@ async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
  */
 export const useAnalytics = () => {
     const auth = useAuth();
-    const appConfig = useConfig<AppConfig>();
+    const appConfig = useConfig();
     const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
     const { site, language } = useSite();
     const siteInfo = { siteId: site.id, localeId: language };
@@ -149,7 +149,11 @@ export const useAnalytics = () => {
             trackClickProductInSearch: () => {},
             trackViewSearchSuggestions: () => {},
             trackClickSearchSuggestion: () => {},
-            trackCommerceAgentEngagement: () => {},
+            trackWishlistItemAdded: () => {},
+            trackWishlistItemRemoved: () => {},
+            trackWishlistViewed: () => {},
+            trackWishlistItemMerged: () => {},
+            trackWishlistMerged: () => {},
         };
         /* eslint-enable @typescript-eslint/no-empty-function */
     }
@@ -296,19 +300,59 @@ export const useAnalytics = () => {
     };
 
     /**
-     * Track shopper engagement with agentic commerce (header icon or search assistant card).
+     * Track wishlist item added
      */
-    const trackCommerceAgentEngagement = async (data: { surface: 'header' | 'search' }) => {
-        return trackEvent(
-            authPromiseRef.current,
-            appConfig,
-            consentPreferences,
-            siteInfo,
-            'commerce_agent_engagement',
-            {
-                surface: data.surface,
-            }
-        );
+    const trackWishlistItemAdded = async (data: {
+        surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+        productId: string;
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_added', {
+            surface: data.surface,
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist item removed
+     */
+    const trackWishlistItemRemoved = async (data: {
+        surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+        productId: string;
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_removed', {
+            surface: data.surface,
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist page view
+     */
+    const trackWishlistViewed = async () => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_viewed', {});
+    };
+
+    /**
+     * Track individual product merged from guest to registered wishlist
+     */
+    const trackWishlistItemMerged = async (data: { productId: string }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_merged', {
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist merge operation summary on login
+     */
+    const trackWishlistMerged = async (data: {
+        merged: number;
+        skipped: number;
+        failed: number;
+        mergedProductIds: string[];
+        skippedProductIds: string[];
+        failedProductIds: string[];
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_merged', data);
     };
 
     return {
@@ -323,6 +367,10 @@ export const useAnalytics = () => {
         trackClickProductInSearch,
         trackViewSearchSuggestions,
         trackClickSearchSuggestion,
-        trackCommerceAgentEngagement,
+        trackWishlistItemAdded,
+        trackWishlistItemRemoved,
+        trackWishlistViewed,
+        trackWishlistItemMerged,
+        trackWishlistMerged,
     };
 };

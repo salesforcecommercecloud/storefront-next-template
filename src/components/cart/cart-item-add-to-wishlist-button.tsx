@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/hooks/use-wishlist';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 interface CartItemAddToWishlistButtonProps {
     product: EnrichedProductItem;
@@ -67,12 +67,12 @@ export function CartItemAddToWishlistButton({
                 variant="link"
                 size="sm"
                 disabled={isLoading}
-                className={`text-xs cursor-pointer hover:no-underline ${className}`}
+                className={`text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline ${className}`}
                 data-testid={`cart-remove-wishlist-${product.itemId}`}
                 aria-label={t('removeFromWishlist')}
                 aria-busy={isLoading}
                 onClick={() => {
-                    void toggleWishlist(hit);
+                    void toggleWishlist(hit, undefined, 'cart');
                 }}>
                 {isLoading && pendingOperation === 'remove' ? t('removingFromWishlist') : t('removeFromWishlist')}
             </Button>
@@ -90,7 +90,7 @@ export function CartItemAddToWishlistButton({
             aria-label={t('addToWishlist')}
             aria-busy={isLoading}
             onClick={() => {
-                void toggleWishlist(hit);
+                void toggleWishlist(hit, undefined, 'cart');
             }}>
             {isLoading && pendingOperation === 'add' ? t('addingToWishlist') : t('addToWishlist')}
         </Button>

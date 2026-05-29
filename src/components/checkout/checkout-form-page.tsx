@@ -23,22 +23,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { useAuth } from '@/providers/auth';
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
 import { Spinner } from '@/components/spinner';
 import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
+import { handlePickupContinueAction, hasAnyValidShippingMethod } from './utils/checkout-utils';
+import { isAddressEmpty } from '@/lib/address/address-utils';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
-// @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { handlePickupContinueAction } from './utils/checkout-utils';
+import { isOrderTotalEstimated } from '@/components/order-summary/mobile-heading-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
 import { filterDeliveryShippingMethods } from '@/extensions/bopis/lib/basket-utils';
-// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 // Lazy load heavy components
 const ContactInfo = lazy(() => import('./components/contact-info'));
@@ -56,6 +57,7 @@ const Payment = lazy(() => import('./components/payment'));
 const RegisterCustomerSelection = lazy(() => import('./components/register-customer-selection'));
 const OrderSummary = lazy(() => import('@/components/order-summary'));
 const MyCart = lazy(() => import('@/components/my-cart'));
+/** @feature-stub Express checkout buttons — remove this import and its JSX below to strip the stub */
 const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 // Import skeleton components for accurate loading states
@@ -132,7 +134,7 @@ function GuestAccountCreation({
     const justRegistered =
         typeof sessionStorage !== 'undefined' && sessionStorage.getItem('registeredViaCheckout') === 'true';
 
-    // Guest chose to skip passwordless OTP — treat like guest checkout but without create-account checkbox
+    // When email verification is disabled, registration is offered on the order confirmation page instead
     if (hideCreateAccountOption && !justRegistered) {
         return null;
     }
@@ -205,7 +207,7 @@ export default function CheckoutFormPage({
 
     const cart = useBasket();
     const basketHydrated = useBasketHydrated();
-    const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
+    const { step, STEPS, goToStep, pinToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
     const registrationFetcher = useFetcher({ key: 'checkout-registration' });
@@ -218,6 +220,7 @@ export default function CheckoutFormPage({
         setFormErrors: null,
     });
     const otpFlowActiveRef = useRef(false);
+    const noShippingMethodsRef = useRef(false);
     const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
         useState(false);
 
@@ -236,7 +239,7 @@ export default function CheckoutFormPage({
         isSubmitting,
         handleCreateAccountPreferenceChange,
         shouldCreateAccount,
-    } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
+    } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef, noShippingMethodsRef });
 
     // Stale `registeredViaCheckout` / `shouldCreateAccount` session from a prior visit can leave
     // `shouldCreateAccount` true and hide the "Save payment" checkbox (see hidePaymentSaveCheckbox).
@@ -296,6 +299,9 @@ export default function CheckoutFormPage({
     showAddressAndOptions = shipmentDistribution.hasDeliveryItems;
     isDeliveryProductItem = shipmentDistribution.isDeliveryProductItem;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    // Keep ref in sync so useCheckoutActions can block advance before rendering the next step
+    noShippingMethodsRef.current = !hasAnyValidShippingMethod(shippingMethodsMap);
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
     const enableMultiAddress = shipmentDistribution.enableMultiAddress;
@@ -465,12 +471,18 @@ export default function CheckoutFormPage({
         onEdit: () => goToStep(STEPS.SHIPPING_OPTIONS),
     };
 
+    // Block payment when shipping is required, an address exists, but no valid delivery methods
+    // are available. A stale shipping method on the basket can make computedStep overshoot to
+    // PAYMENT on reload; this prevents the payment section from opening in that case.
+    const hasShippingAddress = cart?.shipments?.some((s) => s.shippingAddress && !isAddressEmpty(s.shippingAddress));
+    const shippingBlocked = showAddressAndOptions && !!hasShippingAddress && noShippingMethodsRef.current;
+
     const paymentState = {
-        isCompleted: step > STEPS.PAYMENT,
-        isEditing: step === STEPS.PAYMENT || editingStep === STEPS.PAYMENT,
+        isCompleted: step > STEPS.PAYMENT && !shippingBlocked,
+        isEditing: (step === STEPS.PAYMENT || editingStep === STEPS.PAYMENT) && !shippingBlocked,
         onEdit: () => goToStep(STEPS.PAYMENT),
         // Guest: show only "Payment" title until contact, shipping address and options are done
-        disabled: !isRegisteredUser && step < STEPS.PAYMENT,
+        disabled: (!isRegisteredUser && step < STEPS.PAYMENT) || shippingBlocked,
     };
 
     // Surface blocking API errors as error toasts for immediate visibility.
@@ -532,6 +544,54 @@ export default function CheckoutFormPage({
             setIsPlaceOrderPending(false);
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
+
+    // Reload-only: pin to Shipping Address when basket already has an address but no valid delivery methods.
+    // Skipped when there's an active submission so the post-submit effect is the single toast source.
+    const reloadPinDoneRef = useRef(false);
+    useEffect(() => {
+        if (reloadPinDoneRef.current || !cart || !basketHydrated) return;
+        if (shippingAddressFetcher.state !== 'idle' || shippingAddressFetcher.data) return;
+        const hasAddress = cart.shipments?.some((s) => s.shippingAddress && !isAddressEmpty(s.shippingAddress));
+        if (!hasAddress) return;
+        if (!hasAnyValidShippingMethod(shippingMethodsMap)) {
+            reloadPinDoneRef.current = true;
+            pinToStep?.(STEPS.SHIPPING_ADDRESS);
+            showToast?.(tErrors('checkout.noShippingMethodsForAddress'), 'error');
+        }
+    }, [
+        cart,
+        basketHydrated,
+        shippingMethodsMap,
+        shippingAddressFetcher.state,
+        shippingAddressFetcher.data,
+        pinToStep,
+        STEPS,
+        showToast,
+        tErrors,
+    ]);
+
+    // After each shipping-address submit with no delivery methods: toast + pin to Shipping Address.
+    // The noShippingMethodsRef guard in useCheckoutActions prevents the flash when the action
+    // response includes shipping methods. This pinToStep call is still needed as a fallback when
+    // the shipping methods map updates via loader revalidation after the guard has already fired.
+    const noMethodsToastShownRef = useRef<unknown>(null);
+    useEffect(() => {
+        if (shippingAddressFetcher.state !== 'idle' || !shippingAddressFetcher.data?.success) return;
+        if (noMethodsToastShownRef.current === shippingAddressFetcher.data) return;
+        if (!hasAnyValidShippingMethod(shippingMethodsMap)) {
+            noMethodsToastShownRef.current = shippingAddressFetcher.data;
+            showToast?.(tErrors('checkout.noShippingMethodsForAddress'), 'error');
+            pinToStep?.(STEPS.SHIPPING_ADDRESS);
+        }
+    }, [
+        shippingAddressFetcher.state,
+        shippingAddressFetcher.data,
+        shippingMethodsMap,
+        showToast,
+        tErrors,
+        pinToStep,
+        STEPS,
+    ]);
 
     if (!cart || !basketHydrated) {
         return <CheckoutSkeleton />;
@@ -605,12 +665,14 @@ export default function CheckoutFormPage({
     }
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
-    const showPlaceOrderSection = step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT);
+    const showPlaceOrderSection =
+        step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && !shippingBlocked;
+    const isEstimate = cart ? isOrderTotalEstimated(cart) : true;
 
     return (
-        <div className="min-h-screen bg-background pb-20 lg:pb-0">
+        <div className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
-            <div className="section-container py-8">
+            <div className="section-container pt-8 pb-6">
                 <Typography variant="h2" as="h1" className="mb-8">
                     {t('pageTitle')}
                 </Typography>
@@ -618,29 +680,32 @@ export default function CheckoutFormPage({
                 <div className="md:hidden mb-6 border border-border">
                     <Suspense fallback={<OrderSummarySkeleton />}>
                         {/* Pass lazy <OrderSummary /> as children to preserve checkout route code-splitting. */}
-                        <OrderSummaryMobileAccordion basket={cart} defaultExpanded={false}>
+                        <OrderSummaryMobileAccordion
+                            basket={cart}
+                            defaultExpanded={false}
+                            showPrice
+                            isEstimate={isEstimate}>
                             <OrderSummary
                                 basket={cart}
                                 showCartItems={false}
                                 showHeading={false}
                                 showPromoCodeForm={true}
                                 productsByItemId={{}}
-                                isEstimate={true}
+                                isEstimate={isEstimate}
+                                showTotal={false}
                                 showCheckoutAction={false}
                                 className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
                             />
                         </OrderSummaryMobileAccordion>
                     </Suspense>
 
-                    <div className="mt-6">
-                        <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
-                            <MyCartWithData
-                                basket={cart}
-                                productMapPromise={productMapPromise}
-                                promotionsPromise={promotionsPromise}
-                            />
-                        </Suspense>
-                    </div>
+                    <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
+                        <MyCartWithData
+                            basket={cart}
+                            productMapPromise={productMapPromise}
+                            promotionsPromise={promotionsPromise}
+                        />
+                    </Suspense>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -651,10 +716,10 @@ export default function CheckoutFormPage({
                         <UITarget targetId="sfcc.checkout.sidebar.before" />
                         <div className="space-y-6">
                             {/* Order Summary + Cart Items */}
-                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
-                                <CardHeader className="border-b border-border pb-4">
+                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
+                                <CardHeader className="border-b-[1px] border-border pb-2">
                                     <CardTitle>
-                                        <span className="text-xl font-bold tracking-tight text-card-foreground">
+                                        <span className="text-2xl font-bold tracking-tight text-card-foreground">
                                             {t('orderSummary.title')}
                                         </span>
                                     </CardTitle>
@@ -669,6 +734,7 @@ export default function CheckoutFormPage({
                                                 showHeading={false}
                                                 showPromoCodeForm={true}
                                                 productsByItemId={{}}
+                                                isEstimate={isEstimate}
                                                 className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
                                             />
                                         </Suspense>
@@ -696,7 +762,7 @@ export default function CheckoutFormPage({
                     </div>
 
                     {/* Main Checkout Content - Single Page Layout */}
-                    <div className="space-y-6 order-2 lg:order-1 lg:col-span-2">
+                    <div className="space-y-6 order-2 lg:order-1 lg:col-span-2 [&_[data-slot=card-header].border-b]:pb-4">
                         <UITarget targetId="sfcc.checkout.mainContent.before" />
                         {/* Express Payments - Apple Pay, Google Pay, Amazon Pay, PayPal & Venmo (mobile only) */}
                         <UITarget targetId="sfcc.checkout.expressPayments.header.before" />
@@ -816,6 +882,7 @@ export default function CheckoutFormPage({
                                 <UITarget targetId="sfcc.checkout.placeOrder.before" />
                                 <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form
+                                        data-checkout-mobile-bar
                                         onSubmit={handlePlaceOrderSubmit}
                                         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
                                         <Button

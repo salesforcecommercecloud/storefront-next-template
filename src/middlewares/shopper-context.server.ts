@@ -15,9 +15,12 @@
  */
 import type { MiddlewareFunction } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getAuth } from './auth.server';
-import { isPageDesignerMode, extractQualifiersFromUrl, updateShopperContext } from '@/lib/shopper-context-utils.server';
+import {
+    isPageDesignerMode,
+    extractQualifiersFromUrl,
+    updateShopperContext,
+} from '@/lib/shopper-context/server-utils.server';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -28,7 +31,7 @@ import { getLogger } from '@/lib/logger.server';
 const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     const logger = getLogger(context);
     const url = new URL(request.url);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     let response: Response | undefined;
 
     // Check feature flag - skip if shopper context is disabled

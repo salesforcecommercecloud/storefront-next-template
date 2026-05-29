@@ -14,64 +14,35 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CheckoutProgress } from '../checkout-progress';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within } from 'storybook/test';
+import type { ReactNode } from 'react';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
+import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { CheckoutProgress } from '../checkout-progress';
 import { CHECKOUT_STEPS } from '../utils/checkout-context-types';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
-const PROGRESS_HARNESS_ATTR = 'data-progress-harness';
+function Wrapper({ children }: { children: ReactNode }) {
+    return <div className="w-full max-w-4xl mx-auto p-6">{children}</div>;
+}
 
-function ProgressStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logStepClick = useMemo(() => action('progress-step-clicked'), []);
-    const logHover = useMemo(() => action('progress-step-hovered'), []);
+// Asserts visible state by counting style markers in the rendered DOM. The component renders
+// each step twice (mobile + desktop layouts), so completed/current/pending counts double.
+async function assertStepStateCounts(
+    canvasElement: HTMLElement,
+    { completed, current, pending }: { completed: number; current: number; pending: number }
+) {
+    const root = canvasElement;
+    // Completed circles render <svg class="lucide-check">
+    const completedCircles = root.querySelectorAll('svg.lucide-check');
+    // Current circle has the animate-pulse class on the circle itself
+    const currentCircles = root.querySelectorAll('.animate-pulse');
+    // Pending circles use the muted class set
+    const pendingCircles = root.querySelectorAll('.bg-muted.text-muted-foreground');
 
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${PROGRESS_HARNESS_ATTR}]`));
-
-        const handleClick = (event: MouseEvent) => {
-            const target = (event.target as HTMLElement | null)?.closest('[role="button"], button, a');
-            if (!target || !(target instanceof HTMLElement) || !isInsideHarness(target)) {
-                return;
-            }
-
-            const stepText = target.textContent?.trim() || '';
-            logStepClick({ stepText });
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = (event.target as HTMLElement | null)?.closest('[role="button"], button, a');
-            if (!target || !(target instanceof HTMLElement) || !isInsideHarness(target)) {
-                return;
-            }
-
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && target.contains(related)) {
-                return;
-            }
-
-            const stepText = target.textContent?.trim() || '';
-            if (stepText) {
-                logHover({ stepText });
-            }
-        };
-
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logStepClick, logHover]);
-
-    return (
-        <div ref={containerRef} {...{ [PROGRESS_HARNESS_ATTR]: 'true' }} className="w-full max-w-4xl mx-auto p-6">
-            {children}
-        </div>
-    );
+    await expect(completedCircles).toHaveLength(completed * 2);
+    await expect(currentCircles).toHaveLength(current * 2);
+    await expect(pendingCircles).toHaveLength(pending * 2);
 }
 
 const meta: Meta<typeof CheckoutProgress> = {
@@ -84,33 +55,46 @@ const meta: Meta<typeof CheckoutProgress> = {
         docs: {
             description: {
                 component: `
-A progress indicator component that displays the checkout flow steps. Shows current step, completed steps, and pending steps with visual indicators.
+### CheckoutProgress Component
 
-## Features
+This component renders a visual timeline of the six checkout steps so the shopper can see where they are in the flow. It is purely presentational — it accepts \`currentStep\` and \`completedSteps\` as props and renders them; it does not subscribe to \`CheckoutContext\` or any other source, so it can be exercised in stories with any combination of step states.
 
-- **Step Visualization**: Shows all checkout steps with status indicators
-- **Current Step Highlighting**: Highlights the current active step
-- **Completed Steps**: Shows checkmarks for completed steps
-- **Responsive Design**: Horizontal layout on mobile, vertical on desktop
-- **Visual Connectors**: Lines connecting steps to show flow
+**Key Features:**
+- **Three visual states per step**: \`completed\` (primary-color circle with a check icon), \`current\` (primary-color circle with an animated pulse and the step number), and \`pending\` (muted circle with the step number)
+- **Six fixed steps**: Contact Info, Pickup, Shipping, Delivery (shipping options), Payment, Place Order — order and labels are defined inline; the component does not adapt the step list based on basket contents
+- **Responsive layout**: horizontal layout on mobile (truncated titles only); vertical layout from the \`md\` breakpoint with full title and description per step
+- **Connector lines**: each step is joined to the next; connectors before completed steps render in the primary color, otherwise in the muted border color
+- **Stateless**: caller is responsible for computing \`currentStep\` and \`completedSteps\` — typically derived from \`CheckoutContext\` (e.g., from \`step\` and a list of finished steps)
 
-## Usage
-
-\`\`\`tsx
-import { CheckoutProgress } from '../checkout-progress';
-import { CHECKOUT_STEPS } from '../utils/checkout-context-types';
-
-function CheckoutPage() {
-  return (
-    <CheckoutProgress
-      currentStep={CHECKOUT_STEPS.SHIPPING_ADDRESS}
-      completedSteps={[CHECKOUT_STEPS.CONTACT_INFO]}
-    />
-  );
-}
-\`\`\`
+**Dependencies:**
+- \`./utils/checkout-context-types\`: \`CHECKOUT_STEPS\` constants and the \`CheckoutStep\` type
+- \`@/lib/utils\`: \`cn\` class-name merger
+- \`lucide-react\`: \`CheckIcon\` for completed-step circles
                 `,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
+        },
+    },
+    argTypes: {
+        currentStep: {
+            description:
+                'The step the shopper is currently on. Rendered with the `current` style (animated pulse). One of `CHECKOUT_STEPS.CONTACT_INFO` (0) through `CHECKOUT_STEPS.PLACE_ORDER` (5).',
+            table: { type: { summary: 'CheckoutStep' } },
+        },
+        completedSteps: {
+            description:
+                'Steps the shopper has finished. Each is rendered with a check icon and primary-color connector to the next step. Defaults to `[]`.',
+            table: { type: { summary: 'CheckoutStep[]' }, defaultValue: { summary: '[]' } },
+        },
+        className: {
+            description: 'Additional class names merged onto the outer container.',
+            table: { type: { summary: 'string' } },
         },
     },
 };
@@ -120,176 +104,166 @@ type Story = StoryObj<typeof CheckoutProgress>;
 
 export const ContactInfo: Story = {
     render: () => (
-        <ProgressStoryHarness>
+        <Wrapper>
             <CheckoutProgress currentStep={CHECKOUT_STEPS.CONTACT_INFO} completedSteps={[]} />
-        </ProgressStoryHarness>
+        </Wrapper>
     ),
     parameters: {
         docs: {
             description: {
-                story: `
-First step of checkout - Contact Info. No steps completed yet.
-
-### Features:
-- Contact Info step is current (highlighted)
-- All other steps are pending
-- Step 1 indicator shown
-                `,
+                story: 'First step. Contact Info is current; all five remaining steps are pending. No checkmarks.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
+        await assertStepStateCounts(canvasElement, { completed: 0, current: 1, pending: 5 });
+    },
+};
 
-        // Check for Contact Info step - use findAllByText since text appears multiple times
-        const contactInfoElements = await canvas.findAllByText(/contact info/i, {}, { timeout: 5000 });
-        await expect(contactInfoElements.length).toBeGreaterThan(0);
-        await expect(contactInfoElements[0]).toBeInTheDocument();
+export const Pickup: Story = {
+    render: () => (
+        <Wrapper>
+            <CheckoutProgress currentStep={CHECKOUT_STEPS.PICKUP} completedSteps={[CHECKOUT_STEPS.CONTACT_INFO]} />
+        </Wrapper>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Pickup is current; Contact Info shows a checkmark. Four steps remain pending.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        await assertStepStateCounts(canvasElement, { completed: 1, current: 1, pending: 4 });
     },
 };
 
 export const ShippingAddress: Story = {
     render: () => (
-        <ProgressStoryHarness>
+        <Wrapper>
             <CheckoutProgress
                 currentStep={CHECKOUT_STEPS.SHIPPING_ADDRESS}
-                completedSteps={[CHECKOUT_STEPS.CONTACT_INFO]}
+                completedSteps={[CHECKOUT_STEPS.CONTACT_INFO, CHECKOUT_STEPS.PICKUP]}
             />
-        </ProgressStoryHarness>
+        </Wrapper>
     ),
     parameters: {
         docs: {
             description: {
-                story: `
-Second step - Shipping Address. Contact Info is completed.
-
-### Features:
-- Contact Info shows checkmark (completed)
-- Shipping Address is current (highlighted)
-- Remaining steps are pending
-                `,
+                story: 'Shipping Address is current; Contact Info and Pickup are completed. Three steps pending.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check for Shipping step - use findAllByText since text appears multiple times
-        const shippingElements = await canvas.findAllByText(/shipping/i, {}, { timeout: 5000 });
-        await expect(shippingElements.length).toBeGreaterThan(0);
-        await expect(shippingElements[0]).toBeInTheDocument();
+        await assertStepStateCounts(canvasElement, { completed: 2, current: 1, pending: 3 });
     },
 };
 
 export const ShippingOptions: Story = {
     render: () => (
-        <ProgressStoryHarness>
+        <Wrapper>
             <CheckoutProgress
                 currentStep={CHECKOUT_STEPS.SHIPPING_OPTIONS}
-                completedSteps={[CHECKOUT_STEPS.CONTACT_INFO, CHECKOUT_STEPS.SHIPPING_ADDRESS]}
+                completedSteps={[CHECKOUT_STEPS.CONTACT_INFO, CHECKOUT_STEPS.PICKUP, CHECKOUT_STEPS.SHIPPING_ADDRESS]}
             />
-        </ProgressStoryHarness>
+        </Wrapper>
     ),
     parameters: {
         docs: {
             description: {
-                story: `
-Third step - Shipping Options. Contact Info and Shipping Address are completed.
-
-### Features:
-- First two steps show checkmarks
-- Delivery step is current
-- Payment and Place Order are pending
-                `,
+                story: 'Delivery (shipping options) is current; first three steps are completed. Two steps pending.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check for Delivery step - use findAllByText since text appears multiple times
-        const deliveryElements = await canvas.findAllByText(/delivery/i, {}, { timeout: 5000 });
-        await expect(deliveryElements.length).toBeGreaterThan(0);
-        await expect(deliveryElements[0]).toBeInTheDocument();
+        await assertStepStateCounts(canvasElement, { completed: 3, current: 1, pending: 2 });
     },
 };
 
 export const Payment: Story = {
     render: () => (
-        <ProgressStoryHarness>
+        <Wrapper>
             <CheckoutProgress
                 currentStep={CHECKOUT_STEPS.PAYMENT}
                 completedSteps={[
                     CHECKOUT_STEPS.CONTACT_INFO,
+                    CHECKOUT_STEPS.PICKUP,
                     CHECKOUT_STEPS.SHIPPING_ADDRESS,
                     CHECKOUT_STEPS.SHIPPING_OPTIONS,
                 ]}
             />
-        </ProgressStoryHarness>
+        </Wrapper>
     ),
     parameters: {
         docs: {
             description: {
-                story: `
-Fourth step - Payment. All previous steps are completed.
-
-### Features:
-- First three steps show checkmarks
-- Payment step is current
-- Place Order is pending
-                `,
+                story: 'Payment is current; first four steps are completed. Place Order is pending.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Check for Payment step - use findAllByText since text appears multiple times
-        const paymentElements = await canvas.findAllByText(/payment/i, {}, { timeout: 5000 });
-        await expect(paymentElements.length).toBeGreaterThan(0);
-        await expect(paymentElements[0]).toBeInTheDocument();
+        await assertStepStateCounts(canvasElement, { completed: 4, current: 1, pending: 1 });
     },
 };
 
 export const PlaceOrder: Story = {
     render: () => (
-        <ProgressStoryHarness>
+        <Wrapper>
             <CheckoutProgress
                 currentStep={CHECKOUT_STEPS.PLACE_ORDER}
                 completedSteps={[
                     CHECKOUT_STEPS.CONTACT_INFO,
+                    CHECKOUT_STEPS.PICKUP,
                     CHECKOUT_STEPS.SHIPPING_ADDRESS,
                     CHECKOUT_STEPS.SHIPPING_OPTIONS,
                     CHECKOUT_STEPS.PAYMENT,
                 ]}
             />
-        </ProgressStoryHarness>
+        </Wrapper>
     ),
     parameters: {
         docs: {
             description: {
-                story: `
-Final step - Place Order. All previous steps are completed.
-
-### Features:
-- All previous steps show checkmarks
-- Place Order step is current
-- Final step in checkout flow
-                `,
+                story: 'Final step. Place Order is current; all five previous steps show checkmarks.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
+        await assertStepStateCounts(canvasElement, { completed: 5, current: 1, pending: 0 });
+    },
+};
 
-        // Check for Place Order step - use findAllByText since text appears multiple times
-        const placeOrderElements = await canvas.findAllByText(/place order/i, {}, { timeout: 5000 });
-        await expect(placeOrderElements.length).toBeGreaterThan(0);
-        await expect(placeOrderElements[0]).toBeInTheDocument();
+export const AllCompleted: Story = {
+    render: () => (
+        <Wrapper>
+            <CheckoutProgress
+                currentStep={CHECKOUT_STEPS.PLACE_ORDER}
+                completedSteps={[
+                    CHECKOUT_STEPS.CONTACT_INFO,
+                    CHECKOUT_STEPS.PICKUP,
+                    CHECKOUT_STEPS.SHIPPING_ADDRESS,
+                    CHECKOUT_STEPS.SHIPPING_OPTIONS,
+                    CHECKOUT_STEPS.PAYMENT,
+                    CHECKOUT_STEPS.PLACE_ORDER,
+                ]}
+            />
+        </Wrapper>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'All six steps marked completed (e.g., immediately after place-order succeeds). No step is in the `current` state — every circle shows a checkmark and every connector is in the completed style.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        await assertStepStateCounts(canvasElement, { completed: 6, current: 0, pending: 0 });
     },
 };

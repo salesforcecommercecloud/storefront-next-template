@@ -48,6 +48,7 @@ interface ShopperAgentProps {
     locale: string;
     currency?: string;
     userId?: string;
+    usid?: string;
 }
 
 /**
@@ -57,7 +58,7 @@ interface ShopperAgentProps {
  * the agent is typically ready. If the user clicks before idle has fired, we load on demand
  * and cancel the scheduled idle callback.
  */
-function ShopperAgent({ commerceAgentConfiguration, locale, currency, userId }: ShopperAgentProps) {
+function ShopperAgent({ commerceAgentConfiguration, locale, currency, userId, usid }: ShopperAgentProps) {
     const [deferReady, setDeferReady] = useState(false);
     const idleHandleRef = useRef<number | null>(null);
 
@@ -110,6 +111,7 @@ function ShopperAgent({ commerceAgentConfiguration, locale, currency, userId }: 
                 locale={locale}
                 currency={currency}
                 userId={userId}
+                usid={usid}
             />
         </Suspense>
     );

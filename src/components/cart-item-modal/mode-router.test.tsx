@@ -15,7 +15,7 @@
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { CartItemModal } from './index';
 
 const addContainerMock = vi.fn(() => <div data-testid="cart-item-modal-add-container">add-container</div>);

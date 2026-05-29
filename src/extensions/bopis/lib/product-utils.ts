@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 type ProductItem = Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {

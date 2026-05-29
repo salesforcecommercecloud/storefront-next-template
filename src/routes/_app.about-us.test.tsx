@@ -16,12 +16,12 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
+import type { Route } from './+types/_app.about-us';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import AboutUs, { type AboutUsPageData, loader } from './_app.about-us';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 
 const { t } = getTranslation();
 
@@ -94,9 +94,6 @@ vi.mock('@/components/content-card', () => ({
     ),
 }));
 
-// Mock images
-vi.mock('/images/hero-02.webp', () => ({ default: '/mock-hero-02.webp' }));
-
 // Mock react-i18next with partial mock to preserve other exports
 vi.mock('react-i18next', async () => {
     const actual: any = await vi.importActual('react-i18next');
@@ -149,7 +146,7 @@ vi.mock('@/lib/decorators/region-definition', () => ({
     RegionDefinition: () => (target: any) => target,
 }));
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
@@ -169,7 +166,7 @@ const renderComponent = (loaderDataOverrides?: Partial<AboutUsPageData>) => {
             componentData: {},
         },
         pageUrl: 'http://localhost/about-us',
-        ogImageUrl: 'http://localhost/mock-hero-02.webp',
+        ogImageUrl: 'http://localhost/__ASSET_MOCK__',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<AboutUs loaderData={data} />);
@@ -451,13 +448,13 @@ describe('AboutUs', () => {
 
     describe('Loaders', () => {
         let mockContext: ReturnType<typeof createTestContext>;
-        let baseLoaderArgs: LoaderFunctionArgs;
+        let baseLoaderArgs: Route.LoaderArgs;
 
         beforeEach(() => {
             mockContext = createTestContext();
             baseLoaderArgs = {
                 request: new Request('http://localhost/about-us'),
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: '/about-us',
             };
@@ -482,7 +479,7 @@ describe('AboutUs', () => {
                 // Assert - Return value contains all expected properties
                 expect(result.page).toBe(mockPageWithData);
                 expect(result.pageUrl).toBe('http://localhost/about-us');
-                expect(result.ogImageUrl).toContain('mock-hero-02.webp');
+                expect(result.ogImageUrl).toContain('__ASSET_MOCK__');
             });
 
             test('constructs correct canonical URL', async () => {
@@ -504,7 +501,7 @@ describe('AboutUs', () => {
 
                 const result = await loader(baseLoaderArgs);
 
-                expect(result.ogImageUrl).toContain('mock-hero-02.webp');
+                expect(result.ogImageUrl).toContain('__ASSET_MOCK__');
                 expect(result.ogImageUrl).toContain('http://localhost');
             });
         });

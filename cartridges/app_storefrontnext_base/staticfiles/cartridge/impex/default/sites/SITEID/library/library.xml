@@ -70,7 +70,7 @@
     </content>
 
     <content content-id="pdp">
-        <display-name xml:lang="x-default">pdp</display-name>
+        <display-name xml:lang="x-default">Product Detail Page</display-name>
         <type>page.productDetailPage</type>
         <config>{
             "visibility" : [ ]
@@ -90,7 +90,7 @@
     </content>
 
     <content content-id="plp">
-        <display-name xml:lang="x-default">plp</display-name>
+        <display-name xml:lang="x-default">Product List Page</display-name>
         <type>page.productListingPage</type>
         <config>{
             "visibility" : [ ]

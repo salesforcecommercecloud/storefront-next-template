@@ -17,9 +17,9 @@ import type { ReactElement } from 'react';
 import { Typography } from '@/components/typography';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
-import type { AddressBookItem } from '@/lib/customer-profile-utils';
-import { formatAddress, isAddressEmpty } from '@/lib/address-utils';
-import { stripCountryCode } from '@/lib/phone-utils';
+import type { AddressBookItem } from '@/lib/customer/profile-utils';
+import { formatAddress, isAddressEmpty } from '@/lib/address/address-utils';
+import { stripCountryCode } from '@/lib/address/phone-utils';
 
 export type ShippingAddressDisplayProps = {
     /** Address to display (order/basket address shape). When null/undefined or empty, nothing is rendered. */
@@ -56,7 +56,13 @@ export function ShippingAddressDisplay({
                         <Typography variant="small" className="text-sm font-medium text-foreground">
                             {nameLine}
                         </Typography>
-                        {address.preferred && <Badge variant="info">{t('shippingAddress.defaultBadge')}</Badge>}
+                        {address.preferred && (
+                            <Badge
+                                variant="secondary"
+                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                                {t('shippingAddress.defaultBadge')}
+                            </Badge>
+                        )}
                     </>
                 ) : (
                     <p>{nameLine}</p>

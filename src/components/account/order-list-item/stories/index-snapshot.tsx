@@ -15,6 +15,7 @@
  */
 import * as React from 'react';
 import { expect, test, describe, afterEach, vi } from 'vitest';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('@/components/link', () => ({
     Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
@@ -39,8 +40,6 @@ vi.mock('@/config', () => ({
     useConfig: () => ({}),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -49,7 +48,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -57,9 +56,17 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });
@@ -78,7 +85,7 @@ afterEach(() => {
 
 describe('OrderListItem stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
+        if (Story?.parameters?.snapshot === false) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(
                 <MemoryRouter>

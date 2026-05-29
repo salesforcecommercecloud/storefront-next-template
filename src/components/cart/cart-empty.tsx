@@ -23,28 +23,16 @@ import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 
 import { useTranslation } from 'react-i18next';
-
-interface EmptyCartProps {
-    isRegistered?: boolean;
-}
+import { routes } from '@/route-paths';
 
 /**
  * EmptyCart component that displays when the cart has no items
  *
- * This component provides:
- * - Empty cart state display with icon and messaging
- * - Different messages for registered vs guest users
- * - Start Shopping action button
- * - Responsive design with proper spacing
- *
- * Used by cart-content components to display empty cart state.
- *
- * @param props - Component props
  * @returns JSX element with empty cart display
  *
  * @see {@link CartContent} - Cart component that uses this for empty state
  */
-export default function EmptyCart({ isRegistered = false }: EmptyCartProps): ReactElement {
+export default function EmptyCart(): ReactElement {
     const { t } = useTranslation('cart');
 
     return (
@@ -67,16 +55,17 @@ export default function EmptyCart({ isRegistered = false }: EmptyCartProps): Rea
                     </svg>
 
                     {/* Empty Cart Message */}
-                    <Typography variant="h2" as="h2" className="text-xl text-center font-semibold text-foreground mb-2">
+                    <Typography
+                        variant="h2"
+                        as="h2"
+                        className="text-2xl text-center font-semibold text-foreground mb-2">
                         {t('empty.title')}
                     </Typography>
-                    <p className="text-sm text-muted-foreground mb-8">
-                        {isRegistered ? t('empty.registeredMessage') : t('empty.guestMessage')}
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-8">{t('empty.guestMessage')}</p>
 
                     {/* Action Button */}
                     <Button asChild>
-                        <Link to="/">{t('empty.continueShopping')}</Link>
+                        <Link to={routes.home}>{t('empty.continueShopping')}</Link>
                     </Button>
                 </div>
             </div>

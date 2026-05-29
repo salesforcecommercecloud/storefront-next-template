@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { redirect, type ActionFunctionArgs } from 'react-router';
+import { redirect } from 'react-router';
+import type { Route } from './+types/action.place-order';
 import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
+import { routes, routeHref } from '@/route-paths';
 import {
     calculateBasket,
     getBasketCurrency,
@@ -24,7 +26,7 @@ import {
     updateBillingAddressForBasket,
 } from '@/lib/api/basket.server';
 import {
-    savePaymentMethodToCustomer,
+    savePaymentMethodToCustomerViaOrder,
     type PaymentInstrumentForSave,
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
@@ -32,13 +34,14 @@ import {
     getCustomerProfileForCheckout,
 } from '@/lib/api/customer.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -156,7 +159,7 @@ function orderPaymentMatchesSavedProfile(
 /**
  * Server action for placing an order.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
     try {
         // Parse form data to get create account preference and save-payment option
@@ -405,6 +408,26 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Update local basket state with calculated totals
         updateBasketResource(context, calculatedBasket);
 
+        // Extension hook: fraud check before placing the order (blocking — unexpected errors fail the action)
+        const fraudHookResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_FRAUD_BEFORE_PLACE,
+            context: { data: { basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+            blocking: true,
+        });
+        if (fraudHookResult.errorResponse) return fraudHookResult.errorResponse;
+
+        // Extension hook: payment processing before order creation (blocking — e.g. authorization)
+        const paymentHookResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER,
+            context: { data: { basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+            blocking: true,
+        });
+        if (paymentHookResult.errorResponse) return paymentHookResult.errorResponse;
+
         const clients = createApiClients(context);
 
         const { data: order } = await clients.shopperOrders.createOrder({
@@ -427,7 +450,25 @@ export async function action({ request, context }: ActionFunctionArgs) {
             );
         }
 
-        logger.info('PlaceOrder: order created', { orderNo: order.orderNo, basketId: calculatedBasket.basketId });
+        const orderNo = order.orderNo;
+        logger.info('PlaceOrder: order created', { orderNo, basketId: calculatedBasket.basketId });
+
+        // Extension hook: post-processing after order creation (e.g. capture, fulfillment triggers).
+        // Order is already placed — never abort the action. Log at warn level with order
+        // details so post-order failures (e.g. failed capture) are surfaced in monitoring.
+        const afterPlaceResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+            context: { data: { order, basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+        });
+        if (afterPlaceResult.errorResponse) {
+            logger.warn('PlaceOrder: afterPlaceOrder hook failed — order already placed, requires manual review', {
+                hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+                orderNo: order.orderNo,
+                basketId: calculatedBasket.basketId,
+            });
+        }
 
         // Registration-at-checkout: requires both create-account intent AND active registration session (client flag).
         // Stale sessionStorage.shouldCreateAccount alone must not trigger duplicate profile saves for returning shoppers.
@@ -487,11 +528,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
                 if (order.paymentInstruments?.[0]) {
                     const instrument = order.paymentInstruments[0] as PaymentInstrumentForSave;
-                    const instrumentWithDefault = { ...instrument, default: instrument.default ?? true };
                     if (!orderPaymentMatchesSavedProfile(instrument, profileSnapshot ?? undefined)) {
                         savePromises.push(
                             retryProfileSave(
-                                () => savePaymentMethodToCustomer(context, customerId, instrumentWithDefault),
+                                () => savePaymentMethodToCustomerViaOrder(context, orderNo, instrument),
                                 'payment method save',
                                 logger
                             )
@@ -549,9 +589,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
             // Do not automatically save addresses to avoid creating duplicates.
             else if (savePaymentToProfile && order.paymentInstruments?.[0]) {
                 savePromises.push(
-                    savePaymentMethodToCustomer(
+                    savePaymentMethodToCustomerViaOrder(
                         context,
-                        customerId,
+                        orderNo,
                         order.paymentInstruments[0] as PaymentInstrumentForSave
                     ).catch((error) => {
                         logger.error('PlaceOrder: failed to save payment method', { error });
@@ -572,7 +612,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         // Redirect to order confirmation page on success
         // Include account creation and auto-login status as query parameters if account was created
-        let orderConfirmationUrl = buildUrlFromContext(`/order-confirmation/${order.orderNo}`, context);
+        let orderConfirmationUrl = buildUrlFromContext(
+            routeHref(routes.orderConfirmation, { orderNo: order.orderNo }),
+            context
+        );
 
         if (registeredViaCheckout && order.customerInfo?.email) {
             // User registered during checkout - include this in query params for order confirmation

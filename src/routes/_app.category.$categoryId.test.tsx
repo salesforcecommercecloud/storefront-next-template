@@ -16,26 +16,22 @@
 
 import 'reflect-metadata';
 import { render, screen, waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
-import {
-    ApiError,
-    type ShopperExperience,
-    type ShopperProducts,
-    type ShopperSearch,
-} from '@salesforce/storefront-next-runtime/scapi';
+import { MemoryRouter } from 'react-router';
+import { ApiError, type ShopperExperience, type ShopperProducts, type ShopperSearch } from '@/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
+import type { Route } from './+types/_app.category.$categoryId';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -123,9 +119,9 @@ vi.mock('@/components/region', () => ({
     Region: () => null,
 }));
 
-// Mock ProductGrid component
+// Mock DeferredProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: function ProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
+    default: function DeferredProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
         return (
             <div data-testid="product-grid">
                 <div data-testid="critical-count" style={{ display: 'none' }}>
@@ -197,12 +193,18 @@ vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
 vi.mock('@/utils/category-schema', () => ({
     generateCategorySchema: vi.fn(),
+}));
+
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
 }));
 
 // Mock analytics with controllable mock functions
@@ -265,13 +267,10 @@ describe('CategoryPage', () => {
         },
     } as AppConfig;
 
-    const createLoaderArgs = (
-        url: string,
-        overrides?: Partial<Pick<LoaderFunctionArgs, 'params'>>
-    ): LoaderFunctionArgs => ({
+    const createLoaderArgs = (url: string, overrides?: { params?: Record<string, string> }): Route.LoaderArgs => ({
         request: new Request(url),
         context: mockContext,
-        params: { categoryId: 'electronics', ...overrides?.params },
+        params: { siteId: 'test-site', localeId: 'en-US', categoryId: 'electronics', ...overrides?.params },
         unstable_pattern: '/category/:categoryId',
     });
 
@@ -341,7 +340,7 @@ describe('CategoryPage', () => {
                 currency: 'GBP',
             });
             expect(fetchPageWithComponentData).toHaveBeenCalledWith(args, {
-                pageId: 'plp',
+                aspectType: 'plp',
                 categoryId: 'electronics',
             });
             expect(result.categoryId).toBe('electronics');
@@ -397,7 +396,7 @@ describe('CategoryPage', () => {
             expect(closedResult.initialFiltersOpen).toBe(false);
         });
 
-        test('should throw 404 when category fetch fails with ApiError 404', async () => {
+        test('should throw 404 when category fetch fails with NormalizedApiError 404', async () => {
             const mockApiError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
@@ -416,7 +415,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -428,12 +427,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(404);
-                expect(await error.text()).toBe('Category Not Found');
-                expect(error.statusText).toBe('The requested category does not exist');
+                expect(await error.text()).toBe('The requested category does not exist');
             }
         });
 
-        test('should throw 500 when category fetch fails with ApiError 500', async () => {
+        test('should throw 500 when category fetch fails with NormalizedApiError 500', async () => {
             const mockApiError = new ApiError({
                 status: 500,
                 statusText: 'Internal Server Error',
@@ -452,7 +450,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(createLoaderArgs('https://example.com/category/electronics'));
@@ -460,12 +458,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(500);
-                expect(await error.text()).toBe('Internal Server Error');
-                expect(error.statusText).toBe('An unexpected error occurred while processing the request');
+                expect(await error.text()).toBe('An unexpected error occurred while processing the request');
             }
         });
 
-        test('should throw 403 when category fetch fails with ApiError 403', async () => {
+        test('should throw 403 when category fetch fails with NormalizedApiError 403', async () => {
             const mockApiError = new ApiError({
                 status: 403,
                 statusText: 'Forbidden',
@@ -484,7 +481,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -496,12 +493,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(403);
-                expect(await error.text()).toBe('Access Denied');
-                expect(error.statusText).toBe('You do not have permission to access this category');
+                expect(await error.text()).toBe('You do not have permission to access this category');
             }
         });
 
-        test('should use statusText as fallback when ApiError body.title is missing', async () => {
+        test('should use body.detail as message when NormalizedApiError body.title is missing', async () => {
             const mockApiError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
@@ -516,7 +512,38 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
+
+            try {
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
+                expect.fail('Expected loader to throw');
+            } catch (error: any) {
+                expect(error).toBeInstanceOf(Response);
+                expect(error.status).toBe(404);
+                expect(await error.text()).toBe('Category not available');
+            }
+        });
+
+        test('should use statusText as fallback when NormalizedApiError body.detail is missing', async () => {
+            const mockApiError = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers({ 'content-type': 'application/json' }),
+                body: {
+                    type: 'https://api.example.com/errors/not-found',
+                    title: 'Category Not Found',
+                    detail: '',
+                },
+                rawBody: '{}',
+                url: 'https://api.example.com/categories/invalid',
+                method: 'GET',
+            });
+
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -532,37 +559,7 @@ describe('CategoryPage', () => {
             }
         });
 
-        test('should use statusText as fallback when ApiError body.detail is missing', async () => {
-            const mockApiError = new ApiError({
-                status: 404,
-                statusText: 'Not Found',
-                headers: new Headers({ 'content-type': 'application/json' }),
-                body: {
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: '',
-                },
-                rawBody: '{}',
-                url: 'https://api.example.com/categories/invalid',
-                method: 'GET',
-            });
-
-            (fetchCategory as any).mockRejectedValue(mockApiError);
-
-            try {
-                await loader(
-                    createLoaderArgs('https://example.com/category/invalid', {
-                        params: { categoryId: 'invalid' },
-                    })
-                );
-                expect.fail('Expected loader to throw');
-            } catch (error: any) {
-                expect(error).toBeInstanceOf(Response);
-                expect(error.statusText).toBe('Not Found');
-            }
-        });
-
-        test('should throw 500 when category fetch fails with generic error', async () => {
+        test('should throw 500 when category fetch fails with non-ApiError error', async () => {
             (fetchCategory as any).mockRejectedValue(new Error('Unexpected error'));
 
             try {
@@ -589,48 +586,6 @@ describe('CategoryPage', () => {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(500);
                 expect(await error.text()).toBe('Internal Server Error');
-            }
-        });
-
-        test('should preserve headers from ApiError in response', async () => {
-            const customHeaders = new Headers({
-                'content-type': 'application/json',
-                'x-request-id': 'test-request-123',
-                'x-correlation-id': 'correlation-456',
-            });
-
-            const mockApiError = new ApiError({
-                status: 404,
-                statusText: 'Not Found',
-                headers: customHeaders,
-                body: {
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: 'The requested category does not exist',
-                },
-                rawBody: JSON.stringify({
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: 'The requested category does not exist',
-                }),
-                url: 'https://api.example.com/categories/invalid',
-                method: 'GET',
-            });
-
-            (fetchCategory as any).mockRejectedValue(mockApiError);
-
-            try {
-                await loader(
-                    createLoaderArgs('https://example.com/category/invalid', {
-                        params: { categoryId: 'invalid' },
-                    })
-                );
-                expect.fail('Expected loader to throw');
-            } catch (error: any) {
-                expect(error).toBeInstanceOf(Response);
-                expect(error.headers.get('content-type')).toBe('application/json');
-                expect(error.headers.get('x-request-id')).toBe('test-request-123');
-                expect(error.headers.get('x-correlation-id')).toBe('correlation-456');
             }
         });
 
@@ -838,6 +793,11 @@ describe('CategoryPage', () => {
                 pageUrl: 'http://localhost/category/test',
                 initialFiltersOpen: true,
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             const closedLoaderData: CategoryPageData = {
@@ -872,43 +832,6 @@ describe('CategoryPage', () => {
             });
         });
 
-        test('should not remount ProductGrid when only filters query param changes', async () => {
-            const user = userEvent.setup();
-            const loaderData: CategoryPageData = {
-                category: mockCategory,
-                searchResultCritical: mockSearchResult,
-                searchResultNonCritical: Promise.resolve(mockSearchResult),
-                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
-                categoryId: 'electronics',
-                refine: ['cgid=electronics'],
-                currency: 'USD',
-                locale: 'en-US',
-                pageUrl: 'http://localhost/category/test',
-                initialFiltersOpen: false,
-                categorySchema: Promise.resolve(null),
-            };
-
-            render(
-                <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <AllProvidersWrapper>
-                        <CategoryPage loaderData={loaderData} />
-                    </AllProvidersWrapper>
-                </MemoryRouter>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
-            });
-            const productGridBefore = screen.getByTestId('product-grid');
-
-            await user.click(screen.getAllByTestId('filters-button')[0]);
-
-            await waitFor(() => {
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
-            });
-            expect(screen.getByTestId('product-grid')).toBe(productGridBefore);
-        });
-
         test('should render category page with all elements', async () => {
             const loaderData: CategoryPageData = {
                 category: mockCategory,
@@ -924,6 +847,11 @@ describe('CategoryPage', () => {
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
                     name: 'Electronics',
+                }),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
                 }),
             };
 
@@ -969,6 +897,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -997,6 +930,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1025,6 +963,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1052,6 +995,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             const { rerender } = render(
@@ -1093,6 +1041,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1121,6 +1074,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1156,6 +1114,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1189,6 +1152,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1223,6 +1191,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1259,6 +1232,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1293,6 +1271,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1329,6 +1312,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1364,6 +1352,11 @@ describe('CategoryPage', () => {
                     '@type': 'CollectionPage',
                     name: 'Electronics',
                 }),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1397,6 +1390,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1431,6 +1429,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1470,6 +1473,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             // Should render without errors even when analytics is null

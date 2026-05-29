@@ -19,11 +19,20 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import CollapsibleHtmlSection from '../collapsible-html-section';
 
 const meta: Meta<typeof CollapsibleHtmlSection> = {
-    title: 'Components/CollapsibleSection/CollapsibleHtmlSection',
+    title: 'COMMON/Collapsible Html Section',
     component: CollapsibleHtmlSection,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
+    },
+    argTypes: {
+        contentType: {
+            control: 'radio',
+            options: ['plain-text', 'bulleted-list', 'table-2-column'],
+            description: 'Declares the expected HTML structure; resolves default styling',
+        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
     },
 };
 

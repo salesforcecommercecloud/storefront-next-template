@@ -23,13 +23,13 @@ export default function Help(): ReactElement {
             <div className="lg:flex lg:items-center lg:justify-between">
                 <div className="lg:max-w-lg">
                     <h2 className="text-3xl font-bold text-foreground sm:text-4xl">{`We're here to help`}</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">
+                    <p className="mt-4 text-sm text-muted-foreground">
                         Contact our support staff.
                         <br />
                         They will get you to the right place.
                     </p>
                     <div className="mt-8">
-                        <Button asChild className="text-xl p-6">
+                        <Button asChild className="text-2xl p-6">
                             <Link to="/contact">Contact Us</Link>
                         </Button>
                     </div>

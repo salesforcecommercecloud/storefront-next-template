@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+import { useEffect, useRef, type ComponentType, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import ShippingCalculator from '../shipping-calculator';
-import ProductContentProvider from '@/providers/product-content';
-import type { ShippingEstimate } from '@/lib/adapters/product-content-data-types';
-import { addProductContentAdapter } from '@/lib/adapters/product-content-store';
-
-// Register a mock adapter for Storybook
-addProductContentAdapter('mock', {
-    getShippingEstimates: async (_productId?: string, _zipcode?: string): Promise<ShippingEstimate> => {
-        return {
-            delivery_date: '2026-02-10',
-            cost: 0,
-            days: 3,
-        };
-    },
-});
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -84,6 +71,26 @@ const meta: Meta<typeof ShippingCalculator> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
+        mockRoutes: [
+            {
+                path: '/resource/shipping-estimate',
+                loader: ({ request }: { request: Request }) => {
+                    const url = new URL(request.url);
+                    const zipcode = url.searchParams.get('zipcode') ?? '';
+                    const seed = parseInt(zipcode.slice(-2)) || 1;
+                    const days = (seed % 3) + 3;
+                    const date = new Date();
+                    date.setDate(date.getDate() + days);
+                    const lastDigit = parseInt(zipcode.slice(-1)) || 0;
+                    const cost = lastDigit % 2 === 0 ? 0 : 5.99;
+                    return {
+                        success: true,
+                        zipcode,
+                        estimate: { delivery_date: date.toISOString().split('T')[0], cost, days },
+                    };
+                },
+            },
+        ],
         docs: {
             description: {
                 component: `
@@ -114,11 +121,9 @@ This component is used within DeliveryOptions when the delivery option is select
         },
     },
     decorators: [
-        (Story: React.ComponentType) => (
+        (Story: ComponentType) => (
             <ActionLogger>
-                <ProductContentProvider adapterName="mock">
-                    <Story />
-                </ProductContentProvider>
+                <Story />
             </ActionLogger>
         ),
     ],
@@ -150,16 +155,13 @@ This is the initial state before user enters a ZIP code.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for and verify input field is rendered
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Verify calculate button is enabled (changed behavior: always enabled)
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await expect(calculateButton).toBeInTheDocument();
         await expect(calculateButton).not.toBeDisabled();
 
-        // Verify instruction message is shown
         const instruction = canvasElement.querySelector('#delivery-message');
         await expect(instruction).toBeInTheDocument();
     },
@@ -188,14 +190,11 @@ This state appears when user enters a valid 5-digit ZIP code.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for input field
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Type a valid ZIP code
         await userEvent.type(input, '94102');
 
-        // Verify calculate button is now enabled
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await expect(calculateButton).not.toBeDisabled();
     },
@@ -224,20 +223,16 @@ This state appears after user clicks calculate with a valid ZIP code.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for input field
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Type a valid ZIP code and calculate
         await userEvent.type(input, '94102');
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await userEvent.click(calculateButton);
 
-        // Wait for result to appear
         const result = await canvas.findByRole('status', {}, { timeout: 5000 });
         await expect(result).toBeInTheDocument();
 
-        // Verify result contains delivery estimate
         const deliveryText = await canvas.findByText(/estimated delivery/i, {}, { timeout: 5000 });
         await expect(deliveryText).toBeInTheDocument();
     },
@@ -267,25 +262,19 @@ This state appears when user enters less than 5 digits and clicks calculate.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for input field
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Type an invalid ZIP code (less than 5 digits)
         await userEvent.type(input, '941');
 
-        // Verify calculate button is enabled (changed behavior: always enabled, validation on click)
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await expect(calculateButton).not.toBeDisabled();
 
-        // Click calculate to trigger validation
         await userEvent.click(calculateButton);
 
-        // Verify validation error appears after clicking
         const validationError = await canvas.findByRole('alert', {}, { timeout: 5000 });
         await expect(validationError).toBeInTheDocument();
 
-        // Verify input is marked as invalid
         await expect(input).toHaveAttribute('aria-invalid', 'true');
     },
 };
@@ -316,11 +305,9 @@ The component automatically adapts for mobile screens.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for and verify input field is rendered
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Verify calculate button is present
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await expect(calculateButton).toBeInTheDocument();
     },
@@ -352,11 +339,9 @@ The component provides a clean layout for desktop screens.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for and verify input field is rendered
         const input = await canvas.findByLabelText(/zip code/i, {}, { timeout: 5000 });
         await expect(input).toBeInTheDocument();
 
-        // Verify calculate button is present
         const calculateButton = await canvas.findByRole('button', { name: /calculate/i }, { timeout: 5000 });
         await expect(calculateButton).toBeInTheDocument();
     },

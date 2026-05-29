@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, beforeEach } from 'vitest';
 import { getBasketCurrency } from './basket.server';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 const createMockContext = (defaultCurrency = 'USD') =>

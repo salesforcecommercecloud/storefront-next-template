@@ -16,7 +16,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders, ShopperProducts } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
@@ -77,7 +77,8 @@ function createOrderDetailsRouter(orderNo: string) {
             {
                 path: '/account/orders/:orderNo',
                 element: <OrderDetailsPage />,
-                loader,
+                // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                loader: loader as any,
             },
         ],
         { initialEntries: [`/account/orders/${orderNo}`] }
@@ -103,7 +104,8 @@ function createRouterWithRejectingLoader(orderNo: string) {
             {
                 path: '/account/orders/:orderNo',
                 element: <OrderDetailsPage />,
-                loader,
+                // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                loader: loader as any,
             },
         ],
         { initialEntries: [`/account/orders/${orderNo}`] }

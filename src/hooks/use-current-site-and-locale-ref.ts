@@ -16,7 +16,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 /**
  * Returns the current site and locale identifiers for URL building.
@@ -25,7 +24,7 @@ import type { AppConfig } from '@/types/config';
 export function useCurrentSiteAndLocaleRef() {
     const { site } = useSite();
     const { i18n } = useTranslation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     return {
         siteRef: site.alias ?? site.id,

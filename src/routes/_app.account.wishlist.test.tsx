@@ -16,11 +16,11 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { loader } from './_app.account.wishlist';
 import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
-import { createTestContext } from '@/lib/test-utils';
-import type { LoaderFunctionArgs } from 'react-router';
+import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
@@ -603,8 +603,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toBeNull();
             expect(result.items).toEqual([]);
@@ -624,8 +625,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toBeNull();
             expect(result.items).toEqual([]);
@@ -634,9 +636,8 @@ describe('account.wishlist loaders', () => {
         test('should return wishlist with items when items are in initial response', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: 'wishlist-1',
                 type: 'wish_list',
-                items: [
+                customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
                 ] as ShopperCustomers.schemas['CustomerProductListItem'][],
@@ -656,8 +657,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toEqual(mockWishlist);
             expect(result.items).toHaveLength(2);
@@ -673,9 +675,8 @@ describe('account.wishlist loaders', () => {
         test('should fetch all products for the wishlist (no initial batch limit)', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: 'wishlist-1',
                 type: 'wish_list' as const,
-                items: Array.from({ length: 20 }, (_, i) => ({
+                customerProductListItems: Array.from({ length: 20 }, (_, i) => ({
                     id: `item-${i}`,
                     productId: `product-${i}`,
                     priority: 0,
@@ -700,8 +701,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toEqual(mockWishlist);
             expect(result.items).toHaveLength(20); // All items are returned
@@ -729,8 +731,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toBeNull();
             expect(result.items).toEqual([]);
@@ -739,9 +742,8 @@ describe('account.wishlist loaders', () => {
         test('should return empty wishlist when listId is missing', async () => {
             const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: undefined,
-                listId: undefined,
                 type: 'wish_list',
-            } as any;
+            };
 
             mockGetCustomerProductLists.mockResolvedValue({
                 data: { data: [mockWishlist] },
@@ -750,33 +752,33 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toBeNull();
             expect(result.items).toEqual([]);
         });
 
-        test('should return empty wishlist when API call fails', async () => {
+        test('should rethrow non-auth API errors so the route boundary can render a fallback', async () => {
             const apiError = new Error('API Error');
             mockGetCustomerProductLists.mockRejectedValue(apiError);
 
-            const result = await loader({
-                context: mockContext,
-                request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
-
-            expect(result.wishlist).toBeNull();
-            expect(result.items).toEqual([]);
+            await expect(
+                loader({
+                    context: mockContext,
+                    request: new Request('http://localhost/account/wishlist'),
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    unstable_pattern: UNSTABLE_PATTERN,
+                })
+            ).rejects.toThrow();
         });
 
         test('should use id field when listId is not available', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: undefined,
                 type: 'wish_list' as const,
-                items: [
+                customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
                 ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };
@@ -792,8 +794,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
-                params: {},
-            } as LoaderFunctionArgs);
+                params: { siteId: 'test-site', localeId: 'en-US' },
+                unstable_pattern: UNSTABLE_PATTERN,
+            });
 
             expect(result.wishlist).toEqual(mockWishlist);
             expect(result.items).toHaveLength(1);
@@ -810,7 +813,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/wishlist-remove',
+            formAction: resourceRoutes.wishlistRemove,
             defaultShouldRevalidate: true,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),
@@ -826,7 +829,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/cart-item-add',
+            formAction: resourceRoutes.cartItemAdd,
             defaultShouldRevalidate: true,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),
@@ -858,7 +861,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/wishlist-remove',
+            formAction: resourceRoutes.wishlistRemove,
             defaultShouldRevalidate: false,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),
@@ -903,5 +906,12 @@ describe('WishlistSkeleton Component', () => {
 
         // Should NOT render the old product carousel skeleton
         expect(container.querySelector('[data-testid="product-carousel-skeleton"]')).not.toBeInTheDocument();
+    });
+});
+
+describe('ErrorBoundary', () => {
+    test('exports a route-level ErrorBoundary that renders the WishlistLoadError', async () => {
+        const { ErrorBoundary } = await import('./_app.account.wishlist');
+        expect(typeof ErrorBoundary).toBe('function');
     });
 });

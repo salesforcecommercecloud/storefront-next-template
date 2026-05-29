@@ -31,13 +31,13 @@ interface PriceInputProps {
 
 function PriceInput({ placeholder, value, onChange, onKeyDown, hasError, currencySymbol }: PriceInputProps) {
     return (
-        <div className="bg-custom-bg-input-30 rounded-none border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs">
+        <div className="rounded-none border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs">
             <span
                 className="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
                 aria-hidden="true">
                 {currencySymbol}
             </span>
-            <div className="text-muted-foreground text-left font-text-sm-leading-normal-normal-font-family text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap">
+            <div className="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap">
                 <Input
                     type="number"
                     placeholder={placeholder}
@@ -113,9 +113,7 @@ export default function PriceRangeInput({
                 currencySymbol={currencySymbol}
             />
 
-            <div className="text-foreground text-left font-text-sm-leading-none-normal-font-family text-sm leading-none font-normal relative">
-                {t('priceTo')}
-            </div>
+            <div className="text-foreground text-left text-sm leading-none font-normal relative">{t('priceTo')}</div>
 
             <PriceInput
                 placeholder={t('priceMax')}

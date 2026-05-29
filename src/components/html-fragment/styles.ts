@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { HtmlContentType } from '@/lib/adapters/product-content-data-types';
+import type { HtmlContentType } from './types';
 
 /**
  * Default CSS class names for each HtmlContentType.

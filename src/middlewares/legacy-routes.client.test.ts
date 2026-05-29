@@ -18,6 +18,7 @@ import { type DataStrategyResult, RouterContextProvider } from 'react-router';
 import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { getSiteRef, mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
 describe('legacyRoutesMiddleware', () => {
     let mockContext: RouterContextProvider;
@@ -191,8 +192,8 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should only match exact paths configured in legacyRoutes', async () => {
-            // /s/ is in legacyRoutes, but /s/RefArch/en_US/Cart-Show is not
-            const request = new Request('https://example.com/s/RefArch/en_US/Cart-Show');
+            // /s/ is in legacyRoutes, but a full legacy path like /s/<siteId>/en_US/Cart-Show is not
+            const request = new Request(`https://example.com/s/${mockAltSiteObject.id}/en_US/Cart-Show`);
 
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
@@ -304,6 +305,38 @@ describe('legacyRoutesMiddleware', () => {
             // Parameters should not match slashes
             expect(matchesRoutePattern('/product/123/456', '/product/:id')).toBe(false);
         });
+
+        test('should match trailing wildcard patterns across any depth', () => {
+            // Single segment, multi-segment, and empty tail all match
+            expect(matchesRoutePattern('/categoryLv1/shoes', '/categoryLv1/*')).toBe(true);
+            expect(matchesRoutePattern('/categoryLv1/shoes/running', '/categoryLv1/*')).toBe(true);
+            expect(matchesRoutePattern('/categoryLv1/', '/categoryLv1/*')).toBe(true);
+            // Different base path should not match
+            expect(matchesRoutePattern('/categoryLv2/shoes', '/categoryLv1/*')).toBe(false);
+            // Parent path without the trailing slash does not match the '/categoryLv1/*' form
+            expect(matchesRoutePattern('/categoryLv1', '/categoryLv1/*')).toBe(false);
+        });
+
+        test('should match a wildcard combined with a named param', () => {
+            // Named param stays single-segment; wildcard absorbs the rest
+            expect(matchesRoutePattern('/category/shoes/details/blue', '/category/:cat/*')).toBe(true);
+            expect(matchesRoutePattern('/category/shoes/', '/category/:cat/*')).toBe(true);
+        });
+
+        test('should match a root wildcard against any path', () => {
+            expect(matchesRoutePattern('/anything', '*')).toBe(true);
+            expect(matchesRoutePattern('/a/b/c', '*')).toBe(true);
+        });
+
+        test('should match wildcards in the middle of a pattern', () => {
+            // '*' is not restricted to a trailing splat — it matches any content (including '/') anywhere
+            expect(matchesRoutePattern('/api/v1/data', '/api/*/data')).toBe(true);
+            expect(matchesRoutePattern('/api/v1/v2/data', '/api/*/data')).toBe(true);
+            expect(matchesRoutePattern('/api/data', '/api/*/data')).toBe(false);
+            // Combine prefix + suffix around a non-trailing '*'
+            expect(matchesRoutePattern('/files/photo-thumb', '/files/*-thumb')).toBe(true);
+            expect(matchesRoutePattern('/files/photo-full', '/files/*-thumb')).toBe(false);
+        });
     });
 
     describe('multisite prefix stripping', () => {
@@ -327,25 +360,46 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should redirect when multisite-prefixed URL matches a bare legacy route', () => {
-            const request = new Request('https://example.com/global/en-GB/checkout');
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/checkout`);
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toContain('redirected=1');
+            // Navigation target must be the stripped pathname so the legacy backend (or local
+            // hybrid proxy) can apply its own prefix without doubling up on storefront-next's.
+            expect(window.location.href).toBe('https://example.com/checkout?redirected=1');
         });
 
         test('should redirect for parameterized legacy routes with multisite prefix', () => {
-            const request = new Request('https://example.com/global/en-GB/product/123');
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/product/123`);
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toContain('redirected=1');
+            expect(window.location.href).toBe('https://example.com/product/123?redirected=1');
+        });
+
+        test('should preserve query params and hash when stripping prefix', () => {
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/checkout?step=2&item=abc#payment`);
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc&redirected=1#payment');
         });
 
         test('should not redirect for non-legacy multisite routes', async () => {
-            const request = new Request('https://example.com/global/en-GB/category/womens');
+            const request = new Request(
+                `https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/category/womens`
+            );
 
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 

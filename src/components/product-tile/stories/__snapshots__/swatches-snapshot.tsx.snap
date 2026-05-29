@@ -5,8 +5,9 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-current="true"
@@ -93,8 +94,9 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-label="View Test Product in Navy"
@@ -143,10 +145,12 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
       />
     </a>
     <a
-      aria-label="View all 5 colors for Test Product"
+      aria-label="View all 5 colours for Test Product"
       class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
+      href="/RefArchGlobal/en-GB/product/test"
       tabindex="-1"
       title="+2 more"
+      to="/RefArchGlobal/en-GB/product/test"
     >
       <svg
         class="shrink-0"
@@ -170,8 +174,9 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-label="View Test Product in Navy"
@@ -257,8 +262,98 @@ exports[`Swatches stories snapshot > NoSwatches story renders and matches snapsh
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   />
+</div>
+`;
+
+exports[`Swatches stories snapshot > Playground story renders and matches snapshot 1`] = `
+<div
+  class="w-64"
+>
+  <div
+    aria-label="Available colours"
+    class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
+  >
+    <a
+      aria-current="true"
+      aria-label="View Test Product in Navy"
+      class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+      href="/RefArchGlobal/en-GB/product/test?color=navy"
+      style="background-color: navy;"
+      tabindex="-1"
+      to="/RefArchGlobal/en-GB/product/test?color=navy"
+    >
+      <img
+        alt=""
+        class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+        loading="lazy"
+        src="https://example.com/navy.jpg"
+      />
+    </a>
+    <a
+      aria-label="View Test Product in Red"
+      class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+      href="/RefArchGlobal/en-GB/product/test?color=red"
+      style="background-color: red;"
+      tabindex="-1"
+      to="/RefArchGlobal/en-GB/product/test?color=red"
+    >
+      <img
+        alt=""
+        class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+        loading="lazy"
+        src="https://example.com/red.jpg"
+      />
+    </a>
+    <a
+      aria-label="View Test Product in Blue"
+      class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+      href="/RefArchGlobal/en-GB/product/test?color=blue"
+      style="background-color: blue;"
+      tabindex="-1"
+      to="/RefArchGlobal/en-GB/product/test?color=blue"
+    >
+      <img
+        alt=""
+        class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+        loading="lazy"
+        src="https://example.com/blue.jpg"
+      />
+    </a>
+    <a
+      aria-label="View Test Product in Black"
+      class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+      href="/RefArchGlobal/en-GB/product/test?color=black"
+      style="background-color: black;"
+      tabindex="-1"
+      to="/RefArchGlobal/en-GB/product/test?color=black"
+    >
+      <img
+        alt=""
+        class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+        loading="lazy"
+        src="https://example.com/black.jpg"
+      />
+    </a>
+    <a
+      aria-label="View Test Product in Green"
+      class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+      href="/RefArchGlobal/en-GB/product/test?color=green"
+      style="background-color: green;"
+      tabindex="-1"
+      to="/RefArchGlobal/en-GB/product/test?color=green"
+    >
+      <img
+        alt=""
+        class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+        loading="lazy"
+        src="https://example.com/green.jpg"
+      />
+    </a>
+  </div>
 </div>
 `;

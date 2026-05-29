@@ -31,7 +31,7 @@ const defaultClientAuth: PublicSessionData = {
     customerId: 'test-customer',
     userType: 'registered',
 };
-import { mockConfig, mockBuildConfig } from '@/test-utils/config';
+import { mockConfig, mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 // ErrorBoundary creates its own isolated i18next instance from errorTranslations —
 // it does not use the global i18next singleton, so getTranslation() would return key strings here.
 // Importing the JSON directly is the correct source of truth for the translated path assertion.
@@ -42,8 +42,8 @@ import enGBTranslations from '@/locales/en-GB/translations.json';
 const enGBRouteError = enGBTranslations.routeError;
 
 const mockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
-    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+    ...mockSiteObject,
+    alias: mockBuildConfig.app.siteAliasMap?.[mockSiteObject.id] ?? undefined,
 };
 
 vi.mock('@salesforce/storefront-next-runtime/i18n/client', async () => {
@@ -79,14 +79,9 @@ vi.mock('@salesforce/storefront-next-runtime/i18n/client', async () => {
     };
 });
 
-// Mock font file imports (used in root.tsx links function and inline @font-face)
-vi.mock('/fonts/sen-variable.woff2', () => ({
-    default: '/mocked-fonts/sen-variable.woff2',
-}));
-
 vi.mock('@/components/toast', async () => ({
     ...(await vi.importActual('@/components/toast')),
-    ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
+    AppToaster: () => <div data-testid="toaster">Toaster</div>,
 }));
 
 vi.mock('@/components/tracking-consent-banner', async () => ({
@@ -106,15 +101,16 @@ vi.mock('@/extensions/hybrid-proxy/config', () => ({
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
-    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
-    const { ConfigContext, createAppConfig } = await import('@salesforce/storefront-next-runtime/config');
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
 
     return {
         ...actual,
         ConfigProvider: ({ children }: PropsWithChildren) => (
-            <ConfigContext.Provider value={createAppConfig(mockBuildConfig)}>
+            <actual.ConfigProvider config={mockBuildConfig.app}>
                 <div data-testid="config-provider">{children}</div>
-            </ConfigContext.Provider>
+            </actual.ConfigProvider>
         ),
     };
 });
@@ -262,17 +258,11 @@ describe('root.tsx', () => {
         });
 
         it('should render preconnect links from config', async () => {
-            // Mock useMatches to return appConfig in the root route data
+            // Mock useRouteLoaderData to return appConfig in the root route data
             const reactRouter = await import('react-router');
-            const useMatchesSpy = vi.spyOn(reactRouter, 'useMatches').mockReturnValue([
-                {
-                    id: 'root',
-                    pathname: '/',
-                    params: {},
-                    data: { appConfig: mockConfig },
-                    handle: undefined,
-                },
-            ] as any);
+            const useRouteLoaderDataSpy = vi.spyOn(reactRouter, 'useRouteLoaderData').mockReturnValue({
+                appConfig: mockConfig,
+            } as any);
 
             const Stub = createRoutesStub([
                 {
@@ -290,7 +280,7 @@ describe('root.tsx', () => {
                 expect(preconnectLinks[0]).toHaveAttribute('href', 'https://edge.disstg.commercecloud.salesforce.com');
             });
 
-            useMatchesSpy.mockRestore();
+            useRouteLoaderDataSpy.mockRestore();
         });
     });
 

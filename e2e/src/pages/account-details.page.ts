@@ -45,10 +45,9 @@ class AccountDetailsPage {
             .as('Profile Edit Button'),
         profileForm: locate('[data-testid="customer-profile-form"]').as('Customer Profile Form'),
 
-        // Profile form fields
+        // Profile form fields (email is in separate card now)
         firstNameField: locate('input[name="firstName"]').as('First Name Field'),
         lastNameField: locate('input[name="lastName"]').as('Last Name Field'),
-        emailField: locate('input[name="email"]').as('Email Field'),
         phoneField: locate('input[name="phone"]').as('Phone Field'),
         genderSelect: locate('select[name="gender"]').as('Gender Select'),
         birthdayField: locate('input[name="birthday"]').as('Birthday Field'),
@@ -65,15 +64,26 @@ class AccountDetailsPage {
         // Profile display fields (when not editing) — use data-testid for stable E2E
         displayedFirstName: locate('[data-testid="profile-value-firstName"]').as('Displayed First Name'),
         displayedLastName: locate('[data-testid="profile-value-lastName"]').as('Displayed Last Name'),
-        displayedEmail: locate('[data-testid="profile-value-email"]').as('Displayed Email'),
         displayedPhone: locate('[data-testid="profile-value-phone"]').as('Displayed Phone'),
         displayedGender: locate('[data-testid="profile-value-gender"]').as('Displayed Gender'),
         displayedBirthday: locate('[data-testid="profile-value-birthday"]').as('Displayed Birthday'),
 
+        // Email card (separate from profile card)
+        emailCard: locate('[data-testid="sf-toggle-card-email"]').as('Email Card'),
+        displayedEmail: locate('[data-testid="sf-toggle-card-email"]')
+            .find('[data-testid="email-value"]')
+            .as('Displayed Email'),
+        changeEmailButton: locate('[data-testid="sf-toggle-card-email"]')
+            .find('button')
+            .withText('Change email')
+            .as('Change Email Button'),
+
         // Password toggle card
         passwordCard: locate('[data-testid="sf-toggle-card-password"]').as('Password Card'),
         passwordContent: locate('[data-testid="sf-toggle-card-password-content"]').as('Password Card Content'),
-        changePasswordButton: locate('button').withText('Change password').as('Change Password Button'),
+        changePasswordButton: locate('[data-testid="sf-toggle-card-password-content"]')
+            .find('button')
+            .as('Change Password Button'),
         passwordForm: locate('[data-testid="password-update-form"]').as('Password Update Form'),
 
         // Password form fields
@@ -195,11 +205,11 @@ class AccountDetailsPage {
      * Read the current values of all profile form fields while in edit mode.
      * Use this to capture pre-filled values before overriding specific fields,
      * so every save includes all required fields.
+     * Note: Email is in a separate card and not part of profile form.
      */
     async getCurrentEditFormValues(): Promise<{
         firstName: string;
         lastName: string;
-        email: string;
         phone: string;
         gender: string;
         birthday: string;
@@ -207,7 +217,6 @@ class AccountDetailsPage {
         return {
             firstName: await I.grabValueFrom(this.locators.firstNameField),
             lastName: await I.grabValueFrom(this.locators.lastNameField),
-            email: await I.grabValueFrom(this.locators.emailField),
             phone: await I.grabValueFrom(this.locators.phoneField),
             gender: await I.grabValueFrom(this.locators.genderSelect),
             birthday: await I.grabValueFrom(this.locators.birthdayField),
@@ -216,13 +225,12 @@ class AccountDetailsPage {
 
     /**
      * Fill the profile form with data.
-     * Email is read-only in the UI and is never filled (avoids timeout on clear/fill).
-     * @param data - Profile data to fill (email is accepted for type compatibility but not filled)
+     * Note: Email is in a separate card and requires OTP verification to edit.
+     * @param data - Profile data to fill (no email field)
      */
     fillProfileForm(data: {
         firstName?: string;
         lastName?: string;
-        email?: string;
         phone?: string;
         gender?: string;
         birthday?: string;
@@ -233,7 +241,6 @@ class AccountDetailsPage {
         if (data.lastName !== undefined) {
             I.fillField(this.locators.lastNameField, data.lastName);
         }
-        // Email field is read-only in the UI; do not fill to avoid locator.clear timeout
         if (data.phone !== undefined) {
             I.fillField(this.locators.phoneField, data.phone);
         }
@@ -264,7 +271,8 @@ class AccountDetailsPage {
     /**
      * Get displayed profile data (view mode only).
      * Waits for view mode (Edit button visible) then reads values via data-testid.
-     * @returns Promise with profile data
+     * Note: Email is read from separate email card.
+     * @returns Promise with profile data including email
      */
     async getDisplayedProfileData(): Promise<{
         firstName: string;
@@ -279,10 +287,12 @@ class AccountDetailsPage {
 
         const firstName = await I.grabTextFrom(this.locators.displayedFirstName);
         const lastName = await I.grabTextFrom(this.locators.displayedLastName);
-        const email = await I.grabTextFrom(this.locators.displayedEmail);
         const phone = await I.grabTextFrom(this.locators.displayedPhone);
         const gender = await I.grabTextFrom(this.locators.displayedGender);
         const birthday = await I.grabTextFrom(this.locators.displayedBirthday);
+
+        // Email is in separate card
+        const email = await I.grabTextFrom(this.locators.displayedEmail);
 
         return {
             firstName: firstName?.trim() ?? '',
@@ -298,6 +308,7 @@ class AccountDetailsPage {
      * Click the Change Password button
      */
     clickChangePassword(): void {
+        I.waitForElement(this.locators.changePasswordButton, 10);
         I.click(this.locators.changePasswordButton);
         I.waitForElement(this.locators.passwordForm, 5);
     }
@@ -513,8 +524,8 @@ class AccountDetailsPage {
     /**
      * Update profile with the provided changes
      * This is a complete flow: click edit → get current values → merge updates → save → verify success → get updated data
-     * Email is read-only in the UI and cannot be updated via this method.
-     * @param updates - Partial profile data to update (only editable fields; email is ignored)
+     * Note: Email is in a separate card and requires OTP verification to edit (not included here).
+     * @param updates - Partial profile data to update (no email)
      * @returns Promise<ProfileData> - The updated profile data as displayed
      */
     async updateProfile(updates: {

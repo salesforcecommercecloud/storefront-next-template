@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { resolveAssetUrl, isAbsoluteURL, getErrorMessage, parseJsonToStringRecord, getBasePath } from './utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { Buffer } from 'node:buffer';
+import {
+    resolveAssetUrl,
+    isAbsoluteURL,
+    getSafeReturnUrl,
+    getErrorMessage,
+    parseJsonToStringRecord,
+    getBasePath,
+} from './utils';
+import { ApiError } from '@/scapi';
 
 describe('isAbsoluteURL', () => {
     it('should return true for http URLs', () => {
         expect(isAbsoluteURL('http://example.com/image.jpg')).toBe(true);
+        expect(isAbsoluteURL('http://example.com')).toBe(true);
+        expect(isAbsoluteURL('http://example.com/path?query=value')).toBe(true);
+        expect(isAbsoluteURL('http://example.com/path#hash')).toBe(true);
     });
 
     it('should return true for https URLs', () => {
         expect(isAbsoluteURL('https://example.com/image.jpg')).toBe(true);
+        expect(isAbsoluteURL('https://www.example.com/api/v1/data')).toBe(true);
+        expect(isAbsoluteURL('https://subdomain.example.com:8080/path')).toBe(true);
     });
 
     it('should return true for protocol-relative URLs', () => {
@@ -33,6 +46,73 @@ describe('isAbsoluteURL', () => {
     it('should return false for relative URLs', () => {
         expect(isAbsoluteURL('/images/hero.png')).toBe(false);
         expect(isAbsoluteURL('images/hero.png')).toBe(false);
+        expect(isAbsoluteURL('./relative/path')).toBe(false);
+        expect(isAbsoluteURL('../parent/path')).toBe(false);
+        expect(isAbsoluteURL('file.html')).toBe(false);
+    });
+
+    it('should return false for query-only and hash-only URLs', () => {
+        expect(isAbsoluteURL('?query=value')).toBe(false);
+        expect(isAbsoluteURL('#section')).toBe(false);
+        expect(isAbsoluteURL('?query=value#section')).toBe(false);
+    });
+
+    it('should return false for empty or invalid URLs', () => {
+        expect(isAbsoluteURL('')).toBe(false);
+        expect(isAbsoluteURL('not-a-url')).toBe(false);
+        expect(isAbsoluteURL('://')).toBe(false);
+        expect(isAbsoluteURL('http:')).toBe(false);
+        expect(isAbsoluteURL('http:example.com')).toBe(false);
+    });
+
+    it('handles edge cases with valid protocol schemes', () => {
+        expect(isAbsoluteURL('a://example.com')).toBe(true);
+        expect(isAbsoluteURL('data+xml://example.com')).toBe(true);
+        expect(isAbsoluteURL('custom-scheme://example.com')).toBe(true);
+        expect(isAbsoluteURL('scheme.v2://example.com')).toBe(true);
+    });
+});
+
+describe('stringToBase64', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.resetModules();
+    });
+
+    it('uses btoa in browser-like env and encodes correctly', async () => {
+        vi.stubGlobal('btoa', (s: string) => Buffer.from(s, 'binary').toString('base64'));
+        const util = await import('@/lib/utils');
+        expect(util.stringToBase64('hello')).toBe('aGVsbG8=');
+    });
+
+    it('falls back to Buffer in non-browser env', async () => {
+        vi.stubGlobal('window', undefined);
+        const util = await import('@/lib/utils');
+        expect(util.stringToBase64('hello')).toBe('aGVsbG8=');
+    });
+});
+
+describe('validatePassword', () => {
+    it('returns all true for a strong password', async () => {
+        const util = await import('@/lib/utils');
+        expect(util.validatePassword('Abcdef1!')).toEqual({
+            minLength: true,
+            hasUppercase: true,
+            hasLowercase: true,
+            hasNumber: true,
+            hasSpecialChar: true,
+        });
+    });
+
+    it('returns correct flags for a weak password', async () => {
+        const util = await import('@/lib/utils');
+        expect(util.validatePassword('abcdefg')).toEqual({
+            minLength: false,
+            hasUppercase: false,
+            hasLowercase: true,
+            hasNumber: false,
+            hasSpecialChar: false,
+        });
     });
 });
 
@@ -544,5 +624,40 @@ describe('parseJsonToStringRecord', () => {
         expect(parseJsonToStringRecord('{"device":"mobile","count":2,"active":true}')).toEqual({
             device: 'mobile',
         });
+    });
+});
+
+describe('getSafeReturnUrl', () => {
+    it('returns fallback for null', () => {
+        expect(getSafeReturnUrl(null)).toBe('/');
+    });
+
+    it('returns fallback for undefined', () => {
+        expect(getSafeReturnUrl(undefined)).toBe('/');
+    });
+
+    it('returns fallback for empty string', () => {
+        expect(getSafeReturnUrl('')).toBe('/');
+    });
+
+    it('returns fallback for absolute https URL', () => {
+        expect(getSafeReturnUrl('https://evil.com')).toBe('/');
+    });
+
+    it('returns fallback for protocol-relative URL', () => {
+        expect(getSafeReturnUrl('//evil.com')).toBe('/');
+    });
+
+    it('returns relative path as-is', () => {
+        expect(getSafeReturnUrl('/checkout')).toBe('/checkout');
+    });
+
+    it('returns locale-prefixed relative path as-is', () => {
+        expect(getSafeReturnUrl('/en-US/checkout')).toBe('/en-US/checkout');
+    });
+
+    it('uses custom fallback when provided', () => {
+        expect(getSafeReturnUrl(null, '')).toBe('');
+        expect(getSafeReturnUrl('https://evil.com', '')).toBe('');
     });
 });

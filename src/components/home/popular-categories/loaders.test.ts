@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { loader } from './loaders';
 import { fetchCategories } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperExperience, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience, ShopperProducts } from '@/scapi';
 
 vi.mock('@/lib/api/categories.server', () => ({
     fetchCategories: vi.fn(),

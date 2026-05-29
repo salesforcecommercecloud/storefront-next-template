@@ -20,7 +20,7 @@ import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { useProductSetsBundles } from '@/hooks/product/use-product-sets-bundles';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Mock useFetcher function
 const mockUseFetcher = vi.fn(() => ({
@@ -46,7 +46,7 @@ vi.mock('@/extensions/bopis/context/pickup-context', () => ({
 }));
 
 // Mock inventory utils
-vi.mock('@/lib/inventory-utils', () => ({
+vi.mock('@/lib/product/inventory-utils', () => ({
     isStoreOutOfStock: vi.fn(() => false),
     isSiteOutOfStock: vi.fn(() => false),
 }));
@@ -164,7 +164,7 @@ describe('useProductSetsBundles - BOPIS', () => {
             product.inventories = [{ id: 'store-1', stockLevel: 0, orderable: false }];
 
             // Mock inventory utils to return out of stock
-            const inventoryUtilsModule = await import('@/lib/inventory-utils');
+            const inventoryUtilsModule = await import('@/lib/product/inventory-utils');
             vi.spyOn(inventoryUtilsModule, 'isStoreOutOfStock').mockReturnValue(true);
             vi.spyOn(inventoryUtilsModule, 'isSiteOutOfStock').mockReturnValue(true);
 

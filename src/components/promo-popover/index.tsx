@@ -53,7 +53,7 @@ const PromoPopover = ({ header, children, className, ...props }: PromoPopoverPro
                     <div className="p-4">
                         {header && (
                             <div className="mb-2 pb-2 border-b border-border">
-                                <Typography variant="h3" as="h3" className="font-bold text-sm text-foreground">
+                                <Typography variant="h3" as="h3" className="font-bold text-sm text-popover-foreground">
                                     {header}
                                 </Typography>
                             </div>

@@ -22,7 +22,8 @@
  */
 
 import { createElement, type ReactNode } from 'react';
-import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { deepMerge } from '@/test-utils/deep-merge';
 import type { Config } from '@/types/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 
@@ -113,10 +114,13 @@ export const mockBuildConfig: Config = {
                 apiKey: '',
             },
             passwordlessLogin: {
-                enabled: false,
                 mode: 'email' as const,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
+            },
+            otpRequest: {
+                mode: 'email' as const,
+                callbackUri: '',
             },
             resetPassword: {
                 mode: 'email' as const,
@@ -146,7 +150,7 @@ export const mockBuildConfig: Config = {
             productListing: {
                 defaultProductTileImgAspectRatio: 1,
             },
-            inventory: { lowStockThreshold: 5, maxStockDisplay: 99 },
+            inventory: { lowStockThreshold: 5 },
             carousel: { defaultItemCount: 4 },
             badges: [
                 { propertyName: 'c_isSale', label: 'Sale', color: 'orange', priority: 1 },
@@ -238,7 +242,11 @@ export const mockBuildConfig: Config = {
                         checkout_step: true,
                         view_search_suggestion: true,
                         click_search_suggestion: true,
-                        commerce_agent_engagement: true,
+                        wishlist_item_added: true,
+                        wishlist_item_removed: true,
+                        wishlist_viewed: true,
+                        wishlist_item_merged: true,
+                        wishlist_merged: true,
                     },
                 },
                 dataCloud: {
@@ -260,7 +268,11 @@ export const mockBuildConfig: Config = {
                         checkout_step: true,
                         view_search_suggestion: true,
                         click_search_suggestion: true,
-                        commerce_agent_engagement: true,
+                        wishlist_item_added: true,
+                        wishlist_item_removed: true,
+                        wishlist_viewed: true,
+                        wishlist_item_merged: true,
+                        wishlist_merged: true,
                     },
                 },
                 activeData: {
@@ -283,7 +295,11 @@ export const mockBuildConfig: Config = {
                         checkout_step: false,
                         view_search_suggestion: false,
                         click_search_suggestion: false,
-                        commerce_agent_engagement: true,
+                        wishlist_item_added: false,
+                        wishlist_item_removed: false,
+                        wishlist_viewed: false,
+                        wishlist_item_merged: false,
+                        wishlist_merged: false,
                     },
                 },
             },
@@ -315,27 +331,53 @@ export const mockBuildConfig: Config = {
 /**
  * Pre-created mock config for convenience
  */
-export const mockConfig = createAppConfig(mockBuildConfig);
+export const mockConfig = mockBuildConfig.app;
 
 /**
- * The default URL prefix applied by site context routing in tests.
- * Derived from the first configured site and its default locale.
+ * Derived site objects and values for use in test assertions and mock return values.
+ * Never hardcode site IDs in test files — always derive from the mock config.
+ */
+
+/** The full primary mock site object */
+export const mockSiteObject = mockBuildConfig.app.commerce.sites[0];
+
+/** The full alternative mock site object */
+export const mockAltSiteObject = mockBuildConfig.app.commerce.sites[1];
+
+/**
+ * Resolves the URL-visible site reference (alias if configured, otherwise site ID).
  *
- * Use in test assertions where links are expected to include the site/locale prefix:
  * @example
  * ```ts
- * expect(link).toHaveAttribute('href', `${SITE_PREFIX}/product/123`);
+ * // Primary site (default)
+ * useCurrentSiteAndLocaleRef: () => ({ siteRef: getSiteRef(), localeRef: mockSiteObject.defaultLocale })
+ *
+ * // Alt site
+ * useCurrentSiteAndLocaleRef: () => ({ siteRef: getSiteRef(mockAltSiteObject), ... })
  * ```
  */
-const defaultSite = mockBuildConfig.app.commerce.sites[0];
-export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;
+export function getSiteRef(site = mockSiteObject) {
+    return mockBuildConfig.app.siteAliasMap?.[site.id] ?? site.id;
+}
 
 /**
- * The default mock locale derived from the first configured site's default locale.
- * Use when providing `locale` to `SiteProvider` in tests.
+ * Builds the URL prefix for a given site (e.g., `/RefArchGlobal/en-GB`).
+ *
+ * @example
+ * ```ts
+ * expect(link).toHaveAttribute('href', `${getSitePrefix()}/product/123`);
+ * ```
+ */
+export function getSitePrefix(site = mockSiteObject) {
+    return `/${site.id}/${site.defaultLocale}`;
+}
+
+/**
+ * The primary mock locale object for use with `SiteProvider` in tests.
  */
 export const mockLocale =
-    defaultSite.supportedLocales.find((l) => l.id === defaultSite.defaultLocale) ?? defaultSite.supportedLocales[0];
+    mockSiteObject.supportedLocales.find((l) => l.id === mockSiteObject.defaultLocale) ??
+    mockSiteObject.supportedLocales[0];
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context
@@ -369,7 +411,7 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
  */
 export function createConfigWrapper(configOverrides?: Partial<Config>) {
     const customConfig = configOverrides
-        ? createAppConfig(deepMerge(mockBuildConfig, configOverrides as Record<string, unknown>))
+        ? deepMerge(mockBuildConfig, configOverrides as Record<string, unknown>).app
         : mockConfig;
 
     return function CustomConfigWrapper({ children }: { children: ReactNode }) {

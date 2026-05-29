@@ -49,22 +49,11 @@ describe('CartEmpty', () => {
             // Check for empty cart title
             expect(screen.getByText(t('cart:empty.title'))).toBeInTheDocument();
 
+            // Check for guest message (always rendered)
+            expect(screen.getByText(t('cart:empty.guestMessage'))).toBeInTheDocument();
+
             // Check for start shopping button
             expect(screen.getByText(t('cart:empty.continueShopping'))).toBeInTheDocument();
-        });
-    });
-
-    describe('User Registration States', () => {
-        test('renders guest message for unregistered users', () => {
-            renderWithRouter(<CartEmpty isRegistered={false} />);
-
-            expect(screen.getByText(t('cart:empty.guestMessage'))).toBeInTheDocument();
-        });
-
-        test('renders registered message for registered users', () => {
-            renderWithRouter(<CartEmpty isRegistered={true} />);
-
-            expect(screen.getByText(t('cart:empty.registeredMessage'))).toBeInTheDocument();
         });
     });
 

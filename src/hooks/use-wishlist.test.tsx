@@ -19,14 +19,17 @@ import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
+import { resourceRoutes } from '@/route-paths';
 import { useWishlist } from './use-wishlist';
 
 // Mock dependencies
 const mockAddToast = vi.fn();
+const mockTrackWishlistItemAdded = vi.fn();
+const mockTrackWishlistItemRemoved = vi.fn();
 
 const mockAddFetcher = {
     data: null as any,
@@ -47,9 +50,11 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
-// Mock useRequireAuth to pass through the function without auth requirement for testing
-vi.mock('@/hooks/use-require-auth', () => ({
-    useRequireAuth: (fn: any) => fn,
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackWishlistItemAdded: mockTrackWishlistItemAdded,
+        trackWishlistItemRemoved: mockTrackWishlistItemRemoved,
+    }),
 }));
 
 const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
@@ -156,13 +161,13 @@ describe('useWishlist', () => {
         expect(result.current.isItemInWishlist(mockProduct, mockVariant)).toBe(false);
     });
 
-    test('should add item to wishlist optimistically', async () => {
+    test('should add item to wishlist optimistically', () => {
         setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
@@ -170,27 +175,27 @@ describe('useWishlist', () => {
             { productId: 'product-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-add',
+                action: resourceRoutes.wishlistAdd,
             }
         );
     });
 
-    test('should remove item from wishlist optimistically', async () => {
+    test('should remove item from wishlist optimistically', () => {
         setAddFetcherResponse({ success: true });
         setRemoveFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
         // First add the item
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
 
         // Then remove it
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
@@ -198,7 +203,7 @@ describe('useWishlist', () => {
             { productId: 'product-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-remove',
+                action: resourceRoutes.wishlistRemove,
             }
         );
     });
@@ -208,8 +213,8 @@ describe('useWishlist', () => {
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -227,13 +232,13 @@ describe('useWishlist', () => {
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
         // First add the item
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         // Then remove it
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -246,8 +251,8 @@ describe('useWishlist', () => {
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -264,8 +269,8 @@ describe('useWishlist', () => {
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -278,8 +283,8 @@ describe('useWishlist', () => {
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -295,15 +300,15 @@ describe('useWishlist', () => {
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
         // Add item first
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
 
         // Attempt remove — server returns error
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         await waitFor(() => {
@@ -313,7 +318,7 @@ describe('useWishlist', () => {
         });
     });
 
-    test('should handle missing productId gracefully', async () => {
+    test('should handle missing productId gracefully', () => {
         const invalidProduct = {
             productId: undefined,
             productName: 'Invalid Product',
@@ -321,8 +326,8 @@ describe('useWishlist', () => {
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(invalidProduct);
+        act(() => {
+            result.current.toggleWishlist(invalidProduct);
         });
 
         expect(mockAddFetcher.submit).not.toHaveBeenCalled();
@@ -330,20 +335,20 @@ describe('useWishlist', () => {
         expect(mockAddToast).toHaveBeenCalledWith(t('product:failedToAddToWishlist'), 'error');
     });
 
-    test('should use variant productId when provided', async () => {
+    test('should use variant productId when provided', () => {
         setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct, mockVariant);
+        act(() => {
+            result.current.toggleWishlist(mockProduct, mockVariant);
         });
 
         expect(mockAddFetcher.submit).toHaveBeenCalledWith(
             { productId: 'variant-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-add',
+                action: resourceRoutes.wishlistAdd,
             }
         );
     });
@@ -356,13 +361,13 @@ describe('useWishlist', () => {
         expect(result.current.isLoading).toBe(true);
     });
 
-    test('should return wishlist as array', async () => {
+    test('should return wishlist as array', () => {
         setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         expect(Array.isArray(result.current.wishlist)).toBe(true);
@@ -390,8 +395,8 @@ describe('useWishlist', () => {
             mockAddFetcher.data = null;
         });
 
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
+        act(() => {
+            result.current.toggleWishlist(mockProduct);
         });
 
         // Simulate server response completing for the first operation
@@ -416,8 +421,8 @@ describe('useWishlist', () => {
             mockAddFetcher.data = null;
         });
 
-        await act(async () => {
-            await result.current.toggleWishlist(anotherProduct);
+        act(() => {
+            result.current.toggleWishlist(anotherProduct);
         });
 
         // Simulate server response completing for the second operation
@@ -441,17 +446,16 @@ describe('useWishlist', () => {
         });
     });
 
-    test('should not fire effect before any submit (pendingRef is null)', async () => {
+    test('should not fire effect before any submit (pendingRef is null)', () => {
         // If data is somehow set on the fetcher before any toggleWishlist call,
         // the effect should not process it (pendingRef guards it).
         mockAddFetcher.data = { success: true };
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        // No toggleWishlist called — no pending ref set
-        await act(async () => {
-            await Promise.resolve();
-        });
+        // No toggleWishlist called — no pending ref set. The empty act flushes any
+        // microtasks from the renderHook so we can assert nothing else fires.
+        act(() => {});
 
         expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
         expect(mockAddToast).not.toHaveBeenCalled();

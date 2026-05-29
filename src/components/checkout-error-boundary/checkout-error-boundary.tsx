@@ -22,12 +22,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Typography } from '@/components/typography';
 import { useTranslation, withTranslation, type WithTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
+import { routes } from '@/route-paths';
 
 function ReturnToCartButton() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     return (
-        <Button variant="outline" onClick={() => void navigate('/cart')}>
+        <Button variant="outline" onClick={() => void navigate(routes.cart)}>
             {t('checkout:errorBoundary.returnToCart')}
         </Button>
     );
@@ -78,7 +79,7 @@ class CheckoutErrorBoundaryClass extends Component<CheckoutErrorBoundaryProps, C
                 <Card className="mx-auto max-w-2xl rounded-none shadow-none">
                     <CardContent className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center">
                         <AlertTriangle className="mb-4 h-12 w-12 text-destructive" />
-                        <Typography variant="h2" as="h2" className="mb-2 text-xl font-bold text-destructive">
+                        <Typography variant="h2" as="h2" className="mb-2 text-2xl font-bold text-destructive">
                             {t('checkout:errorBoundary.title')}
                         </Typography>
                         <Typography variant="p" className="mb-6 max-w-md text-muted-foreground">
@@ -111,8 +112,8 @@ export function CheckoutComponentError({ retry }: { error?: Error; retry?: () =>
     return (
         <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle className="text-xl font-bold">{t('errorBoundary.componentError.title')}</AlertTitle>
-            <AlertDescription className="text-xl font-bold">
+            <AlertTitle className="text-2xl font-bold">{t('errorBoundary.componentError.title')}</AlertTitle>
+            <AlertDescription className="text-2xl font-bold">
                 {t('errorBoundary.componentError.description')}
                 {retry && (
                     <Button variant="link" size="sm" onClick={retry} className="ml-2 h-auto p-0 font-bold">

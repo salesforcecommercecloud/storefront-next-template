@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense, useMemo } from 'react';
+import { type ReactElement, type ReactNode, Suspense } from 'react';
 import { Await } from 'react-router';
 import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import ProductRecommendations from '@/components/product-recommendations';
-import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
-import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import { UITarget } from '@/targets/ui-target';
 import { RateRecentPurchasesCard } from '@/components/account/account-overview/rate-recent-purchases-card';
+import { routes, routeHref } from '@/route-paths';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -52,6 +50,8 @@ export interface AccountOverviewProps {
     customer?: Customer | null;
     /** Deferred promise for the shopper's recent orders */
     ordersPromise?: Promise<CustomerOrdersResult>;
+    /** Slot for product recommendations (rendered below the orders section) */
+    recommendationsSlot?: ReactNode;
 }
 
 /**
@@ -64,7 +64,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     return (
         <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
-                <h1 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1">
+                <h1 className="text-2xl font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
                 </h1>
                 <p className="text-sm text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
@@ -95,22 +95,22 @@ export function QuickLinksSection(): ReactElement {
 
     const quickLinks: QuickLinkItem[] = [
         {
-            path: '/account',
+            path: routes.account,
             icon: User,
             label: t('navigation.accountDetails'),
         },
         {
-            path: '/account/addresses',
+            path: routes.accountAddresses,
             icon: MapPin,
             label: t('navigation.manageAddresses'),
         },
         {
-            path: '/account/payment-methods',
+            path: routes.accountPaymentMethods,
             icon: CreditCard,
             label: t('navigation.paymentMethods'),
         },
         {
-            path: '/account/orders',
+            path: routes.accountOrders,
             icon: Receipt,
             label: t('navigation.orderHistory'),
         },
@@ -119,9 +119,7 @@ export function QuickLinksSection(): ReactElement {
     return (
         <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
-                <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4">
-                    {t('overview.quickLinks.title')}
-                </h2>
+                <h2 className="text-lg font-semibold text-foreground mb-4">{t('overview.quickLinks.title')}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {quickLinks.map((link) => {
                         const Icon = link.icon;
@@ -165,56 +163,6 @@ export function QuickLinksSectionSkeleton(): ReactElement {
     );
 }
 
-/**
- * Curated for You section with product recommendations
- * Uses Einstein recommendations to display personalized product suggestions
- */
-export function CuratedForYouSection(): ReactElement {
-    const { t } = useTranslation('account');
-
-    const curatedRecommender = useMemo(
-        () => ({
-            name: EINSTEIN_RECOMMENDERS.EMPTY_SEARCH_RESULTS_MOST_VIEWED,
-            title: t('overview.curatedForYou.title'),
-        }),
-        [t]
-    );
-
-    return (
-        <Card className="py-0 rounded-none shadow-none">
-            <CardContent className="p-6">
-                <Suspense
-                    fallback={
-                        <ProductRecommendationSkeleton
-                            title={t('overview.curatedForYou.title')}
-                            className="max-w-none -mx-6 md:py-0"
-                        />
-                    }>
-                    <ProductRecommendations
-                        recommender={curatedRecommender}
-                        titleClassName="text-[length:var(--account-section-header)] font-semibold text-foreground tracking-tight"
-                        subtitle={t('overview.curatedForYou.subtitle')}
-                        className="max-w-none -mx-6 md:py-0"
-                    />
-                </Suspense>
-            </CardContent>
-        </Card>
-    );
-}
-
-/**
- * Skeleton for the Curated for You section
- */
-export function CuratedForYouSectionSkeleton(): ReactElement {
-    return (
-        <Card className="py-0 rounded-none shadow-none">
-            <CardContent className="p-6">
-                <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
-            </CardContent>
-        </Card>
-    );
-}
-
 type RecentOrdersListBlockProps = {
     result: CustomerOrdersResult;
     onViewDetails: (orderNo: string) => void;
@@ -240,7 +188,7 @@ function RecentOrdersListBlock({ result, onViewDetails }: RecentOrdersListBlockP
                             </p>
                         </div>
                         <Button variant="outline" asChild className="shrink-0 bg-secondary shadow-2xs">
-                            <Link to="/account/orders">{t('overview.recentOrders.viewAll')}</Link>
+                            <Link to={routes.accountOrders}>{t('overview.recentOrders.viewAll')}</Link>
                         </Button>
                     </div>
                 </CardContent>
@@ -262,7 +210,7 @@ export function AccountOverviewOrdersAwait({
 
     const handleViewDetails = (orderNo: string) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
-        navigate(`/account/orders/${orderNo}`);
+        navigate(routeHref(routes.accountOrderDetail, { orderNo }));
     };
 
     return (
@@ -330,14 +278,14 @@ export function RecentOrdersSectionSkeleton(): ReactElement {
  * - Curated product recommendations (using Einstein)
  * - Quick Links to key account sections
  */
-export function AccountOverview({ customer, ordersPromise }: AccountOverviewProps): ReactElement {
+export function AccountOverview({ customer, ordersPromise, recommendationsSlot }: AccountOverviewProps): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <UITarget targetId="sfcc.myAccount.loyalty.summary" />
             {ordersPromise && <AccountOverviewOrdersAwait ordersPromise={ordersPromise} />}
             <UITarget targetId="sfcc.myAccount.reviews.pending" />
-            <CuratedForYouSection />
+            {recommendationsSlot}
             <AccountHelp />
             <AppDownloadSection />
             <QuickLinksSection />
@@ -393,12 +341,16 @@ export function AccountHelpSkeleton(): ReactElement {
 /**
  * Account overview skeleton for loading state
  */
-export function AccountOverviewSkeleton(): ReactElement {
+export function AccountOverviewSkeleton({
+    recommendationsSlot,
+}: {
+    recommendationsSlot?: ReactNode;
+} = {}): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <RecentOrdersSectionSkeleton />
-            <CuratedForYouSectionSkeleton />
+            {recommendationsSlot}
             <AccountHelpSkeleton />
             <AppDownloadSectionSkeleton />
             <QuickLinksSectionSkeleton />

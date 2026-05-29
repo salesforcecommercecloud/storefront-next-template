@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@/scapi';
 import { PICKUP_SHIPPING_METHOD_ID } from '../../constants';
 
 /**

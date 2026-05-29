@@ -20,7 +20,7 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import DeliveryOptions from '../delivery-options';
 import { masterProductWithInventories } from '@/components/__mocks__/master-product-with-inventories';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

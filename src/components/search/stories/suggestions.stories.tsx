@@ -15,45 +15,60 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import Suggestions from '../suggestions';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import type { SearchSuggestions } from '../types';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// Suggestions branches on its inputs:
+//   - if searchSuggestions has at least one of categories/products/popular →
+//     renders SuggestionSection
+//   - else → renders RecentSearches
+// Visible state is driven by the counts in each suggestion bucket and the
+// recent-searches list. All of those fold cleanly into Controls. Callbacks
+// (closeAndNavigate, clearRecentSearches, onShopperAgentClick) bind to
+// `action()` directly via component props.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('suggestion-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            // Check for buttons or links
-            const interactive = target.closest('button, a');
-            if (interactive) {
-                const label =
-                    interactive.textContent?.trim() || interactive.getAttribute('aria-label') || 'interactive-element';
-                logClick({ label, type: interactive.tagName.toLowerCase() });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const ALL_CATEGORIES = [
+    { name: 'Footwear', link: '/category/footwear', type: 'category' },
+    { name: 'Outerwear', link: '/category/outerwear', type: 'category' },
+    { name: 'Accessories', link: '/category/accessories', type: 'category' },
+];
+const ALL_PRODUCTS = [
+    {
+        name: 'Running Shoes',
+        link: '/products/running-shoes',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+        price: 99.99,
+    },
+    {
+        name: 'Hiking Boots',
+        link: '/products/hiking-boots',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+        price: 149.99,
+    },
+    {
+        name: 'Casual Sneakers',
+        link: '/products/casual-sneakers',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+        price: 79.99,
+    },
+];
+const ALL_POPULAR = [
+    { name: 'Shoes', link: '/search?q=shoes', type: 'popular' },
+    { name: 'Boots', link: '/search?q=boots', type: 'popular' },
+    { name: 'Sneakers', link: '/search?q=sneakers', type: 'popular' },
+];
+const ALL_RECENT = ['shoes', 'boots', 'sneakers', 'jackets', 'bags'];
 
 const meta: Meta<typeof Suggestions> = {
     title: 'Search/Suggestions',
@@ -63,113 +78,122 @@ const meta: Meta<typeof Suggestions> = {
         docs: {
             description: {
                 component:
-                    'Main suggestions component that displays either search suggestions or recent searches based on available data.',
+                    'Search dropdown that branches between a populated suggestion section (categories, products, popular searches) and a recent-searches list. Optional shopper-agent slot at the bottom.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
     decorators: [
-        (Story) => (
+        (Story: ComponentType) => (
             <ConfigProvider config={mockConfig}>
                 <SiteProvider
-                    site={mockConfig.commerce.sites[0]}
+                    site={mockSiteObject}
                     locale={mockLocale}
-                    language="en-GB"
-                    currency={mockConfig.commerce.sites[0].defaultCurrency}>
-                    <ActionLogger>
-                        <Story />
-                    </ActionLogger>
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <Story />
                 </SiteProvider>
             </ConfigProvider>
         ),
     ],
-    argTypes: {
-        searchSuggestions: {
-            description: 'Object containing various types of search suggestions',
-            control: 'object',
-        },
-        recentSearches: {
-            description: 'Array of recent search query strings',
-            control: 'object',
-        },
-        closeAndNavigate: {
-            description: 'Callback function to close the search and navigate to a URL',
-            action: 'closeAndNavigate',
-        },
-        clearRecentSearches: {
-            description: 'Callback function to clear all recent searches',
-            action: 'clearRecentSearches',
-        },
-    },
 };
 
 export default meta;
-type Story = StoryObj<typeof Suggestions>;
+type Story = StoryObj<typeof meta>;
 
-const mockSearchSuggestions = {
-    categorySuggestions: [
-        {
-            name: 'Footwear',
-            link: '/category/footwear',
-            type: 'category',
-        },
-    ],
-    productSuggestions: [
-        {
-            name: 'Running Shoes',
-            link: '/products/running-shoes',
-            type: 'product',
-            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
-            price: 99.99,
-        },
-    ],
-    popularSearchSuggestions: [
-        {
-            name: 'Shoes',
-            link: '/search?q=shoes',
-            type: 'popular',
-        },
-    ],
+type SyntheticArgs = {
+    categoryCount: number;
+    productCount: number;
+    popularCount: number;
+    recentCount: number;
+    showShopperAgent: boolean;
 };
 
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline — populated suggestion section with all three
+ * buckets (categories + products + popular). Use Controls to slice each
+ * bucket independently or zero them all out to fall through to the
+ * recent-searches branch.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        searchSuggestions: mockSearchSuggestions,
-        recentSearches: [],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
+        categoryCount: 3,
+        productCount: 3,
+        popularCount: 3,
+        recentCount: 3,
+        showShopperAgent: false,
+    },
+    argTypes: {
+        categoryCount: {
+            description: `Synthetic: number of category suggestions (0–${ALL_CATEGORIES.length}).`,
+            control: { type: 'number', min: 0, max: ALL_CATEGORIES.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        productCount: {
+            description: `Synthetic: number of product suggestions (0–${ALL_PRODUCTS.length}).`,
+            control: { type: 'number', min: 0, max: ALL_PRODUCTS.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        popularCount: {
+            description: `Synthetic: number of popular-search suggestions (0–${ALL_POPULAR.length}).`,
+            control: { type: 'number', min: 0, max: ALL_POPULAR.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        recentCount: {
+            description: `Synthetic: number of recent searches (0–${ALL_RECENT.length}). Only renders when all three suggestion buckets are empty.`,
+            control: { type: 'number', min: 0, max: ALL_RECENT.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showShopperAgent: {
+            description: 'Direct prop: toggles the shopper-agent insight card at the bottom of the dropdown.',
+            control: 'boolean',
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            categoryCount: args.categoryCount ?? 0,
+            productCount: args.productCount ?? 0,
+            popularCount: args.popularCount ?? 0,
+            recentCount: args.recentCount ?? 0,
+            showShopperAgent: args.showShopperAgent ?? false,
+        };
+        const categories = ALL_CATEGORIES.slice(0, synthetic.categoryCount);
+        const products = ALL_PRODUCTS.slice(0, synthetic.productCount);
+        const popular = ALL_POPULAR.slice(0, synthetic.popularCount);
+        const recents = ALL_RECENT.slice(0, synthetic.recentCount);
+        const hasAnySuggestion = categories.length || products.length || popular.length;
+        const searchSuggestions: SearchSuggestions | null = hasAnySuggestion
+            ? {
+                  ...(categories.length ? { categorySuggestions: categories } : {}),
+                  ...(products.length ? { productSuggestions: products } : {}),
+                  ...(popular.length ? { popularSearchSuggestions: popular } : {}),
+              }
+            : null;
+        return (
+            <Suggestions
+                searchSuggestions={searchSuggestions}
+                recentSearches={recents}
+                closeAndNavigate={action('closeAndNavigate')}
+                clearRecentSearches={action('clearRecentSearches')}
+                showShopperAgent={synthetic.showShopperAgent}
+                onShopperAgentClick={action('onShopperAgentClick')}
+            />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Should show suggestions section when searchSuggestions are available
         const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
         await expect(categoriesLabels.length).toBeGreaterThan(0);
     },
 };
 
-export const WithRecentSearches: Story = {
-    args: {
-        searchSuggestions: null,
-        recentSearches: ['shoes', 'boots', 'sneakers'],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Should show recent searches when no searchSuggestions
-        const recentSearchesTitles = await canvas.findAllByText(/recent searches/i, {}, { timeout: 5000 });
-        await expect(recentSearchesTitles.length).toBeGreaterThan(0);
-
-        const buttons = canvas.getAllByRole('button');
-        const shoesButton = buttons.find((btn) => btn.textContent?.trim() === 'shoes');
-        await expect(shoesButton).toBeInTheDocument();
-    },
-};
-
+/**
+ * No suggestions and no recent searches. Branch falls through to the
+ * RecentSearches component which renders an empty-state message. Worth a
+ * bookmarkable URL because the visible content is fundamentally different
+ * (just the empty-state copy, no lists).
+ */
 export const Empty: Story = {
     args: {
         searchSuggestions: null,
@@ -179,56 +203,7 @@ export const Empty: Story = {
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        // Component should render but show empty recent searches
         const container = canvasElement.firstChild;
         await expect(container).toBeInTheDocument();
-    },
-};
-
-export const CategoriesOnly: Story = {
-    args: {
-        searchSuggestions: {
-            categorySuggestions: mockSearchSuggestions.categorySuggestions,
-        },
-        recentSearches: [],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
-        await expect(categoriesLabels.length).toBeGreaterThan(0);
-
-        // Use getAllByRole since there may be multiple buttons (mobile + desktop views)
-        const footwearButtons = canvas.getAllByRole('button', { name: /footwear/i });
-        await expect(footwearButtons.length).toBeGreaterThan(0);
-        // Click the first enabled button if available
-        const enabledButton = footwearButtons.find((btn) => !btn.hasAttribute('disabled'));
-        if (enabledButton) {
-            await userEvent.click(enabledButton);
-        }
-    },
-};
-
-export const ProductsOnly: Story = {
-    args: {
-        searchSuggestions: {
-            productSuggestions: mockSearchSuggestions.productSuggestions,
-        },
-        recentSearches: [],
-        closeAndNavigate: action('closeAndNavigate'),
-        clearRecentSearches: action('clearRecentSearches'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const productsLabel = canvas.getByText(/products/i);
-        await expect(productsLabel).toBeInTheDocument();
-
-        const runningShoesLink = canvas.getByRole('link', { name: /running shoes/i });
-        await expect(runningShoesLink).toBeInTheDocument();
     },
 };

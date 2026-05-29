@@ -16,59 +16,33 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import CategorySorting from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import type { ComponentType } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-// @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
-const SORTING_HARNESS_ATTR = 'data-sorting-harness';
+// ---------------------------------------------------------------------------
+// CategorySorting reads `sortingOptions` and `selectedSortingOption` off the
+// ProductSearchResult fixture and renders a labeled `<select>`. Visible
+// state is fully a function of (a) the count of options and (b) which one
+// is selected. Both fold into Controls. Empty options array stays as a
+// dedicated story because the component returns null — a fundamentally
+// different visual state worth a bookmarkable URL.
+//
+// The component owns its own onChange handling (writes to URL via navigate),
+// so no action-logging decorator is needed — Controls + the live URL bar
+// already make changes observable.
+// ---------------------------------------------------------------------------
 
-function SortingStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logChange = useMemo(() => action('sort-option-changed'), []);
-    const logHover = useMemo(() => action('sort-option-hovered'), []);
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
+const ALL_SORTING_OPTIONS = mockSearchResult.sortingOptions ?? [];
+const MAX_OPTIONS = ALL_SORTING_OPTIONS.length;
 
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${SORTING_HARNESS_ATTR}]`));
-
-        const handleChange = (event: Event) => {
-            const select = event.target as HTMLSelectElement | null;
-            if (!select || !isInsideHarness(select)) {
-                return;
-            }
-            logChange({ value: select.value, label: select.options[select.selectedIndex]?.text || '' });
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const select = (event.target as HTMLElement | null)?.closest('select');
-            if (!select || !isInsideHarness(select)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && select.contains(related)) {
-                return;
-            }
-            logHover({});
-        };
-
-        document.addEventListener('change', handleChange, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            document.removeEventListener('change', handleChange, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logChange, logHover]);
-
-    return (
-        <div ref={containerRef} {...{ [SORTING_HARNESS_ATTR]: 'true' }}>
-            {children}
-        </div>
-    );
-}
+type SyntheticArgs = {
+    optionCount: number;
+    selectedSortingOption: string;
+};
 
 const meta: Meta<typeof CategorySorting> = {
     title: 'CATEGORY/Category Sorting',
@@ -79,202 +53,80 @@ const meta: Meta<typeof CategorySorting> = {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-A sorting dropdown component for category product listings. Allows users to sort products by different criteria.
-
-## Features
-
-- **Sort Options**: Dropdown with available sorting options
-- **URL Integration**: Updates URL parameters when selection changes
-- **Current Selection**: Shows the currently selected sort option
-- **Accessible**: Proper label-select association
-- **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
-
-## Usage
-
-The CategorySorting component is used on:
-- Category pages
-- Product listing pages
-- Search results pages
-- Any sortable product list
-
-\`\`\`tsx
-import CategorySorting from '../category-sorting';
-
-function CategoryPage({ searchResult }) {
-  return <CategorySorting result={searchResult} />;
-}
-\`\`\`
-
-## Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result containing sorting options |
-
-## Behavior
-
-- **Changing sort option**: Updates URL parameters and navigates
-- **No options**: Component returns null if no sorting options available
-- **URL updates**: Updates sort and resets offset to 0
-                `,
+                component:
+                    'Sort dropdown for category and search result pages. Renders a labeled `<select>` with one option per `result.sortingOptions[]`. Returns null when the options list is empty.',
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <SortingStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </SortingStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
-
-const mockSearchResultNoSorting: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    sortingOptions: [],
-    selectedSortingOption: undefined,
-};
-
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline — full canonical sorting options list with
+ * "best-matches" pre-selected. Use Controls to slice the options or change
+ * the selection.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        result: mockSearchResult,
+        optionCount: MAX_OPTIONS,
+        selectedSortingOption: 'best-matches',
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The default CategorySorting shows the sort dropdown:
-
-### Features:
-- **Sort label**: "Sort by:" label
-- **Dropdown**: Select with sorting options
-- **Current selection**: Shows selected option
-- **Action logging**: Changes are logged
-
-### Use Cases:
-- Standard sorting
-- Category listings
-- Product sorting
-                `,
-            },
+    argTypes: {
+        optionCount: {
+            description: `Synthetic: number of sorting options to render (1–${MAX_OPTIONS})`,
+            control: { type: 'number', min: 1, max: MAX_OPTIONS, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        selectedSortingOption: {
+            description: 'Synthetic: the `id` of the option to render selected. Empty string = no explicit selection.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
         },
     },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            optionCount: args.optionCount ?? MAX_OPTIONS,
+            selectedSortingOption: args.selectedSortingOption ?? '',
+        };
+        const clamped = Math.max(1, Math.min(synthetic.optionCount, MAX_OPTIONS));
+        const options = ALL_SORTING_OPTIONS.slice(0, clamped);
+        const result: ShopperSearch.schemas['ProductSearchResult'] = {
+            ...mockSearchResult,
+            sortingOptions: options,
+            selectedSortingOption: synthetic.selectedSortingOption || undefined,
+        };
+        return <CategorySorting result={result} />;
+    },
     play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Test sort label is present
+        const canvas = within(canvasElement);
         const label = canvas.getByText(/sort by/i);
         await expect(label).toBeInTheDocument();
-
-        // Test select is present
         const select = canvas.getByRole<HTMLSelectElement>('combobox');
         await expect(select).toBeInTheDocument();
-
-        // Test changing sort option
-        await userEvent.selectOptions(select, select.options[1]?.value || '');
+        if (select.options[1]?.value) {
+            await userEvent.selectOptions(select, select.options[1].value);
+        }
     },
 };
 
+/**
+ * Empty `sortingOptions` array — component returns null. Worth a
+ * bookmarkable URL to assert this null-render explicitly.
+ */
 export const NoSortingOptions: Story = {
-    args: {
-        result: mockSearchResultNoSorting,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-CategorySorting when no sorting options are available:
-
-### No Options Features:
-- **Not rendered**: Component returns null
-- **Clean UI**: No sorting controls shown
-- **No errors**: Gracefully handles missing options
-
-### Use Cases:
-- Search results without sorting
-- Categories without sort options
-- Disabled sorting
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-
-        // Test sorting is not rendered (component returns null)
-        const select = canvasElement.querySelector('select');
-        await expect(select).not.toBeInTheDocument();
-    },
-};
-
-export const WithSelectedOption: Story = {
     args: {
         result: {
             ...mockSearchResult,
-            selectedSortingOption: mockSearchResult.sortingOptions?.[1]?.id || '',
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-CategorySorting with a pre-selected sort option:
-
-### Selected Option Features:
-- **Pre-selected**: Shows the selected option
-- **Same functionality**: All features work the same
-- **Visual feedback**: Selected option is highlighted
-
-### Use Cases:
-- URL-based sorting
-- Preserved sort selection
-- Default sort options
-                `,
-            },
-        },
+            sortingOptions: [],
+            selectedSortingOption: undefined,
+        } as ShopperSearch.schemas['ProductSearchResult'],
     },
     play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Test select is present
-        const select = canvas.getByRole<HTMLSelectElement>('combobox');
-        await expect(select).toBeInTheDocument();
-
-        // Test selected option is set
-        await expect(select.value).not.toBe('');
+        const select = canvasElement.querySelector('select');
+        await expect(select).not.toBeInTheDocument();
     },
 };

@@ -25,6 +25,7 @@ import type { ActionResponse } from '@/routes/types/action-responses';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock the toast hook
 const mockAddToast = vi.fn();
@@ -51,7 +52,7 @@ const mockUseItemFetcher = vi.mocked(useItemFetcher);
 describe('RemoveItemButtonWithConfirmation', () => {
     // Create a function to get defaultConfig with i18next called at test runtime
     const getDefaultConfig = () => ({
-        action: '/action/cart-item-remove',
+        action: resourceRoutes.cartItemRemove,
         confirmDescription: t('cart:removeItemConfirmDescription'),
     });
 

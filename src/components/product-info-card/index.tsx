@@ -70,11 +70,13 @@ export default function ProductInfoCard({
             )}>
             {icon && <div className="flex-shrink-0 mt-0.5 text-muted-foreground">{icon}</div>}
             <div className="min-w-0 flex-1">
-                <Typography variant="small" className="font-semibold">
+                <Typography variant="small" className="text-base font-semibold leading-6 text-card-foreground">
                     {title}
                 </Typography>
                 {description && (
-                    <Typography variant="muted" className="mt-0.5 text-xs">
+                    <Typography
+                        variant="muted"
+                        className="mt-0.5 text-xs font-normal leading-none text-secondary-foreground">
                         {description}
                     </Typography>
                 )}
@@ -83,7 +85,7 @@ export default function ProductInfoCard({
                         type="button"
                         onClick={action.onClick}
                         aria-label={`${action.label} - ${title}`}
-                        className="mt-1 cursor-pointer text-xs font-normal text-primary hover:underline">
+                        className="mt-1 cursor-pointer text-sm font-normal leading-5 text-primary hover:underline">
                         {action.label}
                     </button>
                 )}

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-    WriteReviewFormData,
-    EstimatedDeliveryData,
-    ReturnsAndWarrantyData,
-    ReviewItem,
-} from '@/lib/adapters/product-content-data-types';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import type { WriteReviewFormData, ReviewItem } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+// @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+import type { ReturnsAndWarrantyData } from '@/extensions/product-content/lib/api/product-content.server';
+// @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
 /**
  * Payment schedule data for installment payment modal
@@ -62,6 +65,7 @@ export interface PaymentScheduleModalData extends InfoModalDataBase {
     disclaimer?: string;
 }
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 /** Data for write a review modal */
 export interface WriteReviewModalData extends InfoModalDataBase {
     type: 'write-review';
@@ -91,29 +95,41 @@ export interface StarRatingDistributionModalData extends InfoModalDataBase {
     /** Optional callback when "See customer reviews" button is clicked */
     onSeeReviewsClick?: () => void;
 }
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
 /** Data for estimated delivery / fulfillment & shipping modal */
 export interface EstimatedDeliveryModalData extends InfoModalDataBase {
     type: 'estimated-delivery';
     deliveryData: EstimatedDeliveryData;
 }
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
+// @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
 /** Data for returns & warranty modal */
 export interface ReturnsAndWarrantyModalData extends InfoModalDataBase {
     type: 'returns-and-warranty';
     returnsAndWarrantyData: ReturnsAndWarrantyData;
 }
+// @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 
 /**
  * Structured data for the info modal. Add new modal types by defining a new variant
  * (e.g. SizeGuideModalData) and extending this union.
  */
+// prettier-ignore
 export type InfoModalData =
-    | PaymentScheduleModalData
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+    | EstimatedDeliveryModalData
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     | WriteReviewModalData
     | StarRatingDistributionModalData
-    | EstimatedDeliveryModalData
-    | ReturnsAndWarrantyModalData;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+    | ReturnsAndWarrantyModalData
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+    | PaymentScheduleModalData;
 
 export interface InfoModalProps {
     open: boolean;

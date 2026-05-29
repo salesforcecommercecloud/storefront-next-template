@@ -16,6 +16,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act, type ReactNode, type ComponentProps } from 'react';
+import { mockAltSiteObject } from '@/test-utils/config';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 
 // Type definitions for mock components
@@ -326,9 +327,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });

@@ -21,7 +21,7 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { RemoveAddressConfirmationDialog } from './index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 
 const { t } = getTranslation();

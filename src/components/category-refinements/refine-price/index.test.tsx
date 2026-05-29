@@ -17,7 +17,8 @@ import { vi, test, describe, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
+import { mockAltSiteObject } from '@/test-utils/config';
 import RefinePrice from './index';
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -25,9 +26,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });

@@ -14,67 +14,61 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState, type ReactElement } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 import { CartItemModal } from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { expect, within } from 'storybook/test';
+import { Button } from '@/components/ui/button';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
-// Create a product that won't trigger fetches by ensuring all variants have same productId as master
-const createMockProductForModal = (): ShopperProducts.schemas['Product'] => {
-    const product = {
-        ...masterProduct,
-        variationValues: variantProduct.variationValues,
-        brand: 'Salesforce Foundations',
-    };
-    // Set all variants' productId to match the master id so no variant change triggers a fetch
-    if (product.variants) {
-        product.variants = product.variants.map((v) => ({ ...v, productId: product.id }));
-    }
-    return product;
-};
+// ---------------------------------------------------------------------------
+// Fixtures — derive product variants from the shared master/variant mocks.
+// ---------------------------------------------------------------------------
 
-// Create a product with only Size variation (no color/width) for the size-only story
+// Preserve real variant `productId`s from `master-variant-product` so the modal
+// exercises the production variant-fetch code path (`useEffect` in
+// CartItemModalEditContainer fetches new product data when the selected variant
+// id differs from `product.id`). The story router's default SCAPI mock route
+// (`.storybook/decorators/mock-routes.ts` → `/resource/api/client/:resource`)
+// resolves the fetch with `masterProduct`, so swatch clicks resolve cleanly.
+const createMockProductForModal = (): ShopperProducts.schemas['Product'] => ({
+    ...masterProduct,
+    variationValues: variantProduct.variationValues,
+    brand: 'Salesforce Foundations',
+});
+
 const createSizeOnlyProduct = (): ShopperProducts.schemas['Product'] => {
     const product = createMockProductForModal();
-    // Keep only the 'size' variation attribute
     product.variationAttributes = product.variationAttributes?.filter((attr) => attr.id === 'size');
-    // Remove color/width from variant variation values and deduplicate by size
+    // Drop variants without a meaningful size, then dedupe by size so the swatch
+    // panel doesn't render duplicate options. Avoids the bug where coercing an
+    // undefined size to `''` then deduping by that empty string silently drops
+    // every later size variant.
     const seenSizes = new Set<string>();
     product.variants = product.variants
-        ?.map((v) => ({
-            ...v,
-            variationValues: { size: v.variationValues?.size || '' },
-        }))
-        .filter((v) => {
-            if (seenSizes.has(v.variationValues.size)) return false;
-            seenSizes.add(v.variationValues.size);
+        ?.filter((v): v is NonNullable<typeof v> & { variationValues: { size: string } } => {
+            const size = v.variationValues?.size;
+            if (!size) return false;
+            if (seenSizes.has(size)) return false;
+            seenSizes.add(size);
             return true;
-        });
-    // Set variation values to size only
+        })
+        .map((v) => ({
+            ...v,
+            variationValues: { size: v.variationValues.size },
+        }));
     product.variationValues = { size: product.variationValues?.size || '040' };
-    // Remove color-keyed image groups (keep only generic ones)
     product.imageGroups = product.imageGroups?.filter(
         (group) => !group.variationAttributes?.some((attr) => attr.id === 'color')
     );
-    // Ensure matching variant has same productId
-    const matchingVariant = product.variants?.find((v) => v.variationValues?.size === product.variationValues?.size);
-    if (matchingVariant) {
-        matchingVariant.productId = product.id;
-    }
     return product;
 };
 
-// Create a product with extra images (>4) to demonstrate thumbnail scrolling arrows
 const createProductWithManyImages = (): ShopperProducts.schemas['Product'] => {
     const product = createMockProductForModal();
-    // Add extra images to the generic (non-color-specific) large image group
     const largeGroup = product.imageGroups?.find((g) => g.viewType === 'large' && !g.variationAttributes);
     if (largeGroup?.images) {
         const baseImages = largeGroup.images;
-        // Duplicate images with unique alt text to create 6+ thumbnails
         largeGroup.images = [
             ...baseImages,
             { ...baseImages[0], alt: `${baseImages[0].alt} - angle 3` },
@@ -86,98 +80,57 @@ const createProductWithManyImages = (): ShopperProducts.schemas['Product'] => {
     return product;
 };
 
-const MODAL_HARNESS_ATTR = 'data-edit-modal-harness';
+// ---------------------------------------------------------------------------
+// Pattern 11 — closed-by-default + trigger. Modal/dialog stories must mount
+// closed; the play function clicks "Open modal" and asserts content via
+// `within(document.body)` because the dialog portals out of `canvasElement`.
+// ---------------------------------------------------------------------------
 
-function EditModalStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logModalOpen = useMemo(() => action('edit-modal-opened'), []);
-    const logQuantityChange = useMemo(() => action('quantity-changed'), []);
-    const logUpdate = useMemo(() => action('cart-item-updated'), []);
-    const logHover = useMemo(() => action('edit-modal-hovered'), []);
+interface ModalArgs {
+    product?: ShopperProducts.schemas['Product'];
+    productId?: string;
+    initialQuantity?: number;
+    itemId?: string;
+    initialVariantSelections?: Record<string, string>;
+}
 
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${MODAL_HARNESS_ATTR}]`));
-
-        const handleDialogOpen = () => {
-            const dialog = document.querySelector('[role="dialog"]');
-            if (dialog && isInsideHarness(dialog)) {
-                logModalOpen({});
-            }
-        };
-
-        const handleClick = (event: MouseEvent) => {
-            const button = (event.target as HTMLElement | null)?.closest('button');
-            if (!button || !isInsideHarness(button)) {
-                return;
-            }
-
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (label.toLowerCase().includes('update') || label.toLowerCase().includes('add to cart')) {
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-                logUpdate({ label });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input || !isInsideHarness(input)) {
-                return;
-            }
-            if (input.type === 'number') {
-                logQuantityChange({ value: input.value });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const element = (event.target as HTMLElement | null)?.closest('button, input, [role="button"]');
-            if (!element || !isInsideHarness(element)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && element.contains(related)) {
-                return;
-            }
-            const label = (element.getAttribute('aria-label') ?? element.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-            logHover({ label });
-        };
-
-        // Use MutationObserver to detect dialog open/close
-        const observer = new MutationObserver(() => {
-            handleDialogOpen();
-        });
-
-        const root = containerRef.current;
-        if (root) {
-            observer.observe(root, { childList: true, subtree: true });
-        }
-
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('change', handleChange, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-
-        return () => {
-            observer.disconnect();
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('change', handleChange, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logModalOpen, logQuantityChange, logUpdate, logHover]);
-
+function ModalTriggerHarness(args: ModalArgs): ReactElement {
+    const [open, setOpen] = useState(false);
     return (
-        <div ref={containerRef} {...{ [MODAL_HARNESS_ATTR]: 'true' }}>
-            {children}
+        <div className="p-4">
+            <Button type="button" onClick={() => setOpen(true)}>
+                Open Cart Item Modal
+            </Button>
+            {/* Lazy-mount the modal so the closed-by-default snapshot doesn't run */}
+            {/* the AddContainer/EditContainer hooks (which call useConfig + */}
+            {/* useProductImages) before the user has interacted. */}
+            {/* */}
+            {/* Production differs by entry point: `quick-add-button.tsx` mounts the */}
+            {/* modal lazily on first click but keeps it mounted afterwards (so */}
+            {/* re-opening doesn't re-pay the React.lazy chunk), while */}
+            {/* `cart-item-edit-button.tsx` mounts the modal closed from the start. */}
+            {/* Stories prefer always-unmounted to keep the closed snapshot byte */}
+            {/* identical regardless of mode — assertions that require a real */}
+            {/* mounted-but-closed view should add a dedicated story rather than */}
+            {/* changing this default. */}
+            {open && (
+                <CartItemModal
+                    open={open}
+                    onOpenChange={setOpen}
+                    product={args.product}
+                    productId={args.productId}
+                    initialQuantity={args.initialQuantity}
+                    itemId={args.itemId}
+                    initialVariantSelections={args.initialVariantSelections}
+                />
+            )}
         </div>
     );
 }
 
-const meta: Meta<typeof CartItemModal> = {
+const meta: Meta<typeof ModalTriggerHarness> = {
     title: 'CART/Cart Item Modal',
-    component: CartItemModal,
+    component: ModalTriggerHarness,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
@@ -185,247 +138,93 @@ const meta: Meta<typeof CartItemModal> = {
             story: { inline: false, height: '600px' },
             description: {
                 component: `
-A modal dialog component for editing cart items. Allows shoppers to change product variants, adjust quantity, and update their cart without navigating away from the cart page.
+A modal dialog for editing cart items — change variant, adjust quantity, update the cart line. Internally delegates to \`CartItemModalAddContainer\` (when \`productId\` is supplied) or \`CartItemModalEditContainer\` (when \`product\` + \`itemId\` are supplied). Those subcomponents have no external importers, so their separate story files were folded into this one (Pattern 13).
 
-## Features
+Stories follow the **closed-by-default + trigger pattern (Pattern 11)** — every story mounts a "Open Cart Item Modal" button, and the play function clicks it before asserting on the dialog. This avoids the docs-iframe clipping that \`defaultOpen: true\` overlays produce.
 
-- **Brand Display**: Shows the product brand above the product name
-- **Product Browsing**: Image gallery with scrollable thumbnails for viewing product images
-- **Variant Selection**: Interactive swatches for selecting size, color, and other product options
-- **Quantity Adjustment**: Quantity picker to increase or decrease item quantity
-- **Price Display**: Shows the current unit price for the selected variant
-- **Update Action**: Confirms and applies the shopper's changes to the cart item
-- **Accessible Dialog**: Modal with proper focus management and close functionality
+## Stories
 
-## Usage
+| Story | Description |
+|-------|-------------|
+| **EditWithVariants** | Edit mode: full master product with size/color/width swatches and 6+ image thumbnails (scroll arrows visible) |
+| **EditSizeOnly** | Edit mode: simplified product with a single \`size\` attribute and high quantity |
 
-\`\`\`tsx
-import { CartItemModal } from '../cart-item-modal';
+Add mode (passing only \`productId\`) is intentionally not a separate story — it renders the same \`CartItemModalView\` once SCAPI resolves, and the only visible delta is the bottom CTA wording ("Add to Cart" + "Buy it Now" vs "Update"). The mode-routing logic itself is fully covered by \`mode-router.test.tsx\` and \`index.test.tsx\`. Use the \`productId\` control on **EditWithVariants** to exercise the add-mode CTA wording when needed.
 
-function CartItem({ product, itemId, quantity }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <>
-      <button onClick={() => setIsOpen(true)}>Edit</button>
-      <CartItemModal
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        product={product}
-        initialQuantity={quantity}
-        itemId={itemId}
-      />
-    </>
-  );
-}
-\`\`\`
-
-## Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| \`product\` | \`ShopperProducts.schemas['Product']\` | The product being edited |
-| \`initialQuantity\` | \`number\` | Initial quantity from cart item |
-| \`itemId\` | \`string\` | Cart item ID for update operations |
-| \`open\` | \`boolean\` | Whether the modal is open |
-| \`onOpenChange\` | \`(open: boolean) => void\` | Callback when modal open state changes |
-| \`initialVariantSelections\` | \`Record<string, string>\` | Optional initial variant selections |
-
-## Behavior
-
-- **Variant Changes**: Automatically fetches new product data when variants change
-- **Image Updates**: Gallery updates based on selected variants
-- **Quantity Updates**: Updates cart item quantity
-- **Modal Management**: Handles open/close state
-- **Optimistic UI**: Closes modal immediately before update
-- **Compact styling**: Hides inventory status, promotional callouts, list prices, and "Buy now pay later" text
+Every story's play function implicitly validates the closed-by-default state — the trigger button renders before the click, and no dialog is mounted in the DOM until the play function acts.
                 `,
             },
         },
     },
     argTypes: {
-        product: {
-            control: 'object',
-            description: 'The product being edited',
-            table: {
-                type: { summary: "ShopperProducts.schemas['Product']" },
-            },
-        },
-        initialQuantity: {
-            control: 'number',
-            description: 'Initial quantity from cart item',
-            table: {
-                type: { summary: 'number' },
-            },
-        },
-        itemId: {
-            control: 'text',
-            description: 'Cart item ID for update operations',
-            table: {
-                type: { summary: 'string' },
-            },
-        },
-        open: {
-            control: 'boolean',
-            description: 'Whether the modal is open',
-            table: {
-                type: { summary: 'boolean' },
-                defaultValue: { summary: 'false' },
-            },
-        },
+        product: { control: 'object' },
+        productId: { control: 'text' },
+        initialQuantity: { control: 'number' },
+        itemId: { control: 'text' },
     },
     args: {
         product: createMockProductForModal(),
         initialQuantity: 1,
         itemId: 'item-123',
-        open: false,
     },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <EditModalStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </EditModalStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ModalTriggerHarness>;
 
-export const WithHighQuantity: Story = {
-    args: {
-        product: createSizeOnlyProduct(),
-        initialQuantity: 5,
-        itemId: 'item-123',
-        open: true,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-CartItemModal with a size-only product and high initial quantity. Demonstrates the simplified edit experience for products with a single variation attribute.
-
-### Features:
-- **Brand header**: Organisation name in uppercase grey text
-- **Size only**: Single variation attribute (no color or width swatches)
-- **High quantity**: Initial quantity of 5 shown in the quantity picker
-- **Current price only**: Clean price display without promotions or list price
-- **Compact thumbnails**: No scroll arrows (fewer than 4 images)
-- **Full-width Update button**: Separated by a divider at the bottom
-
-### Use Cases:
-- Products with a single variation attribute
-- Size-only products (e.g. accessories, shoes)
-- Bulk quantity editing
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Dialog renders in a portal, so query from document.body
-        const documentBody = within(document.body);
-
-        // Wait for modal dialog to be visible (not aria-hidden)
-        const dialog = await documentBody.findByRole('dialog', { hidden: false });
-        await expect(dialog).toBeInTheDocument();
-    },
-};
-
-export const WithVariants: Story = {
+export const EditWithVariants: Story = {
     args: {
         product: createProductWithManyImages(),
-        initialQuantity: 1,
-        itemId: 'item-123',
-        open: true,
         initialVariantSelections: variantProduct.variationValues,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-CartItemModal with multiple product variants and a large image gallery. Demonstrates the full edit experience with all variation attributes and scrollable thumbnails.
-
-### Features:
-- **Brand header**: Organisation name in uppercase grey text
-- **Multiple variants**: Size, Color, and Width swatches (size displayed first)
-- **Blue selected state**: Selected swatches use primary (blue) fill
-- **Scrollable thumbnails**: Horizontal thumbnail strip with left/right arrows (6+ images)
-- **Navigation arrows**: Previous/next arrows on the main image
-- **Current price only**: Clean price display without promotions or list price
-- **Full-width Update button**: Separated by a divider at the bottom
-- **Live label updates**: Variant labels (e.g. "Size: 40") update on selection
-
-### Use Cases:
-- Products with multiple variation attributes (color, size, width)
-- Products with many images
-- Full variant editing experience
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement: _canvasElement }) => {
-        // Dialog renders in a portal, so query from document.body
-        const documentBody = within(document.body);
-
-        // Wait for modal dialog to be visible (not aria-hidden)
-        const dialog = await documentBody.findByRole('dialog', { hidden: false });
-        await expect(dialog).toBeInTheDocument();
-    },
-};
-
-export const Closed: Story = {
-    args: {
-        product: createMockProductForModal(),
         initialQuantity: 1,
         itemId: 'item-123',
-        open: false,
     },
     parameters: {
         docs: {
             description: {
-                story: `
-CartItemModal in its closed (default) state. The modal is not rendered in the DOM until opened.
-
-### Features:
-- **Modal hidden**: Dialog is not visible or rendered
-- **Ready to open**: Can be opened programmatically via the \`open\` prop
-- **State management**: Open state controlled by parent component
-
-### Use Cases:
-- Default initial state before user clicks "Edit"
-- After modal is closed following an update
-                `,
+                story: 'Edit mode with size/color/width swatches and a 6+ image thumbnail strip — covers the variant-selection + scrollable-thumbnail path.',
             },
         },
     },
     play: async ({ canvasElement }) => {
-        // Test modal is not visible when closed (check both canvas and document.body since dialog renders in portal)
-        const dialogInCanvas = canvasElement.querySelector('[role="dialog"]');
-        const dialogInBody = document.body.querySelector('[role="dialog"]');
-        await expect(dialogInCanvas).not.toBeInTheDocument();
-        await expect(dialogInBody).not.toBeInTheDocument();
+        const canvas = within(canvasElement);
+        const trigger = await canvas.findByRole('button', { name: /open cart item modal/i });
+
+        // Closed-by-default: dialog must not exist before the user clicks.
+        await expect(document.body.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+
+        await userEvent.click(trigger);
+
+        const documentBody = within(document.body);
+        const dialog = await documentBody.findByRole('dialog', { hidden: false });
+        await expect(dialog).toBeInTheDocument();
+    },
+};
+
+export const EditSizeOnly: Story = {
+    args: {
+        product: createSizeOnlyProduct(),
+        initialQuantity: 5,
+        itemId: 'item-123',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Edit mode for a product with a single `size` attribute and a high initial quantity. Demonstrates the simplified swatch panel.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const trigger = await canvas.findByRole('button', { name: /open cart item modal/i });
+
+        // Closed-by-default: dialog must not exist before the user clicks.
+        await expect(document.body.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+
+        await userEvent.click(trigger);
+
+        const documentBody = within(document.body);
+        const dialog = await documentBody.findByRole('dialog', { hidden: false });
+        await expect(dialog).toBeInTheDocument();
     },
 };

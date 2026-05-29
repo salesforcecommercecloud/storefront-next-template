@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';

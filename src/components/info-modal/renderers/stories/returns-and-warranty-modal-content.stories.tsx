@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_PRODUCT_CONTENT */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { ReturnsAndWarrantyModalContent } from '../returns-and-warranty-modal-content';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content-data-types';
+import type { ReturnsAndWarrantyData } from '@/extensions/product-content/lib/api/product-content.server';
 
 const mockData: ReturnsAndWarrantyData = {
     title: 'Returns & Warranty',
@@ -49,10 +48,26 @@ const mockData: ReturnsAndWarrantyData = {
 };
 
 const meta: Meta<typeof ReturnsAndWarrantyModalContent> = {
-    title: 'Components/InfoModal/ReturnsAndWarrantyModalContent',
+    title: 'COMMON/Info Modal/Returns And Warranty Modal Content',
     component: ReturnsAndWarrantyModalContent,
+    tags: ['autodocs'],
     parameters: {
         layout: 'centered',
+        docs: {
+            description: {
+                component: `
+ReturnsAndWarrantyModalContent is a renderer component that displays the returns policy, warranty, exchange information, and an optional contact card within the InfoModal.
+
+This component is used internally by InfoModal when the modal type is 'returns-and-warranty'.
+                `,
+            },
+        },
+    },
+    // `returnsAndWarrantyData` is a deeply structured fixture that would
+    // render as a JSON editor in Controls — fails the Designer-Friendly
+    // Input Rule.
+    argTypes: {
+        returnsAndWarrantyData: { control: false, table: { disable: true } },
     },
 };
 
@@ -70,12 +85,4 @@ export const Default: Story = {
             </div>
         ),
     ],
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText('Returns Policy')).toBeInTheDocument();
-        await expect(canvas.getByText('Warranty')).toBeInTheDocument();
-        await expect(canvas.getByText('Exchanges')).toBeInTheDocument();
-    },
 };

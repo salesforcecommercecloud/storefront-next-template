@@ -60,8 +60,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@/lib/utils', () => ({
     getErrorMessage: vi.fn((err?: any) => (err && err.message) || 'An error occurred'),
-    getAppOrigin: vi.fn(() => 'https://example.com'),
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 
 const mockLogger = vi.hoisted(() => ({
@@ -201,8 +204,10 @@ describe('Social Login', () => {
                 usid: 'session-usid',
             });
 
-            // Tokens saved and codeVerifier cleared via two updateAuth calls
-            expect(auth.updateAuth).toHaveBeenCalledTimes(2);
+            // Single updateAuth call: tokens saved (which also wipes the code verifier from
+            // storage) and userType derives from the JWT inside updateAuth — no follow-up call.
+            expect(auth.updateAuth).toHaveBeenCalledTimes(1);
+            expect(auth.updateAuth).toHaveBeenCalledWith(mockContext, expect.objectContaining({ accessToken: 'at' }));
             expect(result).toEqual({ success: true });
         });
 
@@ -347,6 +352,19 @@ describe('Social Login', () => {
 
 vi.mock('@/lib/api/basket.server', () => ({
     mergeBasket: vi.fn(),
+}));
+
+vi.mock('@/lib/api/wishlist.server', () => ({
+    captureGuestWishlistSnapshot: vi.fn().mockResolvedValue(null),
+    mergeWishlist: vi.fn().mockResolvedValue({
+        merged: 0,
+        skipped: 0,
+        failed: 0,
+        mergedProductIds: [],
+        skippedProductIds: [],
+        failedProductIds: [],
+    }),
+    appendWishlistMergeFlag: vi.fn((_context: any, url: string) => ({ url, setCookie: '' })),
 }));
 
 const mockMergeBasket = vi.mocked(mergeBasket);

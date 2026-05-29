@@ -15,11 +15,10 @@
  */
 
 import type { ReactElement } from 'react';
-import type { HtmlContentType } from '@/lib/adapters/product-content-data-types';
+import type { HtmlContentType } from './types';
 import { HTML_CONTENT_STYLES } from './styles';
-import { transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 interface HtmlFragmentProps {
     /** The HTML or plain text content to render */
@@ -41,7 +40,7 @@ export default function HtmlFragment({
     contentType = 'plain-text',
     className,
 }: HtmlFragmentProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Transform any image URLs in the HTML content to use DIS with WebP optimization
     const transformedContent = transformHtmlImageUrls(content, config);

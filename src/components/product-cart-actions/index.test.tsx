@@ -30,29 +30,24 @@ import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
-import type { Config } from '@/types/config';
+import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Create a default config object for tests
-const defaultTestConfig = createAppConfig({
-    ...mockBuildConfig,
-    app: {
-        ...mockBuildConfig.app,
-        features: {
-            ...mockBuildConfig.app.features,
-            passwordlessLogin: {
-                enabled: false,
-                callbackUri: '/passwordless-login-callback',
-                landingUri: '/passwordless-login-landing',
-                mode: 'email' as const,
-            },
-            socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
-            socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
-            guestCheckout: true,
+const defaultTestConfig: AppConfig = {
+    ...mockBuildConfig.app,
+    features: {
+        ...mockBuildConfig.app.features,
+        passwordlessLogin: {
+            callbackUri: '/passwordless-login-callback',
+            landingUri: '/passwordless-login-landing',
+            mode: 'email' as const,
         },
+        socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
+        socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
+        guestCheckout: true,
     },
-} satisfies Config);
+};
 
 // Mock useToast
 const mockAddToast = vi.fn();

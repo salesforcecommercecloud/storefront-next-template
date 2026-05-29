@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { getErrorMessage } from '@/lib/utils';
 
 /**

@@ -121,6 +121,9 @@ function getRawRegionDefinitions(target: unknown): RegionDefinitionConfig[] {
  * ```
  */
 export function RegionDefinition(configs: RegionDefinitionConfig[]) {
+    // Class decorators must accept any constructor signature — `unknown[]` here would
+    // reject classes whose constructors take typed args. This is the standard signature
+    // used by TypeScript's class decorator types.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function <T extends new (...args: any[]) => any>(constructor: T) {
         Reflect.defineMetadata(REGION_DEFINITIONS_KEY, configs, constructor);
@@ -134,8 +137,7 @@ export function RegionDefinition(configs: RegionDefinitionConfig[]) {
  * @param target - The class constructor or instance
  * @returns Array of region definition configurations
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionDefinitions(target: any): RegionDefinitionConfig[] {
+export function getRegionDefinitions(target: unknown): RegionDefinitionConfig[] {
     const ctor = getConstructor(target);
     const raw = getRawRegionDefinitions(target);
     const hostGroup = getHostResolvedGroup(ctor);
@@ -149,8 +151,7 @@ export function getRegionDefinitions(target: any): RegionDefinitionConfig[] {
  * @param regionId - The region ID to find
  * @returns Region definition configuration or undefined
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionDefinition(target: any, regionId: string): RegionDefinitionConfig | undefined {
+export function getRegionDefinition(target: unknown, regionId: string): RegionDefinitionConfig | undefined {
     const definitions = getRegionDefinitions(target);
     return definitions.find((def) => def.id === regionId);
 }
@@ -161,8 +162,7 @@ export function getRegionDefinition(target: any, regionId: string): RegionDefini
  * @param target - The class constructor or instance
  * @returns Array of region IDs
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionIds(target: any): string[] {
+export function getRegionIds(target: unknown): string[] {
     return getRawRegionDefinitions(target).map((config) => config.id);
 }
 
@@ -172,8 +172,7 @@ export function getRegionIds(target: any): string[] {
  * @param target - The class constructor or instance
  * @returns Array of region names
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionNames(target: any): string[] {
+export function getRegionNames(target: unknown): string[] {
     return getRawRegionDefinitions(target).map((config) => config.name);
 }
 
@@ -183,8 +182,7 @@ export function getRegionNames(target: any): string[] {
  * @param target - The class constructor or instance
  * @returns Array of component type exclusions
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionExclusions(target: any): string[] {
+export function getRegionExclusions(target: unknown): string[] {
     return getRegionDefinitions(target).flatMap((config) => config.componentTypeExclusions || []);
 }
 
@@ -195,8 +193,7 @@ export function getRegionExclusions(target: any): string[] {
  * @param regionId - The region ID to get exclusions for
  * @returns Array of component type exclusions for the specific region
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionExclusionsForRegion(target: any, regionId: string): string[] {
+export function getRegionExclusionsForRegion(target: unknown, regionId: string): string[] {
     const definition = getRegionDefinition(target, regionId);
     return definition?.componentTypeExclusions || [];
 }
@@ -207,8 +204,7 @@ export function getRegionExclusionsForRegion(target: any, regionId: string): str
  * @param target - The class constructor or instance
  * @returns Array of component type inclusions
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionInclusions(target: any): string[] {
+export function getRegionInclusions(target: unknown): string[] {
     return getRegionDefinitions(target).flatMap((config) => config.componentTypeInclusions || []);
 }
 
@@ -219,8 +215,7 @@ export function getRegionInclusions(target: any): string[] {
  * @param regionId - The region ID to get inclusions for
  * @returns Array of component type inclusions for the specific region
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionInclusionsForRegion(target: any, regionId: string): string[] {
+export function getRegionInclusionsForRegion(target: unknown, regionId: string): string[] {
     const definition = getRegionDefinition(target, regionId);
     return definition?.componentTypeInclusions || [];
 }
@@ -231,8 +226,7 @@ export function getRegionInclusionsForRegion(target: any, regionId: string): str
  * @param target - The class constructor or instance
  * @returns Array of default component constructors
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionDefaultConstructors(target: any): DefaultComponentConstructor[] {
+export function getRegionDefaultConstructors(target: unknown): DefaultComponentConstructor[] {
     return getRegionDefinitions(target).flatMap((config) => config.defaultComponentConstructors || []);
 }
 
@@ -243,8 +237,10 @@ export function getRegionDefaultConstructors(target: any): DefaultComponentConst
  * @param regionId - The region ID to get default constructors for
  * @returns Array of default component constructors for the specific region
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionDefaultConstructorsForRegion(target: any, regionId: string): DefaultComponentConstructor[] {
+export function getRegionDefaultConstructorsForRegion(
+    target: unknown,
+    regionId: string
+): DefaultComponentConstructor[] {
     const definition = getRegionDefinition(target, regionId);
     return definition?.defaultComponentConstructors || [];
 }
@@ -256,8 +252,7 @@ export function getRegionDefaultConstructorsForRegion(target: any, regionId: str
  * @param regionId - The region ID to get max components for
  * @returns Maximum number of components allowed in the region, or undefined if not set
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionMaxComponents(target: any, regionId: string): number | undefined {
+export function getRegionMaxComponents(target: unknown, regionId: string): number | undefined {
     const definition = getRegionDefinition(target, regionId);
     return definition?.maxComponents;
 }

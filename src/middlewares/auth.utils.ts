@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, type RouterContextProvider } from 'react-router';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { AuthTokenInvalidError, type ShopperLogin } from '@/scapi';
 import type { SessionData as AuthData, PublicSessionData } from '@/lib/api/types';
 import {
     clearStorage,
@@ -22,7 +22,7 @@ import {
     type StorageMetaData,
     unpackStorage,
     updateStorageObject,
-} from '@/lib/middleware';
+} from '@/lib/storage-map';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { TrackingConsent, booleanToTrackingConsent } from '@/types/tracking-consent';
@@ -37,9 +37,13 @@ export const COOKIE_REFRESH_TOKEN_GUEST = 'cc-nx-g'; // Guest user refresh token
 export const COOKIE_REFRESH_TOKEN_REGISTERED = 'cc-nx'; // Registered user refresh token
 export const COOKIE_ACCESS_TOKEN = 'cc-at'; // Access token
 export const COOKIE_USID = 'usid'; // User session ID
-export const COOKIE_CUSTOMER_ID = 'customerId'; // Customer ID
-export const COOKIE_ENC_USER_ID = 'encUserId'; // Encoded user ID
-export const COOKIE_IDP_ACCESS_TOKEN = 'cc-idp-at'; // IDP access token (for social login)
+export const COOKIE_CUSTOMER_ID = 'customer_id'; // Legacy customer ID — only used for destroy-path cookie deletion
+export const COOKIE_ENC_USER_ID = 'enc_user_id'; // Encoded user ID
+export const COOKIE_IDP_ACCESS_TOKEN = 'idp_access_token'; // IDP access token (for social login)
+// SFNext intentionally diverges from PWA Kit (which sets id_token without HttpOnly) —
+// SFNext's convention is HttpOnly for everything except cc-cv.
+export const COOKIE_ID_TOKEN = 'id_token'; // OIDC id_token (HttpOnly; expires with access token)
+export const COOKIE_IDP_REFRESH_TOKEN = 'idp_refresh_token'; // IDP refresh token (HttpOnly; expires with refresh token)
 export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
 export const COOKIE_TRACKING_CONSENT = 'dw_dnt'; // Tracking consent preference (cookie value matches TrackingConsent enum)
 export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for session bridge)
@@ -66,7 +70,7 @@ export const AUTH_TOKEN_INVALID_ERROR = 'AUTH_TOKEN_INVALID';
  * }
  */
 export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
 }
 
@@ -88,6 +92,28 @@ export function getPublicSessionData(session: AuthData): PublicSessionData {
         encUserId: session.encUserId,
         trackingConsent: session.trackingConsent,
     };
+}
+
+/**
+ * Whether the session can authorize SCAPI shopper-customer reads against the customer's
+ * own resources. True for any session (guest or registered) that has a non-empty
+ * `customerId` and a still-valid access token. False for sessions missing a token or
+ * customerId, or whose token has expired.
+ *
+ * Use this anywhere a server-side caller needs to decide between "call SCAPI on behalf
+ * of this shopper" and "skip the call and return an empty payload". Replaces the older
+ * `userType === 'registered'` check, which excluded guests from endpoints that SCAPI
+ * itself accepts guest tokens for (product-lists, baskets, etc.).
+ */
+export function hasUsableShopperSession(
+    session: AuthData
+): session is AuthData & { customerId: string; accessToken: string; accessTokenExpiry: number } {
+    return Boolean(
+        session.customerId &&
+            session.accessToken &&
+            typeof session.accessTokenExpiry === 'number' &&
+            session.accessTokenExpiry > Date.now()
+    );
 }
 
 /**
@@ -158,11 +184,17 @@ export const authStorageContext = createContext<Map<keyof AuthStorageData, AuthS
 
 /**
  * Shared utility to write Commerce API auth information from a given token response into the given storage container.
+ *
+ * The access-token JWT is the single source of truth for `userType`, `customerId`, `usid`, and
+ * `accessTokenExpiry`. All four fields are derived from the same JWT decode so they always travel
+ * together — there is no path where one drifts from the other.
+ *
+ * If the response contains a structurally invalid JWT (missing `isb`/`sub` claims, undecodable),
+ * an `AuthTokenInvalidError` is thrown so the caller can route through the recovery flow.
  */
 export const updateAuthStorageDataByTokenResponse = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     tokenResponse: ShopperLogin.schemas['TokenResponse'],
-    userType?: 'guest' | 'registered',
     appConfig?: AppConfig,
     dwsid?: string
 ): void => {
@@ -172,34 +204,50 @@ export const updateAuthStorageDataByTokenResponse = (
     storage.set('accessToken', tokenResponse?.access_token);
     storage.set('refreshToken', tokenResponse?.refresh_token);
 
-    // Decode access token once for expiry and customer ID extraction
-    const claims = tokenResponse?.access_token ? getSLASAccessTokenClaims(tokenResponse.access_token) : null;
+    // Decode access token once for expiry, userType, customerId, and usid extraction.
+    // SLAS always returns a structurally valid JWT — if we can't decode one, treat it as a
+    // critical token-integrity failure rather than falling back to top-level fields, which
+    // would leave session state inconsistent with the (broken) token.
+    if (!tokenResponse?.access_token) {
+        throw new AuthTokenInvalidError('SLAS token response is missing the access_token');
+    }
+    const claims = getSLASAccessTokenClaims(tokenResponse.access_token);
+    if (claims.expiry === null) {
+        throw new AuthTokenInvalidError('SLAS access token could not be decoded');
+    }
+
+    // Derive userType from the JWT (single source of truth). All other fields use the same decode.
+    const userType: 'guest' | 'registered' = deriveUserTypeFromClaims(claims);
+    storage.set('userType', userType);
 
     // Get expiry from JWT token itself (source of truth) rather than calculating from expires_in
-    storage.set('accessTokenExpiry', claims?.expiry ?? now + Number(tokenResponse?.expires_in) * 1_000);
+    storage.set('accessTokenExpiry', claims.expiry);
 
-    // Get final refresh token expiry (with environment override if configured)
-    const apiResponseExpirySeconds = Number(tokenResponse?.refresh_token_expires_in);
+    // Get final refresh token expiry, capped against the per-userType maximum
+    const apiResponseExpirySeconds = Number(tokenResponse.refresh_token_expires_in);
     const refreshTokenExpirySeconds = getRefreshTokenExpiry(apiResponseExpirySeconds, userType, appConfig);
     storage.set('refreshTokenExpiry', now + refreshTokenExpirySeconds * 1_000);
 
-    // Extract customer ID from access token isb claim (source of truth for hybrid storefronts)
-    const customerId = claims ? getCustomerIdFromClaims(claims, userType ?? 'guest') : null;
-    if (customerId) {
-        storage.set('customerId', customerId);
-    } else if (tokenResponse?.customer_id) {
-        storage.set('customerId', tokenResponse.customer_id);
+    // Extract customer ID from access token isb claim (source of truth). SLAS guarantees
+    // gcid/rcid in the isb claim — if the JWT was decodable but lacks them, the token is
+    // structurally broken; throw rather than silently fall back to stale state.
+    const customerId = getCustomerIdFromClaims(claims);
+    if (!customerId) {
+        throw new AuthTokenInvalidError('SLAS access token isb claim is missing the customer ID (gcid/rcid)');
     }
+    storage.set('customerId', customerId);
 
     // Store customer encoded user id if available (for registered users)
     if (tokenResponse?.enc_user_id) {
         storage.set('encUserId', tokenResponse.enc_user_id);
     }
 
-    // Store user session identifier if available
-    if (tokenResponse?.usid) {
-        storage.set('usid', tokenResponse.usid);
+    // Extract usid from access token sub claim (source of truth). Missing usid is a
+    // critical token-integrity failure — throw.
+    if (!claims.usid) {
+        throw new AuthTokenInvalidError('SLAS access token sub claim is missing the usid segment');
     }
+    storage.set('usid', claims.usid);
 
     // Store IDP access token if available (for social login)
     // IDP token doesn't come with its own expiry, so we use the SLAS access token expiry as a reasonable proxy
@@ -213,6 +261,20 @@ export const updateAuthStorageDataByTokenResponse = (
         }
     }
 
+    // Store id_token if available (OIDC ID token). Cookie expiry is reused from
+    // accessTokenExpiry at write time — matches PWA Kit's process-token-response.js
+    // where id_token tracks the access-token JWT exp.
+    if (tokenResponse?.id_token) {
+        storage.set('idToken', tokenResponse.id_token);
+    }
+
+    // Store idp_refresh_token if available (IDP refresh token, social login). Cookie
+    // expiry is reused from refreshTokenExpiry at write time — matches PWA Kit, where
+    // idp_refresh_token shares the SLAS refresh-token TTL.
+    if (tokenResponse?.idp_refresh_token) {
+        storage.set('idpRefreshToken', tokenResponse.idp_refresh_token);
+    }
+
     // Store dwsid if available (from Set-Cookie response header, for hybrid storefronts)
     if (dwsid) {
         storage.set('dwsid', dwsid);
@@ -221,8 +283,6 @@ export const updateAuthStorageDataByTokenResponse = (
 
 /**
  * Shared utility to update the internal auth storage.
- * TODO: Once we got rid of `SessionData` type in favor of using the `TokenResponse` directly, this method could
- *  mostly be replaced by `updateStorage` directly.
  */
 export const updateAuthStorageData = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
@@ -250,9 +310,11 @@ export const updateAuthStorageData = (
             updateStorageObject(storage, updated);
         }
     } else {
-        // Update storage data using a `TokenResponse` (may include dwsid from response headers)
+        // Update storage data using a `TokenResponse` (may include dwsid from response headers).
+        // userType is derived from the JWT inside updateAuthStorageDataByTokenResponse — callers
+        // never need to pass it.
         const { dwsid, ...tokenResponse } = updater;
-        updateAuthStorageDataByTokenResponse(storage, tokenResponse, undefined, appConfig, dwsid);
+        updateAuthStorageDataByTokenResponse(storage, tokenResponse, appConfig, dwsid);
     }
 
     // Restore tracking consent from cookie if it existed (cookie is source of truth, not token)
@@ -266,23 +328,24 @@ export const updateAuthStorageData = (
 };
 
 /**
- * Shared helper to update storage and cache with token response
- * Used by both server and client auth logic
+ * Shared helper to update storage and cache with a token response.
+ *
+ * userType is derived from the JWT by `updateAuthStorageDataByTokenResponse`, so callers
+ * never have to thread it through. Used by both the middleware refresh/guest-login path
+ * and any other server flow that ingests a SLAS token response.
  */
 export const updateStorageAndCache = async (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined },
-    tokenResponse: ShopperLogin.schemas['TokenResponse'] & { dwsid?: string },
-    userType: 'guest' | 'registered'
+    tokenResponse: ShopperLogin.schemas['TokenResponse'] & { dwsid?: string }
 ): Promise<void> => {
     const promiseCache = context.get(authContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     promiseCache.ref = Promise.resolve(tokenResponse).then((response) => {
         const { dwsid, ...tokenData } = response;
-        updateAuthStorageDataByTokenResponse(storage, tokenData, userType, appConfig, dwsid);
+        updateAuthStorageDataByTokenResponse(storage, tokenData, appConfig, dwsid);
         cache.ref = unpackStorage<AuthData>(storage);
-        storage.set('userType', userType);
         storage.set('isUpdated', true);
         return cache.ref;
     });
@@ -293,6 +356,12 @@ export const updateStorageAndCache = async (
 /**
  * Shared utility to make sure that in case the current auth promise reference gets updated while running, the latest
  * promise reference is always resolved/returned.
+ *
+ * If `authContext` has not been set on the provider (i.e. createAuthPromise was called
+ * outside the auth middleware), the supersedence check is skipped and the resolved data
+ * is returned directly. This is a test-harness affordance — production code paths must
+ * always run inside the middleware, so reaching this branch outside tests indicates a bug.
+ * In dev, a warning is logged so the path can't be silently hit.
  */
 export const createAuthPromise = (
     context: Readonly<RouterContextProvider>,
@@ -300,9 +369,20 @@ export const createAuthPromise = (
 ): Promise<AuthData | undefined> => {
     const promise = Promise.resolve(data).then(
         (result: AuthData | undefined): AuthData | undefined | Promise<AuthData | undefined> => {
-            const currentPromise = context.get(authContext).ref;
-            if (promise !== currentPromise) {
-                return currentPromise;
+            const promiseRef = context.get(authContext);
+            if (promiseRef === undefined) {
+                if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        'createAuthPromise: authContext is not set on the provider. ' +
+                            'This is expected in test harnesses; in production code it indicates createAuthPromise ' +
+                            'was called outside the auth middleware.'
+                    );
+                }
+                return result;
+            }
+            if (promise !== promiseRef.ref) {
+                return promiseRef.ref;
             }
             return result;
         }
@@ -383,6 +463,8 @@ export interface SLASAccessTokenClaims {
     gcid: string | null;
     /** Registered customer ID extracted from the isb claim, or null if not present */
     rcid: string | null;
+    /** User session ID extracted from the sub claim, or null if not present */
+    usid: string | null;
 }
 
 /**
@@ -416,11 +498,37 @@ function parseIsbClaim(isb: unknown): { gcid: string | null; rcid: string | null
 }
 
 /**
+ * Parse the `sub` claim from a SLAS access token payload to extract the `usid` segment.
+ * The sub claim is a `::` delimited string of key:value pairs.
+ *
+ * Example: `cc-slas::zzrf_001::scid:<id>::usid:<id>`
+ *
+ * SLAS emits at most one `usid:` segment per token, so the first match is returned.
+ *
+ * @param sub - Raw sub claim string from the token payload
+ * @returns Object with usid value, or null if not found
+ */
+function parseSubClaim(sub: unknown): { usid: string | null } {
+    if (typeof sub !== 'string' || !sub) {
+        return { usid: null };
+    }
+
+    const parts = sub.split('::');
+    for (const part of parts) {
+        if (part.startsWith('usid:')) {
+            return { usid: part.slice(5) };
+        }
+    }
+
+    return { usid: null };
+}
+
+/**
  * Extract claims from a SLAS access token payload.
  * Decodes the token once and returns multiple claims for efficiency.
  *
  * @param token - SLAS access token string
- * @returns Object containing extracted claims (expiry, trackingConsent, gcid, rcid)
+ * @returns Object containing extracted claims (expiry, trackingConsent, gcid, rcid, usid)
  */
 export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
     try {
@@ -437,26 +545,52 @@ export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
         }
 
         const { gcid, rcid } = parseIsbClaim(payload.isb);
+        const { usid } = parseSubClaim(payload.sub);
 
-        return { expiry, trackingConsent, gcid, rcid };
+        return { expiry, trackingConsent, gcid, rcid, usid };
     } catch {
-        return { expiry: null, trackingConsent: null, gcid: null, rcid: null };
+        return { expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null };
     }
 }
 
 /**
- * Select the correct customer ID from decoded token claims based on user type.
+ * Whether decoded SLAS token claims represent a registered shopper.
  *
- * - Guest users: use gcid (guest customer ID)
- * - Registered users: prefer rcid (registered customer ID), fall back to gcid
+ * SLAS encodes the shopper identity in the access token's `isb` claim:
+ * - Guest tokens carry only `gcid:<id>`
+ * - Registered tokens carry both `gcid:<id>` and `rcid:<id>`
  *
- * @param claims - Decoded SLAS access token claims containing gcid and rcid
- * @param userType - Whether the shopper is a guest or registered user
- * @returns The appropriate customer ID, or null if not available
+ * The presence of a non-empty `rcid` is therefore the single rule that distinguishes the two.
+ * This is the only place that rule is encoded — both `deriveUserTypeFromClaims` and any
+ * caller that needs to interpret a token use this helper.
  */
-export function getCustomerIdFromClaims(
-    claims: SLASAccessTokenClaims,
-    userType: 'guest' | 'registered'
-): string | null {
-    return userType === 'registered' ? (claims.rcid ?? claims.gcid) : claims.gcid;
+export function isRegisteredTokenClaims(claims: SLASAccessTokenClaims): boolean {
+    return typeof claims.rcid === 'string' && claims.rcid.length > 0;
+}
+
+/**
+ * Derive `userType` from decoded SLAS token claims.
+ *
+ * The JWT is the single source of truth — see {@link isRegisteredTokenClaims} for the rule.
+ * Cookie names (`cc-nx` / `cc-nx-g`) carry no authority over user type; they are only used
+ * for cold-start ingest when no access token has been issued yet, and as the response-side
+ * decision for which refresh-cookie to write or delete.
+ */
+export function deriveUserTypeFromClaims(claims: SLASAccessTokenClaims): 'guest' | 'registered' {
+    return isRegisteredTokenClaims(claims) ? 'registered' : 'guest';
+}
+
+/**
+ * Select the correct customer ID from decoded token claims.
+ *
+ * Registered tokens carry both `gcid` and `rcid`; the registered customer ID (`rcid`) is the
+ * authoritative customer for the session. Guest tokens carry only `gcid`. Returning
+ * `claims.rcid ?? claims.gcid` therefore produces the right customer ID for either user type
+ * without needing the caller to disambiguate.
+ *
+ * @param claims - Decoded SLAS access token claims
+ * @returns The customer ID, or null if neither claim is present (a structurally broken token)
+ */
+export function getCustomerIdFromClaims(claims: SLASAccessTokenClaims): string | null {
+    return claims.rcid ?? claims.gcid;
 }

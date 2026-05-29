@@ -17,6 +17,7 @@ import { vi, expect, test, describe, afterEach } from 'vitest';
 import type React from 'react';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -82,6 +83,10 @@ vi.mock('@/providers/basket', () => ({
         return undefined;
     },
     useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
+}));
+
+vi.mock('@/hooks/use-mini-cart-data', () => ({
+    useMiniCartDataLoader: () => () => {},
 }));
 
 import { composeStories } from '@storybook/react-vite';

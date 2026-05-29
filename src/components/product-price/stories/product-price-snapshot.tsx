@@ -28,7 +28,7 @@ describe('ProductPrice stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
-            expect(container.firstChild).toMatchSnapshot();
+            expect(container).toMatchSnapshot();
         });
     }
 });

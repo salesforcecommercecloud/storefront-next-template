@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mockAltSiteObject } from '@/test-utils/config';
 import {
     validateSalesforceDomain,
     validateShopperAgentConfig,
@@ -34,7 +35,7 @@ const validConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
     scrt2Url: 'https://test.salesforce-scrt.com',
     salesforceOrgId: '00Dxx0000000000',
-    siteId: 'RefArch',
+    siteId: mockAltSiteObject.id,
 };
 
 describe('validateSalesforceDomain', () => {

@@ -18,9 +18,9 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategory from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
+import { mockConfig, getSitePrefix, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {
@@ -45,7 +45,7 @@ vi.mock('react-i18next', () => ({
             };
             return translations[key] || key;
         },
-        i18n: { language: 'en-GB' },
+        i18n: { language: mockSiteObject.defaultLocale },
     }),
 }));
 
@@ -57,16 +57,7 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
     c_slotBannerImage: '/images/new-arrivals-banner.jpg',
 };
 
-const mockSite: Site = {
-    id: 'RefArchGlobal',
-    defaultLocale: 'en-GB',
-    defaultCurrency: 'GBP',
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'it-IT', preferredCurrency: 'EUR' },
-    ],
-    supportedCurrencies: ['EUR', 'GBP'],
-};
+const mockSite: Site = mockSiteObject;
 
 const mockLocale =
     mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
@@ -78,7 +69,11 @@ const renderComponent = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>
@@ -103,7 +98,7 @@ describe('PopularCategory', () => {
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /new arrivals/i })).toHaveAttribute(
             'href',
-            `${SITE_PREFIX}/category/newarrivals`
+            `${getSitePrefix()}/category/newarrivals`
         );
     });
 
@@ -200,7 +195,7 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
         const link = screen.getByRole('link', { name: /new arrivals/i });
-        expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
+        expect(link).toHaveAttribute('href', `${getSitePrefix()}/category/newarrivals`);
     });
 
     test('handles category with empty id', () => {
@@ -212,7 +207,7 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={categoryWithEmptyId} />);
 
         const link = screen.getByRole('link', { name: /new arrivals/i });
-        expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/`);
+        expect(link).toHaveAttribute('href', `${getSitePrefix()}/category/`);
     });
 
     test('handles category with empty name', () => {

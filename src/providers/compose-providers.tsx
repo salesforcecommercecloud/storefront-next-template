@@ -25,8 +25,10 @@ type ProviderTuple<TProps extends object = Record<string, unknown>> = readonly [
 ];
 
 /**
- * A readonly list of provider tuples.
- * Heterogeneous provider types are allowed.
+ * A readonly list of provider tuples. Heterogeneous provider types are allowed —
+ * `any` is required here because each tuple's `TProps` is invariant; switching to
+ * `unknown` or `Record<string, unknown>` would reject literal tuples whose props don't
+ * extend that exact shape.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProviderList = readonly ProviderTuple<any>[];

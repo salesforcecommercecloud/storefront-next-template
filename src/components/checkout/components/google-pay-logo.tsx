@@ -18,9 +18,11 @@ import googlePayLogo from '/images/google-pay-logo.svg';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Google Pay Logo SVG Component
- * Official Google Pay logo matching SDK button appearance
- * Uses local Google Pay SVG file from public/images
+ * @feature-stub Express checkout buttons (Google Pay logo)
+ * @status stub — no backend integration
+ *
+ * Google Pay logo matching SDK button appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function GooglePayLogo({
     className,

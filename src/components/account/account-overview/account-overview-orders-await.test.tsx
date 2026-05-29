@@ -20,10 +20,10 @@ import { AccountOverviewOrdersAwait } from './index';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import type { Order } from '@/components/account/order-list';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 const { t } = getTranslation();
 
 function renderOrdersAwait(ordersPromise: Promise<CustomerOrdersResult>) {
@@ -33,7 +33,11 @@ function renderOrdersAwait(ordersPromise: Promise<CustomerOrdersResult>) {
                 path: '/',
                 element: (
                     <ConfigWrapper>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <AccountOverviewOrdersAwait ordersPromise={ordersPromise} />
                         </SiteProvider>
                     </ConfigWrapper>
@@ -51,7 +55,7 @@ describe('AccountOverviewOrdersAwait', () => {
         orderDate: '2024-09-14T10:30:00Z',
         status: 'completed',
         total: 50,
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
         itemCount: 1,
         productItems: [
             {

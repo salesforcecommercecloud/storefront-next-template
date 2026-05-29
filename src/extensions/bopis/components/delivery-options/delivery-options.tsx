@@ -13,34 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ComponentType, type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { type ReactElement } from 'react';
+import type { ShopperProducts } from '@/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
-import ProductContentProvider from '@/providers/product-content';
-
-const shippingCalculatorImport = () => import('./shipping-calculator');
-const ShippingCalculator = lazy(shippingCalculatorImport) as ComponentType<{
-    onCalculate: (zipCode: string, days: number) => void;
-    productId: string;
-}>;
-
-/** Skeleton matching ShippingCalculator layout for a smoother loading state */
-function ShippingCalculatorSkeleton() {
-    return (
-        <div className="p-4 border border-muted-foreground/20 rounded-none bg-card animate-pulse">
-            <div className="space-y-3">
-                <div className="h-4 w-32 rounded bg-muted" />
-                <div className="flex gap-2">
-                    <div className="h-10 flex-1 rounded bg-muted" />
-                    <div className="h-10 w-24 rounded bg-muted" />
-                </div>
-            </div>
-        </div>
-    );
-}
+// @sfdc-extension-line SFDC_EXT_SHIPPING_DELIVERY
+import { useShippingCalculator } from './use-shipping-calculator';
 
 interface DeliveryOptionsProps {
     /** The product to check inventory for */
@@ -86,21 +66,13 @@ export default function DeliveryOptions({
     const { selectedDeliveryOption, isStoreOutOfStock, isSiteOutOfStock, handleDeliveryOptionChange } =
         useDeliveryOptions({ product, quantity, isInBasket, pickupStore });
 
-    // Shipping calculator state
-    const [deliveryDays, setDeliveryDays] = useState<number | undefined>(undefined);
-    const [calculatedZipCode, setCalculatedZipCode] = useState<string | undefined>(undefined);
-
-    const handleCalculate = (zipCode: string, days: number) => {
-        setCalculatedZipCode(zipCode);
-        setDeliveryDays(days);
-    };
-
-    // Prefetch shipping calculator chunk as soon as delivery options are shown so it's often ready when user selects "Delivery"
-    useEffect(() => {
-        if (!isInBasket) {
-            shippingCalculatorImport().catch(() => undefined);
-        }
-    }, [isInBasket]);
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+    const { deliveryDays, calculatedZipCode, ShippingCalculatorSlot } = useShippingCalculator({
+        isInBasket,
+        product,
+        selectedDeliveryOption,
+    });
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
     return (
         <div className={className}>
@@ -115,25 +87,15 @@ export default function DeliveryOptions({
                             isPickupDisabled={isStoreOutOfStock}
                             pickupStore={pickupStore}
                             isDeliveryDisabled={isSiteOutOfStock}
+                            // @sfdc-extension-line SFDC_EXT_SHIPPING_DELIVERY
                             deliveryZipCode={calculatedZipCode}
+                            // @sfdc-extension-line SFDC_EXT_SHIPPING_DELIVERY
                             deliveryDays={deliveryDays}
                         />
 
-                        {/* Shipping Estimates Calculator - Only show when delivery option is selected */}
-                        {/* Lazy loaded to reduce initial bundle size */}
-                        {selectedDeliveryOption === 'delivery' && (
-                            <Suspense fallback={<ShippingCalculatorSkeleton />}>
-                                <ProductContentProvider>
-                                    <ShippingCalculator
-                                        onCalculate={handleCalculate}
-                                        productId={
-                                            (product.currentVariant as { productId?: string } | undefined)?.productId ??
-                                            product.id
-                                        }
-                                    />
-                                </ProductContentProvider>
-                            </Suspense>
-                        )}
+                        {/* @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY */}
+                        {ShippingCalculatorSlot}
+                        {/* @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY */}
                     </>
                 )}
             </div>

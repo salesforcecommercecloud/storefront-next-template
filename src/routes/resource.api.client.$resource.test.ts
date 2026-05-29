@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, type RouterContextProvider } from 'react-router';
+import { type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
+import { encodeResource } from '@/lib/scapi/resource-encoding';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 const apiClientMocks = vi.hoisted(() => ({
     mockShopperCustomersGetCustomer: vi.fn(),
     mockShopperCustomersUpdateCustomer: vi.fn(),
+    mockShopperCustomersUse: vi.fn(),
+    mockShopperCustomersEject: vi.fn(),
     mockShopperBasketsAddItemToBasket: vi.fn(),
     mockBasketGetOrCreateBasket: vi.fn(),
     mockAuthLoginAsGuest: vi.fn(),
@@ -34,6 +37,9 @@ vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn(),
     getErrorMessage: vi.fn(),
+}));
+
+vi.mock('@/lib/origin', () => ({
     getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 
@@ -41,6 +47,8 @@ vi.mock('@/lib/utils', () => ({
 const {
     mockShopperCustomersGetCustomer,
     mockShopperCustomersUpdateCustomer,
+    mockShopperCustomersUse,
+    mockShopperCustomersEject,
     mockShopperBasketsAddItemToBasket,
     mockBasketGetOrCreateBasket,
     mockAuthLoginAsGuest,
@@ -55,6 +63,10 @@ vi.mock('@/lib/api-clients.server', () => ({
         shopperCustomers: {
             getCustomer: mockShopperCustomersGetCustomer,
             updateCustomer: mockShopperCustomersUpdateCustomer,
+            // Reserved proxy members exposed by the underlying ProxyClient — must NOT be
+            // invocable through the resource route, even though they are functions.
+            use: mockShopperCustomersUse,
+            eject: mockShopperCustomersEject,
         },
         shopperBasketsV2: {
             addItemToBasket: mockShopperBasketsAddItemToBasket,
@@ -128,7 +140,7 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('loader()', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
@@ -266,7 +278,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle loader with null resource parameter', async () => {
-                const createLoaderArgsWithNullResource = (): LoaderFunctionArgs => ({
+                const createLoaderArgsWithNullResource = () => ({
                     params: { resource: null as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
@@ -281,7 +293,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle loader with undefined resource parameter', async () => {
-                const createLoaderArgsWithUndefinedResource = (): LoaderFunctionArgs => ({
+                const createLoaderArgsWithUndefinedResource = () => ({
                     params: { resource: undefined as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
@@ -305,6 +317,21 @@ describe('Commerce SDK resource', () => {
                     errors: ['Unknown error'],
                 });
             });
+
+            // ProxyClient exposes `use` and `eject` as functions on every SCAPI client.
+            // They are not SCAPI operations and must not be invocable from a crafted resource URL.
+            it.each(['use', 'eject'])('should reject reserved proxy member "%s" in loader calls', async (reserved) => {
+                const invalidResource = encodeBase64Url(JSON.stringify(['shopperCustomers', reserved, { params: {} }]));
+
+                const result = await loader(createLoaderArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: [`Method not found: "shopperCustomers.${reserved}"`],
+                });
+                expect(mockShopperCustomersUse).not.toHaveBeenCalled();
+                expect(mockShopperCustomersEject).not.toHaveBeenCalled();
+            });
         });
     });
 
@@ -321,7 +348,7 @@ describe('Commerce SDK resource', () => {
         const encodedValidActionResource = encodeBase64Url(JSON.stringify(validActionResource));
         const mockActionResponseData = { customerId: 'customer-123', email: 'updated@example.com' };
 
-        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+        const createActionArgs = (resource: string, formData?: Record<string, string>) => {
             const body = new URLSearchParams(formData || {}).toString();
 
             const request = new Request('http://localhost/test', {
@@ -457,10 +484,13 @@ describe('Commerce SDK resource', () => {
                 });
             });
 
-            it('should coerce known form fields to booleans and nullable numbers', async () => {
+            it('passes FormData fields through as raw strings without per-field coercion', async () => {
+                // FormData values are inherently strings; callers needing typed values (numbers,
+                // booleans, null) must submit JSON instead. The resource route does not bake in
+                // knowledge of specific SCAPI field schemas.
                 const formData = {
                     preferred: '1',
-                    gender: 'not-a-number',
+                    gender: '2',
                 };
 
                 const result = await action(createActionArgs(encodedValidActionResource, formData));
@@ -474,18 +504,63 @@ describe('Commerce SDK resource', () => {
                         path: { customerId: 'customer-123' },
                     },
                     body: {
-                        preferred: true,
-                        gender: null,
+                        preferred: '1',
+                        gender: '2',
                     },
                 });
             });
 
-            it('should convert an empty gender field to null', async () => {
-                const formData = {
-                    gender: '',
-                };
+            it('reads JSON body when Content-Type is application/json', async () => {
+                // JSON path used by useScapiFetch and form callers that need typed values
+                // (numbers, booleans, null) — body shape arrives as-is, no string coercion.
+                const resource = encodeResource('shopperCustomers', 'updateCustomer', {
+                    params: { path: { customerId: 'customer-123' } },
+                });
+                const request = new Request(`http://localhost/resource/api/client/${resource}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firstName: 'Ada', gender: 2, preferred: true }),
+                });
 
-                const result = await action(createActionArgs(encodedValidActionResource, formData));
+                const result = await action({
+                    params: { resource },
+                    context: mockContextProvider,
+                    request,
+                    unstable_pattern: 'resource/api/client/:resource',
+                } as never);
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                // Typed values (number, boolean) survive the round-trip with no munging.
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: { firstName: 'Ada', gender: 2, preferred: true },
+                });
+            });
+
+            it('passes JSON null values through to clear nullable fields', async () => {
+                // Callers can clear server-side fields by submitting JSON with explicit nulls
+                // (e.g., resetting `gender`). FormData cannot represent this — that's why
+                // typed mutations should use `encType: 'application/json'`.
+                const resource = encodeResource('shopperCustomers', 'updateCustomer', {
+                    params: { path: { customerId: 'customer-123' } },
+                });
+                const request = new Request(`http://localhost/resource/api/client/${resource}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gender: null }),
+                });
+
+                const result = await action({
+                    params: { resource },
+                    context: mockContextProvider,
+                    request,
+                    unstable_pattern: 'resource/api/client/:resource',
+                } as never);
 
                 expect(result).toEqual({
                     success: true,
@@ -495,9 +570,7 @@ describe('Commerce SDK resource', () => {
                     params: {
                         path: { customerId: 'customer-123' },
                     },
-                    body: {
-                        gender: null,
-                    },
+                    body: { gender: null },
                 });
             });
         });
@@ -595,7 +668,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle action with null resource parameter', async () => {
-                const createActionArgsWithNullResource = (): ActionFunctionArgs => {
+                const createActionArgsWithNullResource = () => {
                     const request = new Request('http://localhost/test', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -618,7 +691,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle action with undefined resource parameter', async () => {
-                const createActionArgsWithUndefinedResource = (): ActionFunctionArgs => {
+                const createActionArgsWithUndefinedResource = () => {
                     const request = new Request('http://localhost/test', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -663,6 +736,21 @@ describe('Commerce SDK resource', () => {
                     errors: ['Method not found: "loyalty.missingMethod"'],
                 });
             });
+
+            // ProxyClient exposes `use` and `eject` as functions on every SCAPI client.
+            // They are not SCAPI operations and must not be invocable from a crafted resource URL.
+            it.each(['use', 'eject'])('should reject reserved proxy member "%s" in action calls', async (reserved) => {
+                const invalidResource = encodeBase64Url(JSON.stringify(['shopperCustomers', reserved, { params: {} }]));
+
+                const result = await action(createActionArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: [`Method not found: "shopperCustomers.${reserved}"`],
+                });
+                expect(mockShopperCustomersUse).not.toHaveBeenCalled();
+                expect(mockShopperCustomersEject).not.toHaveBeenCalled();
+            });
         });
     });
 
@@ -701,7 +789,7 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('Edge cases and comprehensive coverage', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
@@ -723,7 +811,7 @@ describe('Commerce SDK resource', () => {
             // Set up the mock for this specific test
             mockShopperCustomersUpdateCustomer.mockResolvedValue({ data: mockResponseData });
 
-            const createActionArgsWithEmptyForm = (): ActionFunctionArgs => {
+            const createActionArgsWithEmptyForm = () => {
                 const request = new Request('http://localhost/test', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -863,14 +951,14 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('helpers', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
             unstable_pattern: 'resource/api/client/:resource',
         });
 
-        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+        const createActionArgs = (resource: string, formData?: Record<string, string>) => {
             const body = new URLSearchParams(formData || {}).toString();
             const request = new Request('http://localhost/test', {
                 method: 'POST',

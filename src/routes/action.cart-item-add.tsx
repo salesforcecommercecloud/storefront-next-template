@@ -13,97 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients.server';
+import { data } from 'react-router';
+import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-import { getLogger } from '@/lib/logger.server';
-// @sfdc-extension-line SFDC_EXT_BOPIS
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
-
-async function addToCart(
-    context: ActionFunctionArgs['context'],
-    productItem: Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
-        storeId?: string;
-    }
-) {
-    const logger = getLogger(context);
-    logger.debug('CartItemAdd: starting addToCart', {
-        productId: productItem.productId,
-        quantity: productItem.quantity,
-    });
-    const basketResource = await getBasket(context);
-    const basket = basketResource.current;
-
-    if (!basket) {
-        logger.warn('CartItemAdd: no basket found');
-        return {
-            success: false,
-            error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
-        };
-    }
-
-    try {
-        const clients = createApiClients(context);
-        let shipmentId = 'me';
-
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        if (productItem.storeId && productItem.inventoryId) {
-            const pickupShipment = await findOrCreatePickupShipment(basket, context, productItem.storeId);
-            shipmentId = pickupShipment.shipmentId;
-        }
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-        const payload = {
-            productId: productItem.productId,
-            quantity: productItem.quantity,
-            ...(productItem.inventoryId ? { inventoryId: productItem.inventoryId } : {}),
-            shipmentId,
-        };
-        const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
-            params: { path: { basketId: basket.basketId as string } },
-            body: [payload],
-        });
-
-        updateBasketResource(context, updatedBasket);
-
-        logger.info('CartItemAdd: item added successfully');
-        return { success: true, basket: updatedBasket };
-    } catch (error) {
-        logger.error('CartItemAdd: failed', { error });
-        return { success: false, error: createActionError({ error }) };
-    }
-}
+import { validateDeliveryOptionCompatibility } from '@/extensions/bopis/lib/product-actions';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Server action to add a single item to the cart.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
-    const logger = getLogger(context);
-    logger.debug('CartItemAdd: action starting');
-
-    if (request.method !== 'POST') {
-        return Response.json(
-            {
-                success: false,
-                error: createActionError({
-                    code: ErrorCode.METHOD_NOT_ALLOWED,
-                    message: `Expected POST, got ${request.method}`,
-                }),
-            },
-            { status: 405 }
-        );
-    }
-
-    try {
-        const formData = await request.formData();
-        const productItemJson = formData.get('productItem') as string;
-
-        if (!productItemJson) {
+export const action = createBasketAction(
+    {
+        method: 'POST',
+        action: BasketAction.CartItemAdd,
+        parse: (fd) => {
+            const raw = fd.get('productItem') as string | null;
+            return raw
+                ? (JSON.parse(raw) as { productId: string; quantity: number; inventoryId?: string; storeId?: string })
+                : null;
+        },
+    },
+    async ({ input, basketId, basket, context, clients, logger }) => {
+        if (!input) {
             logger.warn('CartItemAdd: missing productItem in form data');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -115,16 +51,43 @@ export async function action({ request, context }: ActionFunctionArgs) {
             );
         }
 
-        const productItem = JSON.parse(productItemJson);
-        const result = await addToCart(context, productItem);
+        logger.debug('CartItemAdd: starting addToCart', {
+            productId: input.productId,
+            quantity: input.quantity,
+        });
 
-        if (!result.success) {
-            const status = result.error?.code === ErrorCode.NOT_FOUND ? 404 : 500;
-            return Response.json(result, { status });
+        let shipmentId = 'me';
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        const deliveryValidation = validateDeliveryOptionCompatibility(basket, input.storeId, context);
+        if (!deliveryValidation.valid) {
+            return data(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.CONFLICT,
+                        message: deliveryValidation.errorMessage,
+                    }),
+                },
+                { status: 409 }
+            );
         }
-        return Response.json(result);
-    } catch (error) {
-        logger.error('CartItemAdd: action failed', { error });
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        if (input.storeId && input.inventoryId) {
+            const pickupShipment = await findOrCreatePickupShipment(basket, context, input.storeId);
+            shipmentId = pickupShipment.shipmentId;
+        }
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+        const payload = {
+            productId: input.productId,
+            quantity: input.quantity,
+            ...(input.inventoryId ? { inventoryId: input.inventoryId } : {}),
+            shipmentId,
+        };
+        const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
+            params: { path: { basketId } },
+            body: [payload],
+        });
+        return updatedBasket;
     }
-}
+);

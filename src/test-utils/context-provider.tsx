@@ -18,14 +18,18 @@ import type { ReactNode } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { mockConfig, mockBuildConfig } from './config';
+import { mockBuildConfig, mockConfig, mockSiteObject } from './config';
 import { UITargetProviders } from '@/targets/ui-target-providers';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
+const defaultSiteId = mockBuildConfig.app.defaultSiteId;
+
 const defaultMockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
-    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+    ...mockSiteObject,
+    alias: mockBuildConfig.app.siteAliasMap?.[defaultSiteId] ?? undefined,
 };
 
 const defaultMockLocale =
@@ -55,7 +59,7 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
  * </AllProvidersWrapper>
  *
  * // Use custom config
- * const customConfig = createAppConfig({ ...mockBuildConfig, ...overrides });
+ * const customConfig = { ...mockBuildConfig.app, ...overrides };
  * <AllProvidersWrapper config={customConfig}>
  *   <MyComponent />
  * </AllProvidersWrapper>
@@ -80,11 +84,16 @@ export function AllProvidersWrapper({
             <SiteProvider
                 site={defaultMockSite}
                 locale={defaultMockLocale}
-                language={mockBuildConfig.app.commerce.sites[0].defaultLocale}
+                language={mockSiteObject.defaultLocale}
                 currency={currency}>
                 {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 <StoreLocatorProvider>
-                    <UITargetProviders>{children}</UITargetProviders>
+                    {/* WishlistProvider mirrors the app shell — guest-mode initial state so any
+                        component that consumes useWishlistState (e.g. WishlistButton in PDP / tiles)
+                        renders without throwing in tests. */}
+                    <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                        <UITargetProviders>{children}</UITargetProviders>
+                    </WishlistProvider>
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 </StoreLocatorProvider>
             </SiteProvider>

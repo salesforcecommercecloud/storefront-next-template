@@ -76,5 +76,5 @@ export function useToast() {
 // Re-export toast and Toaster from sonner for convenience
 export { toast, Toaster } from 'sonner';
 
-// Export theme-aware Toaster component
-export { ToasterTheme } from './toaster-theme';
+// Pre-configured Toaster wrapper with app-wide defaults (position, offset, icons)
+export { AppToaster } from './app-toaster';

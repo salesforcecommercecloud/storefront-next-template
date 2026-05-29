@@ -17,39 +17,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import ListPrice from '../list-price';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                logAction({ type: 'click', tag, label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof ListPrice> = {
     title: 'Components/ProductPrice/ListPrice',
@@ -58,18 +25,43 @@ const meta: Meta<typeof ListPrice> = {
     parameters: {
         layout: 'centered',
     },
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
+    argTypes: {
+        price: { description: 'List price (struck-through value)', control: 'number' },
+        currency: {
+            description: 'Currency code (USD, EUR, GBP, etc.)',
+            control: 'select',
+            options: ['USD', 'EUR', 'GBP'],
+        },
+        as: {
+            description: 'HTML element/tag to render as',
+            control: 'select',
+            options: ['span', 'div', 'p', 'h5'],
+        },
+        isRange: {
+            description: 'Toggle "List price from {price}" aria-label (visible text unchanged)',
+            control: 'boolean',
+        },
+        labelForA11y: { description: 'sr-only label prefix for screen readers', control: 'text' },
+        className: { description: 'Additional CSS classes (merged with line-through)', control: 'text' },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof ListPrice>;
 
+/**
+ * At-rest state — list price `$129.99` rendered with `line-through`
+ * styling. The visual is identical regardless of `isRange`; only the
+ * `aria-label` switches between "List price: …" and "List price from …".
+ *
+ * Drive every other variant from the Controls panel:
+ *   - `price` / `currency` — value updates visible text + aria-label
+ *   - `isRange: true` — aria-label changes to "List price from {price}";
+ *     visible text unchanged (snapshot is identical to Default)
+ *   - `as: 'p'` / `'h5'` — swaps wrapping element
+ *   - `className` — additional classes merged with default line-through styling
+ *   - `labelForA11y` — appears only in sr-only span
+ */
 export const Default: Story = {
     args: {
         price: 129.99,
@@ -81,26 +73,5 @@ export const Default: Story = {
         const price = canvas.getByText('$129.99');
         await expect(price).toBeInTheDocument();
         await expect(price).toHaveClass('line-through');
-    },
-};
-
-export const Range: Story = {
-    args: {
-        price: 89.99,
-        currency: 'USD',
-        isRange: true,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // List price currently doesn't add 'From' text in the visible part based on code read,
-        // only in aria-label. Let's double check implementation.
-        // Implementation: const ariaLabel = isRange ? `List price from ${listPriceText || ''}` : ...
-        // The visible text is just {listPriceText}
-        await expect(canvas.getByText('$89.99')).toBeInTheDocument();
-        await expect(canvas.getByText('$89.99')).toHaveAttribute(
-            'aria-label',
-            expect.stringContaining('List price from')
-        );
     },
 };

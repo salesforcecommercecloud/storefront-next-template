@@ -74,7 +74,7 @@ const defaultConfig: StoreLocatorConfig = {
     geoTimeout: 10000,
 };
 
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 
 /**
  * Normalizes a store object to SelectedStoreInfo format.

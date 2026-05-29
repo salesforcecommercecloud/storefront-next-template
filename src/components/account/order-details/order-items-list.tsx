@@ -25,10 +25,14 @@ import {
 import ProductPrice from '@/components/product-price';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
-import type { EnrichedProductItem } from '@/lib/product-utils';
-import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { OrderLineRateReview } from '@/components/account/order-details/order-line-rate-review';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
+import type { ShopperOrders, ShopperProducts } from '@/scapi';
+import { routes, routeHref } from '@/route-paths';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
+import { UITarget } from '@/targets/ui-target';
+import { OrderLineReviewSlot } from '@/extensions/ratings-reviews/components/order-line-review-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 type OrderItem = ShopperOrders.schemas['ProductItem'];
 
@@ -56,6 +60,7 @@ export function OrderItemsList({
     onOrderLineReviewSubmitted,
 }: OrderItemsListProps): ReactElement {
     const { t } = useTranslation('account');
+    const { t: tProduct } = useTranslation('product');
     const { currency } = useSite();
     const showLineReviews = submittedReviewLineKeys != null && onOrderLineReviewSubmitted != null;
 
@@ -73,13 +78,22 @@ export function OrderItemsList({
                 const productData = item.productId ? productsById[item.productId] : undefined;
                 const productKey = item.itemId ? `${item.itemId}-${index}` : `${item.productId ?? 'item'}-${index}`;
                 const productName = item.productName;
+                // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
                 const lineReviewKey = getOrderLineReviewKey(orderNo, item, index);
                 const reviewSubmitted = submittedReviewLineKeys?.has(lineReviewKey) ?? false;
+                // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
                         <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
-                            <Link to={`/product/${item.productId}`} className="flex-shrink-0 block">
+                            <Link
+                                to={routeHref(routes.product, { productId: item.productId ?? '' })}
+                                className="flex-shrink-0 block"
+                                aria-label={
+                                    productName
+                                        ? tProduct('viewProductAriaLabel', { productName })
+                                        : t('orders.productImageLinkFallback')
+                                }>
                                 <ProductItemVariantImage
                                     productItem={enrichedItem}
                                     className="h-24 w-24 rounded-none"
@@ -93,12 +107,15 @@ export function OrderItemsList({
                                 </p>
                                 {showLineReviews && productData ? (
                                     <div className="pt-1">
-                                        <OrderLineRateReview
+                                        {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                                        <OrderLineReviewSlot
                                             product={productData}
                                             lineKey={lineReviewKey}
                                             reviewSubmitted={reviewSubmitted}
-                                            onLineReviewSubmitted={onOrderLineReviewSubmitted}
-                                        />
+                                            onLineReviewSubmitted={onOrderLineReviewSubmitted}>
+                                            <UITarget targetId="sfcc.account.orderDetail.lineReview" />
+                                        </OrderLineReviewSlot>
+                                        {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                                     </div>
                                 ) : null}
                             </div>
@@ -117,7 +134,9 @@ export function OrderItemsList({
                                         variant="default"
                                         size="sm"
                                         className="rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs">
-                                        <Link to={`/product/${item.productId}`}>{t('orders.buyAgain')}</Link>
+                                        <Link to={routeHref(routes.product, { productId: item.productId })}>
+                                            {t('orders.buyAgain')}
+                                        </Link>
                                     </Button>
                                 )}
                             </div>

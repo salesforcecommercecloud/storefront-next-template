@@ -42,9 +42,9 @@ class AccountAddressesPage {
         emptyStateCard: locate('[data-slot="card"]').as('Empty State Card'),
         emptyStateMessage: locate('p').withText('No Saved Addresses').as('Empty State Message'),
 
-        // Address cards (excluding header and empty state cards)
-        // Address cards have CardFooter with action buttons (Edit, Remove, Set Default)
-        addressCards: locate('[data-slot="card"]:has([data-slot="card-footer"])').as('Address Cards'),
+        // Address cards — scoped to data-testid so we don't accidentally match
+        // other Card+CardFooter components (e.g. tracking-consent-banner).
+        addressCards: locate('[data-testid="address-card"]').as('Address Cards'),
 
         // Default badge
         defaultBadge: locate('[data-slot="badge"]').withText('Default').as('Default Badge'),
@@ -76,14 +76,18 @@ class AccountAddressesPage {
         saveButton: locate('button[type="submit"]').withText('Save').as('Save Button'),
         cancelButton: locate('button[type="button"]').withText('Cancel').as('Cancel Button'),
 
-        // Delete Confirmation Dialog
-        deleteDialog: locate('[role="dialog"]').as('Delete Confirmation Dialog'),
+        // Delete Confirmation Dialog — scoped to Radix's [data-slot="dialog-content"]
+        // so we don't accidentally match other [role="dialog"] elements like the
+        // tracking-consent banner.
+        deleteDialog: locate('[data-slot="dialog-content"]').as('Delete Confirmation Dialog'),
         deleteDialogTitle: locate('[data-slot="dialog-title"]').withText('Remove Address').as('Delete Dialog Title'),
         deleteDialogDescription: locate('p')
             .withText('Are you sure you want to remove this address')
             .as('Delete Dialog Description'),
-        confirmDeleteButton: locate('[role="dialog"] button').withText('Remove').as('Confirm Delete Button'),
-        cancelDeleteButton: locate('[role="dialog"] button').withText('Cancel').as('Cancel Delete Button'),
+        confirmDeleteButton: locate('[data-slot="dialog-content"] button')
+            .withText('Remove')
+            .as('Confirm Delete Button'),
+        cancelDeleteButton: locate('[data-slot="dialog-content"] button').withText('Cancel').as('Cancel Delete Button'),
         defaultAddressWarning: locate('p').withText('This is your default address').as('Default Address Warning'),
 
         // Toast notifications
@@ -279,7 +283,7 @@ class AccountAddressesPage {
      * @returns Promise<boolean> - True if address card with name exists
      */
     async addressExistsByName(name: string): Promise<boolean> {
-        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        const nameLocator = locate('[data-testid="address-card"]').find('p.font-medium').withText(name);
         const count = await I.grabNumberOfVisibleElements(nameLocator);
         return count > 0;
     }
@@ -426,22 +430,45 @@ class AccountAddressesPage {
     }
 
     /**
-     * Poll until the visible address card count matches the expected value.
-     * Runs in Node (not browser context) so it can call CodeceptJS helpers.
+     * Poll until the visible address card count matches the expected value AND
+     * each card has its inner name rendered.
+     *
+     * Card outer wrapper (`[data-testid="address-card"]`) and inner content
+     * (`<AddressDisplay>` rendering `<p class="font-medium">`) are separate
+     * React renders — the wrapper can match before the inner name paints,
+     * especially right after a fetcher revalidation. Waiting only on card
+     * count produced sporadic 5s timeouts in subsequent name lookups.
      */
     private async waitForAddressCount(expected: number, timeoutSeconds: number = 30): Promise<void> {
         const deadline = Date.now() + timeoutSeconds * 1000;
         while (Date.now() < deadline) {
-            const current = await this.getAddressCount();
-            if (current === expected) return;
+            const cardCount = await this.getAddressCount();
+            if (cardCount === expected) {
+                // Card count matches — also verify inner names have rendered.
+                const namedCount = await I.grabNumberOfVisibleElements(
+                    locate(this.locators.addressCards).find('p.font-medium')
+                );
+                if (namedCount >= expected) return;
+            }
             await new Promise((r) => setTimeout(r, 500));
         }
+        // Re-check both conditions atomically once the deadline has elapsed —
+        // the page may have stabilized between the last poll and now, and we
+        // shouldn't throw if both invariants are satisfied at this final read.
         const finalCount = await this.getAddressCount();
+        const finalNamed = await I.grabNumberOfVisibleElements(
+            locate(this.locators.addressCards).find('p.font-medium')
+        );
+        if (finalCount === expected && finalNamed >= expected) return;
+
         if (finalCount !== expected) {
             throw new Error(
                 `Timed out waiting for address count to be ${expected} (currently ${finalCount}) after ${timeoutSeconds}s`
             );
         }
+        throw new Error(
+            `Timed out waiting for address card names to render. Cards: ${finalCount}, named: ${finalNamed} after ${timeoutSeconds}s`
+        );
     }
 
     /**
@@ -456,6 +483,14 @@ class AccountAddressesPage {
             this.createTestAddress(i);
             await this.waitForAddressCount(currentCount + i + 1);
         }
+
+        // Even when the count was already met (no addresses created), card
+        // *names* may still be rendering — the page just navigated, the cards'
+        // outer wrappers paint before their <AddressDisplay> children. Wait
+        // for the post-condition before returning so callers can safely read
+        // positional data.
+        const finalCount = Math.max(currentCount, minCount);
+        await this.waitForAddressCount(finalCount);
     }
 
     /**
@@ -472,7 +507,7 @@ class AccountAddressesPage {
      * @param timeout - Seconds to wait (default: 10)
      */
     waitForAddressWithName(name: string, timeout: number = 10): void {
-        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        const nameLocator = locate('[data-testid="address-card"]').find('p.font-medium').withText(name);
         I.waitForElement(nameLocator, timeout);
     }
 
@@ -482,6 +517,22 @@ class AccountAddressesPage {
      */
     waitForAddressCardsVisible(timeout: number = 15): void {
         I.waitForElement(this.locators.addressCards, timeout);
+    }
+
+    /**
+     * Wait for an address card with the given name to disappear from the DOM.
+     *
+     * Used after delete-address actions where `revalidator.revalidate()` fires alongside
+     * the success toast — the toast appears before the network refetch resolves, so a
+     * single immediate DOM check can race the stale render. Playwright's auto-wait
+     * polls until the element is gone or the timeout elapses.
+     *
+     * @param name - Customer name on the address card (e.g., "John Doe")
+     * @param timeout - Seconds to wait (default: 5)
+     */
+    waitForAddressRemoved(name: string, timeout: number = 5): void {
+        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        I.waitForInvisible(nameLocator, timeout);
     }
 
     /**
@@ -543,11 +594,18 @@ class AccountAddressesPage {
             currentCount = await this.getAddressCount();
         }
 
-        // Create missing
+        // Create missing — wait for each to render before creating the next so
+        // the next createTestAddress() doesn't race with this one's revalidation.
         const addressesToCreate = exactCount - currentCount;
         for (let i = 0; i < addressesToCreate; i++) {
             this.createTestAddress(i);
+            await this.waitForAddressCount(currentCount + i + 1);
         }
+
+        // Even when count was already exactCount (no deletes/creates), inner
+        // names may still be rendering on a fresh navigate. Wait for the
+        // post-condition so callers can safely read positional data.
+        await this.waitForAddressCount(exactCount);
     }
 }
 

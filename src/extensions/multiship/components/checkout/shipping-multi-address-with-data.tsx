@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { use } from 'react';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import ShippingMultiAddress from './shipping-multi-address';
 

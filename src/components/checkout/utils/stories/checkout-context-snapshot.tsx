@@ -15,13 +15,32 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
-// Mock basket provider
-vi.mock('@/providers/basket', () => ({
-    useBasket: vi.fn(() => ({
-        basket: null,
-        isLoading: false,
-    })),
-}));
+// Mock basket provider — keep the real BasketProvider component but mock useBasket
+vi.mock('@/providers/basket', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/providers/basket')>();
+    return {
+        ...actual,
+        useBasket: vi.fn(() => undefined),
+    };
+});
+
+// BasketProvider calls useScapiFetcher → useFetcher during render. Without a data router in the
+// test tree, useFetcher throws "must be used within a data router". Stub useFetcher to return an
+// idle fetcher so the provider tree renders synchronously; load()/submit() are only invoked from
+// callbacks, so vi.fn() suffices and useScapiFetcherEffect's idle-state guard short-circuits.
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useFetcher: () => ({
+            data: undefined,
+            state: 'idle' as const,
+            submit: vi.fn(),
+            load: vi.fn(),
+            Form: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+        }),
+    };
+});
 
 import { composeStories } from '@storybook/react-vite';
 

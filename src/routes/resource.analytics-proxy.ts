@@ -27,9 +27,8 @@
  * a new one. Set-Cookie headers from ECOM are rewritten to the storefront domain,
  * matching how PWA Kit's MRT proxy handles cookie domains.
  */
-import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/resource.analytics-proxy';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getAuth } from '@/middlewares/auth.server';
 import { getLogger } from '@/lib/logger.server';
 
@@ -45,7 +44,7 @@ function rewriteCookieDomain(setCookieValue: string, ecomHostname: string, appHo
     );
 }
 
-async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionFunctionArgs) {
+async function proxyAnalytics({ request, context }: Route.LoaderArgs | Route.ActionArgs) {
     const logger = getLogger(context);
     const url = new URL(request.url);
     const targetUrl = url.searchParams.get('url');
@@ -56,7 +55,7 @@ async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionF
         return new Response('Missing url parameter', { status: 400 });
     }
 
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const activeDataHost = config.engagement?.adapters?.activeData?.host;
 
     if (!activeDataHost) {

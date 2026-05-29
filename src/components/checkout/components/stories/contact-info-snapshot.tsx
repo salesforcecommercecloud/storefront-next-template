@@ -27,6 +27,7 @@ const fetcherMock = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
@@ -48,36 +49,13 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-        useResolvedPath: (to: string) => ({ pathname: to, search: '', hash: '', state: null, key: 'test' }),
-        useRevalidator: () => ({ revalidate: vi.fn(), state: 'idle' }),
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: () => {},
     }),
 }));
 vi.mock('@/providers/basket', () => ({
+    default: ({ children }: React.PropsWithChildren) => <>{children}</>,
     useBasket: () => undefined,
 }));
 /** Guest checkout: hook returns context.customerProfile directly (see use-customer-profile.ts). */
@@ -110,6 +88,16 @@ vi.mock('@/hooks/use-checkout', () => ({
         setSavedAddresses: vi.fn(),
     }),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
+    };
+});
 
 import { composeStories } from '@storybook/react-vite';
 

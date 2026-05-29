@@ -15,16 +15,34 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
 import { ProductTileProvider } from '../context';
 import ProductTile from '../index';
-// @ts-expect-error mock file is JS
 import { mockProductSearchItem } from '../../__mocks__/product-search-hit-data';
 import DynamicImageProvider from '@/providers/dynamic-image';
 
-const meta: Meta<typeof ProductTileProvider> = {
+interface ContextStoryArgs {
+    /** Synthetic Controls arg — number of tiles rendered inside the provider */
+    tileCount: number;
+}
+
+function ProductTileProviderWrapper({ tileCount }: ContextStoryArgs) {
+    return (
+        <ProductTileProvider>
+            <div className="grid grid-cols-2 gap-4 w-[32rem]">
+                {Array.from({ length: tileCount }, (_, i) => `tile-${i}`).map((id) => (
+                    <ProductTile key={id} product={mockProductSearchItem} />
+                ))}
+            </div>
+        </ProductTileProvider>
+    );
+}
+
+const meta: Meta<typeof ProductTileProviderWrapper> = {
     title: 'Components/ProductTile/Context',
-    component: ProductTileProvider,
-    tags: ['autodocs'],
+    component: ProductTileProviderWrapper,
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
@@ -40,12 +58,57 @@ provider is optional but recommended for grids of 3+ tiles.
             },
         },
     },
+    argTypes: {
+        tileCount: {
+            description: 'Synthetic arg — number of `<ProductTile>` children rendered inside the provider',
+            control: { type: 'number', min: 1, max: 12 },
+        },
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof ProductTileProvider>;
+type Story = StoryObj<typeof ProductTileProviderWrapper>;
+
+/**
+ * Rich-but-realistic baseline. The provider exposes no runtime props (it
+ * forwards children verbatim), so the Controls panel exposes a single
+ * synthetic `tileCount` arg that drives how many `<ProductTile>` children are
+ * rendered inside it. Use the panel to compare a single-tile render against a
+ * grid of 4–12 tiles.
+ */
+export const Playground: Story = {
+    args: {
+        tileCount: 4,
+    },
+    decorators: [
+        (Story) => (
+            <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                <Story />
+            </DynamicImageProvider>
+        ),
+    ],
+    render: ({ tileCount }) => (
+        <ProductTileProvider>
+            <div className="grid grid-cols-2 gap-4 w-[32rem]">
+                {Array.from({ length: tileCount }, (_, i) => `tile-${i}`).map((id) => (
+                    <ProductTile key={id} product={mockProductSearchItem} />
+                ))}
+            </div>
+        </ProductTileProvider>
+    ),
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // Each tile renders the product name; verify at least one is present
+        const names = canvas.getAllByText(mockProductSearchItem.productName ?? '');
+        await expect(names.length).toBeGreaterThan(0);
+    },
+};
 
 export const Default: Story = {
+    args: {
+        tileCount: 1,
+    },
     decorators: [
         (Story) => (
             <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
@@ -60,9 +123,17 @@ export const Default: Story = {
             <ProductTile product={mockProductSearchItem} />
         </ProductTileProvider>
     ),
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(mockProductSearchItem.productName ?? '')).toBeInTheDocument();
+    },
 };
 
 export const MultiTileGrid: Story = {
+    args: {
+        tileCount: 4,
+    },
     parameters: {
         docs: {
             description: {
@@ -87,4 +158,11 @@ export const MultiTileGrid: Story = {
             </div>
         </ProductTileProvider>
     ),
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        // 4 tiles — the product name should appear 4 times
+        const names = canvas.getAllByText(mockProductSearchItem.productName ?? '');
+        await expect(names.length).toBe(4);
+    },
 };

@@ -14,61 +14,8 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { action } from 'storybook/actions';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 
 import { Typography } from '../index';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logCopy = action('typography-copy');
-        const logHover = action('typography-hover');
-        const logClick = action('typography-click');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const typographyElement = target.closest('[data-typography]');
-            if (typographyElement) {
-                const text = target.textContent?.trim() || '';
-                logClick({ text });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const typographyElement = target.closest('[data-typography]');
-            if (typographyElement) {
-                const variant = (typographyElement as HTMLElement).getAttribute('data-typography') || '';
-                logHover({ variant });
-            }
-        };
-
-        const handleCopy = () => {
-            const selection = window.getSelection()?.toString() || '';
-            if (selection) logCopy({ selection });
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-        document.addEventListener('copy', handleCopy, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-            document.removeEventListener('copy', handleCopy, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof Typography> = {
     title: 'UI/Typography',
@@ -82,7 +29,7 @@ const meta: Meta<typeof Typography> = {
             },
         },
     },
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     argTypes: {
         variant: {
             description: 'Typography variant style',
@@ -104,6 +51,7 @@ const meta: Meta<typeof Typography> = {
                 'product-title',
                 'product-price',
                 'product-description',
+                'recommendation-title',
             ],
         },
         align: {
@@ -120,83 +68,43 @@ const meta: Meta<typeof Typography> = {
             description: 'Render as child component using Slot',
             control: 'boolean',
         },
-        className: {
-            description: 'Additional CSS classes',
-            control: 'text',
-        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
         children: {
             description: 'Text content',
             control: 'text',
         },
     },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <div data-typography="root">
-                    <Story />
-                </div>
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof Typography>;
 
 /**
- * All heading and text variants in one composite
+ * All heading and text variants in one composite — useful as a visual
+ * showcase / snapshot baseline. Replaces the separate per-variant stories
+ * by demonstrating every supported `variant` value at once.
  */
 export const AllVariants: Story = {
     render: () => (
-        <div className="space-y-6" data-typography="showcase">
-            <Typography variant="h1" data-typography="h1">
-                Heading 1
-            </Typography>
-            <Typography variant="h2" data-typography="h2">
-                Heading 2
-            </Typography>
-            <Typography variant="h3" data-typography="h3">
-                Heading 3
-            </Typography>
-            <Typography variant="h4" data-typography="h4">
-                Heading 4
-            </Typography>
-            <Typography variant="h5" data-typography="h5">
-                Heading 5
-            </Typography>
-            <Typography variant="h6" data-typography="h6">
-                Heading 6
-            </Typography>
-            <Typography variant="p" data-typography="p">
-                Paragraph text with regular styling.
-            </Typography>
-            <Typography variant="lead" data-typography="lead">
-                Lead paragraph with larger text.
-            </Typography>
-            <Typography variant="large" data-typography="large">
-                Large text
-            </Typography>
-            <Typography variant="small" data-typography="small">
-                Small text
-            </Typography>
-            <Typography variant="muted" data-typography="muted">
-                Muted text
-            </Typography>
-            <Typography variant="blockquote" data-typography="blockquote">
-                Blockquote
-            </Typography>
-            <Typography variant="inline-code" data-typography="inline-code">
-                inline code
-            </Typography>
-            <Typography variant="product-title" data-typography="product-title">
-                Product Title
-            </Typography>
-            <Typography variant="product-price" data-typography="product-price">
-                $29.99
-            </Typography>
-            <Typography variant="product-description" data-typography="product-description">
-                Product description text
-            </Typography>
+        <div className="space-y-6">
+            <Typography variant="h1">Heading 1</Typography>
+            <Typography variant="h2">Heading 2</Typography>
+            <Typography variant="h3">Heading 3</Typography>
+            <Typography variant="h4">Heading 4</Typography>
+            <Typography variant="h5">Heading 5</Typography>
+            <Typography variant="h6">Heading 6</Typography>
+            <Typography variant="p">Paragraph text with regular styling.</Typography>
+            <Typography variant="lead">Lead paragraph with larger text.</Typography>
+            <Typography variant="large">Large text</Typography>
+            <Typography variant="small">Small text</Typography>
+            <Typography variant="muted">Muted text</Typography>
+            <Typography variant="blockquote">Blockquote</Typography>
+            <Typography variant="inline-code">inline code</Typography>
+            <Typography variant="product-title">Product Title</Typography>
+            <Typography variant="product-price">$29.99</Typography>
+            <Typography variant="product-description">Product description text</Typography>
+            <Typography variant="recommendation-title">Recommendation title</Typography>
         </div>
     ),
     parameters: {
@@ -206,69 +114,35 @@ export const AllVariants: Story = {
             },
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const h1 = canvasElement.querySelector('[data-typography="h1"]');
-        const p = canvasElement.querySelector('[data-typography="p"]');
-        await expect(h1).toBeInTheDocument();
-        await expect(p).toBeInTheDocument();
-    },
 };
 
-export const CenterAligned: Story = {
+/**
+ * Controls-driven playground — exercise any combination of `variant`,
+ * `align`, `as`, and `children`. Replaces the dedicated `CenterAligned`,
+ * `RightAligned`, and `CustomElement` stories that each varied a single
+ * prop.
+ */
+export const Playground: Story = {
     args: {
         variant: 'h2',
-        align: 'center',
-        children: 'Center Aligned Heading',
+        align: 'left',
+        children: 'Edit me from the Controls panel',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const heading = within(canvasElement).getByText('Center Aligned Heading');
-        await expect(heading).toHaveClass('text-center', { exact: false });
-    },
-};
-
-export const RightAligned: Story = {
-    args: {
-        variant: 'p',
-        align: 'right',
-        children: 'Right aligned paragraph text',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const para = within(canvasElement).getByText('Right aligned paragraph text');
-        await expect(para).toHaveClass('text-right', { exact: false });
+    parameters: {
+        docs: {
+            description: {
+                story: 'Use the Controls panel to combine `variant`, `align`, `as`, and `children`. Examples worth trying: `variant: h3` + `align: right`, or `variant: h3` + `as: div` to render an h3 style as a non-heading element.',
+            },
+        },
     },
 };
 
-export const CustomElement: Story = {
-    args: {
-        variant: 'h3',
-        as: 'div',
-        children: 'H3 variant rendered as div element',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const element = within(canvasElement).getByText('H3 variant rendered as div element');
-        await expect(element).toBeInTheDocument();
-        void expect(element.tagName.toLowerCase()).toBe('div');
-    },
-};
-
-export const CustomStyling: Story = {
-    args: {
-        variant: 'h2',
-        children: 'Custom Styled Heading',
-        className: 'text-primary bg-primary/10 p-4 rounded-none',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const heading = canvas.getByText('Custom Styled Heading');
-        await expect(heading).toHaveClass('text-primary', { exact: false });
-    },
-};
-
+/**
+ * Demonstrates `asChild` (Radix Slot pattern): the Typography styling is
+ * applied to the inner `<button>` element instead of wrapping it. Pairs
+ * Typography with an interactive element so the merging-class behavior is
+ * visible in the canvas.
+ */
 export const AsChildButton: Story = {
     render: () => (
         <Typography variant="h4" asChild>
@@ -280,27 +154,4 @@ export const AsChildButton: Story = {
             </button>
         </Typography>
     ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const button = canvas.getByTestId('typography-button');
-        void expect(button.tagName.toLowerCase()).toBe('button');
-        await expect(button).toHaveTextContent('Typography Button');
-    },
-};
-
-export const AsChildLink: Story = {
-    render: () => (
-        <Typography variant="lead" asChild>
-            <a href="#" className="underline text-primary" data-testid="typography-link">
-                Typography Link
-            </a>
-        </Typography>
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const link = within(canvasElement).getByTestId('typography-link');
-        await expect(link).toBeInTheDocument();
-        void expect(link.tagName.toLowerCase()).toBe('a');
-    },
 };

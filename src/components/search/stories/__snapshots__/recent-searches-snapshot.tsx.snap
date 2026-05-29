@@ -1,167 +1,50 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`RecentSearches stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="section-container py-6"
-  >
-    <div>
-      <div
-        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2"
-      >
-        Recent Searches
-      </div>
-      <div>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          shoes
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          boots
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          sneakers
-        </button>
-        <button
-          class="w-full text-left py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          Clear recent searches
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`RecentSearches stories snapshot > Empty story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="section-container py-6"
-  />
-</div>
+<div
+  class="section-container py-6"
+/>
 `;
 
-exports[`RecentSearches stories snapshot > ManySearches story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="section-container py-6"
-  >
-    <div>
-      <div
-        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2"
-      >
-        Recent Searches
-      </div>
-      <div>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          shoes
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          boots
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          sneakers
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          sandals
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          flip flops
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          running shoes
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          hiking boots
-        </button>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          dress shoes
-        </button>
-        <button
-          class="w-full text-left py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          Clear recent searches
-        </button>
-      </div>
+exports[`RecentSearches stories snapshot > FullyFeatured story renders and matches snapshot 1`] = `
+<div
+  class="section-container py-6"
+>
+  <div>
+    <div
+      class="text-sm font-semibold text-muted-foreground tracking-wide mb-2"
+    >
+      Recent Searches
     </div>
-  </div>
-</div>
-`;
-
-exports[`RecentSearches stories snapshot > SingleSearch story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="section-container py-6"
-  >
     <div>
-      <div
-        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2"
+      <button
+        class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
+        data-slot="suggestion"
+        type="button"
       >
-        Recent Searches
-      </div>
-      <div>
-        <button
-          class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          laptop
-        </button>
-        <button
-          class="w-full text-left py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
-          data-slot="suggestion"
-          type="button"
-        >
-          Clear recent searches
-        </button>
-      </div>
+        shoes
+      </button>
+      <button
+        class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
+        data-slot="suggestion"
+        type="button"
+      >
+        boots
+      </button>
+      <button
+        class="w-full text-left pl-4 py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
+        data-slot="suggestion"
+        type="button"
+      >
+        sneakers
+      </button>
+      <button
+        class="w-full text-left py-2 hover:bg-accent hover:text-foreground text-sm font-medium"
+        data-slot="suggestion"
+        type="button"
+      >
+        Clear recent searches
+      </button>
     </div>
   </div>
 </div>

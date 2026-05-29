@@ -17,7 +17,7 @@ import { type ReactNode } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import DefaultLayout, { loader, shouldRevalidate } from './_app';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 

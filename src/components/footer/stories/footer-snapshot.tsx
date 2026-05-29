@@ -15,8 +15,10 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import React from 'react';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,
@@ -45,33 +47,6 @@ vi.mock('react-router', () => ({
         <div>{router.routes[0]?.element ?? null}</div>
     ),
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
-    return {
-        ...actual,
-        useFetcher: () => ({
-            data: null,
-            state: 'idle',
-            submit: () => {},
-            Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
-        }),
-        useFetchers: () => [],
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: () => {},
@@ -100,14 +75,12 @@ vi.mock('@/components/link', () => ({
 
 vi.mock('@/config', () => ({
     useConfig: () => ({
-        i18n: { supportedLngs: ['en-GB'] },
+        i18n: { supportedLngs: [mockSiteObject.defaultLocale] },
         url: { showDefaults: true },
         localeAliasMap: {},
     }),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -116,7 +89,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@/components/locale-switcher', () => ({
@@ -124,7 +97,11 @@ vi.mock('@/components/locale-switcher', () => ({
 }));
 
 vi.mock('@/components/currency-switcher', () => ({
-    default: () => <select aria-label="Select currency"><option>GBP</option></select>,
+    default: () => (
+        <select aria-label="Select currency">
+            <option>{mockSiteObject.defaultCurrency}</option>
+        </select>
+    ),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -132,9 +109,17 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });

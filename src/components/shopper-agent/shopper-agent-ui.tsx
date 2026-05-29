@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { resolvePrefix } from '@salesforce/storefront-next-runtime/site-context';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import { ShopperAgentWindow } from './shopper-agent-window';
 import { validateShopperAgentConfig, type ShopperAgentConfig } from './shopper-agent.utils';
 
@@ -45,18 +48,32 @@ interface ShopperAgentUIProps {
     locale: string;
     currency?: string;
     userId?: string;
+    usid?: string;
 }
 
 /**
  * Shopper Agent UI chunk – loads Embedded Messaging script and mounts the chat window.
  * Loaded after first paint via preload + requestAnimationFrame so it stays off the critical path.
  */
-export default function ShopperAgentUI({ commerceAgentConfiguration, locale, currency, userId }: ShopperAgentUIProps) {
+export default function ShopperAgentUI({
+    commerceAgentConfiguration,
+    locale,
+    currency,
+    userId,
+    usid,
+}: ShopperAgentUIProps) {
+    const config = useConfig();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+
     if (!validateShopperAgentConfig(commerceAgentConfiguration)) {
         return null;
     }
 
-    const domainUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const prefix = config.url?.prefix
+        ? resolvePrefix({ prefix: config.url.prefix, params: { siteId: siteRef, localeId: localeRef } })
+        : '';
+    const domainUrl = `${origin}${prefix}`;
 
     return (
         <div data-testid="shopper-agent">
@@ -66,6 +83,7 @@ export default function ShopperAgentUI({ commerceAgentConfiguration, locale, cur
                 currency={currency}
                 siteId={commerceAgentConfiguration.siteId}
                 userId={userId}
+                usid={usid}
                 domainUrl={domainUrl}
             />
         </div>

@@ -17,9 +17,9 @@ import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { Button } from '@/components/ui/button';
 import { useProductSetsBundles } from '@/hooks/product/use-product-sets-bundles';
 import { useProductActions } from '@/hooks/product/use-product-actions';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { type ReactElement } from 'react';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ChildProductCard from './child-product-card';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
@@ -36,6 +36,12 @@ type ChildProductsBaseProps = {
     onCartSuccess?: () => void;
     /** Callback invoked if cart operation fails (add or update) */
     onCartError?: (error: unknown) => void;
+    /**
+     * Where each child card's swatch selection state lives. Default `'url'` for PDP usage.
+     * Set to `'local'` when rendering inside a modal (cart-edit, quick-add) so swatch clicks
+     * don't write to the page URL or trigger route revalidation.
+     */
+    selectionSource?: 'url' | 'local';
 };
 
 type ChildProductsAddModeProps = ChildProductsBaseProps & {
@@ -128,6 +134,7 @@ export default function ChildProducts({
     onBeforeCartAction,
     onCartSuccess,
     onCartError,
+    selectionSource = 'url',
 }: ChildProductsProps): ReactElement | null {
     const { t } = useTranslation('product');
     const isProductASet = isProductSet(parentProduct);
@@ -233,14 +240,12 @@ export default function ChildProducts({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {childProducts.map((childProduct: ShopperProducts.schemas['Product']) => (
                     <ChildProductCard
-                        // if in edit mode (Edit cart), we want to use internal state to control swatch navigation
-                        // in add mode (PDP), we let the swatches to be uncontrolled, which will render as link buttons
-                        swatchMode={mode == 'add' ? 'uncontrolled' : 'controlled'}
                         key={childProduct.id}
                         childProduct={childProduct}
                         parentProduct={parentProduct}
                         onSelectionChange={setChildProductSelection}
                         onOrderabilityChange={setChildProductOrderability}
+                        selectionSource={selectionSource}
                     />
                 ))}
             </div>

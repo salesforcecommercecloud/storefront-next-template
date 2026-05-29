@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ReactElement } from 'react';
 import { CartItemAddToWishlistButton } from '../cart-item-add-to-wishlist-button';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 const sampleLine: EnrichedProductItem = {
     itemId: 'cart-wl-story-line',
@@ -28,7 +26,7 @@ const sampleLine: EnrichedProductItem = {
 } as EnrichedProductItem;
 
 const meta: Meta<typeof CartItemAddToWishlistButton> = {
-    title: 'CART/Cart item add to wishlist',
+    title: 'CART/Cart Item Add to Wishlist Button',
     component: CartItemAddToWishlistButton,
     tags: ['autodocs'],
     parameters: {
@@ -36,7 +34,7 @@ const meta: Meta<typeof CartItemAddToWishlistButton> = {
         docs: {
             description: {
                 component:
-                    'Link-style control on cart lines to add or remove the product from the shopper wishlist. Requires React Router (fetchers) and app providers.',
+                    "Link-style control on cart lines to add or remove the product from the shopper wishlist. Requires React Router (fetchers) and app providers. The mode (Add vs Remove) is driven entirely by `wishlistProductIds` — pass an empty array to render the **Add to Wishlist** label, or include the product's ID to render **Remove from Wishlist**. Flip it via the controls panel to see both states.",
             },
         },
     },
@@ -45,41 +43,29 @@ const meta: Meta<typeof CartItemAddToWishlistButton> = {
         wishlistProductIds: [],
         className: '',
     },
-    decorators: [
-        (Story, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <AllProvidersWrapper>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </AllProvidersWrapper>
-                );
-                if (inRouter) {
-                    return content;
-                }
-                const router = createMemoryRouter([{ path: '/', element: content }], { initialEntries: ['/'] });
-                return <RouterProvider router={router} />;
-            };
-            return <RouterWrapper />;
+    argTypes: {
+        wishlistProductIds: {
+            control: 'object',
+            description:
+                'Hydrated wishlist product IDs from the cart loader. When the array contains `product.productId`, the button switches to Remove mode.',
         },
+        product: { table: { disable: true } },
+        className: { table: { disable: true } },
+    },
+    decorators: [
+        (Story) => (
+            <AllProvidersWrapper>
+                <Story />
+            </AllProvidersWrapper>
+        ),
     ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Product not in wishlist — shows add control. */
-export const AddToWishlist: Story = {
-    args: {
-        product: sampleLine,
-        wishlistProductIds: [],
-    },
-};
-
-/** Product already in wishlist — shows remove control (hydration-style IDs). */
-export const RemoveFromWishlist: Story = {
-    args: {
-        product: sampleLine,
-        wishlistProductIds: [sampleLine.productId as string],
-    },
-};
+/**
+ * Default state — product not in wishlist (Add mode). Use the controls panel
+ * to flip `wishlistProductIds` to `[product.productId]` to see Remove mode.
+ */
+export const Default: Story = {};

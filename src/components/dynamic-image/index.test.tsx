@@ -152,6 +152,71 @@ describe('Dynamic Image Component', () => {
         expect(img).toHaveAttribute('title', 'Custom title');
     });
 
+    describe('DIS host rewrite', () => {
+        test('rewrites raw classic SFCC URL to DIS-hosted URL in srcSet and <img src>', () => {
+            const rawSrc =
+                'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toContain(
+                'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg'
+            );
+            expect(img.getAttribute('src')).not.toContain('zzrf-001.dx.commercecloud.salesforce.com');
+
+            const source = img.closest('picture')?.querySelector('source');
+            expect(source?.getAttribute('srcset')).toContain('/dw/image/v2/DEMO_001/');
+            expect(source?.getAttribute('srcset')).toContain('.webp');
+            expect(source?.getAttribute('srcset')).toContain('sfrm=jpg');
+        });
+
+        test('rewrites raw MyDomain URL to DIS-hosted URL in srcSet and <img src>', () => {
+            const rawSrc =
+                'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toContain(
+                'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg'
+            );
+            expect(img.getAttribute('src')).not.toContain('demo-001.my.cc.salesforce.com');
+
+            const source = img.closest('picture')?.querySelector('source');
+            expect(source?.getAttribute('srcset')).toContain('/dw/image/v2/DEMO_001/');
+            expect(source?.getAttribute('srcset')).toContain('.webp');
+            expect(source?.getAttribute('srcset')).toContain('sfrm=jpg');
+        });
+
+        test('leaves raw MyDomain URL as-is when DIS is disabled', () => {
+            mockConfigImages = { ...mockConfig.images, enableDis: false };
+            const rawSrc =
+                'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" />);
+
+            const img = screen.getByRole('img');
+            // DIS disabled → relative static path, no DIS host/prefix
+            expect(img.getAttribute('src')).toBe(
+                '/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg'
+            );
+        });
+
+        test('does not rewrite host for non-SFCC URL when DIS is enabled', () => {
+            const externalSrc = 'https://cdn.example.com/images/product.jpg';
+            render(<DynamicImage src={externalSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            const imgSrc = img.getAttribute('src') ?? '';
+            expect(imgSrc).toContain('cdn.example.com');
+            expect(imgSrc).not.toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(imgSrc).not.toMatch(/\/dw\/image\/v\d+\//);
+
+            const srcset = img.closest('picture')?.querySelector('source')?.getAttribute('srcset') ?? '';
+            expect(srcset).toContain('cdn.example.com');
+            expect(srcset).not.toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(srcset).not.toMatch(/\/dw\/image\/v\d+\//);
+        });
+    });
+
     describe('responsive images', () => {
         test('renders responsive image with widths array', () => {
             render(<DynamicImage src={src} alt="Test image" widths={[100, 200, 400]} />);
@@ -592,7 +657,7 @@ describe('Dynamic Image Component', () => {
                 expect(preloadMock).toHaveBeenCalledTimes(2);
                 expect(preloadMock).toHaveBeenNthCalledWith(
                     1,
-                    expect.any(String),
+                    'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=200&q=70&sfrm=jpg',
                     expect.objectContaining({
                         as: 'image',
                         fetchPriority: 'high',
@@ -605,7 +670,7 @@ describe('Dynamic Image Component', () => {
                 );
                 expect(preloadMock).toHaveBeenNthCalledWith(
                     2,
-                    expect.any(String),
+                    'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4cd0a798/images/large/PG.10216885.JJ169XX.PZ.webp?sw=400&q=70&sfrm=jpg',
                     expect.objectContaining({
                         as: 'image',
                         fetchPriority: 'high',
@@ -616,6 +681,29 @@ describe('Dynamic Image Component', () => {
                         type: 'image/webp',
                     })
                 );
+            });
+
+            test('preload href is the canonical 1x URL — not the srcSet — and unique per breakpoint', () => {
+                // Browsers ignore href when imagesrcset is present, but React keys preload dedup on
+                // (as, href). Passing the srcSet string as href would collapse distinct breakpoints
+                // into one cache slot and break <link rel=preload> emission.
+                render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} priority="high" />);
+
+                const [firstHref, firstOpts] = preloadMock.mock.calls[0] as [string, { imageSrcSet: string }];
+                const [secondHref, secondOpts] = preloadMock.mock.calls[1] as [string, { imageSrcSet: string }];
+
+                // Each href is a single URL — no comma-separated candidate list, no width descriptor.
+                expect(firstHref).not.toContain(',');
+                expect(firstHref).not.toMatch(/\s\d+w$/);
+                expect(secondHref).not.toContain(',');
+                expect(secondHref).not.toMatch(/\s\d+w$/);
+
+                // Per-breakpoint canonical hrefs differ — preserves React's per-resource dedup.
+                expect(firstHref).not.toBe(secondHref);
+
+                // href appears as the 1x candidate inside the imageSrcSet for that breakpoint.
+                expect(firstOpts.imageSrcSet.startsWith(`${firstHref} `)).toBe(true);
+                expect(secondOpts.imageSrcSet.startsWith(`${secondHref} `)).toBe(true);
             });
         });
     });
@@ -855,6 +943,243 @@ describe('Dynamic Image Component', () => {
             expect(wrapper).not.toHaveAttribute('componentData');
             expect(wrapper).not.toHaveAttribute('designMetadata');
             expect(wrapper).not.toHaveAttribute('data');
+        });
+    });
+
+    describe('styling fallback branches', () => {
+        // Page Designer can publish enum values that drift from the type's literal union (e.g. a stale
+        // metadata snapshot or a customer override). The component must not crash or emit a stray
+        // arbitrary class — it falls back to the default.
+
+        test('falls back to rounded-none for unknown borderRadius values but still adds overflow-hidden', () => {
+            render(<DynamicImage src={src} alt="Test" borderRadius={'bogus' as any} />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).toContain('rounded-none');
+            // Still a non-default borderRadius branch, so wrapper clips overflow.
+            expect(wrapper?.className).toContain('overflow-hidden');
+        });
+
+        test('falls back to object-cover for unknown objectFit values', () => {
+            render(<DynamicImage src={src} alt="Test" objectFit={'bogus' as any} />);
+            const img = screen.getByRole('img');
+            expect(img.className).toContain('object-cover');
+        });
+
+        test('does not emit a padding class when padding is "0"', () => {
+            render(<DynamicImage src={src} alt="Test" padding="0" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toMatch(/(^|\s)p-\d/);
+        });
+
+        test('does not emit a margin class when margin is "0"', () => {
+            render(<DynamicImage src={src} alt="Test" margin="0" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toMatch(/(^|\s)m-\d/);
+        });
+
+        test('does not emit a shadow class when boxShadow is "none"', () => {
+            render(<DynamicImage src={src} alt="Test" boxShadow="none" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toContain('shadow-');
+        });
+
+        test('does not emit a hover class when hoverEffect is "none"', () => {
+            render(<DynamicImage src={src} alt="Test" hoverEffect="none" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toContain('hover:');
+            expect(wrapper?.className).not.toContain('transition-');
+        });
+
+        test('does not add overflow-hidden when borderRadius is "none"', () => {
+            render(<DynamicImage src={src} alt="Test" borderRadius="none" />);
+            const wrapper = screen.getByRole('img').parentElement;
+            expect(wrapper?.className).not.toContain('overflow-hidden');
+            expect(wrapper?.className).not.toContain('rounded-');
+        });
+    });
+
+    describe('parseDimensionsString edge cases', () => {
+        test('treats whitespace-only widths string as undefined and renders no <picture>', () => {
+            render(<DynamicImage src={src} alt="Test" widths="   " />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            expect(img.closest('picture')).not.toBeInTheDocument();
+        });
+
+        test('treats all-NaN widths string as undefined and renders no <picture>', () => {
+            render(<DynamicImage src={src} alt="Test" widths="abc,xyz" />);
+            const img = screen.getByRole('img');
+            expect(img).toBeInTheDocument();
+            expect(img.closest('picture')).not.toBeInTheDocument();
+        });
+
+        test('filters NaN tokens out of mixed widths string', () => {
+            render(<DynamicImage src={src} alt="Test" widths="100,abc,200" />);
+            const picture = screen.getByRole('img').closest('picture');
+            expect(picture).toBeInTheDocument();
+
+            // Two valid widths → two breakpoints/sources (sm first, then base).
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(2);
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            expect(srcSets[0]).toContain('sw=200');
+            expect(srcSets[1]).toContain('sw=100');
+        });
+    });
+
+    describe('enableDis: false', () => {
+        beforeEach(() => {
+            mockConfigImages = { ...mockConfig.images, enableDis: false };
+        });
+
+        test('does not emit <source> elements even when widths are provided', () => {
+            render(<DynamicImage src={src} alt="Test" widths={[200, 400]} />);
+            const img = screen.getByRole('img');
+            // No formats means no <source> children, but the wrapper may still create a <picture>
+            // with zero sources — assert the source list is empty either way.
+            const picture = img.closest('picture');
+            const sources = picture?.querySelectorAll('source');
+            expect(sources?.length ?? 0).toBe(0);
+        });
+
+        test('does not convert img src format (no sfrm parameter, original extension preserved)', () => {
+            const pngSrc = 'https://cdn.example.com/image.png';
+            render(<DynamicImage src={pngSrc} alt="Test" widths={[200]} />);
+            const img = screen.getByRole('img');
+            const imgSrc = img.getAttribute('src') ?? '';
+            // replaceImageFormat is not applied → original .png extension survives, no sfrm rewrite.
+            expect(imgSrc).not.toContain('sfrm=');
+            expect(imgSrc).not.toContain('.webp');
+        });
+
+        test('does not pass quality through to img src', () => {
+            mockConfigImages = { ...mockConfig.images, enableDis: false, quality: 85 };
+            const externalSrc = 'https://cdn.example.com/image.jpg';
+            render(<DynamicImage src={externalSrc} alt="Test" widths={[200]} />);
+            const img = screen.getByRole('img');
+            const imgSrc = img.getAttribute('src') ?? '';
+            expect(imgSrc).not.toContain('q=85');
+            expect(imgSrc).not.toContain('q=70');
+        });
+    });
+
+    describe('imageProps precedence', () => {
+        test('merges imageProps.className with the computed object-fit class', () => {
+            render(
+                <DynamicImage
+                    src={src}
+                    alt="Test"
+                    objectFit="contain"
+                    imageProps={{ className: 'custom-img-class' } as any}
+                />
+            );
+            const img = screen.getByRole('img');
+            expect(img.className).toContain('object-contain');
+            expect(img.className).toContain('custom-img-class');
+        });
+
+        test('alt prop overrides imageProps.alt', () => {
+            render(<DynamicImage src={src} alt="prop alt" imageProps={{ alt: 'imageProps alt' } as any} />);
+            const img = screen.getByRole('img');
+            expect(img).toHaveAttribute('alt', 'prop alt');
+        });
+
+        test('component-computed src overrides imageProps.src', () => {
+            const otherSrc = 'https://cdn.example.com/other.jpg';
+            render(<DynamicImage src={src} alt="Test" imageProps={{ src: otherSrc } as any} />);
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).not.toBe(otherSrc);
+        });
+
+        test('effective loading overrides imageProps.loading', () => {
+            // priority="high" → effectiveLoading is "eager"; imageProps.loading="lazy" should be ignored.
+            render(<DynamicImage src={src} alt="Test" priority="high" imageProps={{ loading: 'lazy' } as any} />);
+            const img = screen.getByRole('img');
+            expect(img).toHaveAttribute('loading', 'eager');
+        });
+
+        test('effective fetchPriority overrides imageProps.fetchPriority', () => {
+            render(<DynamicImage src={src} alt="Test" priority="low" imageProps={{ fetchPriority: 'high' } as any} />);
+            const img = screen.getByRole('img');
+            expect(img).toHaveAttribute('fetchpriority', 'low');
+        });
+    });
+
+    describe('DynamicImageContext: hasSource called with transformed src', () => {
+        test('calls hasSource with the DIS-rewritten URL, not the raw src', () => {
+            const rawSrc =
+                'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg';
+            const mockHasSource = vi.fn().mockReturnValue(false);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={rawSrc} alt="Test" />);
+
+            expect(mockHasSource).toHaveBeenCalledTimes(1);
+            const callArg = mockHasSource.mock.calls[0][0] as string;
+            // The transformed URL is what's emitted on the <img>; hasSource is keyed off the same value.
+            expect(callArg).toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(callArg).toContain('/dw/image/v2/DEMO_001/');
+            expect(callArg).not.toContain('demo-001.dx.commercecloud.salesforce.com');
+        });
+
+        test('does not call hasSource when priority is explicitly set', () => {
+            const mockHasSource = vi.fn().mockReturnValue(true);
+            (useDynamicImageContext as Mock).mockReturnValue({
+                hasSource: mockHasSource,
+                addSource: vi.fn(),
+            });
+
+            render(<DynamicImage src={src} alt="Test" priority="low" />);
+
+            // `priority ?? (...)` short-circuits — hasSource must not run.
+            expect(mockHasSource).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('server-side preload edge cases', () => {
+        beforeEach(() => {
+            (isServer as Mock).mockReturnValue(true);
+        });
+
+        afterEach(() => {
+            (isServer as Mock).mockReturnValue(false);
+        });
+
+        test('does not call preload when priority is high but no widths/heights are provided', () => {
+            // No responsive dimensions → responsiveImageProps.links is empty, so the forEach never fires.
+            render(<DynamicImage src={src} alt="Test" priority="high" />);
+            expect(preloadMock).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('wrapper ...rest spread', () => {
+        test('passes through extra HTML attributes (data-*, id, style) to the wrapper element', () => {
+            render(
+                <DynamicImage
+                    src={src}
+                    alt="Test"
+                    {...({ 'data-testid': 'wrapper', id: 'wrap-id', style: { display: 'block' } } as any)}
+                />
+            );
+            const wrapper = screen.getByTestId('wrapper');
+            expect(wrapper).toHaveAttribute('id', 'wrap-id');
+            expect(wrapper).toHaveStyle({ display: 'block' });
+        });
+    });
+
+    describe('Page Designer image object normalization', () => {
+        test('falls through to url when absURL is empty string', () => {
+            // SFCC sometimes emits an image object with absURL set to '' — the resolver must skip the
+            // falsy value and use the next non-empty URL property.
+            render(<DynamicImage src={{ absURL: '', url: src } as unknown as string} alt="Test" />);
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toBeTruthy();
+            // Whatever DIS-rewriting happens, the image must end up rendering — i.e., the empty absURL
+            // didn't short-circuit the fallback chain.
+            expect(img).toBeInTheDocument();
         });
     });
 });

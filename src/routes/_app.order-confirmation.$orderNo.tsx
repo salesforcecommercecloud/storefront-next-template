@@ -16,7 +16,9 @@
 import { type ReactElement, Suspense, useEffect } from 'react';
 import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
-import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Await, useFetcher } from 'react-router';
+import type { action as postOrderRegisterAction } from '@/routes/action.post-order-register';
+import type { Route } from './+types/_app.order-confirmation.$orderNo';
 import { Link } from '@/components/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,20 +30,23 @@ import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { useBasketReset } from '@/providers/basket';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
+import { routes } from '@/route-paths';
 import type {
     ShopperOrders,
     ShopperProducts,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
-import { getCardTypeDisplay } from '@/lib/payment-utils';
-import { getDisplayVariationValues } from '@/lib/product-utils';
+} from '@/scapi';
+import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
+import { getDisplayVariationValues } from '@/lib/product/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { getLogger } from '@/lib/logger.server';
+import { getLoginPreferences } from '@/lib/login-preferences.server';
+import { isRegisteredCustomer } from '@/lib/api/customer.server';
+import { PostOrderRegistration } from '@/components/post-order-registration/post-order-registration';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
@@ -60,6 +65,7 @@ type OrderConfirmationData = {
 
 type CheckoutConfirmationLoaderData = {
     orderData: Promise<OrderConfirmationData>;
+    showPostOrderRegistration: boolean;
 };
 
 type ImageSource = {
@@ -100,11 +106,16 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
  * @param args - Loader function arguments containing context and parameters
  * @returns Promise that resolves to an object containing the order data promise
  */
-export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
+export function loader({ context, params }: Route.LoaderArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
     logger.debug('OrderConfirmation: loader starting', { orderNo });
-    const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
+    const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo);
+
+    // Determine if we should show post-order registration (guest + email verification disabled)
+    const userIsRegistered = isRegisteredCustomer(context);
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const showPostOrderRegistration = !userIsRegistered && !emailVerificationEnabled;
 
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const storesByStoreIdPromise = orderPromise.then((order) => fetchStoresForOrder(context, order));
@@ -127,6 +138,7 @@ export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirm
 
     return {
         orderData: combinedPromise,
+        showPostOrderRegistration,
     };
 }
 
@@ -154,7 +166,7 @@ export function ErrorBoundary() {
                             {errorMessage}
                         </Typography>
                         <Button asChild>
-                            <Link to="/">{t('confirmation.actions.continueShopping')}</Link>
+                            <Link to={routes.home}>{t('confirmation.actions.continueShopping')}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -177,11 +189,18 @@ function OrderConfirmationContent({
     productsById,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId,
-}: OrderConfirmationData): ReactElement {
-    const config = useConfig<AppConfig>();
+    showPostOrderRegistration,
+}: OrderConfirmationData & { showPostOrderRegistration: boolean }): ReactElement {
+    const config = useConfig();
     const { t, i18n } = useTranslation('checkout');
     const { currency } = useSite();
     const resetBasket = useBasketReset();
+
+    // Track registration fetcher to keep showing the card after revalidation
+    // (loader flips showPostOrderRegistration to false once the user is logged in)
+    const registerFetcher = useFetcher<typeof postOrderRegisterAction>({ key: 'post-order-register' });
+    const registrationSuccess = registerFetcher.data?.success === true;
+
     let deliveryShipments = order.shipments;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -198,7 +217,7 @@ function OrderConfirmationContent({
         order.customerInfo?.firstName || order.billingAddress?.firstName || t('confirmation.hero.defaultName');
     const customerEmail = order.customerInfo?.email || t('confirmation.hero.emailFallback');
 
-    // NOTE/TODO: Integrators should replace placeholder URLs with actual FAQ, contact, and return policy links once available.
+    // Integrators should replace placeholder URLs with actual FAQ, contact, and return policy links.
     const helpActions = [
         { label: t('confirmation.helpLinks.faq'), href: '#' },
         { label: t('confirmation.helpLinks.contact'), href: '#' },
@@ -260,7 +279,7 @@ function OrderConfirmationContent({
                                 </Typography>
                             </div>
                             <div className="text-left md:text-right space-y-1">
-                                <p className="text-lg font-semibold text-foreground">
+                                <p className="text-sm font-semibold text-foreground">
                                     {t('confirmation.orderNumber')}
                                     <span data-testid="order-number" className="text-primary">
                                         {' '}
@@ -290,6 +309,16 @@ function OrderConfirmationContent({
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Post-order registration for guest shoppers when email verification is disabled */}
+                {(showPostOrderRegistration || registrationSuccess) && order.customerInfo?.email && (
+                    <PostOrderRegistration
+                        email={order.customerInfo.email}
+                        firstName={order.billingAddress?.firstName || order.shipments?.[0]?.shippingAddress?.firstName}
+                        lastName={order.billingAddress?.lastName || order.shipments?.[0]?.shippingAddress?.lastName}
+                        orderNo={order.orderNo}
+                    />
+                )}
 
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
@@ -325,7 +354,7 @@ function OrderConfirmationContent({
                         <Card key={shipment.shipmentId} className="border border-border/70 rounded-none shadow-none">
                             <CardContent className="grid gap-6 p-6 md:grid-cols-3">
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.arriving')}
                                     </p>
                                     <p className="mt-3 text-sm font-medium text-muted-foreground">
@@ -333,7 +362,7 @@ function OrderConfirmationContent({
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.shippingAddress')}
                                     </p>
                                     <div className="mt-3 space-y-2">
@@ -347,7 +376,7 @@ function OrderConfirmationContent({
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.shippingMethod')}
                                     </p>
                                     <p className="mt-3 text-sm font-medium text-muted-foreground">
@@ -363,7 +392,7 @@ function OrderConfirmationContent({
                 {/* Product Items Summary section */}
                 <Card className="border border-border/70 rounded-none shadow-none">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
+                        <CardTitle className="text-2xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-4">
@@ -401,7 +430,7 @@ function OrderConfirmationContent({
                                             key={productKey}
                                             className="rounded-none border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
                                             <div className="flex items-center justify-center">
-                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
+                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-sm font-semibold">
                                                     {imageSrc ? (
                                                         <ProductImage
                                                             src={toImageUrl({ src: imageSrc, config }) ?? imageSrc}
@@ -439,7 +468,7 @@ function OrderConfirmationContent({
                                                         {formatCurrency(originalPrice, i18n.language, currency)}
                                                     </p>
                                                 )}
-                                                <p className="text-lg font-semibold text-foreground">
+                                                <p className="text-sm font-semibold text-foreground">
                                                     {formatCurrency(finalPrice, i18n.language, currency)}
                                                 </p>
                                             </div>
@@ -498,7 +527,7 @@ function OrderConfirmationContent({
                                 <p className="font-medium text-foreground">{paymentSummary}</p>
                             </div>
                         </div>
-                        <p className="text-lg font-semibold text-foreground">
+                        <p className="text-sm font-semibold text-foreground">
                             {formatCurrency(totals.total, i18n.language, currency)}
                         </p>
                     </CardContent>
@@ -511,7 +540,7 @@ function OrderConfirmationContent({
                             <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>
                             <p className="text-sm text-muted-foreground">{t('confirmation.newsletter.subtitle')}</p>
                         </div>
-                        {/* NOTE/TODO: This is a static placeholder form. Integrators should handle submit events here
+                        {/* This is a static placeholder form. Integrators should handle submit events here
                            (e.g., call their marketing/newsletter API or hook into an existing newsletter service). */}
                         <form className="flex flex-col gap-3 sm:flex-row">
                             <Input
@@ -528,10 +557,10 @@ function OrderConfirmationContent({
 
                 <div className="flex flex-col justify-center gap-4 pt-2 sm:flex-row">
                     <Button asChild size="lg">
-                        <Link to="/">{t('confirmation.actions.continueShopping')}</Link>
+                        <Link to={routes.home}>{t('confirmation.actions.continueShopping')}</Link>
                     </Button>
                     <Button asChild variant="outline" size="lg">
-                        <Link to="/account">{t('confirmation.actions.viewAccount')}</Link>
+                        <Link to={routes.account}>{t('confirmation.actions.viewAccount')}</Link>
                     </Button>
                 </div>
             </div>
@@ -556,7 +585,14 @@ export default function OrderConfirmationPage({
         <>
             <SeoMeta title={t('meta.confirmationTitle', { defaultValue: 'Order Confirmation' })} noIndex />
             <Suspense fallback={<OrderSkeleton />}>
-                <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
+                <Await resolve={loaderData.orderData}>
+                    {(data) => (
+                        <OrderConfirmationContent
+                            {...data}
+                            showPostOrderRegistration={loaderData.showPostOrderRegistration}
+                        />
+                    )}
+                </Await>
             </Suspense>
         </>
     );

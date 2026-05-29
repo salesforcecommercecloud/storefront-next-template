@@ -18,9 +18,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useFetcher } from 'react-router';
 import RegisterCustomerSelection from './register-customer-selection';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock dependencies
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useFetcher: vi.fn(() => ({
         submit: vi.fn(),
         state: 'idle',
@@ -119,7 +121,7 @@ describe('RegisterCustomerSelection', () => {
             expect.any(FormData),
             expect.objectContaining({
                 method: 'POST',
-                action: '/action/initiate-checkout-registration',
+                action: resourceRoutes.initiateCheckoutRegistration,
             })
         );
     });

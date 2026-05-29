@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { handleMultiShipShippingOptions } from './checkout-submit-multi-options.server';
-import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperBasketsV2 } from '@/scapi';
 import type { ActionFunctionArgs } from 'react-router';
 
 // Mock the dependencies
@@ -334,7 +334,7 @@ describe('checkout-submit-multi-options', () => {
             expect(result).not.toBeNull();
             const jsonResult = await result?.json();
             expect(jsonResult.success).toBe(false);
-            expect(jsonResult.error).toBe('Something went wrong. Try again later.');
+            expect(jsonResult.error).toBe('Server error. Try again later.');
         });
     });
 });

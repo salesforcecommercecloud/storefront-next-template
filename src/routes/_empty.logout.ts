@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs, redirect } from 'react-router';
+import { redirect } from 'react-router';
+import type { Route } from './+types/_empty.logout';
 import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { destroyBasket } from '@/middlewares/basket.server';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 /**
  * This server action is required for authentication, because logout must be handled server-side to properly invalidate
  * server-side sessions and integrate with Salesforce Commerce Cloud's authentication system.
  */
-export async function action({ context }: ActionFunctionArgs) {
+export async function action({ context }: Route.ActionArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
     const { accessToken, refreshToken } = session;
@@ -41,5 +43,5 @@ export async function action({ context }: ActionFunctionArgs) {
     destroyAuthServer(context);
     destroyBasket(context);
     logger.info('Logout: session destroyed');
-    return redirect('/');
+    return redirect(routes.home);
 }

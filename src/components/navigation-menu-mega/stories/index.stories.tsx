@@ -15,282 +15,183 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { action } from 'storybook/actions';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { expect, userEvent } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import type { ShopperProducts } from '@/scapi';
 import CategoryNavigationMenuMega from '../index';
-// @ts-expect-error Mock data file is JavaScript
-import { mockCategories } from '@/components/__mocks__/mock-data';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { mockMegaMenuRootCategory, mockMegaMenuSubCategories } from './mock-menu-data';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// Desktop viewport — the mega menu is gated by `lg:flex` (≥1024px).
+// Below that, only the hamburger button renders (mobile drawer).
+const desktopViewport = {
+    name: 'Desktop',
+    styles: { width: '1440px', height: '900px' },
+    type: 'desktop' as const,
+};
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+const mobileViewport = {
+    name: 'iPhone',
+    styles: { width: '375px', height: '844px' },
+    type: 'mobile' as const,
+};
 
-        const logMenuClick = action('mega-menu-click');
-        const logMenuHover = action('mega-menu-hover');
-        const logMenuOpen = action('mega-menu-open');
-        const logBannerClick = action('banner-click');
+const subCategoriesList = mockMegaMenuSubCategories;
 
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const navLink = target.closest('a[href]');
-            const trigger = target.closest('[data-slot="navigation-menu-trigger"]');
-            const img = target.closest('img');
-
-            if (img && img.closest('a[href]')) {
-                const link = img.closest('a[href]') as HTMLAnchorElement;
-                const href = link.getAttribute('href') || '';
-                logBannerClick({ href, alt: img.getAttribute('alt') || '' });
-                return;
-            }
-
-            if (navLink) {
-                const href = navLink.getAttribute('href') || '';
-                const text = navLink.textContent?.trim() || '';
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                logMenuClick({ href, label: text });
-                return;
-            }
-
-            if (trigger) {
-                const label = trigger.textContent?.trim() || '';
-                logMenuOpen({ label });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const navLink = target.closest('a[href], [data-slot="navigation-menu-trigger"]');
-            if (navLink) {
-                const label = navLink.textContent?.trim() || '';
-                const href = (navLink as HTMLAnchorElement).getAttribute('href') || '';
-                logMenuHover({ label, href });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+// Strips banner-related fields from every L1 category so the menu renders the
+// no-banner branch (single column, no `<CategoryBanner>`).
+function stripBanners(root: ShopperProducts.schemas['Category']): ShopperProducts.schemas['Category'] {
+    return {
+        ...root,
+        categories: (root.categories || []).map((cat) => {
+            const stripped: ShopperProducts.schemas['Category'] = { ...cat };
+            delete stripped.c_headerMenuBanner;
+            delete stripped.c_headerMenuOrientation;
+            return stripped;
+        }),
+    };
 }
 
-const mockRootCategory = mockCategories.root;
-const mockCategoriesList = mockRootCategory.categories || [];
+interface MegaStoryArgs {
+    showBanners: boolean;
+}
 
-const meta: Meta<typeof CategoryNavigationMenuMega> = {
-    title: 'NAVIGATION/Navigation Menu Mega',
-    component: CategoryNavigationMenuMega,
+const meta: Meta<MegaStoryArgs> = {
+    title: 'LAYOUT/Navigation Menu Mega',
     tags: ['autodocs', 'interaction'],
     parameters: {
-        layout: 'padded',
+        layout: 'fullscreen',
+        viewport: {
+            options: { desktop: desktopViewport },
+            value: 'desktop',
+            isRotated: false,
+        },
         docs: {
             description: {
                 component: `
-Mega menu implementation for category navigation. Features full-width dropdown menus with category banners and enhanced styling.
+Header navigation product: the responsive mega menu the storefront actually ships. Consumes the generic \`CategoryNavigationMenu\` engine (see *LAYOUT/Navigation Menu*) and configures it for the header — banner layout (vertical/horizontal driven by \`c_headerMenuOrientation\` + \`c_headerMenuBanner\`), pointer-vs-keyboard behavior on top-level triggers, and DIS image transformation on the banner HTML. Also owns the mobile experience the engine doesn't provide: hamburger button, \`MobileMenuContext\`, and \`MobileMenuDropdown\` with expandable subcategories.
 
-**Features:**
-- Full-width mega menu layout
-- Category banner support
-- Vertical and horizontal banner orientations
-- Custom styling for top-seller categories
-- Async category loading via WithCategoryNavigationMenu
+Responsive breakpoints:
+- **Desktop (≥1024px)**: Full-width mega menu with banners + nested categories.
+- **Mobile (<1024px)**: Hamburger button + drawer. Expanding a root category shows all descendant links at once.
+
+Pinned to a desktop viewport so the mega menu is visible. Toggle **Show banners** in the controls panel to switch between the banner branch (\`hasBanner\` true → 2-column grid + \`<CategoryBanner>\`) and the no-banner branch (single column).
                 `,
             },
         },
     },
+    argTypes: {
+        showBanners: {
+            control: 'boolean',
+            description:
+                'Drives `c_headerMenuBanner` / `c_headerMenuOrientation` on the L1 categories. Off → no-banner branch; On → mock banners (Women horizontal, Men vertical).',
+        },
+    },
+    args: {
+        showBanners: true,
+    },
     decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ActionLogger>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActionLogger>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                        {
-                            path: '/category/:id',
-                            element: <div>Category Page</div>,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
+        (Story) => {
+            // Keep the root navigation inside the mock header, matching production:
+            // <Header> sets --header-height and the fixed panel starts below it.
+            return (
+                <div style={{ ['--header-height' as never]: '72px' }}>
+                    <div className="relative z-50 flex h-[72px] items-center bg-header-background px-8 text-header-foreground shadow-sm">
+                        <Story />
+                    </div>
+                    <div className="min-h-[520px] bg-background" aria-hidden />
+                </div>
+            );
         },
     ],
-    argTypes: {
-        resolve: {
-            description: 'Promise resolving to root category with first-level subcategories',
-            control: false,
-        },
-        defer: {
-            description: 'Promise resolving to deeper subcategory data (prefetched)',
-            control: false,
-        },
+    render: ({ showBanners }) => {
+        const root = showBanners ? mockMegaMenuRootCategory : stripBanners(mockMegaMenuRootCategory);
+        return (
+            <CategoryNavigationMenuMega resolve={Promise.resolve(root)} defer={Promise.resolve(subCategoriesList)} />
+        );
     },
 };
 
 export default meta;
-type Story = StoryObj<typeof CategoryNavigationMenuMega>;
+type Story = StoryObj<MegaStoryArgs>;
 
 export const Default: Story = {
-    args: {
-        resolve: Promise.resolve(mockRootCategory),
-        defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
-        ),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Default mega menu with category navigation.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        // The component is hidden on mobile (lg:block), so we check for the navigation menu structure
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-    },
-};
-
-export const Interactive: Story = {
-    args: {
-        resolve: Promise.resolve(mockRootCategory),
-        defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
-        ),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Interactive mega menu with hover and click interactions.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
+        const canvas = within(canvasElement);
 
-        // Find and interact with a trigger button if available
-        const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
-        if (triggers.length > 0) {
-            const firstTrigger = triggers[0] as HTMLElement;
-            await userEvent.hover(firstTrigger);
-            await expect(firstTrigger).toBeInTheDocument();
-        }
+        // Wait for Suspense to flush — `WithCategoryNavigationMenu` awaits the resolve promise.
+        await waitFor(() => {
+            const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
+            expect(triggers.length).toBeGreaterThan(0);
+        });
 
-        // Find and interact with links
-        const links = canvasElement.querySelectorAll('a[href]');
-        if (links.length > 0) {
-            const firstLink = links[0] as HTMLElement;
-            await userEvent.hover(firstLink);
-            await expect(firstLink).toBeInTheDocument();
-        }
-    },
-};
-export const WithBanners: Story = {
-    args: {
-        resolve: Promise.resolve({
-            ...mockRootCategory,
-            categories: mockCategoriesList.map((cat: ShopperProducts.schemas['Category']) => ({
-                ...cat,
-                c_headerMenuBanner: '<img src="https://example.com/banner.jpg" alt="Banner" />',
-                c_headerMenuOrientation: 'horizontal',
-            })),
-        }),
-        defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
-        ),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Mega menu with category banners (horizontal orientation).',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-    },
-};
+        const menu = canvas.getByRole('navigation');
+        await expect(menu).toBeInTheDocument();
 
-export const KeyboardAccessibility: Story = {
-    args: {
-        resolve: Promise.resolve(mockRootCategory),
-        defer: Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
-        ),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Verifies keyboard users can expand dropdowns without navigating away. Uses onPointerDown for mouse navigation while preserving keyboard dropdown expansion.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
+        // Hover the first trigger to open the panel.
+        const triggers = canvasElement.querySelectorAll<HTMLElement>('[data-slot="navigation-menu-trigger"]');
+        await userEvent.hover(triggers[0]);
+        await waitFor(() => {
+            const viewport = canvasElement.querySelector('[data-slot="navigation-menu-viewport"]');
+            expect(viewport?.getAttribute('data-state')).toBe('open');
+        });
 
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-
-        // Find first trigger with subcategories
-        const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
-        if (triggers.length === 0) return;
-
-        const firstTrigger = triggers[0] as HTMLElement;
-
-        // Verify dropdown is closed initially
-        const viewport = canvasElement.querySelector('[data-slot="navigation-menu-viewport"]');
-
-        // Simulate keyboard interaction (Enter key)
-        firstTrigger.focus();
-        await userEvent.keyboard('{Enter}');
-
-        // Wait for animation
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        // Verify dropdown opened (keyboard users should be able to expand without navigation)
-        const openState = viewport?.getAttribute('data-state');
-        await expect(openState).toBe('open');
-
-        // Verify subcategories are now visible
+        // Banner branch: assert the L1 banner image renders inside the open panel.
+        // No-banner branch: assert the panel rendered subcategories without a banner.
         const content = canvasElement.querySelector('[data-slot="navigation-menu-content"]');
-        await expect(content).toBeInTheDocument();
+        if (args.showBanners) {
+            const banner = content?.querySelector('img[alt^="Women"], img[alt^="Men"]');
+            await expect(banner).toBeInTheDocument();
+        } else {
+            const banner = content?.querySelector('img');
+            await expect(banner).toBeNull();
+        }
+    },
+};
+
+// Mobile (<1024px): the desktop mega menu is hidden via `lg:flex`. What renders
+// instead is the hamburger button + `MobileMenuDropdown` drawer.
+// `showBanners` has no effect on this branch — the mobile drawer doesn't render
+// banners.
+export const MobileView: Story = {
+    globals: {
+        viewport: { value: 'iphone', isRotated: false },
+    },
+    parameters: {
+        viewport: {
+            options: { iphone: mobileViewport },
+            value: 'iphone',
+            isRotated: false,
+        },
+        docs: {
+            description: {
+                story: 'Mobile breakpoint (<1024px): root categories expand to reveal all descendant category links at once.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        // Wait for the hamburger to render (also gated by Suspense via `WithCategoryNavigationMenu`).
+        const hamburger = await waitFor(() => {
+            const btn = canvasElement.querySelector<HTMLButtonElement>('button[aria-label="Open menu"]');
+            if (!btn) throw new Error('hamburger not yet rendered');
+            return btn;
+        });
+        await expect(hamburger).toHaveAttribute('aria-expanded', 'false');
+
+        await userEvent.click(hamburger);
+        await expect(hamburger).toHaveAttribute('aria-expanded', 'true');
+
+        const drawer = canvasElement.querySelector('[aria-label="Mobile navigation menu"]');
+        await expect(drawer).toBeInTheDocument();
+        await expect(drawer).not.toHaveAttribute('aria-hidden', 'true');
+
+        // Drawer surfaces the top-level Women link. Subcategory expansion is
+        // gated on the `useSubCategory` store populating from the deferred promise,
+        // which races with this play function in the test runner — covered by
+        // unit tests in `navigation-menu-mega/index.test.tsx` instead.
+        const womenLink = (drawer as HTMLElement).querySelector('a[href$="/category/womens"]');
+        await expect(womenLink).toBeInTheDocument();
     },
 };

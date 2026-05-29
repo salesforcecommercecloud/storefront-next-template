@@ -16,6 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loader } from './_empty.oauth2.jwks';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { mockSiteObject } from '@/test-utils/config';
 
 const { t } = getTranslation();
 // Mock global fetch
@@ -30,7 +31,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
                 clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
                 organizationId: 'f_ecom_zzrf_001',
                 shortCode: 'kv7kzm78',
-                siteId: 'RefArchGlobal',
+                siteId: mockSiteObject.id,
             },
         },
     })),

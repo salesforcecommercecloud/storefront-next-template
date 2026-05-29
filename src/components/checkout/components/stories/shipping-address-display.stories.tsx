@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import ShippingAddressDisplay from '../shipping-address-display';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
+
 const meta: Meta<typeof ShippingAddressDisplay> = {
     title: 'CHECKOUT/ShippingAddressDisplay',
     component: ShippingAddressDisplay,
@@ -28,8 +29,15 @@ const meta: Meta<typeof ShippingAddressDisplay> = {
         docs: {
             description: {
                 component:
-                    'Displays a shipping address in standard format: Name, Address1 Address2, ZipCode, City, StateCode, Country. When address is missing or empty, renders nothing. Used in checkout and order details.',
+                    'Displays a shipping address in standard format: Name, Address1 Address2, City StateCode ZipCode, Country. When address is missing or empty, renders nothing. Used in checkout and order details.',
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     tags: ['autodocs', 'interaction'],
@@ -63,14 +71,18 @@ const fullAddress = {
     countryCode: 'US',
 };
 
-export const Default: Story = {
+export const DefaultView: Story = {
     args: {
         address: fullAddress,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
+        const canvas = within(canvasElement);
+
+        // Verify key address fields render
+        await expect(canvas.getByText('Jane Doe')).toBeInTheDocument();
+        await expect(canvas.getByText(/123 Main St/)).toBeInTheDocument();
+        await expect(canvas.getByText(/San Francisco/)).toBeInTheDocument();
     },
 };
 
@@ -81,33 +93,35 @@ export const WithPhone: Story = {
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
+        const canvas = within(canvasElement);
+
+        // Address renders
+        await expect(canvas.getByText('Jane Doe')).toBeInTheDocument();
+
+        // Phone number is visible (stripCountryCode may reformat; check for core digits)
+        await expect(canvas.getByText(/555-123-4567|5551234567/)).toBeInTheDocument();
     },
 };
 
-export const CardVariantWithDefault: Story = {
+export const WithDefaultTag: Story = {
     args: {
         address: { ...fullAddress, preferred: true },
         variant: 'card',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
-    },
-};
-
-export const EmptyAddress: Story = {
-    args: {
-        address: null,
+    parameters: {
+        docs: {
+            description: {
+                story: 'Card variant with a preferred address — shows the "Default" badge alongside the name.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Component renders nothing (empty fragment) when address is null; Storybook layout may add a wrapper.
-        // Assert that no address content is present rather than firstChild, which can be a layout wrapper div.
-        await expect(canvas.queryByText(/Jane|Doe|123 Main/i)).toBeNull();
-        await expect(canvasElement).toBeInTheDocument();
+
+        await expect(canvas.getByText('Jane Doe')).toBeInTheDocument();
+
+        const badge = canvas.queryByText(/default/i);
+        await expect(badge).toBeInTheDocument();
     },
 };

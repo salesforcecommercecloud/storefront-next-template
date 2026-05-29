@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getAddressKey } from '@/lib/address-utils';
+import type { ShopperBasketsV2 } from '@/scapi';
+import { getAddressKey } from '@/lib/address/address-utils';
 
 /**
  * Return type for pickup shipment distribution analysis functions.

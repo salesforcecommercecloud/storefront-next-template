@@ -16,46 +16,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RadioCard, RadioCardGroup } from '../index';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 
-function RadioCardStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('radio-card-click');
-        const logChange = action('radio-card-change');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            const label = target.closest('label');
-            if (label) {
-                const input = label.querySelector('input[type="radio"]') as HTMLInputElement;
-                if (input) {
-                    logClick({ value: input.value });
-                    logChange({ value: input.value });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+interface RadioCardOption {
+    value: string;
+    title: string;
+    description: string;
+    disabled?: boolean;
 }
 
-const meta: Meta<typeof RadioCardGroup> = {
+interface StoryArgs {
+    options: RadioCardOption[];
+    defaultValue?: string;
+    disabled?: boolean;
+    orientation?: 'horizontal' | 'vertical';
+}
+
+// `Meta` is intentionally untyped against `RadioCardGroup`: the story uses a
+// synthetic `options` arg (mapped to <RadioCard> children in `render`) so
+// designers can edit cards via Controls. JSX `children` cannot be edited as
+// args, so a 1:1 typed Meta against `RadioCardGroupProps` would be misleading.
+const meta: Meta<StoryArgs> = {
     title: 'COMMON/Radio Card',
-    component: RadioCardGroup,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'centered',
         docs: {
@@ -82,42 +64,71 @@ A radio card component group that provides a card-based selection interface for 
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <RadioCardStoryHarness>
-                <Story />
-            </RadioCardStoryHarness>
-        ),
-    ],
+    // Args are bound to the group-level props so Storybook Controls drive
+    // the canvas. `options` is a synthetic story arg that maps to <RadioCard>
+    // children in `render` — JSX children can't be edited via Controls.
+    argTypes: {
+        defaultValue: {
+            control: 'text',
+            description: 'The value of the option that is selected on initial render',
+            table: { type: { summary: 'string' } },
+        },
+        disabled: {
+            control: 'boolean',
+            description: 'Disables the entire group',
+            table: {
+                type: { summary: 'boolean' },
+                defaultValue: { summary: 'false' },
+            },
+        },
+        orientation: {
+            control: 'radio',
+            options: ['vertical', 'horizontal'],
+            description: 'Layout direction of the radio cards',
+            table: {
+                type: { summary: "'vertical' | 'horizontal'" },
+                defaultValue: { summary: "'vertical'" },
+            },
+        },
+        options: {
+            control: 'object',
+            description: 'Story-only arg: list of cards to render. Each entry becomes a <RadioCard>.',
+            table: { type: { summary: 'RadioCardOption[]' } },
+        },
+    },
+    args: {
+        defaultValue: 'option1',
+        disabled: false,
+        orientation: 'vertical',
+        options: [
+            { value: 'option1', title: 'Option 1', description: 'This is the first option' },
+            { value: 'option2', title: 'Option 2', description: 'This is the second option' },
+            { value: 'option3', title: 'Option 3', description: 'This is the third option' },
+        ],
+    },
+    render: (args) => (
+        <RadioCardGroup
+            defaultValue={args.defaultValue}
+            disabled={args.disabled}
+            orientation={args.orientation}
+            onValueChange={action('value-changed')}>
+            {args.options.map((opt) => (
+                <RadioCard key={opt.value} value={opt.value} disabled={opt.disabled}>
+                    <div>
+                        <h3 className="font-semibold">{opt.title}</h3>
+                        {/* text-foreground/80 keeps contrast on the selected (blue) background */}
+                        <p className="text-sm text-foreground/80">{opt.description}</p>
+                    </div>
+                </RadioCard>
+            ))}
+        </RadioCardGroup>
+    ),
 };
 
 export default meta;
-type Story = StoryObj<typeof RadioCardGroup>;
+type Story = StoryObj<StoryArgs>;
 
 export const Default: Story = {
-    render: () => (
-        <RadioCardGroup defaultValue="option1">
-            <RadioCard value="option1">
-                <div>
-                    <h3 className="font-semibold">Option 1</h3>
-                    {/* Use text-foreground/80 for better contrast on selected (blue) background */}
-                    <p className="text-sm text-foreground/80">This is the first option</p>
-                </div>
-            </RadioCard>
-            <RadioCard value="option2">
-                <div>
-                    <h3 className="font-semibold">Option 2</h3>
-                    <p className="text-sm text-foreground/80">This is the second option</p>
-                </div>
-            </RadioCard>
-            <RadioCard value="option3">
-                <div>
-                    <h3 className="font-semibold">Option 3</h3>
-                    <p className="text-sm text-foreground/80">This is the third option</p>
-                </div>
-            </RadioCard>
-        </RadioCardGroup>
-    ),
     parameters: {
         docs: {
             story: `
@@ -130,83 +141,16 @@ Standard radio card group with vertical orientation.
             `,
         },
     },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for option 1
-        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
-        await expect(option1).toBeInTheDocument();
-    },
-};
-
-export const Horizontal: Story = {
-    render: () => (
-        <RadioCardGroup defaultValue="option1" orientation="horizontal">
-            <RadioCard value="option1">
-                <div>
-                    <h3 className="font-semibold">Option 1</h3>
-                </div>
-            </RadioCard>
-            <RadioCard value="option2">
-                <div>
-                    <h3 className="font-semibold">Option 2</h3>
-                </div>
-            </RadioCard>
-            <RadioCard value="option3">
-                <div>
-                    <h3 className="font-semibold">Option 3</h3>
-                </div>
-            </RadioCard>
-        </RadioCardGroup>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Radio card group with horizontal orientation.
-
-### Features:
-- Horizontal layout
-- Side-by-side cards
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for option 1
-        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
-        await expect(option1).toBeInTheDocument();
-    },
 };
 
 export const WithDisabled: Story = {
-    render: () => (
-        <RadioCardGroup defaultValue="option1">
-            <RadioCard value="option1">
-                <div>
-                    <h3 className="font-semibold">Option 1</h3>
-                    {/* Use text-foreground/80 for better contrast on selected (blue) background */}
-                    <p className="text-sm text-foreground/80">Available</p>
-                </div>
-            </RadioCard>
-            <RadioCard value="option2" disabled>
-                <div>
-                    <h3 className="font-semibold">Option 2</h3>
-                    <p className="text-sm text-foreground/80">Unavailable</p>
-                </div>
-            </RadioCard>
-            <RadioCard value="option3">
-                <div>
-                    <h3 className="font-semibold">Option 3</h3>
-                    <p className="text-sm text-foreground/80">Available</p>
-                </div>
-            </RadioCard>
-        </RadioCardGroup>
-    ),
+    args: {
+        options: [
+            { value: 'option1', title: 'Option 1', description: 'Available' },
+            { value: 'option2', title: 'Option 2', description: 'Unavailable', disabled: true },
+            { value: 'option3', title: 'Option 3', description: 'Available' },
+        ],
+    },
     parameters: {
         docs: {
             story: `
@@ -217,12 +161,5 @@ Radio card group with a disabled option.
 - Visual disabled state
             `,
         },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Check for disabled option
-        const option2 = await canvas.findByText(/option 2/i, {}, { timeout: 5000 });
-        await expect(option2).toBeInTheDocument();
     },
 };

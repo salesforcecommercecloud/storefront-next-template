@@ -16,6 +16,7 @@
 
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
+import { mockAltSiteObject } from '@/test-utils/config';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -24,11 +25,17 @@ import type {
     ShopperBasketsV2,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+} from '@/scapi';
 import { useProductActions } from './use-product-actions';
-import BasketProvider from '@/providers/basket';
-// @sfdc-extension-line SFDC_EXT_BOPIS
+import { resourceRoutes } from '@/route-paths';
+// eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
+import * as BasketModule from '@/providers/basket';
+const BasketProvider = BasketModule.default;
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
+import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 
 // Mock useFetcher function
@@ -38,9 +45,11 @@ const mockUseFetcher = vi.fn(() => ({
     submit: vi.fn(),
 }));
 
+const { mockAddToast } = vi.hoisted(() => ({ mockAddToast: vi.fn() }));
+
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
-        addToast: vi.fn(),
+        addToast: mockAddToast,
     }),
 }));
 
@@ -71,9 +80,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });
@@ -128,25 +137,25 @@ const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: Sho
                 element: createTestProviders(children, basket),
             },
             {
-                path: '/action/cart-item-add',
+                path: resourceRoutes.cartItemAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-set-add',
+                path: resourceRoutes.cartSetAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-bundle-add',
+                path: resourceRoutes.cartBundleAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-item-update',
+                path: resourceRoutes.cartItemUpdate,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
@@ -163,6 +172,7 @@ describe('useProductActions', () => {
     beforeEach(() => {
         // Use vi.spyOn to mock useFetcher while keeping real router exports
         vi.spyOn(ReactRouter, 'useFetcher').mockImplementation(mockUseFetcher as any);
+        mockAddToast.mockClear();
     });
 
     afterEach(() => {
@@ -2065,4 +2075,203 @@ describe('useProductActions', () => {
         });
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
+
+    describe('useBasket autoLoad gating', () => {
+        // The PDP performance fix routes BOPIS validation to the server, so add-mode no longer needs
+        // the full basket on first render. We verify the contract here: edit-mode (itemId present)
+        // calls useBasket with autoLoad: true, add-mode with autoLoad: false.
+        test('passes autoLoad: false to useBasket in add mode (no itemId)', () => {
+            const product = createStandardProduct();
+            const useBasketSpy = vi.spyOn(BasketModule, 'useBasket');
+
+            renderHook(() => useProductActions({ product, currentVariant: null }), {
+                wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+            });
+
+            expect(useBasketSpy).toHaveBeenCalledWith({ autoLoad: false });
+        });
+
+        test('passes autoLoad: true to useBasket in edit mode (itemId present)', () => {
+            const product = createStandardProduct();
+            const useBasketSpy = vi.spyOn(BasketModule, 'useBasket');
+
+            renderHook(() => useProductActions({ product, currentVariant: null, itemId: 'item-1' }), {
+                wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+            });
+
+            expect(useBasketSpy).toHaveBeenCalledWith({ autoLoad: true });
+        });
+    });
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    describe('opportunistic BOPIS pre-check', () => {
+        // The cart-add server actions are authoritative — these tests cover the optimization layer:
+        // when the basket is already hydrated client-side, surface the conflict toast immediately and
+        // skip the network round-trip. We assert via the toast call: the change-store error is only
+        // raised by the pre-check, so its presence/absence is a faithful signal.
+        const orderableInventory = { ats: 10, id: 'inv-site', orderable: true };
+        // When pickup is selected the hook reads from the store-keyed entry in `inventories`,
+        // not `inventory`. Without a matching store inventory canAddToCart returns false and the
+        // handler short-circuits before reaching the pre-check.
+        const otherStoreInventories = [{ id: 'inv-other-store', ats: 10, stockLevel: 10, orderable: true }];
+        const existingStoreInventories = [{ id: 'inv-existing-store', ats: 10, stockLevel: 10, orderable: true }];
+        const conflictKey = 'extBopis:cart.addToCartValidation.changeStoreError';
+        const conflictingBasket = createMockBasketWithPickupItems([
+            { productId: 'other-product', inventoryId: 'inventory-other', storeId: 'store-existing' },
+        ]);
+
+        test('handleAddToCart toasts the change-store error when basket has a conflicting pickup store', async () => {
+            const product = {
+                ...standardProd,
+                id: 'pickup-product',
+                inventory: orderableInventory,
+                inventories: otherStoreInventories,
+            };
+
+            const { result } = renderHook(() => useProductActions({ product, currentVariant: null }), {
+                wrapper: ({ children }) => wrapper({ children, basket: conflictingBasket }),
+            });
+
+            act(() => {
+                result.current.addItem?.('pickup-product', 'inv-other-store', 'store-other');
+            });
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            const { t } = getTranslation();
+            expect(mockAddToast).toHaveBeenCalledWith(t(conflictKey), 'error');
+        });
+
+        test('handleAddToCart does not toast a conflict when basket pickup store matches the new item', async () => {
+            const product = {
+                ...standardProd,
+                id: 'pickup-product',
+                inventory: orderableInventory,
+                inventories: existingStoreInventories,
+            };
+            const matchingBasket = createMockBasketWithPickupItems([
+                { productId: 'other-product', inventoryId: 'inventory-other', storeId: 'store-existing' },
+            ]);
+
+            const { result } = renderHook(() => useProductActions({ product, currentVariant: null }), {
+                wrapper: ({ children }) => wrapper({ children, basket: matchingBasket }),
+            });
+
+            act(() => {
+                result.current.addItem?.('pickup-product', 'inv-existing-store', 'store-existing');
+            });
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            const { t } = getTranslation();
+            expect(mockAddToast).not.toHaveBeenCalledWith(t(conflictKey), 'error');
+        });
+
+        test('handleProductSetAddToCart toasts on conflicting store', async () => {
+            const setProduct = {
+                ...standardProd,
+                id: 'set-1',
+                type: { set: true },
+                inventory: orderableInventory,
+            };
+
+            const { result } = renderHook(() => useProductActions({ product: setProduct, currentVariant: null }), {
+                wrapper: ({ children }) => wrapper({ children, basket: conflictingBasket }),
+            });
+
+            act(() => {
+                result.current.addItem?.('child-1', 'inv-other-store', 'store-other');
+            });
+
+            await act(async () => {
+                await result.current.handleProductSetAddToCart([
+                    {
+                        product: { id: 'child-1', price: 10 } as any,
+                        variant: { productId: 'child-1', price: 10 } as any,
+                        quantity: 1,
+                    },
+                ]);
+            });
+
+            const { t } = getTranslation();
+            expect(mockAddToast).toHaveBeenCalledWith(t(conflictKey), 'error');
+        });
+
+        test('handleProductBundleAddToCart toasts on conflicting store', async () => {
+            const bundleProduct = {
+                ...standardProd,
+                id: 'bundle-1',
+                type: { bundle: true },
+                inventory: orderableInventory,
+            };
+
+            const { result } = renderHook(() => useProductActions({ product: bundleProduct, currentVariant: null }), {
+                wrapper: ({ children }) => wrapper({ children, basket: conflictingBasket }),
+            });
+
+            act(() => {
+                result.current.addItem?.('bundle-1', 'inv-other-store', 'store-other');
+            });
+
+            await act(async () => {
+                await result.current.handleProductBundleAddToCart(1, [
+                    {
+                        product: { id: 'child-1' } as any,
+                        variant: { productId: 'child-1' } as any,
+                        quantity: 1,
+                    },
+                ]);
+            });
+
+            const { t } = getTranslation();
+            expect(mockAddToast).toHaveBeenCalledWith(t(conflictKey), 'error');
+        });
+
+        test('handleAddToCart proceeds when basket is undefined (server is authoritative)', async () => {
+            const product = {
+                ...standardProd,
+                id: 'pickup-product',
+                inventory: orderableInventory,
+                inventories: [{ id: 'inv-store', ats: 10, stockLevel: 10, orderable: true }],
+            };
+
+            // Wrapper that omits the `basket` prop so BasketProvider starts uninitialized.
+            const noBasketWrapper = ({ children }: { children: React.ReactNode }) => {
+                const router = createMemoryRouter(
+                    [
+                        {
+                            path: '/',
+                            element: createTestProviders(children, undefined),
+                        },
+                        {
+                            path: resourceRoutes.cartItemAdd,
+                            action: () => Response.json({ success: true }),
+                        },
+                    ],
+                    { initialEntries: ['/'] }
+                );
+                return <RouterProvider router={router} />;
+            };
+
+            const { result } = renderHook(() => useProductActions({ product, currentVariant: null }), {
+                wrapper: noBasketWrapper,
+            });
+
+            act(() => {
+                result.current.addItem?.('pickup-product', 'inv-store', 'store-any');
+            });
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            const { t } = getTranslation();
+            expect(mockAddToast).not.toHaveBeenCalledWith(t(conflictKey), 'error');
+        });
+    });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 });

@@ -76,6 +76,18 @@ describe('getPublicOrigin', () => {
 
         expect(getPublicOrigin(request)).toBe('https://example.com:8080');
     });
+
+    it('should take leftmost entry from a comma-separated x-forwarded-host (multi-proxy chain)', () => {
+        // CloudFront -> ALB -> Lambda emits the chain; the leftmost entry is the public host.
+        const request = new Request('https://internal.aws.lambda.com/path', {
+            headers: {
+                'x-forwarded-host': 'customer.com, alb-internal.aws, lambda.internal',
+                'x-forwarded-proto': 'https',
+            },
+        });
+
+        expect(getPublicOrigin(request)).toBe('https://customer.com');
+    });
 });
 
 describe('buildSchemaUrl', () => {

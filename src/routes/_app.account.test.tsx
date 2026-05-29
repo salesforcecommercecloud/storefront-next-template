@@ -18,6 +18,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, type ShouldRevalidateFunctionArgs } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { resourceRoutes } from '@/route-paths';
 import { shouldRevalidate } from './_app.account';
 
 vi.mock('@/middlewares/auth.server', () => ({
@@ -76,8 +77,44 @@ describe('_app.account shouldRevalidate', () => {
 
     test('respects defaultShouldRevalidate=false for non-SCAPI actions', () => {
         const result = shouldRevalidate({
-            formAction: '/action/cart-item-add',
+            formAction: resourceRoutes.cartItemAdd,
             defaultShouldRevalidate: false,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets otp-verify', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/otp-verify',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets authorize-passwordless-email', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/authorize-passwordless-email',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets otp-request', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/otp-request',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets verify-passwordless-otp', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/verify-passwordless-otp',
+            defaultShouldRevalidate: true,
         } as unknown as ShouldRevalidateFunctionArgs);
 
         expect(result).toBe(false);

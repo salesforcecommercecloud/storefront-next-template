@@ -19,24 +19,23 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const typographyVariants = cva('', {
-    //TODO: get the correct styling for headings from UX
     variants: {
         variant: {
             h1: 'text-4xl font-bold tracking-tight',
             h2: 'text-3xl font-semibold tracking-tight',
             h3: 'text-2xl font-semibold tracking-tight',
-            h4: 'text-xl font-semibold tracking-tight',
-            h5: 'text-lg font-semibold tracking-tight',
+            h4: 'text-2xl font-semibold tracking-tight',
+            h5: 'text-sm font-semibold tracking-tight',
             h6: 'text-base font-semibold tracking-tight',
             p: 'leading-7 [&:not(:first-child)]:mt-6',
             blockquote: 'mt-6 border-l-2 pl-6 italic',
             'inline-code': 'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium',
-            lead: 'text-xl text-muted-foreground',
-            large: 'text-lg font-semibold',
+            lead: 'text-2xl text-muted-foreground',
+            large: 'text-sm font-semibold',
             small: 'text-sm font-medium leading-none',
             muted: 'text-sm text-muted-foreground',
             // Product-specific variants
-            'product-title': 'text-lg font-medium text-foreground leading-tight',
+            'product-title': 'text-sm font-medium text-foreground leading-tight',
             'product-price': 'text-base font-semibold text-foreground',
             'product-description': 'text-sm text-muted-foreground leading-relaxed',
             'recommendation-title': 'self-stretch text-foreground text-3xl font-bold leading-none tracking-tight',

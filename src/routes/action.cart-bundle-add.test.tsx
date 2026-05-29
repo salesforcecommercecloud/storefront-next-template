@@ -19,7 +19,7 @@ import { action } from './action.cart-bundle-add';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 vi.mock('@/middlewares/basket.server');
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
@@ -36,14 +36,22 @@ vi.mock('@salesforce/storefront-next-runtime/config');
 vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
-vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
-    syncShipmentWithDeliveryOptionChange: vi.fn((_context, basket) => Promise.resolve(basket)),
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+vi.mock('@/extensions/bopis/lib/basket-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/extensions/bopis/lib/basket-utils')>();
+    return {
+        ...actual,
+        syncShipmentWithDeliveryOptionChange: vi.fn((_context, basket) => Promise.resolve(basket)),
+    };
+});
+vi.mock('@/extensions/bopis/lib/api/shipment.server', () => ({
+    findOrCreatePickupShipment: vi.fn(() => Promise.resolve({ shipmentId: 'pickup-shipment-1' })),
 }));
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 vi.mock('react-router', () => {
     return {
         ...actualReactRouter,
         createContext: reactCreateContext,
-        data: (body: any, init?: ResponseInit) => Response.json(body, init),
     };
 });
 vi.mock('@/lib/logger.server', () => ({
@@ -56,7 +64,8 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
-import { createActionArgs } from '@/lib/test-utils';
+import { createActionArgs, expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 describe('action.cart-bundle-add', () => {
     const mockBasket = {
@@ -121,17 +130,16 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
 
@@ -154,17 +162,16 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
         });
 
         test('adds bundle with mix of standard and variant products', async () => {
@@ -185,17 +192,16 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
             // The server action extracts productId and quantity from ProductSelectionValues
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
                 params: {
@@ -216,32 +222,67 @@ describe('action.cart-bundle-add', () => {
         });
 
         test('returns error when bundle data is missing', async () => {
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {});
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {});
 
-            const response = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
         });
 
         test('returns error for non-POST requests', async () => {
-            const request = new Request('http://localhost/action/cart-bundle-add', {
+            const request = new Request(`http://localhost${resourceRoutes.cartBundleAdd}`, {
                 method: 'GET',
             });
 
-            const response = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const result = await response.json();
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-            expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
+            expectStatus(result, 405);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
+            expect(result.data.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        test('rejects pickup bundle from a different store than existing pickup items (BOPIS)', async () => {
+            const basketWithPickup = {
+                basketId: 'test-basket-123',
+                productItems: [{ itemId: 'item-existing', productId: 'p-existing', shipmentId: 's-1', quantity: 1 }],
+                shipments: [{ shipmentId: 's-1', c_fromStoreId: 'store-A' }],
+            };
+            vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
+
+            const bundleItem = {
+                productId: 'bundle-123',
+                quantity: 1,
+                inventoryId: 'inv-B',
+                storeId: 'store-B',
+            };
+            const childSelections = [
+                {
+                    product: { id: 'standard-product-1' } as ShopperProducts.schemas['Product'],
+                    quantity: 1,
+                },
+            ];
+
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
+                bundleItem: JSON.stringify(bundleItem),
+                childSelections: JSON.stringify(childSelections),
+            });
+
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+            );
+
+            expectStatus(result, 409);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error?.code).toBe('CONFLICT');
+            expect(mockClients.shopperBasketsV2.addItemToBasket).not.toHaveBeenCalled();
+        });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 });

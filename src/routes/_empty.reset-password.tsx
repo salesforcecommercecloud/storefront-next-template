@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.reset-password';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/reset-password-form';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { isPasswordValid } from '@/lib/utils';
 import { resetPasswordWithToken } from '@/middlewares/auth.server';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 type ResetPasswordLoaderData = {
     token: string;
@@ -34,13 +36,13 @@ type ResetPasswordActionData = {
     error?: string;
 };
 
-export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
+export function loader({ request, context }: Route.LoaderArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
     const email = url.searchParams.get('email');
 
     if (!token || !email) {
-        return redirect(buildUrlFromContext('/forgot-password', context));
+        return redirect(buildUrlFromContext(routes.forgotPassword, context));
     }
 
     return {
@@ -51,7 +53,7 @@ export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordL
 
 // Server action required for authentication - password reset must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<ResetPasswordActionData | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
@@ -62,7 +64,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
     // Separate validation for token - critical security field
     if (!token) {
-        return redirect(buildUrlFromContext('/forgot-password', context));
+        return redirect(buildUrlFromContext(routes.forgotPassword, context));
     }
 
     if (!email || !newPassword || !confirmPassword) {
@@ -86,8 +88,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         });
 
         logger.info('ResetPassword: password reset succeeded');
+        // Auto-login the user with new password to maintain session validity
+        // This matches the behavior when hasPassword={true} users change their password
+        // and is especially important for users who previously had hasPassword=false
+        const { loginRegisteredUser, updateAuth } = await import('@/middlewares/auth.server');
+        const authResponse = await loginRegisteredUser(context, email, newPassword, { skipUsid: true });
+        updateAuth(context, authResponse);
+
         // Password reset successful - redirect to login
-        return redirect(buildUrlFromContext('/login', context));
+        return redirect(buildUrlFromContext(routes.login, context));
     } catch (error) {
         logger.error('ResetPassword: failed', { error });
         const errorMessage = extractErrorMessage(error);
@@ -98,7 +107,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
 export default function ResetPassword({ loaderData }: { loaderData: ResetPasswordLoaderData }): ReactElement {
     const { token, email } = loaderData;
-    const actionData = useActionData<ResetPasswordActionData>();
+    const actionData = useActionData<typeof action>();
     const { t } = useTranslation('resetPassword');
 
     return (

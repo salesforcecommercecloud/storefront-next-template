@@ -32,7 +32,7 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
 
 // Lib
 import { cn } from '@/lib/utils';
-import type { AppConfig } from '@/types/config';
+import { routes } from '@/route-paths';
 
 interface UserMenuProps {
     isAuthenticated: boolean;
@@ -41,9 +41,9 @@ interface UserMenuProps {
 
 // Common className for menu item links
 const menuItemClassName = cn(
-    'flex items-center gap-2 px-3 py-2 text-sm text-foreground rounded-none',
+    'flex items-center gap-2 px-3 py-2 text-sm text-popover-foreground rounded-none',
     'hover:bg-muted/50 transition-colors',
-    'outline-none focus-visible:bg-muted focus-visible:text-foreground'
+    'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
 );
 
 export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElement {
@@ -52,7 +52,7 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
     const openedViaMouseRef = useRef(false);
     const { t } = useTranslation('header');
     const { t: tAccount } = useTranslation('account');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     // Clear timeout on unmount
@@ -137,7 +137,7 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                             </h3>
                             <div className="space-y-1">
                                 <Link
-                                    to="/account/wishlist"
+                                    to={routes.accountWishlist}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <Heart className="h-5 w-5" />
@@ -156,42 +156,42 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                             </h3>
                             <div className="space-y-1">
                                 <Link
-                                    to="/account/overview"
+                                    to={routes.accountOverview}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <House className="h-5 w-5" />
                                     {tAccount('navigation.overview')}
                                 </Link>
                                 <Link
-                                    to="/account"
+                                    to={routes.account}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <User className="h-5 w-5" />
                                     {tAccount('navigation.accountDetails')}
                                 </Link>
                                 <Link
-                                    to="/account/orders"
+                                    to={routes.accountOrders}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <ShoppingBag className="h-5 w-5" />
                                     {tAccount('navigation.orderHistory')}
                                 </Link>
                                 <Link
-                                    to="/account/addresses"
+                                    to={routes.accountAddresses}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <MapPin className="h-5 w-5" />
                                     {t('menu.addressBook')}
                                 </Link>
                                 <Link
-                                    to="/account/payment-methods"
+                                    to={routes.accountPaymentMethods}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <CreditCard className="h-5 w-5" />
                                     {t('menu.paymentMethods')}
                                 </Link>
                                 <Link
-                                    to="/account/store-preferences"
+                                    to={routes.accountStorePreferences}
                                     className={menuItemClassName}
                                     onMouseEnter={handleMenuItemMouseEnter}>
                                     <Building className="h-5 w-5" />
@@ -238,17 +238,17 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                 <div className="p-4 bg-muted/50 rounded-none">
                     <p className="text-sm text-muted-foreground mb-4">{t('menu.signInForBestExperience')}</p>
                     <Button asChild className="w-full mb-3 rounded-none">
-                        <Link to="/login" onMouseEnter={handleMenuItemMouseEnter}>
+                        <Link to={routes.login} onMouseEnter={handleMenuItemMouseEnter}>
                             {t('signIn')}
                         </Link>
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">
                         {t('menu.newCustomer')}{' '}
                         <Link
-                            to="/signup"
+                            to={routes.signup}
                             className={cn(
-                                'text-foreground hover:underline rounded-none px-1 py-0.5',
-                                'outline-none focus-visible:bg-muted focus-visible:text-foreground'
+                                'text-popover-foreground hover:underline rounded-none px-1 py-0.5',
+                                'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
                             )}
                             onMouseEnter={handleMenuItemMouseEnter}>
                             {t('menu.createAccount')}

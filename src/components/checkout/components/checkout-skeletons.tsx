@@ -23,7 +23,7 @@ export function ExpressPaymentsSkeleton(): ReactElement {
         <div className="space-y-6" data-testid="express-payments-skeleton">
             <Card className="flex flex-col items-center gap-3 p-6 rounded-none shadow-none">
                 <Skeleton className="h-5 w-32" />
-                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 w-full">
                     {[1, 2, 3, 4, 5].map((i) => (
                         <Skeleton key={i} className="h-9 w-full" />
                     ))}

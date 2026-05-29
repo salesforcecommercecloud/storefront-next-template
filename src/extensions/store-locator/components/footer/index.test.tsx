@@ -19,16 +19,10 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import StoreLocatorFooter from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
-const defaultMockSite = {
-    id: 'RefArch',
-    defaultLocale: 'en-US',
-    defaultCurrency: 'USD',
-    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-    supportedCurrencies: ['USD'],
-};
+const defaultMockSite = mockAltSiteObject;
 const defaultMockLocale =
     defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
     defaultMockSite.supportedLocales[0];
@@ -41,7 +35,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={defaultMockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             <StoreLocatorProvider>{component}</StoreLocatorProvider>
                         </SiteProvider>
                     </ConfigProvider>
@@ -58,7 +56,7 @@ describe('StoreLocatorFooter', () => {
         renderWithRouter(<StoreLocatorFooter />);
         const link = screen.getByRole('link', { name: /store locator/i });
         expect(link).toBeInTheDocument();
-        expect(link).toHaveAttribute('href', '/RefArch/en-GB/store-locator');
+        expect(link).toHaveAttribute('href', `/${mockAltSiteObject.id}/${mockSiteObject.defaultLocale}/store-locator`);
     });
 
     it('has proper styling classes matching footer links', () => {

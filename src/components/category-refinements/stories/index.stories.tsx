@@ -14,113 +14,57 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ComponentType, type ReactElement, type ReactNode } from 'react';
-import { expect, within, userEvent } from 'storybook/test';
-import { action } from 'storybook/actions';
+import type { ComponentType } from 'react';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import CategoryRefinements from '../index';
-// @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// CategoryRefinements takes two props:
+//   - result.refinements — the array of filter groups (the "interface")
+//   - refine — a string[] of active "attributeId=value" filters
+// The component filters out the cgid group internally (handled by
+// QuickFilters elsewhere). The 5-group fixture therefore renders 4 sections.
+// Visible variations are entirely a function of:
+//   (a) how many refinement groups are present
+//   (b) whether any filters are pre-selected (drives defaultOpen and the
+//       optimistic-check state of values)
+// Both fold into Controls — the synthetic args build the result + refine
+// pair from the merchant fixture.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+const fullSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
 
-        const logToggle = action('refinement-toggle');
-        const logSelect = action('refinement-select');
-        const logClear = action('refinement-clear');
-        const logChipRemove = action('refinement-chip-remove');
+// Filter out cgid (the component does this too) so the count exposed via
+// Controls matches what the user sees.
+const visibleRefinements = (fullSearchResult.refinements ?? []).filter((r) => r.attributeId !== 'cgid');
+const MAX_REFINEMENTS = visibleRefinements.length;
 
-        const getGroupLabel = (el: HTMLElement): string => {
-            const region = el.closest('[aria-labelledby]');
-            const id = region?.getAttribute('aria-labelledby') || '';
-            if (id) {
-                const header = document.getElementById(id);
-                const text = header?.textContent?.trim();
-                if (text) return text;
-            }
-            const heading = el.closest('section, div')?.querySelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
-            if (heading?.textContent) return heading.textContent.trim();
-            return '';
-        };
+type SyntheticArgs = {
+    refinementCount: number;
+    preSelectedRefines: string;
+};
 
-        const getValueLabel = (controlEl: HTMLElement): string => {
-            if (controlEl instanceof HTMLInputElement && controlEl.id) {
-                const lab = document.querySelector(`label[for="${controlEl.id}"]`);
-                if (lab?.textContent) return lab.textContent.trim();
-            }
-            const enclosing = controlEl.closest('label');
-            if (enclosing?.textContent) return enclosing.textContent.trim();
-            const textNode = controlEl.closest('li, div')?.querySelector('span, p');
-            if (textNode?.textContent) return textNode.textContent.trim();
-            const aria = controlEl.getAttribute('aria-label');
-            if (aria) return aria;
-            if (controlEl instanceof HTMLInputElement && controlEl.value) return controlEl.value;
-            return '';
-        };
+function buildResult({ refinementCount }: SyntheticArgs): ShopperSearch.schemas['ProductSearchResult'] {
+    const clamped = Math.max(0, Math.min(refinementCount, MAX_REFINEMENTS));
+    return {
+        ...fullSearchResult,
+        refinements: visibleRefinements.slice(0, clamped),
+    };
+}
 
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const trigger = target.closest('[data-accordion-trigger], button, a');
-            const label = trigger?.textContent?.trim() || '';
-            if (trigger && /(category|colour|color|size|price|brand|material|refinements?)/i.test(label)) {
-                logToggle({ label });
-            }
-
-            const checkbox = target.closest(
-                'input[type="checkbox"], input[type="radio"], [role="checkbox"], [role="radio"]'
-            );
-            if (checkbox) {
-                const group = getGroupLabel(checkbox as HTMLElement);
-                const value = getValueLabel(checkbox as HTMLElement);
-                logSelect({ group, value });
-                return;
-            }
-
-            const colorBtn = target.closest('button');
-            if (colorBtn) {
-                const group = getGroupLabel(colorBtn as HTMLElement);
-                if (/colour|color/i.test(group)) {
-                    const valueText = (colorBtn as HTMLElement).textContent?.trim() || '';
-                    if (valueText) {
-                        logSelect({ group, value: valueText });
-                        return;
-                    }
-                }
-            }
-
-            const clearBtn = target.closest('button, a');
-            const clearLabel = clearBtn?.textContent?.trim() || '';
-            const aria = clearBtn?.getAttribute('aria-label') || '';
-            if (clearBtn && clearBtn.closest('div')?.previousElementSibling?.textContent?.includes('Active filters')) {
-                const valueText = clearLabel || aria.replace(/remove\s*/i, '');
-                const group = 'Active filters';
-                logChipRemove({ group, value: valueText.trim() });
-                return;
-            }
-            if (clearBtn && (/clear|reset|remove all/i.test(clearLabel) || /remove/i.test(aria))) {
-                const value = aria.replace(/remove\s*/i, '') || clearLabel;
-                const group = getGroupLabel(clearBtn as HTMLElement);
-                logClear({ group, value: value.trim() });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => root.removeEventListener('click', handleClick, true);
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+function buildRefine(preSelectedRefines: string): string[] {
+    return preSelectedRefines
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
 }
 
 const meta: Meta<typeof CategoryRefinements> = {
@@ -131,23 +75,19 @@ const meta: Meta<typeof CategoryRefinements> = {
         docs: {
             description: {
                 component:
-                    'A category refinements component that displays filter options for product search results. Includes accordion-style sections for different filter types like color, size, price, and other attributes.',
+                    'Side-panel filter controls for Product Listing Pages. Renders a collapsible section per refinement group from `result.refinements` (cgid is filtered out — that group is owned by QuickFilters). Sections with active filters auto-expand.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
-    argTypes: {
-        result: {
-            description: 'Product search result containing refinements data',
-            control: false,
-        },
-    },
     decorators: [
         (Story: ComponentType) => (
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
-                <ActionLogger>
-                    <Story />
-                </ActionLogger>
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
+                <Story />
             </SiteProvider>
         ),
     ],
@@ -155,81 +95,71 @@ const meta: Meta<typeof CategoryRefinements> = {
 
 export default meta;
 type Story = StoryObj<typeof CategoryRefinements>;
+type StoryWithSynthetic = StoryObj<React.ComponentType<Partial<SyntheticArgs>>>;
 
-// Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
-
-const mockSearchResultMinimal: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    refinements: (mockSearchResult.refinements ?? [])
-        .filter((refinement) => refinement.attributeId !== 'cgid')
-        .slice(0, 1),
-};
-
-const mockSearchResultEmpty: ShopperSearch.schemas['ProductSearchResult'] = {
-    ...mockSearchResult,
-    refinements: [],
-};
-
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline. Drives both the data shape and the
+ * pre-selected filters from the Controls panel.
+ *
+ * - `refinementCount` (1–4) slices the merchant fixture so QA can verify
+ *   one-section, two-section, and full-panel layouts without hand-editing.
+ * - `preSelectedRefines` is a comma-separated list of `attributeId=value`
+ *   strings (e.g. `c_refinementColor=Black,price=(50..100)`). Sections with
+ *   any active value auto-expand. Empty string = no pre-selected filters.
+ */
+export const FullyFeatured: StoryWithSynthetic = {
     args: {
-        result: mockSearchResult,
+        refinementCount: MAX_REFINEMENTS,
+        preSelectedRefines: '',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test that category refinements component renders
-        void expect(canvasElement).toBeInTheDocument();
-        void expect(canvasElement.children.length).toBeGreaterThan(0);
-
-        // Test that refinement sections are present (accordion headers)
-        const refinementHeaders = canvas.queryAllByRole('button');
-        void expect(refinementHeaders.length).toBeGreaterThan(0);
-
-        // Test that at least one refinement header contains expected text
-        const headerTexts = refinementHeaders.map((header: HTMLElement) => header.textContent?.toLowerCase() || '');
-        const hasExpectedHeader = headerTexts.some(
-            (text: string) =>
-                text.includes('category') ||
-                text.includes('color') ||
-                text.includes('size') ||
-                text.includes('price') ||
-                text.includes('brand') ||
-                text.includes('refinement')
+    argTypes: {
+        refinementCount: {
+            description: `Synthetic: number of refinement groups to render (0–${MAX_REFINEMENTS})`,
+            control: { type: 'number', min: 0, max: MAX_REFINEMENTS, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        preSelectedRefines: {
+            description:
+                'Synthetic: comma-separated "attributeId=value" pairs treated as active. Sections with any active value auto-expand.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            refinementCount: args.refinementCount ?? MAX_REFINEMENTS,
+            preSelectedRefines: args.preSelectedRefines ?? '',
+        };
+        return (
+            <CategoryRefinements result={buildResult(synthetic)} refine={buildRefine(synthetic.preSelectedRefines)} />
         );
-        void expect(hasExpectedHeader).toBe(true);
-
-        // Test basic interaction - click on first refinement header to expand
-        if (refinementHeaders.length > 0) {
-            await userEvent.click(refinementHeaders[0]);
-        }
     },
-};
-
-export const Minimal: Story = {
-    args: {
-        result: mockSearchResultMinimal,
-    },
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const firstLabel = mockSearchResultMinimal.refinements?.[0]?.label ?? '';
-        if (firstLabel) {
-            const header = canvas.getByRole('button', { name: firstLabel });
-            void expect(header).toBeInTheDocument();
-        }
+        // Section headers should equal refinementCount (each renders one button trigger)
+        const expectedCount = args.refinementCount ?? MAX_REFINEMENTS;
+        const headers = canvas.queryAllByRole('button');
+        await expect(headers.length).toBeGreaterThanOrEqual(expectedCount);
     },
 };
 
+/**
+ * No refinements available — the component renders a "no filter options
+ * available" empty-state message instead of any filter sections. Visually
+ * distinct enough to deserve a bookmarkable URL.
+ */
 export const Empty: Story = {
     args: {
-        result: mockSearchResultEmpty,
+        result: {
+            ...fullSearchResult,
+            refinements: [],
+        },
+        refine: [],
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const noFiltersMessage = canvas.getByText(/no filter options available/i);
-        void expect(noFiltersMessage).toBeInTheDocument();
+        await expect(canvas.getByText(/no filter options available/i)).toBeInTheDocument();
     },
 };

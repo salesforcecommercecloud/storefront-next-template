@@ -27,7 +27,7 @@ afterEach(() => {
 
 describe('PasswordUpdateFields stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
+        if (Story?.parameters?.snapshot === false) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { createContext, createCookie, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
-import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperBasketsV2 } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
+import { BASKET_COOKIE_NAME, validateBasketSnapshot } from '@/lib/basket/cookie';
 import { getCookieConfig } from '@/lib/cookie-utils.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 // Types
 type Basket = ShopperBasketsV2.schemas['Basket'];
@@ -80,8 +82,6 @@ export type BasketMetadata = {
 };
 
 // Constants
-// Shared basket identifiers across server and client
-export const BASKET_COOKIE_NAME = '__sfdc_basket';
 const GUEST_BASKET_COOKIE_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 const REGISTERED_BASKET_COOKIE_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_BASKET_MIDDLEWARE_CONFIG: Required<
@@ -280,9 +280,15 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
         const basketCookie = createCookie(cookieName, cookieConfig);
         const cookieHeader = request.headers.get('Cookie') || '';
 
-        // Get the snapshot from the cookie.
-        snapshot = cookieHeader ? await basketCookie.parse(cookieHeader) : undefined;
+        // Get the snapshot from the cookie. Run the parsed value through the shape validator so that a tampered or
+        // malformed cookie can never reach loaders/SSR.
+        const cookiePresent = cookieHeader.includes(`${cookieName}=`);
+        const parsedFromCookie = cookieHeader ? await basketCookie.parse(cookieHeader) : null;
+        snapshot = validateBasketSnapshot(parsedFromCookie);
         logger.debug('Basket: middleware starting', { mode, hasSnapshot: !!snapshot });
+        if (cookiePresent && !snapshot) {
+            logger.debug('Basket: discarding malformed snapshot cookie', { cookieName });
+        }
 
         // Build and set the basket in the context.
         context.set(basketResourceContext, createBasketResource(snapshot, basket));
@@ -352,7 +358,7 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
  */
 export const getBasket = async (
     context: Readonly<RouterContextProvider>,
-    options: { ensureBasket?: boolean } = { ensureBasket: true }
+    options: { ensureBasket?: boolean | 'read' } = { ensureBasket: true }
 ): Promise<BasketResource> => {
     const basketResource = context.get(basketResourceContext);
     const { ensureBasket = true } = options;
@@ -369,18 +375,38 @@ export const getBasket = async (
         return basketResource;
     }
 
+    // If there's no existing basket ID, but read hydration is requested, skip and return the resource.
     const basketId = basketResource.snapshot?.basketId;
+    if (ensureBasket === 'read' && !basketId) {
+        logger.debug('Basket: hydration skipped, no existing basket ID');
+        return basketResource;
+    }
+
     const metadata = context.get(basketMetadataContext);
     const currency = metadata?.currency ?? context.get(siteContext)?.currency ?? '';
     const calculateBasketSnapshot = metadata?.calculateSnapshot;
     logger.debug('Basket: hydration starting', { hasExistingBasketId: Boolean(basketId) });
 
     try {
+        let basket: Basket | null = null;
         const clients = createApiClients(context);
-        let basket = await clients.basket.getOrCreateBasket({
-            params: { path: { basketId } },
-            body: { currency },
-        });
+        if (ensureBasket === 'read') {
+            ({ data: basket } = await clients.shopperBasketsV2
+                .getBasket({
+                    params: { path: { basketId: basketId as string } },
+                })
+                .catch(async () => ({
+                    data: await clients.basket.getOrCreateBasket({
+                        params: { path: { basketId } },
+                        body: { currency },
+                    }),
+                })));
+        } else {
+            basket = await clients.basket.getOrCreateBasket({
+                params: { path: { basketId } },
+                body: { currency },
+            });
+        }
 
         // If the basket's currency doesn't match the requested currency,
         // update the basket to trigger price recalculation
@@ -406,13 +432,43 @@ export const getBasket = async (
 
         const nextSnapshot = createSnapshot(basket, { calculateSnapshot: calculateBasketSnapshot });
         context.set(basketResourceContext, createBasketResource(nextSnapshot, basket, true, null));
+        // Parallel loaders or in-request retries can recover after an earlier hydration call flipped
+        // basketMarkedForDeletion. Clear it on success so the response phase serializes the fresh
+        // snapshot instead of expiring a cookie for a basket that is now hydrated and valid.
+        const successMetadata = context.get(basketMetadataContext);
+        if (successMetadata?.basketMarkedForDeletion) {
+            context.set(basketMetadataContext, { ...successMetadata, basketMarkedForDeletion: false });
+        }
         logger.debug('Basket: hydration succeeded');
         return context.get(basketResourceContext) as BasketResource;
     } catch (err) {
-        const loadError = err instanceof Error ? err : new Error('Failed to load basket');
+        const normalizedError = new NormalizedApiError(err);
         logger.error('Basket: hydration failed', { error: err });
-        context.set(basketResourceContext, createBasketResource(basketResource.snapshot, undefined, true, loadError));
-        throw loadError;
+        // getOrCreateBasket already self-heals 404/400 from the read path, so most errors that bubble
+        // here are transient (5xx, network, auth) — those must NOT clear the cookie or the basket is
+        // lost on every blip. Only treat the basket as missing when the status genuinely indicates
+        // it is no longer in SCAPI.
+        const isBasketMissing =
+            normalizedError.status === 400 || normalizedError.status === 404 || normalizedError.status === 410;
+        context.set(
+            basketResourceContext,
+            createBasketResource(isBasketMissing ? null : basketResource.snapshot, undefined, true, normalizedError)
+        );
+        if (isBasketMissing) {
+            logger.warn('Basket: snapshot cookie expired due to missing basket id', {
+                status: normalizedError.status,
+                basketId,
+            });
+            // Flip the deletion flag so the middleware response phase serializes an expired Set-Cookie
+            // and the cart badge can't keep displaying a stale count on subsequent requests. Don't call
+            // destroyBasket() — that clobbers the error resource the route-level <Await errorElement>
+            // boundaries surface to the user.
+            const errorMetadata = context.get(basketMetadataContext);
+            if (errorMetadata) {
+                context.set(basketMetadataContext, { ...errorMetadata, basketMarkedForDeletion: true });
+            }
+        }
+        throw normalizedError;
     }
 };
 

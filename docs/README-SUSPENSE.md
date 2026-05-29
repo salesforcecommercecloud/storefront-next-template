@@ -107,22 +107,22 @@ With separate boundaries, each promise resolves independently. Fast content stre
 
 ```jsx
 function ProductWrapper({ promise }: { promise: Promise<Product> }) {
-    const product = use(promise);
-    return <ProductContent product={product} />;
+  const product = use(promise);
+  return <ProductContent product={product} />;
 }
 
 function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
-    const reviews = use(promise);
-    return <ReviewsSection reviews={reviews} />;
+  const reviews = use(promise);
+  return <ReviewsSection reviews={reviews} />;
 }
 
 <div>
-    <Suspense fallback={<ProductSkeleton />}>
-        <ProductWrapper promise={productPromise} />
-    </Suspense>
-    <Suspense fallback={<ReviewsSkeleton />}>
-        <ReviewsWrapper promise={reviewsPromise} />
-    </Suspense>
+  <Suspense fallback={<ProductSkeleton />}>
+    <ProductWrapper promise={productPromise} />
+  </Suspense>
+  <Suspense fallback={<ReviewsSkeleton />}>
+    <ReviewsWrapper promise={reviewsPromise} />
+  </Suspense>
 </div>
 ```
 
@@ -134,14 +134,14 @@ function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
 // promise2 (still pending) suspends the boundary again — tearing
 // down Component1 and showing <ComponentsSkeleton /> a second time.
 <Suspense fallback={<ComponentsSkeleton />}>
-    <div>
-        <Await resolve={promise1}>
-            {(resolved) => <Component1 resolved={resolved} />}
-        </Await>
-        <Await resolve={promise2}>
-            {(resolved) => <Component2 resolved={resolved} />}
-        </Await>
-    </div>
+  <div>
+    <Await resolve={promise1}>
+      {(resolved) => <Component1 resolved={resolved} />}
+    </Await>
+    <Await resolve={promise2}>
+      {(resolved) => <Component2 resolved={resolved} />}
+    </Await>
+  </div>
 </Suspense>
 ```
 
@@ -153,24 +153,24 @@ function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
 // Resolution of one promise triggers a re-render that re-suspends
 // for the other, causing the same fallback thrashing.
 function CombinedView({
-    promise1,
-    promise2,
+  promise1,
+  promise2,
 }: {
-    promise1: Promise<Component1Data>;
-    promise2: Promise<Component2Data>;
+  promise1: Promise<Component1Data>;
+  promise2: Promise<Component2Data>;
 }) {
-    const data1 = use(promise1);
-    const data2 = use(promise2);
-    return (
-        <>
-            <Component1 resolved={data1} />
-            <Component2 resolved={data2} />
-        </>
-    );
+  const data1 = use(promise1);
+  const data2 = use(promise2);
+  return (
+    <>
+      <Component1 resolved={data1} />
+      <Component2 resolved={data2} />
+    </>
+  );
 }
 
 <Suspense fallback={<ComponentsSkeleton />}>
-    <CombinedView promise1={promise1} promise2={promise2} />
+  <CombinedView promise1={promise1} promise2={promise2} />
 </Suspense>
 ```
 
@@ -180,21 +180,130 @@ function CombinedView({
 // ❌ BAD: promise2 cannot even begin to resolve until promise1 is done,
 // creating an artificial waterfall on top of the shared-boundary problem.
 <Suspense fallback={<ComponentsSkeleton />}>
-    <Await resolve={promise1}>
-        {(resolved1) => (
-            <>
-                <Component1 resolved={resolved1} />
-                <Await resolve={promise2}>
-                    {(resolved2) => <Component2 resolved={resolved2} />}
-                </Await>
-            </>
-        )}
-    </Await>
+  <Await resolve={promise1}>
+    {(resolved1) => (
+      <>
+        <Component1 resolved={resolved1} />
+        <Await resolve={promise2}>
+          {(resolved2) => <Component2 resolved={resolved2} />}
+        </Await>
+      </>
+    )}
+  </Await>
 </Suspense>
 ```
 
 > [!TIP]
 > **Exception:** Truly dependent promises (for example, fetching details after a list) can share a boundary because they represent one logical loading unit.
+
+### Promise Identity
+
+A [`<Suspense>`](https://react.dev/reference/react/Suspense#reference) boundary identifies a pending promise by its reference, not by its value. When a child suspends, the boundary remembers *that exact promise object* and waits for it to settle. On the next render, if the child hands back a different promise object — even one that resolves to the same data — the boundary treats it as new pending work, throws away what it just rendered, and shows the fallback again. With a fresh promise on every render, the cycle never ends and the fallback flickers forever. This applies equally to React's [`use()`](https://react.dev/reference/react/use#reference) and React Router's [`<Await>`](https://reactrouter.com/api/components/Await).
+
+So the rule is: *the same logical operation must produce the same promise object across renders*.
+
+Promises returned from a route `loader` satisfy this automatically — React Router preserves their identity for the lifetime of the active route match, whether read via `useLoaderData`, `useRouteLoaderData`, or `useOutletContext`. Anything composed in the component body with `Promise.all`, `Promise.race`, `.then(...)`, or any wrapper expression does not: the expression is evaluated on every render, producing a brand-new Promise object each time.
+
+#### Anti-pattern: composing promises in the component
+
+```jsx
+// ❌ BAD: Promise.all returns a new promise every render, even with stable inputs.
+// The Suspense boundary never sees the resolved reference and flickers forever.
+function CombinedView() {
+  const { promise1, promise2 } = useLoaderData();
+  const combined = Promise.all([promise1, promise2]);
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>
+        {([a, b]) => <Content a={a} b={b} />}
+      </Await>
+    </Suspense>
+  );
+}
+```
+
+`useMemo(() => Promise.all([p1, p2]), [p1, p2])` does **not** fix this: React discards the memo cache when the component suspends on initial mount (see [`useMemo` Caveats](https://react.dev/reference/react/useMemo#caveats), *"a state variable or a ref may be more appropriate"*; failure mode confirmed in [remix-run/remix#7392](https://github.com/remix-run/remix/issues/7392)).
+
+#### Fix 1 — primary: compose in the loader
+
+If the promises form one logical loading unit, combine them in the loader so `loaderData` exposes a single stable reference.
+
+```jsx
+// route.tsx
+export async function loader() {
+  const critical = await fetchCritical();
+  // Created once per request; loaderData preserves identity across renders.
+  const combined = Promise.all([fetchA(), fetchB()]);
+  return { critical, combined };
+}
+
+function CombinedView() {
+  const { combined } = useLoaderData();
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>
+        {([a, b]) => <Content a={a} b={b} />}
+      </Await>
+    </Suspense>
+  );
+}
+```
+
+#### Fix 2 — primary: split into sibling boundaries
+
+If the promises don't truly form one loading unit, give each its own `<Suspense>` boundary so they resolve independently (see [Suspense Boundary Granularity](#suspense-boundary-granularity)). No composition needed.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  return (
+    <>
+      <Suspense fallback={<SkeletonA />}>
+        <Await resolve={p1}>{(a) => <SectionA data={a} />}</Await>
+      </Suspense>
+      <Suspense fallback={<SkeletonB />}>
+        <Await resolve={p2}>{(b) => <SectionB data={b} />}</Await>
+      </Suspense>
+    </>
+  );
+}
+```
+
+#### Fix 3 — escape hatch: pin the composed promise locally
+
+Use only when neither primary fix applies (e.g. the inputs arrive from a parent layout's `useOutletContext`, props, or fetcher hooks, and the consuming component must combine them). The examples assume `p1` and `p2` are already stable references; how they're obtained doesn't matter.
+
+**Variant A — lazy `useState` pin.** Frozen for the component's lifetime; invalidate by remounting via `<Component key={inputIdentity} />`.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  // Lazy initializer runs once per component lifetime and survives Suspense throws.
+  const [combined] = useState(() => Promise.all([p1, p2]));
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>{…}</Await>
+    </Suspense>
+  );
+}
+```
+
+**Variant B — `useRef` pin with manual re-pin.** Use when the consumer can't be remounted via `key` (e.g. inputs change on revalidation while the component stays mounted). Re-pins when input identity changes; survives Suspense throws.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  const pinRef = useRef(null);
+  if (pinRef.current === null || pinRef.current.inputs[0] !== p1 || pinRef.current.inputs[1] !== p2) {
+    pinRef.current = { inputs: [p1, p2], combined: Promise.all([p1, p2]) };
+  }
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={pinRef.current.combined}>{…}</Await>
+    </Suspense>
+  );
+}
+```
+
+> [!NOTE]
+> The same rule applies to `use()` wrappers: a child that calls `use(somePromise)` must receive a stable promise reference as a prop. Constructing the promise in the parent's render (e.g. `<Child promise={Promise.all([a, b])} />`, `<Child promise={a.then(transform)} />`) re-suspends on every render for the same reason.
 
 ## Imperative Loading States
 
@@ -400,35 +509,3 @@ Optimistic UI skips the loading state entirely by assuming that an operation wil
 Optimistic UI is appropriate when the probability of failure is low and the operation is reversible. It's not suitable for destructive or irreversible actions where a failed rollback leaves the UI in an inconsistent state.
 
 `useFetcher()` exposes submitted form data via `fetcher.formData` before the action completes, enabling optimistic updates without external state management. For implementation patterns using `fetcher.formData` and `useOptimistic`, see [State Management](README-STATE.md#optimistic-state).
-
-## Lazy Loading for Overlays (Modals, Drawers, Dialogs)
-
-Overlay components that are hidden on initial render, such as modals, drawers, and dialogs, **must** use [`React.lazy()`](https://react.dev/reference/react/lazy) with deferred mounting. Mount the `<Suspense>` subtree only after the first user interaction, not on page load. This keeps the overlay's code out of the main chunk entirely until it's actually needed, reducing page load size and [Total Blocking Time](https://web.dev/articles/tbt) (TBT).
-
-```jsx
-const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
-
-function MyComponent() {
-    const [loaded, setLoaded] = useState(false);
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button onClick={() => { setLoaded(true); setOpen(true); }}>Open</Button>
-            {loaded && (
-                <Suspense fallback={null}>
-                    <MyModal open={open} onOpenChange={setOpen} />
-                </Suspense>
-            )}
-        </>
-    );
-}
-```
-
-- `loaded` flips once on first click — controls when the chunk is fetched and the component mounts.
-- `open` toggles visibility — re-opening after first load is instant.
-
-> [!IMPORTANT]
-> **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and TBT.
->
-> **Discouraged:** `<Suspense><LazyComponent /></Suspense>` without a guard — the chunk is separate but still fetched and parsed on mount, adding to TBT during page startup.

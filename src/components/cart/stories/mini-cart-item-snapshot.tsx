@@ -14,83 +14,56 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import { composeStories } from '@storybook/react-vite';
+import { render, cleanup } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { mockSiteObject } from '@/test-utils/config';
 
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-
-const fetcherMock = {
-    data: null,
-    state: 'idle',
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual = await importOriginal<object>();
+// Partial mock — keep RouterProvider/createMemoryRouter and Form real, only
+// override the hooks the snapshot needs to be deterministic. Full-replacement
+// mocks strip RouterProvider's children and produce null snapshots (Pattern 2).
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
     return {
         ...actual,
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
+        useFetcher: () => ({
+            data: null,
+            state: 'idle' as const,
+            submit: () => {},
+            Form: actual.Form,
         }),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
+        useFetchers: () => [],
+        useNavigation: () => ({ state: 'idle' as const, location: undefined }),
     };
 });
+
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: () => {},
     }),
 }));
+
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
-    const actual = await importOriginal<object>();
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/site-context')>();
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });
 
-import { composeStories } from '@storybook/react-vite';
-
 import * as MiniCartItemStories from './mini-cart-item.stories';
-import { render, cleanup } from '@testing-library/react';
 
 const composed = composeStories(MiniCartItemStories);
 
@@ -101,9 +74,16 @@ afterEach(() => {
 describe('MiniCartItem stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(
-                <Story />
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/',
+                        element: <Story />,
+                    },
+                ],
+                { initialEntries: ['/'] }
             );
+            const { container } = render(<RouterProvider router={router} />);
             expect(container.firstChild).toMatchSnapshot();
         });
     }

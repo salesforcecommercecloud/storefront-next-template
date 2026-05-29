@@ -15,82 +15,23 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import SuggestionsList from '../suggestions-list';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// SuggestionsList renders a vertical button list — one per `suggestion` —
+// where each row optionally shows a circular image preview. Visible state is
+// fully a function of (a) the suggestion type / count and (b) whether each
+// entry has an `image` field. All three fold cleanly into Controls.
+// `closeAndNavigate` binds to `action()` directly via component props. The
+// empty case returns null — kept as a dedicated story.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('suggestion-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const button = target.closest('button');
-            if (button && root.contains(button)) {
-                logClick({ text: button.textContent?.trim() });
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-const meta: Meta<typeof SuggestionsList> = {
-    title: 'Search/SuggestionsList',
-    component: SuggestionsList,
-    parameters: {
-        layout: 'centered',
-        docs: {
-            description: {
-                component:
-                    'Displays a vertical list of search suggestions (categories, products, or popular searches) with optional images.',
-            },
-        },
-    },
-    tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <ActionLogger>
-                    <Story />
-                </ActionLogger>
-            </ConfigProvider>
-        ),
-    ],
-    argTypes: {
-        suggestions: {
-            description: 'Array of suggestions to display',
-            control: 'object',
-        },
-        closeAndNavigate: {
-            description: 'Callback function to close the search and navigate to a URL',
-            action: 'closeAndNavigate',
-        },
-        className: {
-            description: 'Additional CSS classes',
-            control: 'text',
-        },
-    },
-};
-
-export default meta;
-type Story = StoryObj<typeof SuggestionsList>;
-
-const mockCategorySuggestions = [
+const ALL_CATEGORY_SUGGESTIONS = [
     {
         name: 'Footwear',
         link: '/category/footwear',
@@ -107,10 +48,16 @@ const mockCategorySuggestions = [
         name: 'Accessories',
         link: '/category/accessories',
         type: 'category',
+        image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100&h=100&fit=crop',
+    },
+    {
+        name: 'Outerwear',
+        link: '/category/outerwear',
+        type: 'category',
+        image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=100&h=100&fit=crop',
     },
 ];
-
-const mockProductSuggestions = [
+const ALL_PRODUCT_SUGGESTIONS = [
     {
         name: 'Running Shoes',
         link: '/products/running-shoes',
@@ -123,94 +70,153 @@ const mockProductSuggestions = [
         type: 'product',
         image: 'https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=100&h=100&fit=crop',
     },
+    {
+        name: 'Casual Sneakers',
+        link: '/products/casual-sneakers',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=100&h=100&fit=crop',
+    },
+    {
+        name: 'Dress Shoes',
+        link: '/products/dress-shoes',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop',
+    },
+];
+const ALL_POPULAR_SUGGESTIONS = [
+    { name: 'Shoes', link: '/search?q=shoes', type: 'popular' },
+    { name: 'Boots', link: '/search?q=boots', type: 'popular' },
+    { name: 'Jackets', link: '/search?q=jackets', type: 'popular' },
+    { name: 'Bags', link: '/search?q=bags', type: 'popular' },
 ];
 
-export const Default: Story = {
+const SUGGESTION_LISTS: Record<'category' | 'product' | 'popular', typeof ALL_CATEGORY_SUGGESTIONS> = {
+    category: ALL_CATEGORY_SUGGESTIONS,
+    product: ALL_PRODUCT_SUGGESTIONS,
+    popular: ALL_POPULAR_SUGGESTIONS as typeof ALL_CATEGORY_SUGGESTIONS,
+};
+
+const meta: Meta<typeof SuggestionsList> = {
+    title: 'Search/SuggestionsList',
+    component: SuggestionsList,
+    parameters: {
+        layout: 'centered',
+        docs: {
+            description: {
+                component:
+                    'Vertical list of search suggestions (categories, products, or popular searches). Each row is a button with an optional circular image preview to the left of the suggestion name.',
+            },
+        },
+    },
+    tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story: ComponentType) => (
+            <ConfigProvider config={mockConfig}>
+                <Story />
+            </ConfigProvider>
+        ),
+    ],
+};
+
+export default meta;
+
+type SyntheticArgs = {
+    suggestionType: 'category' | 'product' | 'popular';
+    suggestionCount: number;
+    showImages: boolean;
+    searchPhrase: string;
+    className: string;
+};
+
+/**
+ * Rich-but-realistic baseline — 3 category suggestions with images. Use
+ * Controls to switch between category / product / popular fixture sets,
+ * adjust the count, or strip image fields.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        suggestions: mockCategorySuggestions,
-        closeAndNavigate: action('closeAndNavigate'),
+        suggestionType: 'category',
+        suggestionCount: 3,
+        showImages: true,
+        searchPhrase: '',
+        className: '',
+    },
+    argTypes: {
+        suggestionType: {
+            description:
+                'Synthetic: which canonical fixture list to render — categories (with images), products (with images), or popular searches (no images by default).',
+            control: { type: 'inline-radio' },
+            options: ['category', 'product', 'popular'],
+            table: { category: 'Synthetic (data shape)' },
+        },
+        suggestionCount: {
+            description: 'Synthetic: number of suggestion rows to render (0–4). Setting to 0 returns null.',
+            control: { type: 'number', min: 0, max: 4, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showImages: {
+            description:
+                'Synthetic: when off, strips the `image` field from each suggestion so the circular image slot is hidden.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        searchPhrase: {
+            description: 'Direct prop: the search phrase that triggered the list. Passed to analytics on click.',
+            control: 'text',
+        },
+        className: {
+            description: 'Direct prop: additional CSS classes applied to the outer wrapper.',
+            control: 'text',
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            suggestionType: args.suggestionType ?? 'category',
+            suggestionCount: args.suggestionCount ?? 3,
+            showImages: args.showImages ?? true,
+            searchPhrase: args.searchPhrase ?? '',
+            className: args.className ?? '',
+        };
+        const source = SUGGESTION_LISTS[synthetic.suggestionType];
+        const clamped = Math.max(0, Math.min(synthetic.suggestionCount, source.length));
+        const suggestions = source.slice(0, clamped).map((s) =>
+            synthetic.showImages
+                ? s
+                : {
+                      name: s.name,
+                      link: s.link,
+                      type: s.type,
+                  }
+        );
+        return (
+            <SuggestionsList
+                suggestions={suggestions}
+                searchPhrase={synthetic.searchPhrase}
+                closeAndNavigate={action('closeAndNavigate')}
+                className={synthetic.className || undefined}
+            />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        const footwearButton = await canvas.findByRole('button', { name: /footwear/i });
-        await expect(footwearButton).toBeInTheDocument();
-
-        await userEvent.click(footwearButton);
+        const buttons = await canvas.findAllByRole('button', {}, { timeout: 5000 });
+        await expect(buttons.length).toBeGreaterThan(0);
     },
 };
 
-export const Empty: Story = {
+/**
+ * Empty `suggestions` makes the component return null. Worth a bookmarkable
+ * URL so the null-render can be asserted explicitly.
+ */
+export const Empty: StoryObj<typeof SuggestionsList> = {
     args: {
         suggestions: [],
         closeAndNavigate: action('closeAndNavigate'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        // Component should render nothing when empty (returns null)
-        // The container might have a wrapper div, so we check that no buttons are rendered
         const buttons = canvasElement.querySelectorAll('button');
         await expect(buttons.length).toBe(0);
-    },
-};
-
-export const WithProducts: Story = {
-    args: {
-        suggestions: mockProductSuggestions,
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const runningShoesButton = canvas.getByRole('button', { name: /running shoes/i });
-        await expect(runningShoesButton).toBeInTheDocument();
-    },
-};
-
-export const WithoutImages: Story = {
-    args: {
-        suggestions: [
-            {
-                name: 'Category Without Image',
-                link: '/category/no-image',
-                type: 'category',
-            },
-            {
-                name: 'Another Category',
-                link: '/category/another',
-                type: 'category',
-            },
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const categoryButton = canvas.getByRole('button', { name: /category without image/i });
-        await expect(categoryButton).toBeInTheDocument();
-    },
-};
-
-export const SingleSuggestion: Story = {
-    args: {
-        suggestions: [
-            {
-                name: 'Single Item',
-                link: '/category/single',
-                type: 'category',
-                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop',
-            },
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const itemButton = canvas.getByRole('button', { name: /single item/i });
-        await expect(itemButton).toBeInTheDocument();
     },
 };

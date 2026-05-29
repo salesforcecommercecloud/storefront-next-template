@@ -24,4 +24,6 @@ export interface PasswordRequirementsProps {
 export interface SignupFormProps {
     /** Optional error message to display */
     error?: string;
+    /** When true, hides password fields */
+    isPasswordless?: boolean;
 }

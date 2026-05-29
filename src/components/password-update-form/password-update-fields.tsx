@@ -59,7 +59,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.currentPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -81,7 +81,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.newPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -103,7 +103,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.confirmPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>

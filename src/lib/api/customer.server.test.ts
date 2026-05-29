@@ -322,7 +322,7 @@ describe('Customer API', () => {
             const result = await customerLookup(mockContext, 'unknown@example.com');
 
             expect(result.recommendation).toBe('guest');
-            expect(result.message).toBe('Continuing as guest. You can login later if you have an account.');
+            expect(result.message).toBe('Continuing as guest. You can log in later if you have an account.');
             expect(result.isRegistered).toBe(false);
         });
 

@@ -16,59 +16,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import ProductCartActions from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import ProductViewProvider from '@/providers/product-view';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-
-// Mock ProductViewProvider to control internal state if needed,
-// but using the real one is better for integration testing if possible.
-// We need to ensure all dependencies of ProductViewProvider are met.
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                event.preventDefault();
-                event.stopPropagation();
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof ProductCartActions> = {
     title: 'Components/ProductCartActions',
@@ -83,14 +38,12 @@ const meta: Meta<typeof ProductCartActions> = {
             return (
                 <ConfigProvider config={mockConfig}>
                     <SiteProvider
-                        site={mockConfig.commerce.sites[0]}
+                        site={mockSiteObject}
                         locale={mockLocale}
-                        language="en-GB"
-                        currency="USD">
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="add">
-                            <ActionLogger>
-                                <Story />
-                            </ActionLogger>
+                            <Story />
                         </ProductViewProvider>
                     </SiteProvider>
                 </ConfigProvider>
@@ -104,7 +57,7 @@ type Story = StoryObj<typeof ProductCartActions>;
 
 export const Default: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -121,15 +74,13 @@ export const Default: Story = {
 
 export const EditMode: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
     },
     decorators: [
         (Story: React.ComponentType, context) => (
             <ConfigProvider config={mockConfig}>
                 <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="edit">
-                    <ActionLogger>
-                        <Story />
-                    </ActionLogger>
+                    <Story />
                 </ProductViewProvider>
             </ConfigProvider>
         ),
@@ -144,5 +95,53 @@ export const EditMode: Story = {
         // Wishlist button should not be present in edit mode
         const wishlistButton = canvas.queryByRole('button', { name: /add to wishlist/i });
         await expect(wishlistButton).not.toBeInTheDocument();
+    },
+};
+
+export const CompactWithBuyNow: Story = {
+    args: {
+        product: mockStandardProductOrderable.product,
+        onBuyNow: action('buy-now'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCartButton).toBeInTheDocument();
+        const buyNowButton = canvas.getByRole('button', { name: /buy it now/i });
+        await expect(buyNowButton).toBeInTheDocument();
+    },
+};
+
+export const NoVariantSelected: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            variationValues: {},
+        },
+    },
+    decorators: [
+        (Story: React.ComponentType, context) => (
+            <ConfigProvider config={mockConfig}>
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="add">
+                        <Story />
+                    </ProductViewProvider>
+                </SiteProvider>
+            </ConfigProvider>
+        ),
+    ],
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
+        await expect(addToCartButton).toBeInTheDocument();
+        await expect(addToCartButton).toBeDisabled();
     },
 };

@@ -13,55 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, expect, test, describe, afterEach } from 'vitest';
-import type React from 'react';
-
-// Mock react-router to avoid nested Router issues
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => ({
-        data: null,
-        state: 'idle',
-
-        submit: () => {},
-        Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
-    }),
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-    createMemoryRouter: vi.fn().mockImplementation((routes: Array<{ path: string; element: unknown }>) => ({
-        routes: routes || [],
-        navigate: vi.fn(),
-        state: { location: { pathname: '/', search: '', hash: '', state: null } },
-    })),
-    RouterProvider: ({ router }: { router?: { routes?: Array<{ element?: unknown }> } }) => {
-        if (!router || !router.routes) {
-            return <div />;
-        }
-        return <div>{router.routes[0]?.element || null}</div>;
-    },
-    useInRouterContext: () => false,
-}));
-
+import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 
 import * as ActiveFiltersStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
-import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { StoryTestWrapper } from '../../../../../.storybook/test-wrapper';
 
 const composed = composeStories(ActiveFiltersStories);
 
@@ -71,11 +28,13 @@ afterEach(() => {
 
 describe('ActiveFilters stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
+        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
+            const initialEntries = Story?.parameters?.initialEntries as string[] | undefined;
             const { container } = render(
-                <AllProvidersWrapper>
+                <StoryTestWrapper initialEntries={initialEntries}>
                     <Story />
-                </AllProvidersWrapper>
+                </StoryTestWrapper>
             );
             expect(container.firstChild).toMatchSnapshot();
         });

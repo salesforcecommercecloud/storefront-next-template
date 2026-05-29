@@ -15,8 +15,10 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import type React from 'react';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createCookie: (name: string) => ({
         name,
         parse: () => null,
@@ -77,8 +79,6 @@ vi.mock('@/config', () => ({
     useConfig: () => ({}),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
     getBadgeVariant: () => 'default',
 }));
 
@@ -87,7 +87,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
@@ -109,7 +109,7 @@ afterEach(() => {
 
 describe('ForgotPasswordForm stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
+        if (Story?.parameters?.snapshot === false) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();

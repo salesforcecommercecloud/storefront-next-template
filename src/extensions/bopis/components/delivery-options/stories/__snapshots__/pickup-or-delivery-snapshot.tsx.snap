@@ -22,7 +22,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -76,12 +76,12 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -95,7 +95,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="unchecked"
@@ -119,12 +119,12 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -159,7 +159,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-disabled=""
           data-radix-collection-item=""
           data-slot="radio-group-item"
@@ -185,12 +185,12 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -204,7 +204,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -258,7 +258,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>
@@ -307,7 +307,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -361,12 +361,12 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -380,7 +380,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="unchecked"
@@ -404,7 +404,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>
@@ -453,7 +453,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -507,12 +507,12 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -526,7 +526,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="unchecked"
@@ -550,12 +550,12 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -590,7 +590,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="unchecked"
@@ -614,12 +614,12 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -633,7 +633,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -687,12 +687,12 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -727,7 +727,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -781,12 +781,12 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -800,7 +800,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-disabled=""
           data-radix-collection-item=""
           data-slot="radio-group-item"
@@ -826,7 +826,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Pickup unavailable at
             </span>
@@ -875,7 +875,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
       >
         <button
           aria-checked="false"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="unchecked"
@@ -899,12 +899,12 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Deliver to
             </span>
             <p
-              class="text-xs text-muted-foreground mt-0.5"
+              class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
             >
               Enter ZIP code to see delivery estimate
             </p>
@@ -918,7 +918,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
       >
         <button
           aria-checked="true"
-          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
+          class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 sr-only"
           data-radix-collection-item=""
           data-slot="radio-group-item"
           data-state="checked"
@@ -972,7 +972,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
             class="flex flex-col"
           >
             <span
-              class="text-xs font-medium text-foreground"
+              class="text-sm font-medium leading-none text-foreground"
             >
               Free pickup in
             </span>

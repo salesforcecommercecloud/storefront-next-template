@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useState, useCallback } from 'react';
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
+import { type ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFetcher } from 'react-router';
 import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProductContentAdapter } from '@/providers/product-content';
-import type { ShippingEstimate } from '@/lib/adapters/product-content-data-types';
+import type { ShippingEstimateResult } from '@/extensions/shipping-delivery/routes/resource.shipping-estimate';
 
 // US Postal Code validation (5 digits or 5+4 format)
 const US_POSTAL_CODE_REGEX = /^\d{5}(-\d{4})?$/;
@@ -31,56 +32,40 @@ interface ShippingCalculatorProps {
 export default function ShippingCalculator({ onCalculate, productId }: ShippingCalculatorProps): ReactElement | null {
     const { t } = useTranslation('extBopis');
     const [inputValue, setInputValue] = useState('');
-    const [showResult, setShowResult] = useState(false);
-    const [deliveryEstimate, setDeliveryEstimate] = useState<ShippingEstimate | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
     const [showInvalidZipError, setShowInvalidZipError] = useState(false);
 
-    const adapter = useProductContentAdapter();
+    const fetcher = useFetcher<ShippingEstimateResult>();
+    const isLoading = fetcher.state === 'loading';
 
-    // All hooks must be called before any conditional returns
-    const clearError = useCallback(() => {
-        setError(null);
-    }, []);
+    // Derive display state from fetcher.data — only show when the response's zipcode
+    // matches the current input. Editing the input automatically hides stale results.
+    const matched = fetcher.data && fetcher.data.zipcode === inputValue ? fetcher.data : null;
+    const estimate = matched?.success ? matched.estimate : null;
+    const errorMsg = matched && !matched.success ? matched.error : null;
 
-    // Early return after all hooks
-    if (!adapter?.getShippingEstimates) {
-        return null;
-    }
+    useEffect(() => {
+        if (matched?.success) {
+            onCalculate(matched.zipcode, matched.estimate.days);
+        }
+    }, [matched, onCalculate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/\D/g, '').slice(0, 5);
         setInputValue(val);
-        setShowResult(false);
-        clearError();
         setShowInvalidZipError(false);
     };
 
     const isValidZip = US_POSTAL_CODE_REGEX.test(inputValue);
 
-    const handleCalculate = async () => {
+    const handleCalculate = () => {
         if (!isValidZip) {
             setShowInvalidZipError(true);
             return;
         }
 
-        if (!adapter?.getShippingEstimates) return;
-
-        clearError();
-        setShowResult(false);
-        setIsLoading(true);
-
-        try {
-            const estimate = await adapter.getShippingEstimates(productId, inputValue);
-            setDeliveryEstimate(estimate);
-            onCalculate(inputValue, estimate.days);
-            setShowResult(true);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-        } finally {
-            setIsLoading(false);
-        }
+        void fetcher.load(
+            `/resource/shipping-estimate?productId=${encodeURIComponent(productId)}&zipcode=${encodeURIComponent(inputValue)}`
+        );
     };
 
     return (
@@ -101,7 +86,7 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                             aria-label={t('deliveryOptions.pickupOrDelivery.zipAriaLabel')}
                             aria-invalid={showInvalidZipError}
                             aria-describedby={
-                                showResult
+                                estimate
                                     ? 'delivery-result'
                                     : showInvalidZipError
                                       ? 'validation-error'
@@ -122,7 +107,7 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                         type="button"
                         className="px-4 py-2 text-sm font-medium rounded-none transition-colors whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
                         disabled={isLoading}
-                        onClick={() => void handleCalculate()}
+                        onClick={handleCalculate}
                         aria-label={t('deliveryOptions.pickupOrDelivery.calculateAriaLabel')}>
                         {isLoading
                             ? t('deliveryOptions.pickupOrDelivery.calculating')
@@ -136,13 +121,13 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                     </p>
                 )}
 
-                {!showResult && !isLoading && !error && !showInvalidZipError && (
+                {!estimate && !isLoading && !errorMsg && !showInvalidZipError && (
                     <p id="delivery-message" className="text-xs text-muted-foreground">
                         {t('deliveryOptions.pickupOrDelivery.calculatorInstructionMessage')}
                     </p>
                 )}
 
-                {error && (
+                {errorMsg && (
                     <div className="bg-destructive/10 border border-destructive/20 rounded-none p-3">
                         <div className="flex items-start gap-2">
                             <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
@@ -152,7 +137,7 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                                 </p>
                                 <button
                                     type="button"
-                                    onClick={() => void handleCalculate()}
+                                    onClick={handleCalculate}
                                     className="text-sm text-destructive underline hover:no-underline mt-1">
                                     {t('deliveryOptions.pickupOrDelivery.retry')}
                                 </button>
@@ -161,7 +146,7 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                     </div>
                 )}
 
-                {showResult && !error && (
+                {estimate && (
                     <div
                         id="delivery-result"
                         role="status"
@@ -172,19 +157,19 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                             <div className="flex-1 space-y-1">
                                 <p className="text-sm text-success">
                                     {t('deliveryOptions.pickupOrDelivery.estimatedDeliveryInDays', {
-                                        days: deliveryEstimate?.days,
+                                        days: estimate.days,
                                     })}
                                 </p>
                                 <p className="text-sm text-success flex items-center gap-1">
                                     <span>
                                         {t('deliveryOptions.pickupOrDelivery.shippingCost')}{' '}
                                         <span className="font-semibold">
-                                            {deliveryEstimate && deliveryEstimate.cost > 0
-                                                ? `$${deliveryEstimate.cost.toFixed(2)}`
+                                            {estimate.cost > 0
+                                                ? `$${estimate.cost.toFixed(2)}`
                                                 : t('deliveryOptions.pickupOrDelivery.free')}
                                         </span>
                                     </span>
-                                    {deliveryEstimate && deliveryEstimate.cost === 0 && <Check className="w-4 h-4" />}
+                                    {estimate.cost === 0 && <Check className="w-4 h-4" />}
                                 </p>
                             </div>
                         </div>

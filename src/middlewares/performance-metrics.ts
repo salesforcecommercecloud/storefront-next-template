@@ -61,6 +61,8 @@ export const PERFORMANCE_MARKS = {
     authAuthorizePasswordless: 'auth.authorizePasswordless',
     authGetPasswordLessAccessToken: 'auth.getPasswordLessAccessToken',
     authGetPasswordResetToken: 'auth.getPasswordResetToken',
+    authRequestOtp: 'auth.requestOtp',
+    authVerifyOtp: 'auth.verifyOtp',
     authResetPasswordWithToken: 'auth.resetPasswordWithToken',
 
     // API Call helpers - generate dynamic performance mark names

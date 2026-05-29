@@ -27,6 +27,26 @@ vi.mock('react-router', async () => {
     };
 });
 
+// Make `useConfig()` resolve to the shared mock config for snapshot tests
+// that render components outside the Storybook decorator chain (which would
+// otherwise wrap them in `<ConfigProvider>`). `getConfig()` is already
+// covered above via `window.__APP_CONFIG__`; `useConfig()` reads from React
+// context, so we replace it at the SDK boundary so any caller (production
+// component or shared util) renders without per-file `<ConfigProvider>` wiring.
+//
+// Snapshots that need a richer config (e.g., specific `auth.otpLength`) can
+// still override this via their own `vi.mock(...)` call — those take
+// precedence over this setup-level default.
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => mockConfig,
+    };
+});
+
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import resources from '../src/locales';

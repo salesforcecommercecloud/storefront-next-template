@@ -450,7 +450,7 @@ The site switcher (`src/components/site-switcher`) in the footer allows switchin
 
 The locale switcher (`src/components/locale-switcher`) changes the locale on the current page:
 
-1. Strips the current site/locale prefix from the URL using `sanitizePrefix`
+1. Strips the current site/locale prefix from the URL using `stripPathPrefix`
 2. Rebuilds the URL with the new locale
 3. Calls `i18n.changeLanguage()` for immediate client-side update
 4. Submits `type: 'locale'`, `locale`, and `pathname` to `/action/set-site-context`

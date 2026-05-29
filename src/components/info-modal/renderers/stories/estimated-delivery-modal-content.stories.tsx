@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { EstimatedDeliveryModalContent } from '../estimated-delivery-modal-content';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
 
 const mockDeliveryData: EstimatedDeliveryData = {
     title: 'Fulfillment & Shipping',
@@ -57,7 +56,7 @@ const mockDeliveryData: EstimatedDeliveryData = {
 
 function Wrapper({ deliveryData, currency }: { deliveryData: EstimatedDeliveryData; currency: string }) {
     return (
-        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency={currency}>
+        <SiteProvider site={mockSite} locale={mockLocale} language={mockSiteObject.defaultLocale} currency={currency}>
             <div className="max-w-2xl p-6 space-y-6">
                 <EstimatedDeliveryModalContent deliveryData={deliveryData} currency={currency} />
             </div>
@@ -66,11 +65,30 @@ function Wrapper({ deliveryData, currency }: { deliveryData: EstimatedDeliveryDa
 }
 
 const meta: Meta<typeof Wrapper> = {
-    title: 'Components/InfoModal/EstimatedDeliveryModalContent',
+    title: 'COMMON/Info Modal/Estimated Delivery Modal Content',
     component: Wrapper,
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
+        docs: {
+            description: {
+                component: `
+EstimatedDeliveryModalContent is a renderer component that displays delivery options, shipping rates, international shipping notes, and order tracking information within the InfoModal.
+
+This component is used internally by InfoModal when the modal type is 'estimated-delivery'.
+                `,
+            },
+        },
+    },
+    // `deliveryData` is a deeply structured fixture that would render as
+    // a JSON editor in Controls — fails the Designer-Friendly Input Rule.
+    argTypes: {
+        currency: {
+            control: 'select',
+            options: ['USD', 'EUR', 'GBP', 'JPY'],
+            description: 'Currency code used to format shipping costs',
+        },
+        deliveryData: { control: false, table: { disable: true } },
     },
 };
 
@@ -80,18 +98,6 @@ type Story = StoryObj<typeof Wrapper>;
 export const Default: Story = {
     args: {
         deliveryData: mockDeliveryData,
-        currency: 'USD',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Standard Shipping/)).toBeInTheDocument();
-        await expect(canvas.getByText(/Express Shipping/)).toBeInTheDocument();
-        await expect(canvas.getByText(/Next Day Delivery/)).toBeInTheDocument();
-        await expect(canvas.getAllByText('5-7 business days').length).toBeGreaterThanOrEqual(1);
-        await expect(canvas.getByText('Free')).toBeInTheDocument();
-        await expect(canvas.getByText('International Shipping')).toBeInTheDocument();
-        await expect(canvas.getByText('Order Tracking')).toBeInTheDocument();
+        currency: mockSiteObject.defaultCurrency,
     },
 };

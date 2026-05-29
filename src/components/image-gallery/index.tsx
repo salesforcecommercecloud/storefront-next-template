@@ -13,18 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, useCallback, type MouseEvent, type ReactElement } from 'react';
+import {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    useCallback,
+    type FocusEvent,
+    type MouseEvent,
+    type PointerEvent,
+    type ReactElement,
+} from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { DynamicImage } from '@/components/dynamic-image';
+import { preloadDynamicImage } from '@/components/dynamic-image/preload';
 import ImageNavArrows from '@/components/image-nav-arrows';
 import { useTranslation } from 'react-i18next';
+import { useDeferredRenderSequence } from '@/hooks/use-deferred-render';
 import { cn } from '@/lib/utils';
+import type { DynamicImageDimensions } from '@/lib/images/dynamic-image';
+import type { AppConfig } from '@/types/config';
 import { UITarget } from '@/targets/ui-target';
 
 export interface GalleryImage {
     src: string;
     alt?: string;
     thumbSrc?: string;
+}
+
+interface ImageGalleryWidths {
+    /**
+     * Responsive widths for the main image. Defaults match PDP (`section-container` → `lg:grid-cols-2` →
+     * `max-w-screen-2xl`): viewport-wide below `lg`, half-viewport at `lg`/`xl`, capped at 680 once the
+     * container hits `max-w-screen-2xl`. Override when the gallery sits in a narrower container (modal,
+     * card cell) so DIS doesn't deliver an oversized main image.
+     */
+    main?: DynamicImageDimensions;
+    /**
+     * Responsive widths for thumbnails in grid mode. Defaults match PDP (gallery half-width at `lg+`,
+     * grid-cols-4). Override when the gallery's effective width differs (e.g. inside a modal at `lg+` or
+     * a multi-column card grid). Ignored when `horizontalThumbnails` is set — the strip uses fixed CSS
+     * sizes instead.
+     */
+    thumbnail?: DynamicImageDimensions;
 }
 
 interface ImageGalleryProps {
@@ -37,9 +69,70 @@ interface ImageGalleryProps {
     /** Use horizontal scrollable thumbnail strip with arrows instead of grid */
     horizontalThumbnails?: boolean;
     productName?: string;
+    /**
+     * Per-callsite responsive widths for the main image and grid thumbnails. Either field may be
+     * omitted to keep the corresponding default. Defaults are PDP-shaped (full container,
+     * `lg:grid-cols-2`, capped at `max-w-screen-2xl`); override when the gallery sits in a narrower
+     * container so DIS doesn't deliver oversized variants.
+     */
+    widths?: ImageGalleryWidths;
 }
 
+type NetworkInformation = {
+    saveData?: boolean;
+};
+
+// Cap eager preloads so a set/bundle PDP (one gallery per child product) doesn't fan out into an unclear amount of
+// requests on hydration. Slides beyond the cap are promoted on hover/focus intent before the click lands. Within the
+// cap, the preloads are spread across consecutive idle frames so the network burst stays flat.
+const EAGER_PRELOAD_LIMIT = 4;
 const THUMBNAIL_SCROLL_OFFSET = 200;
+
+// === Canonical width ladder for cache reuse ===
+//
+// Each width here turns into a `sw=<n>` query param on the DIS URL, and `sw` is part of the cache key. A single
+// browsing session typically hits the gallery on the PDP, the cart-edit modal, the bonus-product modal, and the
+// per-child gallery on a set/bundle PDP. If those four surfaces pick four slightly different widths for the same
+// product image, the browser and CDN cache them as four separate variants. Same picture, four downloads.
+//
+// Fix: pick widths from a small shared ladder instead of fitting each container to the pixel. ~3-5% over-supply is
+// invisible to the user; the cache reuse compounds across navigation. When in doubt, round up to the next rung —
+// never invent a new one.
+//
+//   thumbs:  64, 80, 96, 144, 176, 240
+//   main:    360, 420, 680, '100vw' (resolves to 640/768/1024), '50vw'
+//
+// Alignments this currently buys us:
+//   - All mobile main images share the `'100vw'` rung → 640/768/1024 on PDP, cart-modal, bonus-modal.
+//   - All desktop "narrow gallery" main images share 420 (cart-modal `md+`, bonus-modal `lg+`, child-card `md+`).
+//   - PDP and bonus-modal share the same `md` thumb at 240.
+//
+// PDP gallery is full-width below `lg`, half-width at `lg`/`xl` (`lg:grid-cols-2`), and capped at 680 once the
+// container hits `max-w-screen-2xl`. The `'50vw'` overestimates slightly (ignores `lg:gap-12`) which is harmless —
+// the browser picks the smallest sufficient candidate from the srcset.
+const DEFAULT_WIDTHS_MAIN: DynamicImageDimensions = { base: '100vw', lg: '50vw', '2xl': 680 };
+// Grid is `grid-cols-4 gap-2 sm:gap-3` inside the gallery container, and the gallery itself drops to half-width once
+// PDP switches to `lg:grid-cols-2`. Cell width therefore peaks in the `md` range (~230px just below `lg`) and falls
+// back to ~160px at `lg+` where the gallery is half-width and capped by `max-w-screen-2xl`. Each entry targets the
+// upper end of its breakpoint range so DIS still has headroom at @2x DPR.
+const DEFAULT_WIDTHS_THUMBNAIL_GRID: DynamicImageDimensions = { base: 144, sm: 176, md: 240, lg: 168 };
+// Horizontal strip uses fixed `h-16 w-16 sm:h-20 sm:w-20` — 64 base, 80 sm+. Fixed CSS, so this is intentionally
+// not configurable per consumer.
+const DEFAULT_WIDTHS_THUMBNAIL_STRIP: DynamicImageDimensions = [64, 80];
+
+/**
+ * Respect the user-explicit Data Saver preference (`Save-Data`) by skipping preloads. Falls back to "preload allowed"
+ * when the `NetworkInformation` API isn't exposed (Safari, Firefox). We deliberately do not consult `effectiveType`,
+ * which is a passively-derived network signal and a known fingerprinting vector — only the explicit user preference is
+ * honored. The remaining defenses against bandwidth waste (cap, idle scheduling, `fetchPriority: 'low'`) carry the rest.
+ */
+const isPreloadAllowedByConnection = (): boolean => {
+    if (typeof navigator === 'undefined') {
+        return false;
+    }
+    const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection;
+    return !connection?.saveData;
+};
 
 export default function ImageGallery({
     images,
@@ -48,9 +141,43 @@ export default function ImageGallery({
     navigationArrowSize = 'sm',
     horizontalThumbnails = false,
     productName,
+    widths,
 }: ImageGalleryProps): ReactElement {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const thumbStripRef = useRef<HTMLDivElement>(null);
+    const config = useConfig<AppConfig>();
+    const mainWidths = widths?.main ?? DEFAULT_WIDTHS_MAIN;
+    const thumbnailWidths = widths?.thumbnail ?? DEFAULT_WIDTHS_THUMBNAIL_GRID;
+
+    const preloadGallerySlide = useCallback(
+        (image: GalleryImage | undefined) => {
+            if (!image) {
+                return;
+            }
+            preloadDynamicImage({
+                config,
+                src: image.src,
+                widths: mainWidths,
+                fetchPriority: 'low',
+            });
+        },
+        [config, mainWidths]
+    );
+
+    /**
+     * Promote a non-eagerly-preloaded slide on hover/focus intent. By the time the click lands, the variant should
+     * usually already be in the HTTP cache.
+     */
+    const handleThumbnailIntent = useCallback(
+        (event: PointerEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => {
+            const index = Number(event.currentTarget.dataset.index);
+            if (Number.isNaN(index)) {
+                return;
+            }
+            preloadGallerySlide(images[index]);
+        },
+        [images, preloadGallerySlide]
+    );
     const handleScrollThumbnailsLeft = useCallback(() => {
         thumbStripRef.current?.scrollBy({ left: -THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
     }, []);
@@ -74,6 +201,22 @@ export default function ImageGallery({
             return currentIndex < images.length ? currentIndex : 0;
         });
     }, [images]);
+
+    // Off-screen slides eligible for eager preload. Save-Data and the cap are folded into the array length so the
+    // sequencer's `n === 0` disabled state doubles as the "nothing to do" guard. No idle frames are scheduled when
+    // there's only one slide or when the user opted into Data Saver.
+    const offScreenSlides = useMemo(
+        () => (isPreloadAllowedByConnection() ? images.slice(1, 1 + EAGER_PRELOAD_LIMIT) : []),
+        [images]
+    );
+
+    // Spread preloads across consecutive idle frames instead of registering all `EAGER_PRELOAD_LIMIT` in one tick.
+    // `react-dom` dedupes per resource, so re-running the effect with a growing cursor is cheap. Slides beyond the
+    // cap are promoted on hover/focus.
+    const readyPreloadCount = useDeferredRenderSequence(offScreenSlides.length);
+    useEffect(() => {
+        offScreenSlides.slice(0, readyPreloadCount).forEach(preloadGallerySlide);
+    }, [offScreenSlides, readyPreloadCount, preloadGallerySlide]);
 
     const { t: tCommon } = useTranslation('common');
     const { t: tProduct } = useTranslation('product');
@@ -100,9 +243,9 @@ export default function ImageGallery({
                 {/* Main Image */}
                 <div className="relative aspect-square overflow-hidden rounded-none bg-muted">
                     <DynamicImage
-                        src={`${selectedImage.src}[?sw={width}]`}
+                        src={selectedImage.src}
                         alt={selectedImage.alt || imageAltFallback}
-                        widths={['100vw', '680px']}
+                        widths={mainWidths}
                         className="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                         loading={eager ? 'eager' : 'lazy'}
                         priority={eager ? 'high' : undefined}
@@ -123,6 +266,8 @@ export default function ImageGallery({
                             <button
                                 key={image.src + (image.thumbSrc || '')}
                                 onClick={handleThumbnailClick}
+                                onPointerEnter={handleThumbnailIntent}
+                                onFocus={handleThumbnailIntent}
                                 data-index={index}
                                 className={`
                                 aspect-square overflow-hidden rounded-none bg-muted
@@ -133,10 +278,12 @@ export default function ImageGallery({
                                         : 'border-transparent hover:border-border'
                                 }
                             `}>
-                                <img
+                                <DynamicImage
                                     src={image.thumbSrc || image.src}
                                     alt={image.alt || imageAltFallback}
-                                    className="w-full h-full object-cover object-center"
+                                    widths={thumbnailWidths}
+                                    className="w-full h-full"
+                                    imageProps={{ className: 'w-full h-full object-cover object-center' }}
                                     loading="lazy"
                                 />
                             </button>
@@ -167,6 +314,8 @@ export default function ImageGallery({
                                 <button
                                     key={image.src + (image.thumbSrc || '')}
                                     onClick={handleThumbnailClick}
+                                    onPointerEnter={handleThumbnailIntent}
+                                    onFocus={handleThumbnailIntent}
                                     data-index={index}
                                     className={cn(
                                         'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-none bg-muted',
@@ -175,10 +324,12 @@ export default function ImageGallery({
                                             ? 'border-primary'
                                             : 'border-transparent hover:border-border'
                                     )}>
-                                    <img
+                                    <DynamicImage
                                         src={image.thumbSrc || image.src}
-                                        alt={image.alt}
-                                        className="w-full h-full object-cover object-center"
+                                        alt={image.alt || imageAltFallback}
+                                        widths={DEFAULT_WIDTHS_THUMBNAIL_STRIP}
+                                        className="w-full h-full"
+                                        imageProps={{ className: 'w-full h-full object-cover object-center' }}
                                         loading="lazy"
                                     />
                                 </button>

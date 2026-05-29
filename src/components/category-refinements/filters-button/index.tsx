@@ -54,13 +54,20 @@ export default function FiltersButton({
         <Button
             variant={isActive ? 'default' : 'outline'}
             onClick={onClick}
-            className={cn(className)}
+            className={cn(
+                'text-sm font-normal leading-5 tracking-[-0.15px]',
+                isActive ? 'text-primary-foreground' : 'text-foreground',
+                className
+            )}
             aria-label={filtersAriaLabel}
             aria-pressed={isActive}>
             <Funnel className="size-4 mr-2" />
             {filtersLabel}
             {hasSelectedFilters && (
-                <Badge className="ml-2 min-w-5 px-1.5 rounded-none" aria-hidden>
+                <Badge
+                    variant="outline"
+                    className="ml-2 min-w-5 px-1.5 rounded-none border-0 bg-background text-foreground"
+                    aria-hidden>
                     {normalizedSelectedFiltersCount}
                 </Badge>
             )}

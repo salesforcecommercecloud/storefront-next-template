@@ -19,7 +19,7 @@
  *
  * These tests verify the UI elements of the passwordless login flow.
  * Tests are scoped to behaviors that work on any environment regardless
- * of whether SLAS private client (passwordlessLogin.enabled) is configured.
+ * of whether SLAS private client or passwordlessLogin is configured.
  */
 
 Feature('Passwordless Login').tag('@core').tag('@auth').tag('@passwordless');
@@ -38,9 +38,9 @@ Scenario('Login page displays passwordless login form', async () => {
     const isEmailVisible = await passwordlessLoginPage.isEmailInputVisible();
     expect(isEmailVisible, 'Email input should be visible').to.be.true;
 
-    // Verify send login link button is present
-    const isSendButtonVisible = await passwordlessLoginPage.isSendLoginLinkButtonVisible();
-    expect(isSendButtonVisible, 'Send login link button should be visible').to.be.true;
+    // Verify Continue button is present
+    const isSendButtonVisible = await passwordlessLoginPage.isContinueButtonVisible();
+    expect(isSendButtonVisible, 'Continue button should be visible').to.be.true;
 })
     .tag('@passwordless-login')
     .tag('@login-form');
@@ -53,7 +53,7 @@ Scenario('Email validation - empty email shows error', async () => {
     await passwordlessLoginPage.dismissCookieDialog();
 
     // Try to submit without entering email
-    passwordlessLoginPage.clickSendLoginLink();
+    passwordlessLoginPage.clickContinue();
 
     // The browser's native validation should prevent submission
     // or an error message should appear
@@ -70,7 +70,7 @@ Scenario('Invalid email format is rejected by the form', async () => {
     await passwordlessLoginPage.dismissCookieDialog();
 
     passwordlessLoginPage.enterEmail('not-a-valid-email');
-    passwordlessLoginPage.clickSendLoginLink();
+    passwordlessLoginPage.clickContinue();
 
     // Browser native email validation blocks submission — form stays on page
     const isEmailVisible = await passwordlessLoginPage.isEmailInputVisible();

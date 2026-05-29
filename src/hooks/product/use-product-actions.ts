@@ -17,8 +17,9 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
-import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperBasketsV2 } from '@/scapi';
 import { useToast } from '@/components/toast';
+import { resourceRoutes } from '@/route-paths';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
@@ -27,10 +28,13 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import { useRequireAuth } from '@/hooks/use-require-auth';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useAnalytics } from '../use-analytics';
-import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
+import {
+    getEffectiveStockLevel,
+    getEffectiveInventory,
+    isInStock as isProductInStock,
+} from '@/lib/product/inventory-utils';
 interface ProductSelectionValues {
     product: ShopperProducts.schemas['Product'];
     variant?: ShopperProducts.schemas['Variant'];
@@ -105,8 +109,11 @@ export function useProductActions({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const pickupContext = usePickup();
 
-    // Get basket data for update operations
-    const basket = useBasket();
+    // Get basket data for update operations.
+    // Auto-load is only required in edit mode (itemId present): we need the full basket to look up the existing item,
+    // its pickup store, and the current bundle child items. In add mode, the server action is the authoritative source
+    // for delivery-option/BOPIS validation, so we don't need to trigger a basket fetch on PDP mount.
+    const basket = useBasket({ autoLoad: itemId !== undefined });
     const { setMiniCartOpen } = useMiniCart();
     const basketProductItems = basket?.productItems || [];
 
@@ -466,7 +473,10 @@ export function useProductActions({
             (product.id !== itemProductId ? pickupContext?.pickupBasketItems?.get(product.id) : undefined);
         const storeId = pickupInfo?.storeId ?? null;
 
-        // Validate pickup/delivery compatibility with existing basket items
+        // Opportunistic client-side validation: when the basket is already hydrated (e.g., the shopper opened the
+        // mini-cart earlier), short-circuit a network round-trip and surface the localized conflict toast right away.
+        // The cart-item-add server action remains authoritative — it re-validates against the server-side basket and
+        // returns CONFLICT if the basket was undefined here.
         if (!isSelectedDeliveryOptionValid(basket, storeId, addToast)) return;
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
@@ -497,7 +507,7 @@ export function useProductActions({
                 { productItem: JSON.stringify(productItem) },
                 {
                     method: 'POST',
-                    action: '/action/cart-item-add',
+                    action: resourceRoutes.cartItemAdd,
                 }
             );
 
@@ -510,7 +520,6 @@ export function useProductActions({
             addToast(t('product:failedToAddProductToCart'), 'error');
         }
     }, [
-        basket,
         product,
         quantity,
         isMasterOrVariantProduct,
@@ -521,8 +530,10 @@ export function useProductActions({
         addToast,
         analytics,
         t,
-        // @sfdc-extension-line SFDC_EXT_BOPIS
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        basket,
         pickupContext,
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     ]);
 
     /**
@@ -579,41 +590,20 @@ export function useProductActions({
         [product, isMasterOrVariantProduct, currentVariant, addToast]
     );
 
-    // Handle adding to wishlist - using generic handler
-    const handleAddToWishlistBase = useMemo(
+    // Handle adding to wishlist. Guests are allowed: SCAPI accepts the gcid token
+    // for product-list mutations, and the action route already rejects sessions
+    // without a customerId as NOT_AUTHENTICATED.
+    const handleAddToWishlist = useMemo(
         () =>
             createProductActionHandler<{ productId: string }>({
-                actionRoute: '/action/wishlist-add',
+                actionRoute: resourceRoutes.wishlistAdd,
                 fetcher: wishlistFetcher,
                 errorMessage: t('product:failedToAddProductToWishlist'),
                 buildFormData: (params) => ({ productId: String(params.productId) }),
-                actionName: 'handleAddToWishlistBase',
+                actionName: 'handleAddToWishlist',
             }),
         [createProductActionHandler, wishlistFetcher, t]
     );
-
-    // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
-    const handleAddToWishlist = useRequireAuth(
-        (async (...args: unknown[]) => {
-            const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
-            return handleAddToWishlistBase(variant);
-        }) as (...args: unknown[]) => Promise<unknown>,
-        {
-            actionName: 'addToWishlist',
-            getActionParams: (...args: unknown[]) => {
-                const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
-                const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
-                const itemProductId = getProductId(productToAdd) || product.id;
-                if (!itemProductId) {
-                    throw new Error(t('product:productIdRequired'));
-                }
-                return { productId: itemProductId };
-            },
-            getReturnUrl: () =>
-                typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
-            toastMessage: t('product:signInToAddToWishlist'),
-        }
-    ) as (variant?: ShopperProducts.schemas['Variant']) => Promise<void>;
 
     // Handle product set add to cart (multiple products)
     const handleProductSetAddToCart = useCallback(
@@ -626,41 +616,48 @@ export function useProductActions({
                 return;
             }
 
+            const productItems = productSelections.map((selection) => {
+                const selectionProductId = selection.variant?.productId || selection.product.id;
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                // Pickup can be stored by: (1) variant id, (2) master product id (per-child DeliveryOptions),
+                // or (3) parent set product id (set-level DeliveryOptions). Try all.
+                const pickupInfo =
+                    pickupContext?.pickupBasketItems?.get(selectionProductId) ??
+                    (selection.product.id !== selectionProductId
+                        ? pickupContext?.pickupBasketItems?.get(selection.product.id)
+                        : undefined) ??
+                    pickupContext?.pickupBasketItems?.get(product.id);
+                const inventoryId = pickupInfo?.inventoryId ?? null;
+                const storeId = pickupInfo?.storeId ?? null;
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+                return {
+                    productId: selectionProductId,
+                    quantity: selection.quantity,
+                    price: selection.variant?.price || selection.product.price,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    inventoryId,
+                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                    storeId,
+                };
+            });
+
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // Opportunistic client-side validation: see handleAddToCart for rationale.
+            // A set's pickup items must share a single store, so the first non-null storeId is sufficient.
+            const setStoreId = productItems.find((item) => item.storeId)?.storeId ?? null;
+            if (!isSelectedDeliveryOptionValid(basket, setStoreId, addToast)) return;
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
             setIsAddingToOrUpdatingCart(true);
 
             try {
-                const productItems = productSelections.map((selection) => {
-                    const selectionProductId = selection.variant?.productId || selection.product.id;
-                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                    // Pickup can be stored by: (1) variant id, (2) master product id (per-child DeliveryOptions),
-                    // or (3) parent set product id (set-level DeliveryOptions). Try all.
-                    const pickupInfo =
-                        pickupContext?.pickupBasketItems?.get(selectionProductId) ??
-                        (selection.product.id !== selectionProductId
-                            ? pickupContext?.pickupBasketItems?.get(selection.product.id)
-                            : undefined) ??
-                        pickupContext?.pickupBasketItems?.get(product.id);
-                    const inventoryId = pickupInfo?.inventoryId ?? null;
-                    const storeId = pickupInfo?.storeId ?? null;
-                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-                    return {
-                        productId: selectionProductId,
-                        quantity: selection.quantity,
-                        price: selection.variant?.price || selection.product.price,
-                        // @sfdc-extension-line SFDC_EXT_BOPIS
-                        inventoryId,
-                        // @sfdc-extension-line SFDC_EXT_BOPIS
-                        storeId,
-                    };
-                });
-
                 // Use server action to add multiple items to cart
                 await multipleItemsFetcher.submit(
                     { productItems: JSON.stringify(productItems) },
                     {
                         method: 'POST',
-                        action: '/action/cart-set-add',
+                        action: resourceRoutes.cartSetAdd,
                     }
                 );
 
@@ -680,8 +677,10 @@ export function useProductActions({
             addToast,
             analytics,
             t,
-            // @sfdc-extension-line SFDC_EXT_BOPIS
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            basket,
             pickupContext,
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
         ]
     );
 
@@ -696,15 +695,18 @@ export function useProductActions({
                 return;
             }
 
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            const pickupInfo = pickupContext?.pickupBasketItems?.get(product.id);
+            const bundleInventoryId = pickupInfo?.inventoryId ?? null;
+            const bundleStoreId = pickupInfo?.storeId ?? null;
+
+            // Opportunistic client-side validation: see handleAddToCart for rationale.
+            if (!isSelectedDeliveryOptionValid(basket, bundleStoreId, addToast)) return;
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
             setIsAddingToOrUpdatingCart(true);
 
             try {
-                // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                const pickupInfo = pickupContext?.pickupBasketItems?.get(product.id);
-                const bundleInventoryId = pickupInfo?.inventoryId ?? null;
-                const bundleStoreId = pickupInfo?.storeId ?? null;
-                // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
                 const bundleItem = {
                     productId: product.id,
                     quantity: qty,
@@ -725,7 +727,7 @@ export function useProductActions({
                     },
                     {
                         method: 'POST',
-                        action: '/action/cart-bundle-add',
+                        action: resourceRoutes.cartBundleAdd,
                     }
                 );
 
@@ -754,8 +756,10 @@ export function useProductActions({
             addToast,
             analytics,
             t,
-            // @sfdc-extension-line SFDC_EXT_BOPIS
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            basket,
             pickupContext,
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
         ]
     );
 
@@ -819,7 +823,7 @@ export function useProductActions({
                         { items: JSON.stringify(itemsToBeUpdated) },
                         {
                             method: 'PATCH',
-                            action: '/action/cart-bundle-update',
+                            action: resourceRoutes.cartBundleUpdate,
                         }
                     );
                 } else {
@@ -867,7 +871,7 @@ export function useProductActions({
                 updateFormData.append('quantity', quantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
             }
             // Case 2: User is selecting a different variant that already exists in basket
@@ -878,7 +882,7 @@ export function useProductActions({
                 removeFormData.append('itemId', itemId);
                 await cartFetcher.submit(removeFormData, {
                     method: 'POST',
-                    action: '/action/cart-item-remove',
+                    action: resourceRoutes.cartItemRemove,
                 });
                 // Check if remove succeeded
                 if (cartFetcher.data?.success === false) {
@@ -893,7 +897,7 @@ export function useProductActions({
                 updateFormData.append('quantity', newQuantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
 
                 // Check if update succeeded, if not, restore the removed item
@@ -910,7 +914,7 @@ export function useProductActions({
                     );
                     await cartFetcher.submit(restoreFormData, {
                         method: 'POST',
-                        action: '/action/cart-item-add',
+                        action: resourceRoutes.cartItemAdd,
                     });
                     throw new Error(t('product:failedToUpdateItemQuantity'));
                 }
@@ -924,7 +928,7 @@ export function useProductActions({
                 updateFormData.append('quantity', quantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
             }
         } catch (error) {

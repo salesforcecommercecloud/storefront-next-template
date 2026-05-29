@@ -18,9 +18,11 @@ import applePayLogo from '/images/apple-pay-logo.svg';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Apple Pay Logo SVG Component
- * Official Apple Pay logo matching SDK button appearance
- * Uses local Apple Pay SVG file from public/images
+ * @feature-stub Express checkout buttons (Apple Pay logo)
+ * @status stub — no backend integration
+ *
+ * Apple Pay logo matching SDK button appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function ApplePayLogo({
     className,

@@ -18,7 +18,8 @@ import { render as rtlRender, screen, waitFor, renderHook, type RenderOptions } 
 import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
 import { useShippingOptions } from './use-shipping-options';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
+import { mockAltSiteObject } from '@/test-utils/config';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const render = (ui: React.ReactElement, options?: RenderOptions) =>
@@ -33,16 +34,16 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
-    currency: 'USD',
+    currency: mockAltSiteObject.defaultCurrency,
     customerInfo: { email: 'test@example.com' },
     shipments: [
         {
@@ -134,7 +135,7 @@ describe('useShippingOptions', () => {
         });
     });
 
-    test('falls back to raw basket data for summaryMethod when method is not in available list', () => {
+    test('returns undefined summaryMethod when basket method is not in available list', () => {
         useBasket.mockReturnValue(
             createMockBasket({
                 shipments: [
@@ -146,36 +147,7 @@ describe('useShippingOptions', () => {
             })
         );
         const { result } = renderShippingHook();
-        expect(result.current.summaryMethod).toEqual({
-            id: 'unlisted',
-            name: 'Custom',
-            description: 'desc',
-            price: 7.5,
-        });
-    });
-
-    test('uses method id as name fallback when name is undefined', () => {
-        useBasket.mockReturnValue(
-            createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: { id: 'no-name', price: 3 } }] })
-        );
-        const { result } = renderShippingHook();
-        expect(result.current.summaryMethod?.name).toBe('no-name');
-    });
-
-    test('preserves shippingPromotions in summaryMethod fallback', () => {
-        const promos = [{ promotionId: 'p1', calloutMsg: '50% off!' }];
-        useBasket.mockReturnValue(
-            createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingMethod: { id: 'unlisted', name: 'Promo', price: 10, shippingPromotions: promos },
-                    },
-                ],
-            })
-        );
-        const { result } = renderShippingHook();
-        expect(result.current.summaryMethod?.shippingPromotions).toEqual(promos);
+        expect(result.current.summaryMethod).toBeUndefined();
     });
 
     describe('getDiscountedPrice', () => {

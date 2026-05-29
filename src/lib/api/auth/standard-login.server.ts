@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperLogin } from '@/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
@@ -23,7 +23,7 @@ import { getLogger } from '@/lib/logger.server';
 export const loginRegisteredUser = async (
     context: ActionFunctionArgs['context'],
     credentials: { email: string; password: string },
-    customParameters?: CustomQueryParameters
+    options?: { customParameters?: CustomQueryParameters; skipUsid?: boolean }
 ): Promise<{
     success: boolean;
     error?: string;
@@ -37,30 +37,26 @@ export const loginRegisteredUser = async (
             context,
             credentials.email,
             credentials.password,
-            {
-                customParameters,
-            }
+            options
         );
-        // Update session with user tokens and info
+        // Update session with user tokens and info. userType, customerId, usid, and the
+        // refresh-token expiry cap all derive from the access-token JWT inside updateAuth —
+        // no follow-up call is needed.
         updateAuth(context, tokenResponse);
-        updateAuth(context, (session) => ({
-            ...session,
-            userType: 'registered',
-        }));
 
         logger.info('StandardLogin: succeeded');
         return {
             success: true,
         };
     } catch (error) {
-        const errorDetails = error instanceof Error ? error.message : String(error);
+        const errorMessageDetails = error instanceof Error ? error.message : String(error);
         logger.error('StandardLogin: failed', { error });
 
         const errorMessage = t('errors:loginFailed');
         return {
             success: false,
             error: errorMessage,
-            errorDetails, // Include detailed error for debugging
+            errorDetails: errorMessageDetails, // Include detailed error for debugging
         };
     }
 };

@@ -20,7 +20,8 @@ import type { ReactNode } from 'react';
 import CartDeliveryOption from './cart-delivery-option';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import { resourceRoutes } from '@/route-paths';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 // Mock PickupOrDeliveryDropdown
 vi.mock('./pickup-or-delivery-dropdown', () => ({
@@ -159,6 +160,21 @@ describe('CartDeliveryOption', () => {
             expect(screen.getByTestId('pickup-or-delivery-dropdown')).toBeInTheDocument();
         });
 
+        it('reads the basket without opting in to auto-load (cart route hydrates the basket via CartContent)', () => {
+            render(
+                <AllProvidersWrapper>
+                    <CartDeliveryOption product={mockProduct} />
+                </AllProvidersWrapper>
+            );
+
+            // The cart loader hydrates the basket; CartContent syncs it into context via
+            // useBasketUpdater. This consumer must not opt in to auto-load — that would
+            // issue a redundant GET on mount.
+            expect(mockUseBasket).toHaveBeenCalled();
+            const args = mockUseBasket.mock.calls[0];
+            expect(args[0]?.autoLoad).not.toBe(true);
+        });
+
         it('renders with delivery option when shipment has no store', () => {
             mockUseBasket.mockReturnValue({
                 basketId: 'basket-1',
@@ -293,7 +309,7 @@ describe('CartDeliveryOption', () => {
             expect(formData.get('deliveryOption')).toBe(DELIVERY_OPTIONS.DELIVERY);
             expect(mockFetcher.submit.mock.calls[0][1]).toEqual({
                 method: 'PATCH',
-                action: '/action/cart-item-update',
+                action: resourceRoutes.cartItemUpdate,
             });
         });
 

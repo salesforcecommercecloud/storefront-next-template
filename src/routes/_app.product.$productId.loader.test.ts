@@ -16,23 +16,28 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { loader } from './_app.product.$productId';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { authContext } from '@/middlewares/auth.utils';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
-// Mock the API client creation - use vi.hoisted to avoid hoisting issues
-const mockGetProduct = vi.hoisted(() => vi.fn());
-const mockGetCategory = vi.hoisted(() => vi.fn());
+// Mock fetchProductById and fetchCategory directly
+const mockFetchProductById = vi.hoisted(() => vi.fn());
+const mockFetchCategory = vi.hoisted(() => vi.fn());
 
-vi.mock('@/lib/api-clients.server', () => ({
-    createApiClients: vi.fn(() => ({
-        shopperProducts: {
-            getProduct: mockGetProduct,
-            getCategory: mockGetCategory,
-        },
-    })),
+vi.mock('@/lib/api/products.server', () => ({
+    fetchProductById: mockFetchProductById,
+}));
+
+vi.mock('@/lib/api/categories.server', () => ({
+    fetchCategory: mockFetchCategory,
+}));
+
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
 }));
 
 // Mock Page Designer functions - use vi.hoisted to avoid hoisting issues
@@ -49,7 +54,7 @@ const mockFetchPageWithComponentData = vi.hoisted(() =>
     )
 );
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: mockFetchPageWithComponentData,
 }));
 
@@ -130,60 +135,141 @@ describe('Product Route Loaders', () => {
 
     describe('loader function', () => {
         test('fetches product data successfully', async () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            expect(result).toHaveProperty('product');
-            expect(result).toHaveProperty('category');
+            // product is now synchronous on the loaderData
+            expect(result.product).toEqual(mockProduct);
 
-            // Verify the product promise resolves correctly
-            const productData = await result.product;
-            expect(productData).toEqual(mockProduct);
-
-            // Verify the category promise resolves correctly
+            // category is still a Promise
             const categoryData = await result.category;
             expect(categoryData).toEqual(mockCategory);
+
+            expect(mockFetchProductById).toHaveBeenCalledWith(
+                context,
+                'test-product-123',
+                expect.objectContaining({ allImages: true, perPricebook: true })
+            );
+            expect(mockFetchCategory).toHaveBeenCalledWith(context, 'test-category-123', 1);
         });
 
-        test('handles product fetch failure gracefully', async () => {
-            mockGetProduct.mockRejectedValue(new Error('Product not found'));
+        test('throws Response with original status when product fetch fails with NormalizedApiError', async () => {
+            const { NormalizedApiError } = await import('@/lib/api/normalized-api-error');
+            const { ApiError } = await import('@/scapi');
+
+            const apiError = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { type: 'Not Found', title: 'Not Found', detail: 'Product not found' },
+                rawBody: JSON.stringify({ detail: 'Product not found' }),
+                url: 'https://api.example.com/products/nonexistent',
+                method: 'GET',
+            });
+            mockFetchProductById.mockRejectedValueOnce(new NormalizedApiError(apiError));
 
             const request = new Request('https://example.com/product/nonexistent');
             const params = { productId: 'nonexistent' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const error = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            }).then(
+                () => {
+                    throw new Error('expected loader to throw a Response');
+                },
+                (e: unknown) => e
+            );
 
-            // The product promise should reject with the error
-            await expect(result.product).rejects.toThrow('Product not found');
-
-            // The category promise should also reject since it depends on the product
-            await expect(result.category).rejects.toThrow('Product not found');
+            expect(error).toBeInstanceOf(Response);
+            const response = error as Response;
+            expect(response.status).toBe(404);
+            expect(await response.text()).toBe('Product not found');
         });
 
-        test('handles category fetch failure gracefully', async () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockRejectedValue(new Error('Category not found'));
+        test('throws Response 500 when product fetch fails with non-API error', async () => {
+            const { NormalizedApiError } = await import('@/lib/api/normalized-api-error');
+            mockFetchProductById.mockRejectedValueOnce(new NormalizedApiError(new TypeError('Network failure')));
+
+            const request = new Request('https://example.com/product/sku-network');
+            const params = { productId: 'sku-network' };
+            const context = mockContext;
+
+            const error = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            }).then(
+                () => {
+                    throw new Error('expected loader to throw a Response');
+                },
+                (e: unknown) => e
+            );
+
+            expect(error).toBeInstanceOf(Response);
+            expect((error as Response).status).toBe(500);
+        });
+
+        test('throws Response 404 when fetchProductById returns null', async () => {
+            mockFetchProductById.mockResolvedValueOnce(null);
+
+            const request = new Request('https://example.com/product/empty-result');
+            const params = { productId: 'empty-result' };
+            const context = mockContext;
+
+            const error = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            }).then(
+                () => {
+                    throw new Error('expected loader to throw a Response');
+                },
+                (e: unknown) => e
+            );
+
+            expect(error).toBeInstanceOf(Response);
+            expect((error as Response).status).toBe(404);
+        });
+
+        test('propagates category fetch failure on the deferred promise (route-level <Await errorElement> degrades silently)', async () => {
+            const { NormalizedApiError } = await import('@/lib/api/normalized-api-error');
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockRejectedValueOnce(new NormalizedApiError(new Error('Category service down')));
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            // Product should still resolve
-            const productData = await result.product;
-            expect(productData).toEqual(mockProduct);
+            // Product still resolves
+            expect(result.product).toEqual(mockProduct);
 
-            // Category should be undefined due to error
-            const categoryData = await result.category;
-            expect(categoryData).toBeUndefined();
+            // Category promise rejects — render-time silent degradation is handled by
+            // <Await errorElement={null}> at the route level, not by a loader-side .catch().
+            await expect(result.category).rejects.toThrow(NormalizedApiError);
         });
 
         test('handles variant product with master product category', async () => {
@@ -191,9 +277,7 @@ describe('Product Route Loaders', () => {
                 ...mockProduct,
                 id: 'variant-product-123',
                 primaryCategoryId: null,
-                master: {
-                    masterId: 'master-product-123',
-                },
+                master: { masterId: 'master-product-123' },
             };
 
             const masterProduct = {
@@ -202,53 +286,55 @@ describe('Product Route Loaders', () => {
                 primaryCategoryId: 'master-category-123',
             };
 
-            mockGetProduct
-                .mockResolvedValueOnce({ data: variantProduct }) // First call for variant
-                .mockResolvedValueOnce({ data: masterProduct }); // Second call for master
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+            mockFetchProductById
+                .mockResolvedValueOnce(variantProduct) // First call for variant (loader's await)
+                .mockResolvedValueOnce(masterProduct); // Second call for master (inside category promise)
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/variant-product-123');
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            const productData = await result.product;
-            expect(productData).toEqual(variantProduct);
+            expect(result.product).toEqual(variantProduct);
 
             const categoryData = await result.category;
             expect(categoryData).toEqual(mockCategory);
 
-            // Verify both product calls were made
-            expect(mockGetProduct).toHaveBeenCalledTimes(2);
+            expect(mockFetchProductById).toHaveBeenCalledTimes(2);
         });
 
-        test('handles product with variant ID in search params', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('handles product with variant ID in search params', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/test-product-123?pid=variant-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the pid parameter instead of productId
-            expect(mockGetProduct).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'variant-123',
-                    }),
-                }),
-            });
+            expect(mockFetchProductById.mock.calls[0][1]).toBe('variant-123');
         });
     });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     describe('loader function with BOPIS extension', () => {
-        test('includes inventoryIds when store is selected in context', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('includes inventoryIds when store is selected in context', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             mockSelectedStoreInfo = {
                 id: 'store-123',
@@ -260,42 +346,46 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
-
-            // Verify getProduct was called with inventoryIds parameter
-            expect(mockGetProduct).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'test-product-123',
-                    }),
-                    query: expect.objectContaining({
-                        inventoryIds: ['inventory-123'],
-                    }),
-                }),
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
             });
+
+            // Verify fetchProductById was called with inventoryIds parameter
+            expect(mockFetchProductById).toHaveBeenCalledWith(
+                context,
+                'test-product-123',
+                expect.objectContaining({ inventoryIds: ['inventory-123'] })
+            );
 
             mockSelectedStoreInfo = null;
         });
 
-        test('does not include inventoryIds when store is not selected', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('does not include inventoryIds when store is not selected', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
             mockSelectedStoreInfo = null;
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            // Verify getProduct was called without inventoryIds parameter
-            const callArgs = mockGetProduct.mock.calls[0]?.[0];
-            expect(callArgs?.params?.query).not.toHaveProperty('inventoryIds');
+            // Verify fetchProductById was called without inventoryIds parameter
+            expect(mockFetchProductById.mock.calls[0][2]).not.toHaveProperty('inventoryIds');
         });
 
-        test('handles store info without inventoryId', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('handles store info without inventoryId', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             mockSelectedStoreInfo = {
                 id: 'store-123',
@@ -307,11 +397,15 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            // Verify getProduct was called without inventoryIds parameter
-            const callArgs = mockGetProduct.mock.calls[0][0];
-            expect(callArgs.params.query).not.toHaveProperty('inventoryIds');
+            // Verify fetchProductById was called without inventoryIds parameter
+            expect(mockFetchProductById.mock.calls[0][2]).not.toHaveProperty('inventoryIds');
 
             mockSelectedStoreInfo = null;
         });
@@ -319,68 +413,71 @@ describe('Product Route Loaders', () => {
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     describe('getPageData helper function', () => {
-        test('uses pid parameter when present in URL', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('uses pid parameter when present in URL', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/test-product-123?pid=variant-456');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the pid parameter instead of productId
-            expect(mockGetProduct).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'variant-456',
-                    }),
-                }),
-            });
+            expect(mockFetchProductById.mock.calls[0][1]).toBe('variant-456');
         });
 
-        test('uses productId when pid parameter is not present', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('uses productId when pid parameter is not present', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the productId from params
-            expect(mockGetProduct).toHaveBeenCalledWith({
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'test-product-123',
-                    }),
-                }),
-            });
+            expect(mockFetchProductById.mock.calls[0][1]).toBe('test-product-123');
         });
 
-        test('includes all required expand parameters', () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+        test('includes all required expand parameters', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            const callArgs = mockGetProduct.mock.calls[0][0];
-            expect(callArgs.params.query.expand).toContain('availability');
-            expect(callArgs.params.query.expand).toContain('bundled_products');
-            expect(callArgs.params.query.expand).toContain('images');
-            expect(callArgs.params.query.expand).toContain('options');
-            expect(callArgs.params.query.expand).toContain('page_meta_tags');
-            expect(callArgs.params.query.expand).toContain('prices');
-            expect(callArgs.params.query.expand).toContain('promotions');
-            expect(callArgs.params.query.expand).toContain('set_products');
-            expect(callArgs.params.query.expand).toContain('variations');
-            expect(callArgs.params.query.allImages).toBe(true);
-            expect(callArgs.params.query.perPricebook).toBe(true);
+            const callOptions = mockFetchProductById.mock.calls[0][2];
+            expect(callOptions.expand).toContain('availability');
+            expect(callOptions.expand).toContain('bundled_products');
+            expect(callOptions.expand).toContain('images');
+            expect(callOptions.expand).toContain('options');
+            expect(callOptions.expand).toContain('page_meta_tags');
+            expect(callOptions.expand).toContain('prices');
+            expect(callOptions.expand).toContain('promotions');
+            expect(callOptions.expand).toContain('set_products');
+            expect(callOptions.expand).toContain('variations');
+            expect(callOptions.allImages).toBe(true);
+            expect(callOptions.perPricebook).toBe(true);
         });
 
         test('handles product without primaryCategoryId', async () => {
@@ -389,17 +486,22 @@ describe('Product Route Loaders', () => {
                 primaryCategoryId: null,
             };
 
-            mockGetProduct.mockResolvedValue({ data: productWithoutCategory });
+            mockFetchProductById.mockResolvedValueOnce(productWithoutCategory);
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
-            expect(mockGetCategory).not.toHaveBeenCalled();
+            expect(mockFetchCategory).not.toHaveBeenCalled();
         });
 
         test('handles variant product without master product ID', async () => {
@@ -410,18 +512,23 @@ describe('Product Route Loaders', () => {
                 master: undefined, // No master product
             };
 
-            mockGetProduct.mockResolvedValue({ data: variantProductWithoutMaster });
+            mockFetchProductById.mockResolvedValueOnce(variantProductWithoutMaster);
 
             const request = new Request('https://example.com/product/variant-product-123');
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
             // Should not try to fetch master product category
-            expect(mockGetProduct).toHaveBeenCalledTimes(1);
+            expect(mockFetchProductById).toHaveBeenCalledTimes(1);
         });
 
         test('handles variant product with master but master has no category', async () => {
@@ -440,34 +547,44 @@ describe('Product Route Loaders', () => {
                 primaryCategoryId: null, // Master also has no category
             };
 
-            mockGetProduct
-                .mockResolvedValueOnce({ data: variantProduct }) // First call for variant
-                .mockResolvedValueOnce({ data: masterProductWithoutCategory }); // Second call for master
+            mockFetchProductById
+                .mockResolvedValueOnce(variantProduct) // First call for variant
+                .mockResolvedValueOnce(masterProductWithoutCategory); // Second call for master
 
             const request = new Request('https://example.com/product/variant-product-123');
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
-            expect(mockGetProduct).toHaveBeenCalledTimes(2);
-            expect(mockGetCategory).not.toHaveBeenCalled();
+            expect(mockFetchProductById).toHaveBeenCalledTimes(2);
+            expect(mockFetchCategory).not.toHaveBeenCalled();
         });
 
-        test('handles category fetch error gracefully', async () => {
-            mockGetProduct.mockResolvedValue({ data: mockProduct });
-            mockGetCategory.mockRejectedValue(new Error('Category not found'));
+        test('propagates category fetch failure on the deferred promise', async () => {
+            const { NormalizedApiError } = await import('@/lib/api/normalized-api-error');
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockRejectedValueOnce(new NormalizedApiError(new Error('Category not found')));
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            const categoryData = await result.category;
-            expect(categoryData).toBeUndefined();
+            await expect(result.category).rejects.toThrow(NormalizedApiError);
         });
 
         test('handles variant product with master product category lookup', async () => {
@@ -486,39 +603,31 @@ describe('Product Route Loaders', () => {
                 primaryCategoryId: 'master-category-123',
             };
 
-            mockGetProduct
-                .mockResolvedValueOnce({ data: variantProduct }) // First call for variant
-                .mockResolvedValueOnce({ data: masterProduct }); // Second call for master
-            mockGetCategory.mockResolvedValue({ data: mockCategory });
+            mockFetchProductById
+                .mockResolvedValueOnce(variantProduct) // First call for variant
+                .mockResolvedValueOnce(masterProduct); // Second call for master
+            mockFetchCategory.mockResolvedValue(mockCategory);
 
             const request = new Request('https://example.com/product/variant-product-123');
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
-            const productData = await result.product;
-            expect(productData).toEqual(variantProduct);
+            expect(result.product).toEqual(variantProduct);
 
             const categoryData = await result.category;
             expect(categoryData).toEqual(mockCategory);
 
             // Verify both product calls were made
-            expect(mockGetProduct).toHaveBeenCalledTimes(2);
-            expect(mockGetProduct).toHaveBeenNthCalledWith(1, {
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'variant-product-123',
-                    }),
-                }),
-            });
-            expect(mockGetProduct).toHaveBeenNthCalledWith(2, {
-                params: expect.objectContaining({
-                    path: expect.objectContaining({
-                        id: 'master-product-123',
-                    }),
-                }),
-            });
+            expect(mockFetchProductById).toHaveBeenCalledTimes(2);
+            expect(mockFetchProductById.mock.calls[0][1]).toBe('variant-product-123');
+            expect(mockFetchProductById.mock.calls[1][1]).toBe('master-product-123');
         });
     });
 });

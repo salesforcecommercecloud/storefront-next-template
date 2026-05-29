@@ -18,11 +18,11 @@ import { Check, Hash, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 import OrderItemsList, { type ProductDataById } from '@/components/account/order-details/order-items-list';
 import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
-import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order-status';
+import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order/status';
 import { cn } from '@/lib/utils';
 import { UITarget } from '@/targets/ui-target';
 
@@ -156,7 +156,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                     {/* Order Details header */}
                     <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                         <div>
-                            <h1 className="text-xl font-bold">{t('orders.orderDetailsPageTitle')}</h1>
+                            <h1 className="text-2xl font-semibold">{t('orders.orderDetailsPageTitle')}</h1>
                             <p
                                 className="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
                                 data-testid="order-number">

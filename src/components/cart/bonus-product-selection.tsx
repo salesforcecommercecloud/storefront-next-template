@@ -15,21 +15,21 @@
  */
 import { type ReactElement, useMemo, useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/components/toast';
-import { getBonusProductCountsForPromotion } from '@/lib/bonus-product-utils';
-import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product-utils';
+import { getBonusProductCountsForPromotion } from '@/lib/cart/bonus-product-utils';
+import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product/product-utils';
 import { useRuleBasedBonusProducts } from '@/hooks/use-rule-based-bonus-products';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getPriceData } from '@/components/product-price/utils';
+import { resourceRoutes } from '@/route-paths';
 
 interface BonusProductSelectionProps {
     bonusDiscountLineItem: ShopperBasketsV2.schemas['BonusDiscountLineItem'];
@@ -49,7 +49,7 @@ export default function BonusProductSelection({
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
     const { t, i18n } = useTranslation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { currency } = useSite();
 
     // Track processed fetcher data to prevent duplicate toasts
@@ -183,7 +183,7 @@ export default function BonusProductSelection({
 
             void addToCartFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
         }
     };
