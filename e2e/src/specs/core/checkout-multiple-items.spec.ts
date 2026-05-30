@@ -24,6 +24,9 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 Scenario('Guest checkout with multiple items in cart', async () => {
     const productInfo1 = await addToCartFlow.execute(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -49,4 +52,5 @@ Scenario('Guest checkout with multiple items in cart', async () => {
     expect(orderNumber).to.match(/^\d+$/);
 })
     .tag('@guest-checkout')
-    .tag('@place-order');
+    .tag('@place-order')
+    .tag('@smoke');

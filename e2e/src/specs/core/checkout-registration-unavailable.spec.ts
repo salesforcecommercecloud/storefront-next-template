@@ -30,6 +30,9 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 Scenario(
     'Create account checkbox is silently unchecked when registration is unavailable and checkout completes as guest',
@@ -69,7 +72,8 @@ Scenario(
 )
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@silent-uncheck');
+    .tag('@silent-uncheck')
+    .tag('@smoke');
 
 Scenario('No error message or toast is shown when registration is unavailable', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -103,6 +107,7 @@ Scenario('No error message or toast is shown when registration is unavailable', 
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@no-error-toast');
+    .tag('@no-error-toast')
+    .tag('@smoke');
 
 export {};

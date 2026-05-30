@@ -19,6 +19,9 @@ Feature('Storefront Checkout Analytics Tests').tag('@core').tag('@checkout').tag
 const { checkoutPage, apiCartSetupFlow, storefrontPage, beaconCaptureFlow } = inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 /**
  * Checkout Analytics - checkout_start event with checkoutType
@@ -70,6 +73,8 @@ Scenario('Checkout step event should include checkoutType attribute', async () =
     const checkoutStepBeacon = capturedBeacons.find((beacon) => beacon.url.includes('checkoutStep'));
     expect(checkoutStepBeacon, 'Should have captured checkout_step (checkoutStep) beacon').to.not.be.undefined;
     expect(checkoutStepBeacon?.payload.checkoutType, 'checkoutType should be present in payload').to.equal('one-click');
-}).tag('@checkout-step');
+})
+    .tag('@checkout-step')
+    .tag('@smoke');
 
 export {};

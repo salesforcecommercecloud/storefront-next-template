@@ -32,6 +32,9 @@ import {
     TEST_LOCALE_CURRENCIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 const siteAliases: readonly string[] = TEST_LOCALE_CURRENCIES.map((e) => e.siteAlias);
 
@@ -83,7 +86,8 @@ for (const localeCurrency of TEST_LOCALE_CURRENCIES) {
     })
         .tag(`@${localeCurrency.label.toLowerCase()}`)
         .tag('@guest-checkout')
-        .tag('@place-order');
+        .tag('@place-order')
+        .tag('@smoke');
 }
 
 export {};

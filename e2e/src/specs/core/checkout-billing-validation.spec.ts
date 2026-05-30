@@ -24,6 +24,9 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 Scenario('Billing address validation — required fields show errors', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -60,4 +63,5 @@ Scenario('Billing address validation — required fields show errors', async () 
 })
     .config({ retries: 0 })
     .tag('@billing-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

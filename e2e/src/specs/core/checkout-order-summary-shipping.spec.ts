@@ -30,6 +30,9 @@ Feature('Checkout Order Summary & Shipping Method Tests').tag('@core').tag('@che
 const { checkoutPage, apiCartSetupFlow } = inject();
 import { expect } from 'chai';
 import { TEST_SHIPPING_ADDRESS, TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 /**
  * Order summary displays subtotal, shipping, tax, and total
@@ -68,7 +71,8 @@ Scenario('Order summary displays subtotal, shipping, tax, and total', async () =
     expect(updatedSummaryText, 'Updated summary should include a currency value').to.match(/[$£€¥][\d,.]+/);
 })
     .tag('@order-summary')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
 /**
  * Guest shopper can view and select different shipping methods
@@ -109,4 +113,5 @@ Scenario('Guest shopper can view and select different shipping methods', async (
     expect(paymentVisible, 'Payment step should be reached after selecting shipping method').to.be.true;
 })
     .tag('@shipping-method')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

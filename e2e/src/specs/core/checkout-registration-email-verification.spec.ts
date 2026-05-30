@@ -24,6 +24,9 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -70,7 +73,8 @@ Scenario('Guest should create account during checkout with email verification', 
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@otp-modal');
+    .tag('@otp-modal')
+    .tag('@smoke');
 
 Scenario('Guest should be able to resend OTP code during checkout registration', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -105,7 +109,8 @@ Scenario('Guest should be able to resend OTP code during checkout registration',
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@otp-resend');
+    .tag('@otp-resend')
+    .tag('@smoke');
 
 Scenario('Guest should be able to cancel account registration and checkout as guest', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -142,7 +147,8 @@ Scenario('Guest should be able to cancel account registration and checkout as gu
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@cancel-registration');
+    .tag('@cancel-registration')
+    .tag('@smoke');
 
 Scenario('Guest should see error message if registration initiation fails', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -173,7 +179,8 @@ Scenario('Guest should see error message if registration initiation fails', asyn
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@error-handling');
+    .tag('@error-handling')
+    .tag('@smoke');
 
 Scenario('Save payment checkbox is not visible for guest shoppers during checkout', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -204,7 +211,8 @@ Scenario('Save payment checkbox is not visible for guest shoppers during checkou
     .tag('@guest-checkout')
     .tag('@checkout-registration')
     .tag('@save-payment-checkbox')
-    .tag('@hide-save-payment');
+    .tag('@hide-save-payment')
+    .tag('@smoke');
 
 Scenario('Save payment checkbox remains hidden when guest declines account creation', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -245,4 +253,5 @@ Scenario('Save payment checkbox remains hidden when guest declines account creat
     .tag('@guest-checkout')
     .tag('@checkout-registration')
     .tag('@save-payment-checkbox')
-    .tag('@keep-save-payment');
+    .tag('@keep-save-payment')
+    .tag('@smoke');

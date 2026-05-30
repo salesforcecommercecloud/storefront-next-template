@@ -25,6 +25,13 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+// The deployed e2e target has no login-preferences entry, so the real BFF
+// returns `requiresLogin: true` on email blur and pops the login modal.
+// Stub every scenario in this file with the 'guest' branch so the contact
+// step stays open and checkout can proceed.
+installLoginPrefsStubHooks();
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -33,13 +40,7 @@ After(async (test: unknown) => {
     }
 });
 
-// Temporarily skipped (W-22677587): the e2e MRT target's RefArchGlobal site
-// has no `RefArchGlobal-login-preferences` data-store entry, so login
-// preferences middleware falls back to `emailVerificationEnabled: false`. With
-// that fallback, the checkout-login design routes any email-blur to the
-// standard login modal, which blocks the "Continue to Shipping" click for a
-// guest. Re-enable once the data-store entry is seeded on the e2e target.
-xScenario('Guest shopper should complete checkout and place order', async () => {
+Scenario('Guest shopper should complete checkout and place order', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -169,7 +170,8 @@ Scenario(
     }
 )
     .tag('@billing-address')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
 /**
  * Billing Address Can Be Filled After Checking "Use a Different Billing Address"
@@ -227,7 +229,8 @@ Scenario('Guest shopper can fill custom billing address and place order', async 
     .tag('@billing-address')
     .tag('@custom-billing')
     .tag('@guest-checkout')
-    .tag('@place-order');
+    .tag('@place-order')
+    .tag('@smoke');
 
 /**
  * Payment Validation: Empty Card Fields Block Place Order
@@ -262,4 +265,5 @@ Scenario('Place order is blocked with validation errors when payment fields are 
     expect(currentUrl, 'Should NOT have redirected to order confirmation').to.not.include('/order-confirmation');
 })
     .tag('@payment-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

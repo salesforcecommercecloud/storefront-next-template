@@ -93,6 +93,8 @@ export default function ContactInfo({
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
     const authorizePasswordlessEmailPath = useResolvedPath(resourceRoutes.authorizePasswordlessEmail).pathname;
     const revalidator = useRevalidator();
+    // E2e tests can stub this fetcher's response per scenario via
+    // e2e/src/utils/login-prefs-stub.ts (`stubLoginPrefs({ branch })`).
     const passwordlessEmailFetcher = useFetcher<typeof authorizePasswordlessEmailAction>({
         key: 'contact-authorize-passwordless-email',
     });

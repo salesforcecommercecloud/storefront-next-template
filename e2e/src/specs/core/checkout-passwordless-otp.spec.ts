@@ -30,6 +30,7 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { stubLoginPrefs } from '../../utils/login-prefs-stub';
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -46,7 +47,7 @@ Scenario('Guest enters registered email, sees passwordless OTP modal, and contin
 
     checkoutPage.validatePageLoaded();
 
-    await checkoutPage.mockPasswordlessAuthorizationSuccess(registeredEmail);
+    await stubLoginPrefs({ branch: 'otp', email: registeredEmail });
     await checkoutPage.fillContactInfoEmail(registeredEmail);
     await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
     await checkoutPage.blurEmailField();

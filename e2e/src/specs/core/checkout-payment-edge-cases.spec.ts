@@ -25,6 +25,9 @@ import {
     INVALID_TEST_DATA,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 Scenario('Invalid card number shows inline error', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -54,7 +57,8 @@ Scenario('Invalid card number shows inline error', async () => {
 })
     .config({ retries: 0 })
     .tag('@payment-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
 Scenario('Expired card date shows inline error', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
