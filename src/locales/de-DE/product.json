@@ -99,6 +99,8 @@
     "clearStarFilter": "Filter nach {{count}} Sternen löschen",
     "clearPhotoFilter": "Fotofilter löschen",
     "writeReviewButton": "Bewertung schreiben",
+    "askAssistant": "Assistenten fragen",
+    "faqQuestionSendToAssistantAriaLabel": "Shopper Agent aufrufen und fragen: {{question}}",
     "materials": "Materialien",
     "usageInstructions": "Nutzungsanweisungen",
     "specifications": "Spezifikationen",
