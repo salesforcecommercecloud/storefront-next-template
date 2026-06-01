@@ -171,40 +171,159 @@ Scenario('User can cancel profile editing without saving changes', async () => {
     .tag('@cancel');
 
 /**
- * Change Email with OTP Verification
+ * Email card displays current email address and supports changing it
  *
  * Test Flow:
  * 1. Navigate to account details
- * 2. Click "Change Email" button
- * 3. OTP modal opens with current email displayed
- * 4. Verify modal UI elements are present
- * 5. Close modal (actual OTP flow requires valid email/code)
+ * 2. Verify the email card is visible and shows the current email address
+ * 3. Click "Change email", submit new email with current password
+ * 4. Verify success toast and new email is displayed
+ * 5. Update spec-scoped email so subsequent scenarios re-login with the new address
  *
- * NOTE: Temporarily disabled - requires "Enable Email Verification" to be enabled in Business Manager
+ * NOTE: The change email feature requires:
+ * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
+ * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-// Scenario('Change email button opens OTP modal', async () => {
-//     accountDetailsPage.navigate();
+Scenario('Email card displays current email address and supports changing it', async () => {
+    accountDetailsPage.navigate();
 
-//     // Click Change email button (lowercase 'e' per translation)
-//     I.click(locate('button').withText('Change email'));
+    // Verify email card is visible and shows the current email address
+    accountDetailsPage.validateEmailCardVisible();
+    const email = await accountDetailsPage.getDisplayedEmail();
+    expect(email, 'Email address should be displayed').to.have.length.greaterThan(0);
 
-//     // Verify OTP modal opens
-//     I.waitForElement(locate('[data-testid="otp-modal"]'), 5);
+    // Click Change email and submit new address with current password
+    const newEmail = `shopper_${Date.now()}@test.com`;
+    accountDetailsPage.clickChangeEmail();
+    accountDetailsPage.fillAndSubmitEmailUpdateForm({ email: newEmail, currentPassword: specPassword });
 
-//     // Verify OTP input fields are present (8 digits)
-//     const otpInputCount = await I.grabNumberOfVisibleElements('input[type="text"][maxlength="1"]');
-//     expect(otpInputCount, 'Should have 8 OTP input fields').to.equal(8);
+    // Verify success toast
+    accountDetailsPage.validateSuccessToast();
 
-//     // Verify Resend Code button is present
-//     I.seeElement(locate('button').withText('Resend Code'));
+    // Update spec-scoped email so subsequent scenarios re-login with the new address
+    specEmail = newEmail;
 
-//     // Close modal
-//     I.click(locate('button[aria-label*="Close"]'));
-// })
-//     .tag('@profile')
-//     .tag('@email')
-//     .tag('@otp')
-//     .tag('@smoke');
+    // Verify new email is displayed
+    const displayedEmail = await accountDetailsPage.getDisplayedEmail();
+    expect(displayedEmail, 'Updated email should be displayed').to.equal(newEmail);
+
+    // Verify automatic re-authentication happened — page should remain on /account
+    // If auth failed, navigation would happen immediately; no explicit wait needed
+    const currentUrl = await I.grabCurrentUrl();
+    expect(currentUrl, 'Should remain on account page after email change').to.include('/account');
+
+    // SLAS enforces a 1-second cooldown between login operations for the same user.
+    // Email change triggers an internal re-auth; waiting here avoids a 409 on the next scenario's login.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+})
+    .tag('@email')
+    .tag('@edit')
+    .tag('@positive');
+
+/**
+ * Change Email - Wrong Current Password
+ *
+ * Test Flow:
+ * 1. Navigate to account details
+ * 2. Click "Change email"
+ * 3. Enter a valid new email with an incorrect current password
+ * 4. Submit the form
+ * 5. Verify error toast is shown and form remains open
+ *
+ * NOTE: The change email feature requires:
+ * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
+ * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
+ */
+Scenario('Email change fails with incorrect current password', async () => {
+    accountDetailsPage.navigate();
+
+    accountDetailsPage.clickChangeEmail();
+
+    // Submit with a wrong password — the new email format is valid, so only the password fails
+    accountDetailsPage.fillAndSubmitEmailUpdateForm({
+        email: `shopper_${Date.now()}@test.com`,
+        currentPassword: 'WrongPassword123!',
+    });
+
+    // Verify error toast
+    accountDetailsPage.validateErrorToast('Failed to update email address');
+
+    // Form should remain open since the request failed
+    const isFormStillVisible = await accountDetailsPage.isEmailUpdateFormVisible();
+    expect(isFormStillVisible, 'Email update form should remain open after failed submission').to.be.true;
+})
+    .tag('@email')
+    .tag('@negative')
+    .tag('@validation');
+
+/**
+ * Change Email - Invalid Email Format
+ *
+ * Test Flow:
+ * 1. Navigate to account details
+ * 2. Click "Change email"
+ * 3. Enter an invalid email address (not a valid format)
+ * 4. Submit the form
+ * 5. Verify client-side form validation error is shown and form remains open
+ *
+ * NOTE: The change email feature requires:
+ * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
+ * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
+ */
+Scenario('Email change fails with invalid email format', async () => {
+    accountDetailsPage.navigate();
+
+    accountDetailsPage.clickChangeEmail();
+
+    // Fill the form with an invalid email format — client-side validation should reject it
+    accountDetailsPage.fillAndSubmitEmailUpdateForm({
+        email: 'not-a-valid-email',
+        currentPassword: specPassword,
+    });
+
+    // Verify client-side validation error is shown
+    accountDetailsPage.validateFormError();
+
+    // Form should remain open
+    const isFormStillVisible = await accountDetailsPage.isEmailUpdateFormVisible();
+    expect(isFormStillVisible, 'Email update form should remain open after validation error').to.be.true;
+})
+    .tag('@email')
+    .tag('@negative')
+    .tag('@validation');
+
+/**
+ * Email verification badge and Verify Email OTP flow
+ *
+ * Test Flow:
+ * 1. Navigate to account details
+ * 2. Verify unverified badge is displayed
+ * 3. Click "Verify Email", verify OTP modal opens with correct digit inputs and a Resend Code button.
+ * 4. Close without submitting
+ *
+ * NOTE: Email verification status badges are only rendered when "Enable Email Verification" is enabled in
+ * Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
+ */
+Scenario('Email verification badge is shown and Verify Email opens OTP modal when unverified', () => {
+    accountDetailsPage.navigate();
+
+    // The spec account is created without verifying the email, so email is always unverified in this test
+    accountDetailsPage.validateEmailUnverifiedBadgeVisible();
+
+    // Click Verify Email — sends OTP to current email and opens the modal
+    accountDetailsPage.clickVerifyEmail();
+
+    // Verify OTP modal opens with the correct number of input digits
+    accountDetailsPage.validateOtpModalOpen();
+
+    // Verify Resend Code button is present
+    accountDetailsPage.validateOtpResendButtonVisible();
+
+    // Close without submitting — actual OTP requires a valid code from email
+    accountDetailsPage.closeOtpModal();
+})
+    .tag('@email')
+    .tag('@verify');
 
 /**
  * Profile Data Persistence After Page Refresh

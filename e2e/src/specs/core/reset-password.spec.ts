@@ -16,14 +16,30 @@
 
 Feature('Reset Password').tag('@core').tag('@auth');
 
-const { forgotPasswordPage, resetPasswordPage } = inject();
+const { storefrontPage, forgotPasswordPage, resetPasswordPage, signupFlow } = inject();
 import { expect } from 'chai';
 
-// Get test email from environment variable or use default
-const testEmail = process.env.E2E_TEST_USER_EMAIL || 'e2e.test.user@gmail.com';
+/**
+ * Spec-scoped account credentials, lazily created on the first scenario.
+ * Keeping these in module-level variables (not the shared credential file)
+ * ensures this worker's account is never touched by other parallel workers.
+ */
+let specEmail = '';
 
-// This scenario is skipped because using a fixed email triggers the password reset rate limit in CI.
-xScenario('User can request password reset', () => {
+/**
+ * Before hook: on the first scenario, create a dedicated account via signup.
+ * On every subsequent scenario, clear cookies and re-login with stored creds.
+ * This ensures the tests avoid hitting the password reset limit for a shopper's email.
+ */
+Before(async () => {
+    if (!specEmail) {
+        await storefrontPage.clearCookies();
+        const { signupData } = await signupFlow.execute({ createBasket: false });
+        specEmail = signupData.email;
+    }
+});
+
+Scenario('User can request password reset', () => {
     // Navigate to the forgot password page
     forgotPasswordPage.navigate();
 
@@ -31,7 +47,7 @@ xScenario('User can request password reset', () => {
     forgotPasswordPage.validateResetPasswordHeading();
 
     // Enter email address
-    forgotPasswordPage.enterEmail(testEmail);
+    forgotPasswordPage.enterEmail(specEmail);
 
     // Submit the form
     forgotPasswordPage.submitForm();
@@ -48,7 +64,7 @@ Scenario('User can reset password using magic link', async () => {
     const testPassword = 'NewSecureP@ssw0rd!';
 
     // Navigate to reset password page with token and email
-    resetPasswordPage.navigate(testToken, testEmail);
+    resetPasswordPage.navigate(testToken, specEmail);
 
     // Dismiss cookie/consent dialog first so heading is visible, then verify heading
     await resetPasswordPage.dismissCookieDialog();
@@ -70,7 +86,7 @@ Scenario('User can reset password using magic link', async () => {
     // Verify request payload
     const params = new URLSearchParams(resetPasswordRequest.postData ?? '');
     expect(params.get('token'), 'Request should include token').to.equal(testToken);
-    expect(params.get('email'), 'Request should include email').to.equal(testEmail);
+    expect(params.get('email'), 'Request should include email').to.equal(specEmail);
     expect(params.get('newPassword'), 'Request should include password').to.equal(testPassword);
     expect(params.get('confirmPassword'), 'Request should include confirm password').to.equal(testPassword);
 })

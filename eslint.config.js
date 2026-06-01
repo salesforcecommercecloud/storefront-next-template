@@ -90,6 +90,7 @@ const baseConfig = defineConfig([
         '**/src/scapi/custom-clients.ts',
         '**/src/components/ui/**',
         '**/src/dashboard/components/ui/**',
+        '**/src/lib/page-designer/static-registry.ts',
         '.claude/**',
         '**/lighthouserc.cjs',
         '**/generate-config.cjs'
