@@ -14,53 +14,50 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import HeroCarousel from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import HeroCarousel, { type HeroSlide } from '../index';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
-function HeroCarouselStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+type HeroCarouselArgs = {
+    slideCount?: number;
+    autoPlay?: boolean;
+    autoPlayInterval?: number;
+    showDots?: boolean;
+    showNavigation?: boolean;
+    longCopy?: boolean;
+};
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+const SAMPLE_IMAGE = 'https://via.placeholder.com/1920x1080?text=Slide';
 
-        const logClick = action('hero-carousel-click');
-        const logSlideChange = action('hero-carousel-slide-change');
+function buildSlides(count: number, longCopy: boolean): HeroSlide[] {
+    const titles = ['Welcome to Our Store', 'New Collection', 'Special Offers', 'Outdoor Adventures', 'Members Only'];
+    const subtitles = [
+        'Discover amazing products',
+        'Latest fashion trends',
+        'Limited time deals',
+        'Built for the wild',
+        'Early access perks',
+    ];
+    const ctas = ['Shop Now', 'Explore', 'Shop Deals', 'Discover Gear', 'Sign in'];
+    const ctaLinks = ['/category/all', '/category/new', '/category/sale', '/category/outdoors', '/account'];
 
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            const link = target.closest('a');
-            if (link) {
-                event.preventDefault();
-                logClick({ href: link.getAttribute('href') || '', text: link.textContent?.trim() || '' });
-            }
-        };
+    const longHeadline =
+        'A Substantially Longer Editorial Headline That Tests How the Carousel Slide Handles Multi-Line Authored Content Across Responsive Breakpoints';
+    const longSubtitle =
+        'A multi-sentence subtitle of the kind merchants actually author for seasonal campaign takeovers — exercises the slide overlay layout under realistic copy density.';
 
-        // Listen for slide changes via aria-live region
-        const observer = new MutationObserver(() => {
-            const liveRegion = root.querySelector('[aria-live]');
-            if (liveRegion) {
-                logSlideChange({ text: liveRegion.textContent || '' });
-            }
-        });
-
-        observer.observe(root, { childList: true, subtree: true });
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-            observer.disconnect();
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+    return Array.from({ length: count }, (_, i) => ({
+        id: `slide-${i + 1}`,
+        title: longCopy ? longHeadline : titles[i % titles.length],
+        subtitle: longCopy ? longSubtitle : subtitles[i % subtitles.length],
+        imageUrl: `${SAMPLE_IMAGE}+${i + 1}`,
+        imageAlt: `Slide ${i + 1}`,
+        ctaText: ctas[i % ctas.length],
+        ctaLink: ctaLinks[i % ctaLinks.length],
+    }));
 }
 
-const meta: Meta<typeof HeroCarousel> = {
+const meta: Meta<HeroCarouselArgs> = {
     title: 'COMMON/Hero Carousel',
     component: HeroCarousel,
     tags: ['autodocs', 'interaction'],
@@ -69,199 +66,141 @@ const meta: Meta<typeof HeroCarousel> = {
         docs: {
             description: {
                 component: `
-A carousel component for displaying multiple hero slides with navigation controls and auto-play functionality.
-
-### Features:
-- Multiple slides support
-- Auto-play with configurable interval
-- Navigation buttons (prev/next)
-- Dot indicators
-- Keyboard navigation
-- Pause on hover/focus
+A Page Designer carousel of \`Hero\` slides. Supports autoplay (paused on hover/focus), keyboard navigation (arrows / Home / End), prev/next buttons, and dot indicators. Slides come from either the \`slides\` prop (storybook/test path) or the Page Designer \`component.regions\` payload (production path).
                 `,
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <HeroCarouselStoryHarness>
-                <Story />
-            </HeroCarouselStoryHarness>
-        ),
-    ],
+    argTypes: {
+        slideCount: {
+            control: { type: 'number', min: 0, max: 10 },
+            description:
+                'Synthetic toggle: how many slides to mock. 0 exercises the empty-state branch; 1 hides dots/nav; 2+ shows full controls.',
+            table: { category: 'Synthetic' },
+        },
+        longCopy: {
+            control: 'boolean',
+            description:
+                'Synthetic toggle: replaces slide titles/subtitles with editorial-length copy (AC #2 long-copy authoring).',
+            table: { category: 'Synthetic' },
+        },
+        autoPlay: { control: 'boolean' },
+        autoPlayInterval: { control: { type: 'number', min: 1000, step: 500 } },
+        showDots: { control: 'boolean' },
+        showNavigation: { control: 'boolean' },
+    },
+    args: {
+        slideCount: 3,
+        longCopy: false,
+        autoPlay: true,
+        autoPlayInterval: 5000,
+        showDots: true,
+        showNavigation: true,
+    },
+    render: ({ slideCount = 3, longCopy = false, ...props }) => (
+        <HeroCarousel slides={buildSlides(slideCount, longCopy)} {...props} />
+    ),
 };
 
 export default meta;
-type Story = StoryObj<typeof HeroCarousel>;
+type Story = StoryObj<HeroCarouselArgs>;
 
-const mockSlides = [
-    {
-        id: '1',
-        title: 'Welcome to Our Store',
-        subtitle: 'Discover amazing products',
-        imageUrl: 'https://via.placeholder.com/1920x1080?text=Slide+1',
-        imageAlt: 'Slide 1',
-        ctaText: 'Shop Now',
-        ctaLink: '/category/all',
+export const Playground: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Toggle every prop via Controls. Use `slideCount` to flip between empty-state (0), single-slide (1), and multi-slide (2+) branches.',
+            },
+        },
     },
-    {
-        id: '2',
-        title: 'New Collection',
-        subtitle: 'Latest fashion trends',
-        imageUrl: 'https://via.placeholder.com/1920x1080?text=Slide+2',
-        imageAlt: 'Slide 2',
-        ctaText: 'Explore',
-        ctaLink: '/category/new',
-    },
-    {
-        id: '3',
-        title: 'Special Offers',
-        subtitle: 'Limited time deals',
-        imageUrl: 'https://via.placeholder.com/1920x1080?text=Slide+3',
-        imageAlt: 'Slide 3',
-        ctaText: 'Shop Deals',
-        ctaLink: '/category/sale',
-    },
-];
+};
 
 export const Default: Story = {
-    render: () => <HeroCarousel slides={mockSlides} />,
     parameters: {
         docs: {
             description: {
-                story: `
-Standard hero carousel with 3 example slides and auto-play enabled.
-
-### Features:
-- 3 example slides
-- Auto-play with 5 second interval
-- Navigation buttons
-- Dot indicators only
-            `,
+                story: '3-slide carousel with autoplay, dots, and prev/next navigation — the standard authoring shape.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Wait for carousel to initialize and render
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Verify carousel structure is present by checking for the region role
-        const carousel = await canvas.findByRole('region', { name: /hero carousel/i }, { timeout: 5000 });
+        const carousel = await canvas.findByRole('region', { name: /hero carousel with 3 slides/i });
         await expect(carousel).toBeInTheDocument();
 
-        // Check for any slide title (carousel may have auto-played to a different slide)
-        // Use findAllByText to handle cases where text might appear multiple times or in different slides
-        try {
-            const titles = await canvas.findAllByText(
-                /welcome to our store|new collection|special offers/i,
-                {},
-                { timeout: 4000 }
-            );
-            await expect(titles.length).toBeGreaterThan(0);
-            await expect(titles[0]).toBeInTheDocument();
-        } catch {
-            // If specific titles not found (e.g., images not loaded in CI, or carousel auto-played),
-            // verify carousel navigation elements are present as fallback
-            try {
-                // Check for navigation buttons
-                const navButtons = await canvas.findAllByRole(
-                    'button',
-                    { name: /previous|next|slide/i },
-                    { timeout: 2000 }
-                );
-                await expect(navButtons.length).toBeGreaterThan(0);
-            } catch {
-                // If navigation buttons not found, check for dot indicators
-                const tablist = await canvas.findByRole('tablist', { name: /slide navigation/i }, { timeout: 2000 });
-                await expect(tablist).toBeInTheDocument();
-            }
-        }
+        // Dots tablist with 3 dots.
+        const tablist = await canvas.findByRole('tablist', { name: /slide navigation/i });
+        await expect(tablist).toBeInTheDocument();
+        await expect(within(tablist).getAllByRole('tab')).toHaveLength(3);
     },
 };
 
-export const WithoutAutoPlay: Story = {
-    render: () => <HeroCarousel slides={mockSlides} autoPlay={false} />,
+export const EmptySlides: Story = {
+    args: {
+        slideCount: 0,
+    },
     parameters: {
-        chromatic: { disableSnapshot: true },
         docs: {
             description: {
-                story: `
-Hero carousel with auto-play disabled.
-
-### Features:
-- No auto-play
-- Manual navigation only
-            `,
+                story: 'Coverage for AC #2 missing-media at the carousel level — when the `slides` prop is empty (or every slide gets filtered out), the component falls back to a flat "No slides available" placeholder. Merchants see this when a Page Designer slides region is left empty.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Check for first slide - use findAllByText since text may appear multiple times
-        const titles = await canvas.findAllByText(/welcome to our store/i, {}, { timeout: 5000 });
-        await expect(titles.length).toBeGreaterThan(0);
-        await expect(titles[0]).toBeInTheDocument();
+        await expect(await canvas.findByText(/no slides available/i)).toBeInTheDocument();
+        // No carousel region, no tablist.
+        await expect(canvas.queryByRole('region', { name: /hero carousel/i })).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('tablist')).not.toBeInTheDocument();
     },
 };
 
-export const WithoutNavigation: Story = {
-    render: () => <HeroCarousel slides={mockSlides} showNavigation={false} />,
+export const SingleSlide: Story = {
+    args: {
+        slideCount: 1,
+    },
     parameters: {
-        chromatic: { disableSnapshot: true },
         docs: {
             description: {
-                story: `
-Hero carousel without navigation buttons.
-
-### Features:
-- No prev/next buttons
-- Dot indicators only
-            `,
+                story: 'With one slide, the component hides the dot indicators and prev/next buttons (`slides.length > 1` gate). Verifies the merchant-facing "carousel of one" layout.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Check for first slide - use findAllByText since text may appear multiple times
-        const titles = await canvas.findAllByText(/welcome to our store/i, {}, { timeout: 5000 });
-        await expect(titles.length).toBeGreaterThan(0);
-        await expect(titles[0]).toBeInTheDocument();
+        // Region renders.
+        await expect(await canvas.findByRole('region', { name: /hero carousel with 1 slide/i })).toBeInTheDocument();
+        // No dots, no prev/next.
+        await expect(canvas.queryByRole('tablist')).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('button', { name: /previous slide/i })).not.toBeInTheDocument();
     },
 };
 
-export const WithoutDots: Story = {
-    render: () => <HeroCarousel slides={mockSlides} showDots={false} />,
+export const LongCopy: Story = {
+    args: {
+        slideCount: 3,
+        longCopy: true,
+        autoPlay: false, // Pause autoplay so the long-copy slide is observable.
+    },
     parameters: {
         docs: {
             description: {
-                story: `
-Hero carousel without dot indicators.
-
-### Features:
-- No dot indicators
-- Navigation buttons only
-            `,
+                story: 'AC #2 long-copy coverage — every slide gets editorial-length title + multi-sentence subtitle. Autoplay paused so the layout under copy density is observable.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
 
-        // Check for first slide - use findAllByText since text may appear multiple times
-        const titles = await canvas.findAllByText(/welcome to our store/i, {}, { timeout: 5000 });
-        await expect(titles.length).toBeGreaterThan(0);
-        await expect(titles[0]).toBeInTheDocument();
+        // All 3 slides share the long-copy headline (longCopy=true mirrors it across the helper output).
+        const headings = await canvas.findAllByText(/a substantially longer editorial headline/i);
+        await expect(headings.length).toBeGreaterThan(0);
     },
 };
