@@ -320,19 +320,40 @@ Tests can be tagged for easy filtering and organization:
 
 #### Test Tiers (`@smoke` vs `@core`)
 
-Three tiers gate different stages of CI:
+Two tiers gate three pipelines. Every `@smoke` scenario also carries `@core` (via the Feature-level tag) — so `@smoke ⊂ @core`.
 
-| Tier | Tag | Where it runs | What it covers |
+| Tier | Tag | What it covers | Wall clock |
 |---|---|---|---|
-| Smoke | `@smoke` | Every PR (sequential, ~5–6 min budget) | Critical revenue/auth paths only — must pass to merge because every merge auto-deploys to a production demo site |
-| Core | `@core` | Post-merge on `push` to `main` / `release-*` (queued, never cancelled), and nightly | OOTB regression set; failure here triggers a Slack notification with PR + author attribution |
-| Full | (no tag filter) | Manual / on demand | Everything, including non-`@core` specs (e.g., multi-site, performance) |
+| Smoke | `@smoke` | Critical revenue/auth paths (homepage load, PLP→PDP→cart, login, checkout place-order) | ~6 min |
+| Core | `@core` | OOTB regression set | ~27 min |
+
+**Where each tier runs:**
+
+| Pipeline | Trigger | Grep | Behavior on failure |
+|---|---|---|---|
+| Pre-merge gate (`e2e-core-pr.yml`) | every PR + `merge_group` | pass 1: `@smoke`, then pass 2: `(?=.*@core)(?!.*@smoke)` on the same pool target | pass 1 fails → pass 2 skipped (fast-fail); merge blocked until both pass. Bypass with the [`skip-e2e` label](#skip-e2e-pr-label-escape-hatch). |
+| Post-merge canary (`e2e-postmerge.yml`) | push to `main` / `release-*` | `@smoke` | retries once on a fresh pool target; if both attempts fail → Slack page |
+| Nightly (`e2e-core-nightly.yml`) | cron | `@core` | full run on a dedicated target (no pool pressure); flake baseline + drift detector |
 
 **Rules for tagging:**
 
-- **Add `@smoke` sparingly.** A scenario earns `@smoke` only if it gates revenue or auth — homepage load, PLP→PDP→cart, login, checkout place-order. Anything else stays in `@core`. The smoke set should fit a ~5–6 min budget at `workers: 1`.
-- **`@smoke` scenarios must also stay in `@core`.** All `@smoke` scenarios live inside `@core` Features, so they automatically pick up `@core` from the Feature-level tag. Don't drop the Feature tag.
+- **Add `@smoke` sparingly.** A scenario earns `@smoke` only if it gates revenue or auth. Anything else stays in `@core`. Keep the smoke set under a ~6 min budget at `workers: 2`.
+- **`@smoke` scenarios must also stay in `@core`.** All `@smoke` scenarios live inside `@core` Features and pick up `@core` from the Feature-level tag. Don't drop the Feature tag.
 - **If a `@smoke` scenario flakes**, treat it as P0 — either fix it or downgrade it to `@core`. Don't ship a flaky smoke gate.
+
+#### `skip-e2e` PR label (escape hatch)
+
+Add the `skip-e2e` label to a PR to bypass the E2E gate entirely. The `check_skip` job in `e2e-core-pr.yml` forwards the result as `bypass: true` to `e2e-runner.yml`, which causes the inner `run_e2e_tests` job to be skipped at the job level. GitHub still reports a "Skipped" status for `call_runner / run_e2e_tests`, and branch protection treats that as success.
+
+**Use sparingly.** Appropriate cases:
+
+- Changelog-only or docs-only PRs that don't touch product code.
+- Hot-revert PRs where the revert itself was already covered by the original PR's gate and the priority is restoring `main`.
+- Infra-only PRs that demonstrably can't affect E2E behavior (e.g., editing GitHub Actions workflows that aren't on the test path).
+
+**Inappropriate cases.** Anything that touches storefront source, SDK runtime, route loaders/actions, page objects, or test infrastructure. If you're unsure, run the gate — a 27 min run is cheaper than a broken `main` and a Slack page from the post-merge canary.
+
+**The label only bypasses `pull_request` runs, not the merge queue.** When a PR is added to the merge queue, GitHub fires a `merge_group` event against a synthetic merge commit (your PR + current `main`), and `e2e-core-pr.yml` re-runs against that ref. PR labels aren't attached to the merge commit, so `check_skip` always evaluates to `skip=false` on `merge_group` and the full ~27 min suite runs. This is intentional — the merge queue exists to catch semantic conflicts that can't be detected at the PR level — but expect the wait when queueing a labelled PR.
 
 #### Basic Tag Usage
 
