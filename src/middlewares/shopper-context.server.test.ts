@@ -238,11 +238,11 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
 
-            // Verify sourceCode cookie was set with correct data
+            // Verify sourceCode cookie was set with the bare source-code string (SFRA-compatible)
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
+            expect(sourceCodeCookieValue).toBe('email');
         });
     });
 
@@ -279,11 +279,30 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
 
-            // Verify sourceCode cookie was set with correct data
+            // Verify sourceCode cookie was set with the bare source-code string (SFRA-compatible)
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
+            expect(sourceCodeCookieValue).toBe('email');
+        });
+
+        test('SFRA contract: dwsourcecode_<siteId> Set-Cookie value is the bare source-code string, not JSON', async () => {
+            // Hybrid storefronts (SFRA + Storefront Next) read the same `dwsourcecode_*` cookie.
+            // SFRA expects a plain string; storing JSON would break it.
+            const url = new URL('https://example.com?src=email');
+            mockRequest = new Request(url.toString());
+
+            const result = await shopperContextMiddleware(createMiddlewareArgs(mockRequest, mockContext), mockNext);
+
+            const setCookieHeaders = (result as Response).headers.getSetCookie();
+            const sourceCodeHeader = setCookieHeaders.find((h) => h.startsWith('dwsourcecode_RefArchGlobal='));
+            expect(sourceCodeHeader).toBeDefined();
+            // The substring after `name=` and before the first `;` is the cookie value.
+            const value = (sourceCodeHeader as string).split(';')[0].split('=', 2)[1];
+            expect(value).toBe('email');
+            // Defensive: confirm the value is not URL-encoded JSON (SFRA cannot parse this).
+            expect(value).not.toContain('%7B');
+            expect(value).not.toContain('{');
         });
 
         test('should set sourceCode cookie when hasNewSourceCodeContext is true', async () => {
@@ -299,11 +318,11 @@ describe('shopper-context.server', () => {
             const setCookieHeaders = (result as Response).headers.getSetCookie();
             expect(setCookieHeaders.length).toBe(1);
 
-            // Verify sourceCode cookie was set with correct data
+            // Verify sourceCode cookie was set with the bare source-code string (SFRA-compatible)
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
+            expect(sourceCodeCookieValue).toBe('email');
         });
 
         test('should set context cookie when hasNewContext is true', async () => {
@@ -369,30 +388,24 @@ describe('shopper-context.server', () => {
                 const setCookieHeaders = (result as Response).headers.getSetCookie();
                 expect(setCookieHeaders.length).toBe(2);
 
-                // Verify both cookies were set with correct data
+                // Verify both cookies were set with correct data. Source-code is a bare string
+                // (SFRA-compatible); context is JSON. Disambiguate by namespaced cookie name.
                 const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
                 const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
                 const contextCookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
 
-                // Find which cookie is which by parsing both
-                let sourceCodeCookieValue: Record<string, string> | null = null;
-                let contextCookieValue: Record<string, string> | null = null;
+                const sourceCodeHeader = setCookieHeaders.find((h) => h.startsWith('dwsourcecode_RefArchGlobal='));
+                const contextHeader = setCookieHeaders.find((h) =>
+                    h.startsWith('storefront-next-context_RefArchGlobal=')
+                );
+                expect(sourceCodeHeader).toBeDefined();
+                expect(contextHeader).toBeDefined();
 
-                for (const cookieHeader of setCookieHeaders) {
-                    const parsedSourceCode = await sourceCodeCookieHandler.parse(cookieHeader);
-                    const parsedContext = await contextCookieHandler.parse(cookieHeader);
-                    if (parsedSourceCode) {
-                        const obj = JSON.parse(parsedSourceCode as string) as Record<string, string>;
-                        if ('sourceCode' in obj) sourceCodeCookieValue = obj;
-                    }
-                    if (parsedContext) {
-                        const obj = JSON.parse(parsedContext as string) as Record<string, string>;
-                        if ('deviceType' in obj) contextCookieValue = obj;
-                    }
-                }
+                const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(sourceCodeHeader as string);
+                const contextCookieValue = await contextCookieHandler.parse(contextHeader as string);
 
-                expect(sourceCodeCookieValue).toEqual({ sourceCode: 'email' });
-                expect(contextCookieValue).toEqual({ deviceType: 'mobile' });
+                expect(sourceCodeCookieValue).toBe('email');
+                expect(JSON.parse(contextCookieValue as string)).toEqual({ deviceType: 'mobile' });
             } finally {
                 extractQualifiersFromUrlSpy.mockRestore();
             }
@@ -400,10 +413,9 @@ describe('shopper-context.server', () => {
 
         test('should restore sourceCode from dwsourcecode cookie when storefront-next-context is empty/expired', async () => {
             // Scenario: context cookie is empty/expired, but sourceCode cookie has value
-            const sourceCodeValue = { sourceCode: 'persisted-source' };
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
-            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize(JSON.stringify(sourceCodeValue));
+            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize('persisted-source');
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
             // Request has sourceCode cookie but no context cookie (expired/empty); no URL params
@@ -430,9 +442,7 @@ describe('shopper-context.server', () => {
             const contextCookieHandler = createCookie('storefront-next-context', cookieConfig, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const contextCookieSerialized = await contextCookieHandler.serialize(JSON.stringify(currentContext));
-            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize(
-                JSON.stringify({ sourceCode: 'email' })
-            );
+            const sourceCodeCookieSerialized = await sourceCodeCookieHandler.serialize('email');
             const contextCookieValue = contextCookieSerialized.split(';')[0];
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
@@ -548,16 +558,18 @@ describe('shopper-context.server', () => {
         };
 
         test('sourceCode (src): passes through null, undefined, empty, whitespace, and valid string', async () => {
+            // Source-code cookie is a bare string for SFRA hybrid compatibility. Empty/whitespace
+            // values clear the cookie (`parseAllCookies` drops empty values, so `parse()` → null).
             const cases: {
                 param: string | null | undefined;
                 expected: string;
-                expectedCookie: Record<string, string>;
+                expectedCookie: string | null;
             }[] = [
-                { param: 'email', expected: 'email', expectedCookie: { sourceCode: 'email' } },
-                { param: '', expected: '', expectedCookie: { sourceCode: '' } }, // src= with prior cookie → delete
-                { param: '  ', expected: '', expectedCookie: { sourceCode: '' } },
-                { param: 'email  insta', expected: 'email  insta', expectedCookie: { sourceCode: 'email  insta' } }, // trim only; internal spaces preserved
-                { param: ' email  ', expected: 'email', expectedCookie: { sourceCode: 'email' } },
+                { param: 'email', expected: 'email', expectedCookie: 'email' },
+                { param: '', expected: '', expectedCookie: null }, // src= with prior cookie → delete
+                { param: '  ', expected: '', expectedCookie: null },
+                { param: 'email  insta', expected: 'email  insta', expectedCookie: 'email  insta' }, // trim only; internal spaces preserved
+                { param: ' email  ', expected: 'email', expectedCookie: 'email' },
             ];
             let cookieForNextRequest: string | null = null;
             for (const { param, expected, expectedCookie } of cases) {
@@ -574,7 +586,7 @@ describe('shopper-context.server', () => {
                 const setCookieHeaders = (result as Response).headers.getSetCookie();
                 expect(setCookieHeaders.length).toBe(1);
                 const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-                expect(JSON.parse(sourceCodeCookieValue as string)).toEqual(expectedCookie);
+                expect(sourceCodeCookieValue).toBe(expectedCookie);
                 cookieForNextRequest = setCookieHeaders[0].split(';')[0];
             }
         });
@@ -810,7 +822,7 @@ describe('shopper-context.server', () => {
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
+            expect(sourceCodeCookieValue).toBe('email');
         });
 
         test('should process shopper context when request URL is an action URL (e.g. POST to action route)', async () => {
@@ -828,7 +840,7 @@ describe('shopper-context.server', () => {
             const cookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const sourceCodeCookieHandler = createCookie('dwsourcecode', cookieConfig, mockContext);
             const sourceCodeCookieValue = await sourceCodeCookieHandler.parse(setCookieHeaders[0]);
-            expect(JSON.parse(sourceCodeCookieValue as string)).toEqual({ sourceCode: 'email' });
+            expect(sourceCodeCookieValue).toBe('email');
         });
     });
 
@@ -836,9 +848,7 @@ describe('shopper-context.server', () => {
         test('should restore sourceCode from persistent cookie when not in URL', async () => {
             const testCookieConfig = getCookieConfig({ httpOnly: false }, mockContext);
             const testSourceCodeCookieHandler = createCookie('dwsourcecode', testCookieConfig, mockContext);
-            const sourceCodeCookieSerialized = await testSourceCodeCookieHandler.serialize(
-                JSON.stringify({ sourceCode: 'persisted' })
-            );
+            const sourceCodeCookieSerialized = await testSourceCodeCookieHandler.serialize('persisted');
             const sourceCodeCookieValue = sourceCodeCookieSerialized.split(';')[0];
 
             mockRequest = new Request('https://example.com', {

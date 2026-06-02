@@ -300,6 +300,14 @@ describe('shopper-context-utils', () => {
                 }
             }
         });
+
+        test('should strip CR/LF from sourceCode value (cookie-header safety)', () => {
+            // Node's Headers.append rejects CR/LF in Set-Cookie values. Sanitize at extraction so
+            // both the SCAPI body and the bare-string cookie write are safe.
+            const url = new URL('https://example.com?src=email%0D%0AMax-Age%3D0');
+            const result = extractQualifiersFromUrl(url);
+            expect(result.sourceCodeQualifiers.sourceCode).toBe('emailMax-Age=0');
+        });
     });
 
     describe('extractQualifiersFromInput', () => {
@@ -925,8 +933,8 @@ describe('shopper-context-utils', () => {
 
         test('should merge new context with existing cookie context', async () => {
             mockParse
-                .mockResolvedValueOnce(JSON.stringify({ existingKey: 'existing' })) // shopper context cookie
-                .mockResolvedValueOnce(JSON.stringify({ sourceCode: 'old-source' })); // source code cookie
+                .mockResolvedValueOnce(JSON.stringify({ existingKey: 'existing' })) // shopper context cookie (JSON)
+                .mockResolvedValueOnce('old-source'); // source code cookie (bare string)
 
             const newShopperContext = { deviceType: 'mobile' };
             const newSourceCodeContext = { sourceCode: 'new-source' };
@@ -939,11 +947,8 @@ describe('shopper-context-utils', () => {
                 cookieHeader: 'some-cookie-header',
             });
 
-            // Verify serialize was called with JSON-encoded merged context (cookie-utils stores strings)
-            expect(mockSerialize).toHaveBeenCalledWith(
-                JSON.stringify({ sourceCode: 'new-source' }),
-                expect.any(Object)
-            );
+            // Source-code cookie is the bare string; shopper-context cookie is JSON-encoded.
+            expect(mockSerialize).toHaveBeenCalledWith('new-source', expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith(
                 JSON.stringify({
                     existingKey: 'existing',
@@ -1071,6 +1076,58 @@ describe('shopper-context-utils', () => {
                 JSON.stringify({ deviceType: 'new-device' }),
                 expect.any(Object)
             );
+        });
+
+        test('does not resurrect a deleted source code on later qualifier-only updates', async () => {
+            // After ?src= clears the source-code cookie, `parseAllCookies` drops it and `parse()`
+            // returns null. A subsequent qualifier-only update must NOT re-send the old sourceCode.
+            mockParse
+                .mockResolvedValueOnce(null) // shopper context cookie (no qualifier yet)
+                .mockResolvedValueOnce(null); // source code cookie (post-delete)
+
+            const newShopperContext = { deviceType: 'mobile' };
+            const newSourceCodeContext = {};
+
+            await updateShopperContext({
+                context: mockContext,
+                usid: 'test-usid',
+                newShopperContext,
+                newSourceCodeContext,
+                cookieHeader: 'some-header',
+            });
+
+            expect(mockCreateShopperContext).toHaveBeenCalledTimes(1);
+            const apiBody = mockCreateShopperContext.mock.calls[0][2];
+            expect(apiBody).not.toHaveProperty('sourceCode');
+        });
+
+        test('preserves persisted source code on qualifier-only updates and does not rewrite the source-code cookie', async () => {
+            // A persisted bare-string `dwsourcecode_*` cookie must be merged into the SCAPI body,
+            // and a qualifier-only update (no newSourceCodeContext) must NOT re-serialize it.
+            mockParse
+                .mockResolvedValueOnce(null) // shopper context cookie (empty)
+                .mockResolvedValueOnce('persisted-source'); // source code cookie (bare string)
+
+            const newShopperContext = { deviceType: 'mobile' };
+            const newSourceCodeContext = {};
+
+            const result = await updateShopperContext({
+                context: mockContext,
+                usid: 'test-usid',
+                newShopperContext,
+                newSourceCodeContext,
+                cookieHeader: 'some-header',
+            });
+
+            // SCAPI body includes the persisted source code (merged from the cookie).
+            expect(mockCreateShopperContext).toHaveBeenCalledTimes(1);
+            const apiBody = mockCreateShopperContext.mock.calls[0][2];
+            expect(apiBody.sourceCode).toBe('persisted-source');
+
+            // Only the shopper-context cookie was re-serialized; source-code cookie was left alone.
+            expect(mockSerialize).toHaveBeenCalledTimes(1);
+            expect(mockSerialize).toHaveBeenCalledWith(JSON.stringify({ deviceType: 'mobile' }), expect.any(Object));
+            expect(result.setCookieHeaders).toHaveLength(1);
         });
     });
 });
