@@ -224,10 +224,13 @@ export async function getOrCreateWishlist(
             throw new Error(t('account:wishlist.unableToRetrieveId'));
         }
 
-        // Create a new wishlist if it doesn't exist.
-        // Commerce SDK createCustomerProductList might not return listId immediately
-        // so we re-fetch after creation.
-        await clients.shopperCustomers.createCustomerProductList({
+        // Create a new wishlist if it doesn't exist. The POST response body comes from the
+        // write path and is not subject to the index-propagation delay that affects the GET
+        // endpoints (see the retry branch above and the comment in getWishlist). When the
+        // response carries an id we can return it immediately. Only when it doesn't do we
+        // wait for the index to catch up and re-read — the original behavior — because that
+        // GET is what the indexing-delay sleep was protecting all along.
+        const { data: created } = await clients.shopperCustomers.createCustomerProductList({
             params: {
                 path: { customerId },
             },
@@ -238,6 +241,13 @@ export async function getOrCreateWishlist(
             },
         });
 
+        if (created?.id) {
+            return created;
+        }
+
+        logger.warn('Wishlist: createCustomerProductList returned without an id, waiting for index propagation', {
+            customerId,
+        });
         await new Promise((resolve) => setTimeout(resolve, WISHLIST_CREATION_DELAY_MS));
 
         const { wishlist: createdWishlist, id: createdListId } = await getWishlist(context, customerId);
