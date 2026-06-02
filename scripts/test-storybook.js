@@ -22,9 +22,14 @@
  *   --type=snapshot|interaction|a11y
  *
  * Optional:
- *   --update     # snapshot only — regenerate snapshot fixtures
- *   --coverage   # snapshot only — auto-runs generate-story-tests then vitest --coverage
- *   --static     # interaction|a11y — build storybook & serve static instead of dev
+ *   --update          # snapshot only — regenerate snapshot fixtures
+ *   --coverage        # snapshot only — auto-runs generate-story-tests then vitest --coverage
+ *   --static          # interaction|a11y — build storybook & serve static instead of dev
+ *   --stories=<name>  # snapshot only — narrow the vitest run to story files whose
+ *                     #   path contains <name> (may be a nested subpath, e.g.
+ *                     #   account/order-details). Ignored for interaction|a11y: the
+ *                     #   test-runner runs in --index-json mode, which only filters
+ *                     #   by tag, not by file path or name.
  *
  * Snapshot tests use vitest. Interaction/a11y tests orchestrate a server
  * (storybook dev or `npx serve` of the static build) plus `test-storybook`,
@@ -69,6 +74,9 @@ if (type === 'snapshot') {
         args.push('--coverage');
     }
     args.push('--config', './.storybook/vite.config.ts');
+    // vitest treats trailing positionals as filename filters — narrow to story
+    // files whose path contains <name>.
+    if (typeof flags.stories === 'string') args.push(flags.stories);
     process.exit(await run('vitest', args));
 }
 
