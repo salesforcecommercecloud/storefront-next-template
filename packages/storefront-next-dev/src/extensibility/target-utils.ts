@@ -465,3 +465,68 @@ export function buildTargetRegistry(
 
     return { componentRegistry, contextProviders, actionHookRegistry };
 }
+
+const TARGET_ID_PATTERN = /<UITarget[\s][^>]*targetId=["']([^"']+)["']/g;
+const EXCLUDED_DIRS = new Set(['ui-target-dev-mode', 'ui-target-smoke-test']);
+
+/**
+ * Recursively collect all UITarget IDs declared in template source files.
+ * Excludes extension directories so only "real" UITarget placements are counted.
+ */
+export function collectUITargetIds(sourceDir: string): Set<string> {
+    const result = new Set<string>();
+
+    function walk(dir: string) {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                if (entry.name === 'extensions' || EXCLUDED_DIRS.has(entry.name)) continue;
+                walk(fullPath);
+            } else if (
+                entry.isFile() &&
+                /\.(tsx?|jsx?)$/.test(entry.name) &&
+                !/\.test\.(tsx?|jsx?)$/.test(entry.name)
+            ) {
+                const content = fs.readFileSync(fullPath, 'utf-8');
+                TARGET_ID_PATTERN.lastIndex = 0;
+                let match;
+                while ((match = TARGET_ID_PATTERN.exec(content)) !== null) {
+                    result.add(match[1]);
+                }
+            }
+        }
+    }
+
+    walk(sourceDir);
+    return result;
+}
+
+export interface OrphanedTarget {
+    targetId: string;
+    extension: string;
+    componentPath: string;
+}
+
+/**
+ * Validate that all targetIds in the component registry correspond to
+ * UITarget declarations in the template source. Returns orphaned entries.
+ */
+export function validateTargetRegistry(
+    componentRegistry: TargetComponentRegistry,
+    declaredTargetIds: Set<string>
+): OrphanedTarget[] {
+    const orphaned: OrphanedTarget[] = [];
+    for (const targetId in componentRegistry) {
+        if (!declaredTargetIds.has(targetId)) {
+            for (const entry of componentRegistry[targetId]) {
+                orphaned.push({
+                    targetId,
+                    extension: entry.namespace,
+                    componentPath: entry.path,
+                });
+            }
+        }
+    }
+    return orphaned;
+}

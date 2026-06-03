@@ -31,10 +31,14 @@ const viteConfig = {
 vi.mock('../extensibility/target-utils', () => ({
     buildTargetRegistry: vi.fn(),
     transformTargets: vi.fn(),
+    collectUITargetIds: vi.fn(),
+    validateTargetRegistry: vi.fn(),
 }));
 
 import {
     buildTargetRegistry,
+    collectUITargetIds,
+    validateTargetRegistry,
     type TargetComponentRegistry,
     type TargetContextProviderConfig,
     transformTargets,
@@ -75,6 +79,8 @@ describe('transformTargetPlaceholderPlugin', () => {
             actionHookRegistry: {},
         }));
         transformTargetsMock = vi.mocked(transformTargets);
+        vi.mocked(collectUITargetIds).mockReturnValue(new Set(['test.target']));
+        vi.mocked(validateTargetRegistry).mockReturnValue([]);
         vi.spyOn(process, 'cwd').mockReturnValue('/project');
 
         vitePlugin = transformTargetPlaceholderPlugin();
@@ -165,5 +171,33 @@ describe('transformTargetPlaceholderPlugin', () => {
             expect.stringContaining('UITarget replace ERROR in /project/src/SomeComponent.tsx: test error')
         );
         errorSpy.mockRestore();
+    });
+
+    it('should throw when extensions target non-existent UITarget IDs', () => {
+        vi.mocked(validateTargetRegistry).mockReturnValue([
+            {
+                targetId: 'sfcc.nonexistent.target',
+                extension: 'MyExt',
+                componentPath: 'extensions/my-ext/comp.tsx',
+            },
+        ]);
+
+        expect(() => vitePlugin.buildStart()).toThrow(
+            /1 extension component\(s\) target UITarget IDs that do not exist/
+        );
+        expect(() => vitePlugin.buildStart()).toThrow(/sfcc\.nonexistent\.target/);
+    });
+
+    it('should not throw when all extension targets are valid', () => {
+        vi.mocked(validateTargetRegistry).mockReturnValue([]);
+
+        expect(() => vitePlugin.buildStart()).not.toThrow();
+    });
+
+    it('should call collectUITargetIds with sourceDir and validateTargetRegistry with registry', () => {
+        vitePlugin.buildStart();
+
+        expect(collectUITargetIds).toHaveBeenCalledWith('src');
+        expect(validateTargetRegistry).toHaveBeenCalledWith(mockComponentRegistry, new Set(['test.target']));
     });
 });

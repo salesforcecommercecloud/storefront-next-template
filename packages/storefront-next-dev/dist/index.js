@@ -606,6 +606,45 @@ function buildTargetRegistry(rootDir, options = {}) {
 		actionHookRegistry
 	};
 }
+const TARGET_ID_PATTERN = /<UITarget[\s][^>]*targetId=["']([^"']+)["']/g;
+const EXCLUDED_DIRS = new Set(["ui-target-dev-mode", "ui-target-smoke-test"]);
+/**
+* Recursively collect all UITarget IDs declared in template source files.
+* Excludes extension directories so only "real" UITarget placements are counted.
+*/
+function collectUITargetIds(sourceDir) {
+	const result = /* @__PURE__ */ new Set();
+	function walk(dir) {
+		const entries = fs.readdirSync(dir, { withFileTypes: true });
+		for (const entry of entries) {
+			const fullPath = path$1.join(dir, entry.name);
+			if (entry.isDirectory()) {
+				if (entry.name === "extensions" || EXCLUDED_DIRS.has(entry.name)) continue;
+				walk(fullPath);
+			} else if (entry.isFile() && /\.(tsx?|jsx?)$/.test(entry.name) && !/\.test\.(tsx?|jsx?)$/.test(entry.name)) {
+				const content = fs.readFileSync(fullPath, "utf-8");
+				TARGET_ID_PATTERN.lastIndex = 0;
+				let match;
+				while ((match = TARGET_ID_PATTERN.exec(content)) !== null) result.add(match[1]);
+			}
+		}
+	}
+	walk(sourceDir);
+	return result;
+}
+/**
+* Validate that all targetIds in the component registry correspond to
+* UITarget declarations in the template source. Returns orphaned entries.
+*/
+function validateTargetRegistry(componentRegistry, declaredTargetIds) {
+	const orphaned = [];
+	for (const targetId in componentRegistry) if (!declaredTargetIds.has(targetId)) for (const entry of componentRegistry[targetId]) orphaned.push({
+		targetId,
+		extension: entry.namespace,
+		componentPath: entry.path
+	});
+	return orphaned;
+}
 
 //#endregion
 //#region src/plugins/transformTargets.ts
@@ -623,6 +662,12 @@ function transformTargetPlaceholderPlugin() {
 		},
 		buildStart() {
 			({componentRegistry, contextProviders} = buildTargetRegistry(sourceDir, { isProduction }));
+			const declaredTargetIds = collectUITargetIds(sourceDir);
+			const orphaned = validateTargetRegistry(componentRegistry, declaredTargetIds);
+			if (orphaned.length > 0) {
+				const lines = orphaned.map((o) => `  • "${o.targetId}" (extension: ${o.extension}, component: ${o.componentPath})`);
+				throw new Error(`[storefront-next] ${orphaned.length} extension component(s) target UITarget IDs that do not exist in the template:\n${lines.join("\n")}\n\nEither add a <UITarget targetId="..."> to the template or remove/disable the component in target-config.json.`);
+			}
 		},
 		transform(code, id) {
 			if (process.env.VITE_UI_TARGET_DEV_MODE === "true") return null;

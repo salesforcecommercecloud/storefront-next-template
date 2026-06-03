@@ -16,7 +16,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { join } from 'path';
 import fs from 'fs-extra';
-import { buildTargetRegistry, transformTargets } from './target-utils';
+import { buildTargetRegistry, transformTargets, collectUITargetIds, validateTargetRegistry } from './target-utils';
 import { logger } from '../utils/logger';
 
 describe('target-utils', () => {
@@ -628,6 +628,184 @@ describe('target-utils', () => {
 
             expect(result).not.toContain('UITarget');
             expect(result).not.toContain('UITargetProviders');
+        });
+    });
+
+    describe('collectUITargetIds', () => {
+        const testDir = join(__dirname, '__test-collect-targets__');
+
+        beforeEach(() => {
+            fs.ensureDirSync(testDir);
+        });
+
+        afterEach(() => {
+            fs.removeSync(testDir);
+        });
+
+        it('should collect targetIds from tsx files', () => {
+            fs.ensureDirSync(join(testDir, 'components'));
+            fs.writeFileSync(
+                join(testDir, 'components', 'page.tsx'),
+                `<UITarget targetId="sfcc.header.before.cart" />\n<UITarget targetId="sfcc.footer.start" />`
+            );
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).toContain('sfcc.header.before.cart');
+            expect(ids).toContain('sfcc.footer.start');
+            expect(ids.size).toBe(2);
+        });
+
+        it('should exclude the extensions directory', () => {
+            fs.ensureDirSync(join(testDir, 'extensions', 'my-ext'));
+            fs.writeFileSync(
+                join(testDir, 'extensions', 'my-ext', 'comp.tsx'),
+                `<UITarget targetId="should.not.be.found" />`
+            );
+            fs.ensureDirSync(join(testDir, 'components'));
+            fs.writeFileSync(join(testDir, 'components', 'page.tsx'), `<UITarget targetId="valid.target" />`);
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).not.toContain('should.not.be.found');
+            expect(ids).toContain('valid.target');
+        });
+
+        it('should exclude ui-target-dev-mode and ui-target-smoke-test directories', () => {
+            fs.ensureDirSync(join(testDir, 'ui-target-dev-mode'));
+            fs.writeFileSync(
+                join(testDir, 'ui-target-dev-mode', 'tool.tsx'),
+                `<UITarget targetId="dev.only.target" />`
+            );
+            fs.ensureDirSync(join(testDir, 'ui-target-smoke-test'));
+            fs.writeFileSync(
+                join(testDir, 'ui-target-smoke-test', 'test.tsx'),
+                `<UITarget targetId="smoke.test.target" />`
+            );
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).not.toContain('dev.only.target');
+            expect(ids).not.toContain('smoke.test.target');
+        });
+
+        it('should return empty set when no targets found', () => {
+            fs.writeFileSync(join(testDir, 'page.tsx'), `export default function Page() { return <div />; }`);
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids.size).toBe(0);
+        });
+
+        it('should match single-quoted targetId attributes', () => {
+            fs.ensureDirSync(join(testDir, 'components'));
+            fs.writeFileSync(
+                join(testDir, 'components', 'page.tsx'),
+                `<UITarget targetId='sfcc.header.single.quote' />`
+            );
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).toContain('sfcc.header.single.quote');
+        });
+
+        it('should not match targetId on non-UITarget components', () => {
+            fs.ensureDirSync(join(testDir, 'components'));
+            fs.writeFileSync(
+                join(testDir, 'components', 'page.tsx'),
+                `<SomeOther targetId="not.a.real.target" />\n<UITarget targetId="real.target" />`
+            );
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).not.toContain('not.a.real.target');
+            expect(ids).toContain('real.target');
+            expect(ids.size).toBe(1);
+        });
+
+        it('should exclude test files', () => {
+            fs.ensureDirSync(join(testDir, 'components'));
+            fs.writeFileSync(join(testDir, 'components', 'page.tsx'), `<UITarget targetId="real.target" />`);
+            fs.writeFileSync(join(testDir, 'components', 'page.test.tsx'), `<UITarget targetId="test.only.target" />`);
+
+            const ids = collectUITargetIds(testDir);
+            expect(ids).toContain('real.target');
+            expect(ids).not.toContain('test.only.target');
+            expect(ids.size).toBe(1);
+        });
+    });
+
+    describe('validateTargetRegistry', () => {
+        it('should return empty array when all targetIds are declared', () => {
+            const registry = {
+                'sfcc.header.before.cart': [
+                    {
+                        targetId: 'sfcc.header.before.cart',
+                        path: 'extensions/foo/comp.tsx',
+                        namespace: 'Foo',
+                        componentName: 'Foo_Comp',
+                        order: 0,
+                    },
+                ],
+            };
+            const declared = new Set(['sfcc.header.before.cart', 'sfcc.footer.start']);
+
+            const orphaned = validateTargetRegistry(registry, declared);
+            expect(orphaned).toHaveLength(0);
+        });
+
+        it('should return orphaned entries for undeclared targetIds', () => {
+            const registry = {
+                'sfcc.header.before.cart': [
+                    {
+                        targetId: 'sfcc.header.before.cart',
+                        path: 'extensions/foo/comp.tsx',
+                        namespace: 'Foo',
+                        componentName: 'Foo_Comp',
+                        order: 0,
+                    },
+                ],
+                'sfcc.nonexistent.target': [
+                    {
+                        targetId: 'sfcc.nonexistent.target',
+                        path: 'extensions/bar/widget.tsx',
+                        namespace: 'Bar',
+                        componentName: 'Bar_Widget',
+                        order: 0,
+                    },
+                ],
+            };
+            const declared = new Set(['sfcc.header.before.cart']);
+
+            const orphaned = validateTargetRegistry(registry, declared);
+            expect(orphaned).toHaveLength(1);
+            expect(orphaned[0].targetId).toBe('sfcc.nonexistent.target');
+            expect(orphaned[0].extension).toBe('Bar');
+            expect(orphaned[0].componentPath).toBe('extensions/bar/widget.tsx');
+        });
+
+        it('should report all components for a single orphaned targetId', () => {
+            const registry = {
+                'missing.target': [
+                    {
+                        targetId: 'missing.target',
+                        path: 'extensions/a/comp.tsx',
+                        namespace: 'A',
+                        componentName: 'A_Comp',
+                        order: 0,
+                    },
+                    {
+                        targetId: 'missing.target',
+                        path: 'extensions/b/comp.tsx',
+                        namespace: 'B',
+                        componentName: 'B_Comp',
+                        order: 1,
+                    },
+                ],
+            };
+            const declared = new Set<string>();
+
+            const orphaned = validateTargetRegistry(registry, declared);
+            expect(orphaned).toHaveLength(2);
+        });
+
+        it('should return empty array for empty registry', () => {
+            const orphaned = validateTargetRegistry({}, new Set(['some.target']));
+            expect(orphaned).toHaveLength(0);
         });
     });
 });

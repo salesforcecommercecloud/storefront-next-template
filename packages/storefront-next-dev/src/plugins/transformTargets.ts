@@ -16,6 +16,8 @@
 import {
     buildTargetRegistry,
     transformTargets,
+    collectUITargetIds,
+    validateTargetRegistry,
     type TargetContextProviderConfig,
     type TargetComponentRegistry,
 } from '../extensibility/target-utils';
@@ -45,6 +47,20 @@ export function transformTargetPlaceholderPlugin() {
         buildStart() {
             // Build the registry once at the start of the build
             ({ componentRegistry, contextProviders } = buildTargetRegistry(sourceDir, { isProduction }));
+
+            // Validate that all registered targetIds have a corresponding <UITarget> in the template
+            const declaredTargetIds = collectUITargetIds(sourceDir);
+            const orphaned = validateTargetRegistry(componentRegistry, declaredTargetIds);
+            if (orphaned.length > 0) {
+                const lines = orphaned.map(
+                    (o) => `  • "${o.targetId}" (extension: ${o.extension}, component: ${o.componentPath})`
+                );
+                throw new Error(
+                    `[storefront-next] ${orphaned.length} extension component(s) target UITarget IDs that do not exist in the template:\n${lines.join(
+                        '\n'
+                    )}\n\nEither add a <UITarget targetId="..."> to the template or remove/disable the component in target-config.json.`
+                );
+            }
         },
 
         transform(code: string, id: string) {
