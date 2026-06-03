@@ -51,6 +51,18 @@ if (!['snapshot', 'interaction', 'a11y'].includes(type)) {
     process.exit(2);
 }
 
+// `--stories` with no usable value can't filter anything: the space form
+// `--stories <name>` parses to boolean `true`, and the empty form `--stories=`
+// parses to `''`. The first would silently run the full suite; the second would
+// push an empty positional to vitest and crash. Fail loud for both so a
+// no-value form can't masquerade as a filtered run. Scoped to snapshot — the
+// only type that honors `--stories`; interaction/a11y ignore it entirely, so
+// erroring there would demand a value that does nothing for those types.
+if (type === 'snapshot' && (flags.stories === true || flags.stories === '')) {
+    console.error('Error: --stories needs a value — use --stories=<name>');
+    process.exit(2);
+}
+
 // --- helpers ---------------------------------------------------------------
 function run(cmd, args, env = process.env) {
     return new Promise((resolve, reject) => {
