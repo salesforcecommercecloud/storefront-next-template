@@ -62,6 +62,17 @@ vi.mock('@/hooks/use-deferred-render', () => ({
     useDeferredRenderSequence: () => 0,
 }));
 
+// Spy on the bonus-product modal so we can verify the props the cart wires through
+// `getBonusDiscountSlotsForPromotion`. Render-only stub — exercises the modal-open code path
+// without needing the full modal subtree (variant selector, image gallery, scapi fetcher).
+const bonusModalRenders: Array<Record<string, unknown>> = [];
+vi.mock('@/components/bonus-product-modal', () => ({
+    BonusProductModal: (props: Record<string, unknown>) => {
+        bonusModalRenders.push(props);
+        return props.open ? <div data-testid="bonus-product-modal-stub" /> : null;
+    },
+}));
+
 // Components
 import CartContent from './cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
@@ -144,6 +155,7 @@ const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
 describe('CartContent', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        bonusModalRenders.length = 0;
     });
 
     const mockBasket = {
@@ -837,6 +849,119 @@ describe('CartContent', () => {
             // First committed render does NOT see the basket — the autoLoad:false default is
             // required at every read-only consumer that mounts inside or alongside CartContent.
             expect(renders[0]).toBeUndefined();
+        });
+    });
+
+    describe('Bonus product modal — capacity wiring', () => {
+        // Variant-bearing bonus product: triggers `requiresVariantSelection` → `requiresModal=true`,
+        // which is the only path that opens BonusProductModal.
+        const variantBonusProduct = {
+            id: 'bonus-shirt',
+            name: 'Free Shirt',
+            type: { master: true },
+            variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'red' }] }],
+            variants: [{ productId: 'bonus-shirt-red' }],
+        } as unknown as import('@/scapi').ShopperProducts.schemas['Product'];
+
+        test('opens with slot rows wired from getBonusDiscountSlotsForPromotion when user picks a variant-bearing bonus', async () => {
+            // Two BLIs under the same promotion. One slot is fully claimed (selected=2/2),
+            // the other has half-remaining capacity (selected=1/3). The test asserts the
+            // modal receives both slot rows verbatim — the modal recomputes its own remaining
+            // count from the active slot's `maxBonusItems` and `bonusProductsSelected`.
+            const basket = {
+                basketId: 'b-bonus',
+                productItems: [
+                    { itemId: 'cart-item-1', quantity: 1, productId: 'shirt-1' },
+                    {
+                        itemId: 'bonus-item-1',
+                        productId: 'bonus-shirt-red',
+                        quantity: 2,
+                        bonusProductLineItem: true,
+                        bonusDiscountLineItemId: 'bli-1',
+                    },
+                    {
+                        itemId: 'bonus-item-2',
+                        productId: 'bonus-tie',
+                        quantity: 1,
+                        bonusProductLineItem: true,
+                        bonusDiscountLineItemId: 'bli-2',
+                    },
+                ],
+                bonusDiscountLineItems: [
+                    {
+                        id: 'bli-1',
+                        promotionId: 'promo-bonus',
+                        maxBonusItems: 2,
+                        bonusProducts: [{ productId: 'bonus-shirt', productName: 'Free Shirt' }],
+                    },
+                    {
+                        id: 'bli-2',
+                        promotionId: 'promo-bonus',
+                        maxBonusItems: 3,
+                        bonusProducts: [{ productId: 'bonus-shirt', productName: 'Free Shirt' }],
+                    },
+                ],
+            };
+
+            renderCartContent({
+                basket: basket as any,
+                productsByItemId: { 'cart-item-1': { id: 'shirt-1', variants: [{} as any] } } as any,
+                bonusProductsById: { 'bonus-shirt': variantBonusProduct } as any,
+            });
+
+            // The Select button lives inside the lazily-loaded BonusProductSelection carousel,
+            // and one renders per BLI. Wait for the chunk to mount, then click any one — the
+            // capacity is keyed on promotionId, not the clicked BLI.
+            const selectButtons = await screen.findAllByRole('button', { name: /^Select$/ });
+            fireEvent.click(selectButtons[0]);
+
+            // Modal mounts via Suspense after `selectedBonusProduct` is set.
+            await screen.findByTestId('bonus-product-modal-stub');
+
+            const openCalls = bonusModalRenders.filter((p) => p.open === true);
+            expect(openCalls.length).toBeGreaterThan(0);
+            const lastOpen = openCalls[openCalls.length - 1];
+
+            expect(lastOpen.promotionId).toBe('promo-bonus');
+            expect(lastOpen.bonusDiscountSlots).toEqual([
+                { id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 2 },
+                { id: 'bli-2', maxBonusItems: 3, bonusProductsSelected: 1 },
+            ]);
+        });
+
+        test('passes a single empty slot through to the modal on the simple-BLI happy path', async () => {
+            // Smallest possible wiring test: one BLI, no prior selections. Pins the contract that
+            // an empty bonus state surfaces as `bonusDiscountSlots: [{ ..., bonusProductsSelected: 0 }]`.
+            const basket = {
+                basketId: 'b-bonus-empty',
+                productItems: [{ itemId: 'cart-item-1', quantity: 1, productId: 'shirt-1' }],
+                bonusDiscountLineItems: [
+                    {
+                        id: 'bli-active',
+                        promotionId: 'promo-bonus',
+                        maxBonusItems: 1,
+                        bonusProducts: [{ productId: 'bonus-shirt', productName: 'Free Shirt' }],
+                    },
+                ],
+            };
+
+            renderCartContent({
+                basket: basket as any,
+                productsByItemId: { 'cart-item-1': { id: 'shirt-1', variants: [{} as any] } } as any,
+                bonusProductsById: { 'bonus-shirt': variantBonusProduct } as any,
+            });
+
+            const selectButton = await screen.findByRole('button', { name: /^Select$/ });
+            fireEvent.click(selectButton);
+
+            await screen.findByTestId('bonus-product-modal-stub');
+
+            const openCalls = bonusModalRenders.filter((p) => p.open === true);
+            const lastOpen = openCalls[openCalls.length - 1];
+            expect(lastOpen.promotionId).toBe('promo-bonus');
+            expect(lastOpen.bonusDiscountSlots).toEqual([
+                { id: 'bli-active', maxBonusItems: 1, bonusProductsSelected: 0 },
+            ]);
         });
     });
 });

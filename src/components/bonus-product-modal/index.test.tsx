@@ -114,7 +114,6 @@ describe('BonusProductModal', () => {
             { id: 'bdli-xyz', maxBonusItems: 2, bonusProductsSelected: 0 },
             { id: 'bdli-abc', maxBonusItems: 1, bonusProductsSelected: 0 },
         ],
-        maxQuantity: 3,
     };
 
     beforeEach(() => {

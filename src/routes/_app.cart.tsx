@@ -207,7 +207,6 @@ export default function Cart(): ReactElement {
     const recommendationsSkeleton = (
         <div className="mt-16 space-y-16">
             <ProductRecommendationSkeleton title={mayAlsoLikeTitle} className="max-w-none px-0" />
-            <ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />
         </div>
     );
     const recommendationsSlot = (
@@ -224,7 +223,6 @@ export default function Cart(): ReactElement {
                 recommenderTitle={recentlyViewedTitle}
                 data={pinnedRecentlyViewedPromise}
                 className="max-w-none px-0"
-                fallback={<ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />}
             />
         </div>
     );

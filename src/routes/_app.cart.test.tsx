@@ -142,16 +142,16 @@ describe('Cart route component', () => {
             });
 
             const skeletons = await screen.findAllByTestId('product-recommendation-skeleton');
-            expect(skeletons).toHaveLength(2);
+            expect(skeletons).toHaveLength(1);
 
-            // Each skeleton receives the translated title for its recommender so the heading
-            // doesn't pop in when the promise resolves.
+            // The skeleton receives the translated title for its recommender so the heading doesn't pop in when the
+            // promise resolves.
             const titles = skeletons.map((el) => el.textContent);
-            expect(titles).toContain('You might also like');
-            expect(titles).toContain('Recently viewed');
+            expect(titles).toHaveLength(1);
+            expect(titles[0]).toBe('You might also like');
         });
 
-        test('renders the rec skeletons via the CartSkeleton fallback while basketDataPromise is pending', async () => {
+        test('renders the rec skeleton via the CartSkeleton fallback while basketDataPromise is pending', async () => {
             // Gate A: when the basket itself hasn't resolved yet, the resolved-branch <CartBody>
             // (and its rec Suspense boundaries) aren't in the tree. The route-level CartSkeleton
             // fallback must therefore render the rec skeletons itself, otherwise the cart's upper
@@ -191,13 +191,13 @@ describe('Cart route component', () => {
             });
             expect(screen.queryByTestId('cart-content-stub')).not.toBeInTheDocument();
 
-            // The rec skeletons must already be in the DOM — passed through CartSkeleton's
+            // The rec skeleton must already be in the DOM — passed through CartSkeleton's
             // recommendationsSlot — so the carousel area doesn't pop in once the basket resolves.
             const skeletons = await screen.findAllByTestId('product-recommendation-skeleton');
-            expect(skeletons).toHaveLength(2);
+            expect(skeletons).toHaveLength(1);
             const titles = skeletons.map((el) => el.textContent);
-            expect(titles).toContain('You might also like');
-            expect(titles).toContain('Recently viewed');
+            expect(titles).toHaveLength(1);
+            expect(titles[0]).toBe('You might also like');
         });
 
         test('does not render ProductRecommendationSkeleton once recommendation promises resolve', async () => {

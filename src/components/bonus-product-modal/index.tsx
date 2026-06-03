@@ -43,7 +43,6 @@ export interface BonusProductModalProps {
     promotionId: string;
     bonusDiscountLineItemId: string;
     bonusDiscountSlots: BonusDiscountSlot[];
-    maxQuantity: number;
 }
 
 const BONUS_MODAL_CONTENT_MAX_HEIGHT = 600;
@@ -67,7 +66,6 @@ export function BonusProductModal({
     promotionId,
     bonusDiscountLineItemId,
     bonusDiscountSlots,
-    maxQuantity: _maxQuantity,
 }: BonusProductModalProps): ReactElement {
     const { t } = useTranslation();
     const addToCartFetcher = useFetcher();
