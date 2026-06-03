@@ -331,7 +331,13 @@ interface Metrics {
     pageManifestKey?: string;
     /** Data Store key the site manifest was looked up under. See {@link pageManifestKey}. */
     siteManifestKey?: string;
-    resolutionParameters?: { id: string; identifierType: IdentifierType; aspectType?: string; locale: string };
+    resolutionParameters?: {
+        id: string;
+        identifierType: IdentifierType;
+        aspectType?: string;
+        categoryId?: string;
+        locale: string;
+    };
     resolutionResult?: ShopperExperience.schemas['Page'] | null;
     resolvedContext?: QualifierContext | null;
 }
@@ -553,6 +559,10 @@ async function resolveGetPageRequest({
         id: parameters.id,
         identifierType: parameters.identifierType,
         aspectType: parameters.aspectType,
+        // The fallback is only ever a string here — `getPageResolutionParams`
+        // never wraps it in a Promise. Narrow defensively so the metric stays
+        // log-safe if that ever changes.
+        categoryId: typeof parameters.categoryId === 'string' ? parameters.categoryId : undefined,
         locale: parameters.locale,
     };
 
@@ -674,10 +684,18 @@ function getPageResolutionParams({
         },
     });
 
+    // When a product ID is supplied alongside a category ID (caller-provided
+    // primary category), pass the category through as a fallback so the
+    // resolver can find a category-level page assignment when the product
+    // itself has none. `resolveDynamicPageId` only consults this fallback
+    // after the product lookup misses, so the happy path is unchanged.
+    const productCategoryFallback = productId && categoryId ? categoryId : undefined;
+
     return {
         id,
         identifierType,
         aspectType,
+        categoryId: productCategoryFallback,
         locale,
         defaultLocale,
         attrCtx,

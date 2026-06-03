@@ -411,6 +411,38 @@ describe('pageDesignerResolutionMiddleware', () => {
             );
         });
 
+        it('should pass categoryId as a fallback when both productId and categoryId are provided', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            const aspectAttributes = JSON.stringify({ productId: 'shirt-001', categoryId: 'mens-clothing' });
+            await handler(middlewareParams(new Request(getPageUrl('pdp', { aspectAttributes }))));
+
+            expect(mockedResolvePage).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: 'shirt-001',
+                    identifierType: 'product',
+                    categoryId: 'mens-clothing',
+                })
+            );
+        });
+
+        it('should not pass categoryId when only productId is provided', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            const aspectAttributes = JSON.stringify({ productId: 'shirt-001' });
+            await handler(middlewareParams(new Request(getPageUrl('pdp', { aspectAttributes }))));
+
+            expect(mockedResolvePage).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: 'shirt-001',
+                    identifierType: 'product',
+                    categoryId: undefined,
+                })
+            );
+        });
+
         it('should return undefined when resolvePage returns null (pass through to SCAPI)', async () => {
             const handler = await setupHandler();
             mockedResolvePage.mockResolvedValue(null);
