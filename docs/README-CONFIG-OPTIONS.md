@@ -606,6 +606,14 @@ PUBLIC__app__auth__otpLength=6
 
 ---
 
+## security
+
+### `security.headers`
+
+Default security response headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy). Empty `{}` uses SDK defaults. See [README-SECURITY-HEADERS.md](./README-SECURITY-HEADERS.md) for the defaults table and extension recipes.
+
+---
+
 ## features
 
 Site feature flags that enable or disable specific functionality.

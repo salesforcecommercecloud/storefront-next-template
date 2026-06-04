@@ -23,6 +23,7 @@
  */
 import type { BaseConfig, Url } from '@salesforce/storefront-next-runtime/config';
 import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
+import type { SecurityConfig } from '@salesforce/storefront-next-runtime/security';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
@@ -309,6 +310,12 @@ export type AppConfig = {
                 enabled: boolean;
             };
         };
+        /**
+         * Default security response headers (CSP, HSTS, X-Frame-Options, etc.)
+         * applied by the SDK middleware. Any field omitted uses the SDK default.
+         * See docs/README-SECURITY-HEADERS.md for the defaults table and recipes.
+         */
+        headers?: SecurityConfig;
     };
 };
 

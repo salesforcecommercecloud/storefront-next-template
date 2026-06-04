@@ -54,13 +54,14 @@ const isSSR = typeof window === "undefined";
 * @returns A script element during SSR, or null during client-side rendering
 * @internal
 */
-const InternalServerScripts = () => {
+const InternalServerScripts = ({ nonce }) => {
 	if (!isSSR) return null;
 	const bundleId = process.env.BUNDLE_ID || "local";
 	const basePath = getBasePath();
 	const bundlePath = `${basePath}/mobify/bundle/${bundleId}/client/`;
 	return /* @__PURE__ */ jsx("script", {
 		id: "sf-next-bundle-config",
+		nonce,
 		dangerouslySetInnerHTML: { __html: `
         window._BUNDLE_ID = ${JSON.stringify(bundleId)};
         window._BUNDLE_PATH = ${JSON.stringify(bundlePath)};
@@ -84,7 +85,7 @@ const InternalServerScripts = () => {
 * @returns A fragment containing internal bundle scripts and React Router scripts
 */
 function Scripts(props) {
-	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(InternalServerScripts, {}), /* @__PURE__ */ jsx(Scripts$1, { ...props })] });
+	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(InternalServerScripts, { nonce: props.nonce }), /* @__PURE__ */ jsx(Scripts$1, { ...props })] });
 }
 
 //#endregion

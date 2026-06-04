@@ -646,3 +646,7 @@ Complex values can be encoded as JSON strings — the merge mechanism parses any
 # Override multiple cart configuration values at once
 # PUBLIC__app__pages__cart='{"quantityUpdateDebounce":1000,"maxQuantityPerItem":500,"enableSaveForLater":true}'
 ```
+
+## Related
+
+- [README-SECURITY-HEADERS.md](./README-SECURITY-HEADERS.md) — Security response headers config (`app.security.headers.*`)

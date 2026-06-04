@@ -38,6 +38,9 @@ vi.mock('react-router', async (importOriginal) => {
     return {
         ...actual,
         useNavigation: () => ({ state: 'idle', location: undefined }),
+        // CategoryJsonLd reads `nonce` from the root loader. Tests render the page
+        // outside a real data router, so stub the lookup with a deterministic value.
+        useRouteLoaderData: (id: string) => (id === 'root' ? { nonce: undefined } : undefined),
     };
 });
 

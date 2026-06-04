@@ -26,6 +26,7 @@ export default defineConfig([
             'routing-app-wrapper': 'src/routing/app-wrapper.tsx',
             workspace: 'src/workspace/index.ts',
             i18n: 'src/i18n/index.ts',
+            security: 'src/security/index.ts',
         },
         platform: 'neutral',
         target: 'node24',
@@ -33,7 +34,7 @@ export default defineConfig([
         dts: true,
         outDir: 'dist',
         clean: true,
-        external: ['node:fs', 'node:fs/promises', 'node:path', 'node:url', 'jiti'],
+        external: ['node:fs', 'node:fs/promises', 'node:path', 'node:url', 'node:crypto', 'jiti'],
         alias: {
             '@/*': 'src/*',
         },
@@ -43,6 +44,19 @@ export default defineConfig([
     {
         entry: {
             'i18n-client': 'src/i18n/client.ts',
+        },
+        platform: 'browser',
+        format: ['esm'],
+        dts: true,
+        outDir: 'dist',
+        clean: false,
+        external: [/node_modules/],
+        hash: false,
+    },
+    // security/react entry (browser-safe — React Context only, no node:crypto/zod)
+    {
+        entry: {
+            'security-react': 'src/security/react.ts',
         },
         platform: 'browser',
         format: ['esm'],

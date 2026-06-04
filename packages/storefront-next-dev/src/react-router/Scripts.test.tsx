@@ -102,6 +102,15 @@ describe('Scripts', () => {
             expect(html).toBeDefined();
             expect(typeof html).toBe('string');
         });
+
+        it('should forward nonce to the sf-next-bundle-config inline script', async () => {
+            const { Scripts } = await import('./Scripts');
+            const html = renderToStaticMarkup(createElement(Scripts, { nonce: 'test-nonce' }));
+
+            // The bundle-config inline <script> must carry the nonce so a strict
+            // CSP (script-src 'nonce-...') doesn't block it. Regression guard.
+            expect(html).toMatch(/<script[^>]*id="sf-next-bundle-config"[^>]*nonce="test-nonce"/);
+        });
     });
 
     describe('Client environment', () => {

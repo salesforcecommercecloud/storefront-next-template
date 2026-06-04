@@ -35,7 +35,7 @@ const isSSR = typeof window === 'undefined';
  * @returns A script element during SSR, or null during client-side rendering
  * @internal
  */
-const InternalServerScripts = () => {
+const InternalServerScripts = ({ nonce }: { nonce?: string }) => {
     if (!isSSR) {
         return null;
     }
@@ -46,6 +46,7 @@ const InternalServerScripts = () => {
     return (
         <script
             id="sf-next-bundle-config"
+            nonce={nonce}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
                 __html: `
@@ -76,7 +77,7 @@ const InternalServerScripts = () => {
 export function Scripts(props: React.ComponentProps<typeof ReactRouterScripts>) {
     return (
         <>
-            <InternalServerScripts />
+            <InternalServerScripts nonce={props.nonce} />
             <ReactRouterScripts {...props} />
         </>
     );

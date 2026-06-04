@@ -78,6 +78,9 @@ import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-pa
 import { siteUrlConfigMiddleware } from '@/middlewares/site-url-config.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
+import { securityHeadersMiddleware } from '@/middlewares/security-headers.server';
+import { getSecurityNonce } from '@salesforce/storefront-next-runtime/security';
+import { useSecurityNonceFromContext } from '@salesforce/storefront-next-runtime/security/react';
 
 // Providers
 import AuthProvider from '@/providers/auth';
@@ -141,6 +144,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
+    securityHeadersMiddleware,
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
     ...dataStoreMiddleware,
     siteUrlConfigMiddleware, // Must run after siteContextMiddleware (entry key uses site id)
@@ -198,6 +202,8 @@ export const loader = ({
     getI18next: () => i18n;
     // Serialized error namespace for the active locale — used by ErrorBoundary on SSR/hydration
     errorTranslations: Record<string, unknown>;
+    // CSP nonce for inline scripts; null when security headers middleware is disabled
+    nonce: string | null;
 } => {
     const session = getAuthServer(context);
 
@@ -245,6 +251,9 @@ export const loader = ({
         location: { pathname: requestUrl.pathname, search: requestUrl.search },
     });
 
+    // CSP nonce produced by securityHeadersMiddleware; null when middleware is disabled.
+    const nonce = getSecurityNonce(context);
+
     return {
         appConfig,
         basketSnapshot,
@@ -260,6 +269,7 @@ export const loader = ({
         getI18next: () => i18next,
         errorTranslations: (i18next.getResourceBundle(i18next.language, 'routeError') as Record<string, unknown>) ?? {},
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
+        nonce,
     };
 };
 
@@ -271,7 +281,22 @@ type LoaderData = ServerLoaderData;
 export function Layout({ children }: PropsWithChildren) {
     const data = useRouteLoaderData<LoaderData>('root');
     const appConfig = data?.appConfig;
-    const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
+    const appConfigScript = appConfig
+        ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)
+              .replace(/</g, '\\u003c')
+              .replace(/>/g, '\\u003e')
+              .replace(/&/g, '\\u0026')
+              .replace(/\u2028/g, '\\u2028')
+              .replace(/\u2029/g, '\\u2029')};`
+        : '';
+    // React 19 omits the attribute when the value is undefined, so coerce null/missing to undefined.
+    // Falls back to the NonceContext so the error path (root loader threw → no
+    // loader data) still gets a valid nonce on its inline scripts. The middleware
+    // sets `securityContext` *before* `next()`, and `entry.server.tsx` wraps
+    // the SSR tree with <NonceContext.Provider>, so the context is populated
+    // even when the loader fails.
+    const nonceFromContext = useSecurityNonceFromContext();
+    const nonce = data?.nonce ?? nonceFromContext ?? undefined;
 
     const i18next = typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient;
     const lang = i18next?.language ?? 'en';
@@ -292,6 +317,7 @@ export function Layout({ children }: PropsWithChildren) {
                     <link key={href} rel="prefetch" href={href} />
                 ))}
                 <script
+                    nonce={nonce}
                     dangerouslySetInnerHTML={{
                         __html: `
                         ${appConfigScript}
@@ -305,8 +331,8 @@ export function Layout({ children }: PropsWithChildren) {
             <body className="antialiased flex flex-col min-h-screen">
                 {children}
                 <AppToaster />
-                <ScrollRestoration />
-                <Scripts />
+                <ScrollRestoration nonce={nonce} />
+                <Scripts nonce={nonce} />
                 {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}
                 <UITargetDevModeInit />
             </body>

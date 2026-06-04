@@ -109,6 +109,18 @@
         "types": "./dist/i18n-client.d.ts",
         "default": "./dist/i18n-client.js"
       }
+    },
+    "./security": {
+      "import": {
+        "types": "./dist/security.d.ts",
+        "default": "./dist/security.js"
+      }
+    },
+    "./security/react": {
+      "import": {
+        "types": "./dist/security-react.d.ts",
+        "default": "./dist/security-react.js"
+      }
     }
   },
   "files": [
@@ -138,7 +150,8 @@
   "dependencies": {
     "@salesforce/mrt-utilities": "0.2.1",
     "jiti": "^2.6.1",
-    "openapi-fetch": "0.15.0"
+    "openapi-fetch": "0.15.0",
+    "zod": "4.1.13"
   },
   "devDependencies": {
     "@react-router/dev": "7.12.0",

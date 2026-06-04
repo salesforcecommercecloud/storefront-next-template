@@ -290,6 +290,8 @@ export async function callbackAction({ request, context }: ActionFunctionArgs) {
 }
 ```
 
+> **CSP note:** When you add a social-login provider beyond the defaults, extend `connect-src` (and any redirect/popup origins) in your `app.security.headers.csp.directives` config. See [README-SECURITY-HEADERS.md](./README-SECURITY-HEADERS.md).
+
 ### Custom Auth Operations
 
 For custom auth workflows, use the provided server-side helpers:

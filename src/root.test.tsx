@@ -282,6 +282,128 @@ describe('root.tsx', () => {
 
             useRouteLoaderDataSpy.mockRestore();
         });
+
+        // Guards the inline `__APP_CONFIG__` script against HTML breakout: a config
+        // value containing `</script>` or U+2028/U+2029 would otherwise close the
+        // script tag (or terminate the JS string literal). CSP-with-nonce does NOT
+        // protect against breakout from inside an already-nonce'd script — the
+        // escape is the only line of defense, so a regression here is silent and
+        // exploitable. See packages/template-retail-rsc-app/src/root.tsx Layout()
+        // for the matching escape logic.
+        it('escapes <, >, &, U+2028, and U+2029 in the inline __APP_CONFIG__ script', async () => {
+            const reactRouter = await import('react-router');
+            // Inject every char our escape covers: `<`, `>`, `&`, U+2028, U+2029.
+            // Piggy-back on a simple string field (`defaultSiteId`) — the value
+            // is not interpreted at render, just stringified into the inline
+            // script body.
+            const dangerousValue = 'inject </script><x> & sep     done';
+            const dangerousConfig = {
+                ...mockConfig,
+                defaultSiteId: dangerousValue,
+            };
+            const useRouteLoaderDataSpy = vi.spyOn(reactRouter, 'useRouteLoaderData').mockReturnValue({
+                appConfig: dangerousConfig,
+            } as any);
+
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: LayoutComponent,
+                },
+            ]);
+            render(<Stub initialEntries={['/']} />);
+
+            await waitFor(() => {
+                const scripts = Array.from(document.head.querySelectorAll('script'));
+                const inline = scripts.find((s) => s.innerHTML.includes('window.__APP_CONFIG__'));
+                if (!inline) throw new Error('Inline __APP_CONFIG__ script not found');
+                const html = inline.innerHTML;
+                // Each problematic char must be replaced with its \uXXXX escape
+                // (the JS engine reconstructs the char inside the string literal,
+                // which is harmless — but the HTML parser never sees it raw).
+                expect(html).not.toMatch(/<\/script/i);
+                expect(html).not.toContain(' ');
+                expect(html).not.toContain(' ');
+                expect(html).toContain('\\u003c'); // <
+                expect(html).toContain('\\u003e'); // >
+                expect(html).toContain('\\u0026'); // &
+                expect(html).toContain('\\u2028');
+                expect(html).toContain('\\u2029');
+            });
+
+            useRouteLoaderDataSpy.mockRestore();
+        });
+
+        // Guards the wiring from `loader → loader-return → Layout → <script nonce={...}>`.
+        // Without a CSP nonce on the inline __APP_CONFIG__ script, a strict CSP blocks
+        // hydration. Regression coverage for the loader→Layout nonce contract.
+        it('forwards the loader-supplied nonce to the inline __APP_CONFIG__ script', async () => {
+            const reactRouter = await import('react-router');
+            const useRouteLoaderDataSpy = vi.spyOn(reactRouter, 'useRouteLoaderData').mockReturnValue({
+                appConfig: mockConfig,
+                nonce: 'test-nonce-123',
+            } as any);
+
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: LayoutComponent,
+                },
+            ]);
+            render(<Stub initialEntries={['/']} />);
+
+            await waitFor(() => {
+                const scripts = Array.from(document.head.querySelectorAll('script'));
+                const inline = scripts.find((s) => s.innerHTML.includes('window.__APP_CONFIG__'));
+                if (!inline) throw new Error('Inline __APP_CONFIG__ script not found');
+                expect(inline.getAttribute('nonce')).toBe('test-nonce-123');
+            });
+
+            useRouteLoaderDataSpy.mockRestore();
+        });
+
+        // When the root loader throws, useRouteLoaderData('root') returns
+        // undefined → data?.nonce is undefined → Layout would render inline
+        // scripts without a nonce → strict CSP blocks them → blank/dead error
+        // page. The NonceContext fallback (populated by entry.server.tsx
+        // BEFORE the loader runs) is what keeps the error path nonced.
+        it('falls back to NonceContext when loader data is unavailable (error path)', async () => {
+            const reactRouter = await import('react-router');
+            // Simulate root loader throw: useRouteLoaderData returns undefined.
+            const useRouteLoaderDataSpy = vi.spyOn(reactRouter, 'useRouteLoaderData').mockReturnValue(undefined as any);
+
+            const { NonceContext } = await import('@salesforce/storefront-next-runtime/security/react');
+
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: () => (
+                        <NonceContext.Provider value="ctx-nonce-456">
+                            <LayoutComponent />
+                        </NonceContext.Provider>
+                    ),
+                },
+            ]);
+            render(<Stub initialEntries={['/']} />);
+
+            await waitFor(() => {
+                // Without appConfig the inline body is empty, but the <script>
+                // tag still renders and its nonce attribute must be set so the
+                // CSP doesn't block any other inline scripts in this tree.
+                const scripts = Array.from(document.head.querySelectorAll('script'));
+                const tagged = scripts.find((s) => s.getAttribute('nonce') === 'ctx-nonce-456');
+                if (!tagged) {
+                    throw new Error(
+                        `No <script nonce="ctx-nonce-456"> found. Layout must fall back to NonceContext on the error path.`
+                    );
+                }
+            });
+
+            useRouteLoaderDataSpy.mockRestore();
+        });
     });
 
     describe('ErrorBoundary Component', () => {
