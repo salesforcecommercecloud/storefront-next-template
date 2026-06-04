@@ -807,10 +807,23 @@ export function createExpressResponse(
 
         initializeResponse(this);
 
-        // MRT requires at least one write call to the body stream
-        // before ending it, even for responses with no body (e.g. 3xx redirects).
-        // Without this, the stream terminates abnormally and MRT returns 502.
-        if (isNullOrUndefined(chunk) && statusCode >= 300 && statusCode < 400) {
+        // MRT requires at least one write call to the body stream before
+        // ending it, even for responses with no body (e.g. 3xx redirects,
+        // 204 No Content, 2xx routes that intentionally discard the upstream
+        // body such as analytics beacon proxies, and 5xx error responses
+        // returned without a body). Without this, the stream terminates
+        // abnormally and MRT returns its own 502 InternalServerErrorException
+        // regardless of the application's intended status code.
+        //
+        // Known limitation: when a body-less response declares a compressible
+        // Content-Type with an encoding negotiated, this empty write is routed
+        // through the compression stream, so the response carries a few bytes
+        // of gzip framing and a Content-Encoding header — technically a body on
+        // a 204/304, which RFC 9110 says must not have one. In practice these
+        // statuses rarely set a compressible Content-Type, so the impact is
+        // negligible; revisit by skipping compression for body-less responses
+        // if a real case appears.
+        if (isNullOrUndefined(chunk)) {
             writeChunk(Buffer.alloc(0));
         }
 

@@ -18,6 +18,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { PassThrough, type Writable } from 'stream';
 import { EventEmitter } from 'events';
+import zlib from 'node:zlib';
 import express, { type Express } from 'express';
 import { createStreamingLambdaAdapter, createExpressRequest, createExpressResponse } from './create-lambda-adapter';
 
@@ -804,6 +805,121 @@ describe('create-lambda-adapter', () => {
 
                 expect(mockResponseStream.end).toHaveBeenCalled();
                 expect(res.finished).toBe(true);
+            });
+
+            // MRT requires at least one body chunk write before stream end; otherwise
+            // the AWS Lambda HttpResponseStream terminates abnormally and API Gateway
+            // returns a 502 InternalServerErrorException. The adapter writes an empty
+            // buffer for any body-less response so this constraint is satisfied
+            // regardless of the application's intended status code.
+            it('should write empty buffer before ending for 200 with no body chunk', () => {
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(mockResponseStream, event, context);
+                res.status(200).end();
+
+                expect(mockResponseStream.write).toHaveBeenCalledWith(Buffer.alloc(0));
+                expect(mockResponseStream.end).toHaveBeenCalled();
+            });
+
+            it('should write empty buffer before ending for 204 No Content', () => {
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(mockResponseStream, event, context);
+                res.status(204).end();
+
+                expect(mockResponseStream.write).toHaveBeenCalledWith(Buffer.alloc(0));
+                expect(mockResponseStream.end).toHaveBeenCalled();
+            });
+
+            it('should write empty buffer before ending for 302 redirect with no body chunk', () => {
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(mockResponseStream, event, context);
+                res.status(302).end();
+
+                expect(mockResponseStream.write).toHaveBeenCalledWith(Buffer.alloc(0));
+                expect(mockResponseStream.end).toHaveBeenCalled();
+            });
+
+            it('should write empty buffer before ending for 4xx with no body chunk', () => {
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(mockResponseStream, event, context);
+                res.status(400).end();
+
+                expect(mockResponseStream.write).toHaveBeenCalledWith(Buffer.alloc(0));
+                expect(mockResponseStream.end).toHaveBeenCalled();
+            });
+
+            it('should write empty buffer before ending for 502 error response with no body chunk', () => {
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(mockResponseStream, event, context);
+                res.status(502).end();
+
+                expect(mockResponseStream.write).toHaveBeenCalledWith(Buffer.alloc(0));
+                expect(mockResponseStream.end).toHaveBeenCalled();
+            });
+
+            // Regression guard for the compressed path. A body-less res.end()
+            // reaches endStream() with or without the fix, so res.finished and
+            // the emitted gzip framing (byte-identical either way) can't tell
+            // fixed from unfixed code apart. The behavior unique to the fix is
+            // the writeChunk(Buffer.alloc(0)) call from end() — which lands
+            // BEFORE endStream() flushes/ends the stream.
+            //
+            // Note: endStream()'s own _flush() also writes a zero-length buffer
+            // into the gzip stream — that's how zlib's flush() triggers a flush
+            // (it calls this.write(Buffer.alloc(0))). So "gzip received an empty
+            // write" is true even on the unfixed adapter. The discriminator is
+            // specifically an empty write that occurs BEFORE the first flush().
+            it('should write a zero-length chunk into the compression stream before flushing a body-less 200', async () => {
+                const stream = createCollectingStream();
+                const request = createRequestWithEncoding('gzip');
+                const event = createMockEvent({ httpMethod: 'GET', headers: { 'Accept-Encoding': 'gzip' } });
+                const context = createMockContext();
+
+                // Wrap the real gzip stream so the pipeline still flushes and
+                // waitForEnd() resolves, while letting us observe its writes.
+                const realCreateGzip = zlib.createGzip;
+                let gzipWriteSpy: any;
+                let gzipFlushSpy: any;
+                const createGzipSpy = vi.spyOn(zlib, 'createGzip').mockImplementation((options) => {
+                    const gzip = realCreateGzip(options);
+                    gzipWriteSpy = vi.spyOn(gzip, 'write');
+                    gzipFlushSpy = vi.spyOn(gzip, 'flush');
+                    return gzip;
+                });
+
+                try {
+                    const res = createExpressResponse(stream, event, context, request);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).end();
+
+                    await stream.waitForEnd();
+
+                    // Compression was actually negotiated — guards against a
+                    // silent fall back to the identity path that would void this
+                    // test.
+                    expect(createGzipSpy).toHaveBeenCalledTimes(1);
+
+                    // A zero-length chunk reached the gzip stream from end()'s
+                    // priming write, before endStream()'s flush() ran. The
+                    // flush-induced empty write happens after flush(), so it does
+                    // not satisfy this — only the fix's write does.
+                    const flushOrder = gzipFlushSpy.mock.invocationCallOrder[0] ?? Infinity;
+                    const primedBeforeFlush = gzipWriteSpy.mock.calls.some(
+                        ([chunk]: [any], i: number) =>
+                            Buffer.isBuffer(chunk) &&
+                            chunk.length === 0 &&
+                            gzipWriteSpy.mock.invocationCallOrder[i] < flushOrder
+                    );
+                    expect(primedBeforeFlush).toBe(true);
+                    expect(res.finished).toBe(true);
+                } finally {
+                    createGzipSpy.mockRestore();
+                }
             });
 
             it('should write final chunk before ending', () => {
