@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, useMemo, type ReactElement } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useState, useEffect, useRef, type ReactElement } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperLogin } from '@/scapi';
 import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
@@ -26,7 +23,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import { useOtpVerification } from '@/hooks/use-otp-verification';
 import { resourceRoutes } from '@/route-paths';
 
@@ -47,22 +43,14 @@ interface OtpModalProps {
     isRegistration?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createOtpSchema = (t: TFunction<any, any>, otpLength: number) => {
-    return z.object({
-        otpCode: z
-            .string()
-            .min(otpLength, {
-                message: t('login:otpRequired'),
-            })
-            .max(otpLength, {
-                message: t('login:otpInvalidFormat', { otpLength }),
-            })
-            .regex(new RegExp(`^\\d{${otpLength}}$`), {
-                message: t('login:otpInvalidFormat', { otpLength }),
-            }),
-    });
-};
+// SLAS issues OTPs in the 6-to-8-digit range (pwd_action_token: ^[0-9]{6,8}$).
+// `otpLength` is the storefront's configured guess at the length, but SLAS owns
+// what it actually sends, so the two can drift. The modal renders `otpLength`
+// slots initially and expands toward this ceiling when a longer code is pasted,
+// so a code longer than the configured length is still enterable; the floor is
+// the shortest code SLAS can issue, below which Verify stays disabled.
+const MIN_OTP_LENGTH = 6;
+const MAX_OTP_LENGTH = 8;
 
 export default function OtpModal({
     isOpen,
@@ -85,19 +73,14 @@ export default function OtpModal({
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
-    const schema = useMemo(() => createOtpSchema(t, otpLength), [t, otpLength]);
-    const form = useForm<z.infer<ReturnType<typeof createOtpSchema>>>({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            otpCode: '',
-        },
-    });
 
     const isLoading = fetcher.state === 'submitting' || fetcher.state === 'loading';
 
     const handleVerify = (code: string) => {
         setError(null);
-        form.setValue('otpCode', code);
+        // The reopen and initialError effects clear this, and a successful
+        // verification closes the modal; the submit path gates on it.
+        setIsVerifying(true);
 
         // If onVerifyCode callback is provided, use it (parent handles verification)
         if (onVerifyCode) {
@@ -106,7 +89,6 @@ export default function OtpModal({
         }
 
         // Otherwise use fetcher
-        setIsVerifying(true);
         const formData = new FormData();
         formData.append('otpCode', code);
         formData.append('email', email);
@@ -119,9 +101,18 @@ export default function OtpModal({
         });
     };
 
+    // The hook manages a fixed pool of MAX_OTP_LENGTH slots so a code longer than
+    // the configured `otpLength` can still be entered; the modal renders only as
+    // many as the configured length or the entered code needs (see visibleCount).
+    // A pasted code auto-submits (it arrives whole, so it can't be a prefix of a
+    // longer code the way a typed code can); typed codes submit via the button.
     const { otpInputs, otpInputsRef, refCallbacks } = useOtpVerification({
-        otpLength,
-        onVerify: handleVerify,
+        slotCount: MAX_OTP_LENGTH,
+        onPasteComplete: (code) => {
+            if (code.length >= MIN_OTP_LENGTH && code.length <= MAX_OTP_LENGTH) {
+                handleVerify(code);
+            }
+        },
     });
     // Resend countdown (same behavior as avinash branch)
     useEffect(() => {
@@ -138,7 +129,6 @@ export default function OtpModal({
         if (isOpen) {
             otpInputsRef.current.clear();
             setError(initialError ?? null);
-            form.setValue('otpCode', '');
             setIsVerifying(false);
             setResendTimer(0);
 
@@ -161,9 +151,8 @@ export default function OtpModal({
             setIsVerifying(false);
             // Clear OTP inputs so user can retry
             otpInputsRef.current.clear();
-            form.setValue('otpCode', '');
         }
-    }, [initialError, form, otpInputsRef]);
+    }, [initialError, otpInputsRef]);
 
     // Reset success guard when closing or submitting
     useEffect(() => {
@@ -184,7 +173,6 @@ export default function OtpModal({
         if (fetcher.state === 'idle' && fetcher.data?.success === true && !hasCalledOnSuccessRef.current) {
             // Mark that we've called onSuccess IMMEDIATELY to prevent duplicate calls
             hasCalledOnSuccessRef.current = true;
-            form.reset();
             setError(null);
             setIsVerifying(false);
             onSuccess(
@@ -201,7 +189,6 @@ export default function OtpModal({
             setIsVerifying(false);
             // Clear OTP inputs so user can retry
             otpInputsRef.current.clear();
-            form.setValue('otpCode', '');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetcher.state, fetcher.data, onSuccess, onVerifyCode]);
@@ -226,15 +213,19 @@ export default function OtpModal({
     };
 
     const handleInputChange = (index: number, value: string) => {
-        const code = otpInputs.setValue(index, value);
+        otpInputs.setValue(index, value);
         setError(null);
-        if (typeof code === 'string') {
-            form.setValue('otpCode', code);
-            // onComplete from useOtpInputs already calls handleVerifyRef when full;
-            // no need to call handleVerify again here.
-        }
     };
 
+    const enteredOtp = otpInputs.values.join('');
+    // Render `otpLength` slots by default, but expand to fit a longer entered code
+    // (a paste fills more of the fixed pool) up to the SLAS ceiling — so the box
+    // count matches the code the shopper actually has, in either drift direction.
+    const visibleCount = Math.min(Math.max(otpLength, enteredOtp.length), MAX_OTP_LENGTH);
+    // A gap (an empty slot before a filled one) would make `join('')` collapse to a
+    // code that doesn't match what's shown, so only a gapless run of slots can submit.
+    const hasGap = otpInputs.values.some((value, index) => value === '' && index < enteredOtp.length);
+    const canVerify = enteredOtp.length >= MIN_OTP_LENGTH && !hasGap && !isVerifying && !isLoading;
     const isResendDisabled = resendTimer > 0 || isVerifying || isLoading;
 
     return (
@@ -247,24 +238,26 @@ export default function OtpModal({
                 <div className="space-y-6 flex flex-col items-center w-full">
                     <div
                         className="grid gap-3 w-full justify-center"
-                        style={{ gridTemplateColumns: `repeat(${otpLength}, minmax(0, 1fr))` }}>
-                        {Array.from({ length: otpLength }, (_, index) => `otp-input-${index}`).map((inputId, index) => (
-                            <Input
-                                key={inputId}
-                                ref={refCallbacks[index]}
-                                type="text"
-                                inputMode="numeric"
-                                maxLength={1}
-                                value={otpInputs.values[index] || ''}
-                                onChange={(e) => handleInputChange(index, e.target.value)}
-                                onKeyDown={(e) => otpInputs.handleKeyDown(index, e)}
-                                onPaste={otpInputs.handlePaste}
-                                disabled={isVerifying || isLoading}
-                                autoFocus={index === 0}
-                                className="w-12 h-14 text-center text-sm font-bold border-2"
-                                aria-label={`${t('otpCodeLabel')} ${index + 1} of ${otpLength}`}
-                            />
-                        ))}
+                        style={{ gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))` }}>
+                        {Array.from({ length: visibleCount }, (_, index) => `otp-input-${index}`).map(
+                            (inputId, index) => (
+                                <Input
+                                    key={inputId}
+                                    ref={refCallbacks[index]}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    value={otpInputs.values[index] || ''}
+                                    onChange={(e) => handleInputChange(index, e.target.value)}
+                                    onKeyDown={(e) => otpInputs.handleKeyDown(index, e)}
+                                    onPaste={otpInputs.handlePaste}
+                                    disabled={isVerifying || isLoading}
+                                    autoFocus={index === 0}
+                                    className="w-12 h-14 text-center text-sm font-bold border-2"
+                                    aria-label={`${t('otpCodeLabel')} ${index + 1} of ${visibleCount}`}
+                                />
+                            )
+                        )}
                     </div>
                     {error && error.trim() !== '' && (
                         <p className="text-destructive text-sm text-left w-full">{error}</p>
@@ -275,6 +268,14 @@ export default function OtpModal({
                         </Typography>
                     )}
                     <div className="flex gap-4 w-full justify-center">
+                        <Button
+                            type="button"
+                            onClick={() => handleVerify(enteredOtp)}
+                            disabled={!canVerify}
+                            size="lg"
+                            className="min-w-[160px]">
+                            {t('verify')}
+                        </Button>
                         {onCheckoutAsGuest && (
                             <Button
                                 type="button"

@@ -2,7 +2,7 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import { ReactNode } from "react";
 import * as react_jsx_runtime2 from "react/jsx-runtime";
-import * as react_router5 from "react-router";
+import * as react_router15 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/config/context.d.ts
@@ -22,7 +22,7 @@ interface AppConfigShape {
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
  * actions, and other middleware. Returns the augmented `AppConfigShape`.
  */
-declare const appConfigContext: react_router5.RouterContext<AppConfigShape>;
+declare const appConfigContext: react_router15.RouterContext<AppConfigShape>;
 interface ConfigProviderProps {
   config: AppConfigShape;
   children: ReactNode;
