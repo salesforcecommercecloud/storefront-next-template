@@ -89,13 +89,6 @@ export default meta;
 type Story = StoryObj<HeaderStoryArgs>;
 
 export const Default: Story = {
-    parameters: {
-        // Skip vitest snapshot — `<ResponsiveNavigationMenu>` mounts a Suspense/Await
-        // boundary that the snapshot harness's `vi.mock('react-router')` doesn't pass
-        // through, causing the renderer to suspend and crash. Interaction + a11y
-        // suites cover this story end-to-end via the dev server.
-        snapshot: false,
-    },
     play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -123,8 +116,6 @@ const mobileViewport = {
  */
 export const CheckoutVariant: Story = {
     parameters: {
-        // Same Suspense/Await snapshot caveat as Default.
-        snapshot: false,
         docs: {
             description: {
                 story: 'Checkout header — logo + cart only. No search, user actions, wishlist, or navigation menu.',
@@ -166,8 +157,6 @@ export const MobileView: Story = {
         </div>
     ),
     parameters: {
-        // See Default — same Suspense/Await crash in the snapshot harness.
-        snapshot: false,
         viewport: { options: { iphone: mobileViewport }, value: 'iphone', isRotated: false },
         docs: { description: { story: 'Header at mobile breakpoint — collapsed actions and hamburger.' } },
     },

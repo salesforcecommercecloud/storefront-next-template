@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import type { ReactNode } from 'react';
 
 type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
 type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
@@ -55,6 +56,10 @@ vi.mock('react-router', () => ({
             </a>
         );
     },
+    // Synthesize Await's resolved value so the snapshot captures the
+    // empty-state baseline instead of the suspended fallback.
+    Await: ({ children }: { resolve: Promise<unknown>; children: (data: unknown) => ReactNode }) =>
+        children([]),
 }));
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
