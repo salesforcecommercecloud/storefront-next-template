@@ -69,6 +69,23 @@ The ESLint configuration includes specific rules for React 19:
 - **Hooks**: Proper React Hooks usage enforcement
 - **Refresh**: React Refresh compatibility checks
 
+## Performance tuning
+
+### `@typescript-eslint/no-misused-promises` — `checksVoidReturn.attributes: false`
+
+The `no-misused-promises` rule (enabled at `error` via `recommended-type-checked`) catches Promise-returning functions passed to positions that expect a void-returning callable. Its `checksVoidReturn` sub-check covers four positions:
+
+- **argument** — `callMe(asyncFn)` where `callMe(cb: () => void)`
+- **variable** — `const v: () => void = asyncFn`
+- **property** — `{ onClick: asyncFn }`
+- **attribute** — `<button onClick={asyncFn} />`
+
+The attribute traversal asks the type-checker about every JSX event-handler attribute (`onClick`, `onChange`, `onSubmit`, …) on every component. Across thousands of TSX files the fan-out dominates lint runtime — customers reported `pnpm lint` exceeding 30 minutes on slow CI runners, with `TIMING=` data attributing 65%+ of total time to this rule.
+
+The config disables only the attribute case (`checksVoidReturn: { attributes: false }`). Argument, variable, and property checks remain at error level — those are where the rule catches the bugs that actually lose work (`window.addEventListener('beforeunload', async () => …)`, async functions assigned to void-typed slots, etc.). React's synthetic event system doesn't await JSX event handlers, so the attribute case mostly enforces a stylistic `() => void asyncHandler()` wrapper rather than catching real bugs; unhandled rejections inside an async handler are still caught by `no-floating-promises`.
+
+To re-enable the attribute check (e.g. as part of a broader migration to `oxlint` or another faster linter), remove the override in `eslint.config.js` and the preset default reasserts itself.
+
 ## Customization
 
 To modify the ESLint rules, edit `.eslintrc.js`. The configuration uses the new flat config format and includes:

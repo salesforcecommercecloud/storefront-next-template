@@ -198,6 +198,12 @@ const baseConfig = defineConfig([
             // '@typescript-eslint/explicit-function-return-type': 'error',
             // '@typescript-eslint/explicit-module-boundary-types': 'error',
             // '@typescript-eslint/no-use-before-define': 'error',
+            // Disable `checksVoidReturn.attributes` — the sub-check scans every JSX event-handler
+            // attribute (`onClick`, `onChange`, …) against the value's return type, which fans out
+            // across thousands of TSX files and dominates lint runtime on slow CI runners. The
+            // rule still fires on argument/property/return/variable positions, where it catches
+            // the high-value bugs (e.g. `await someAsyncFn()` discarded by a `() => void` callback).
+            '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: { attributes: false } }],
             '@typescript-eslint/no-base-to-string': 'off',
             '@typescript-eslint/no-unsafe-argument': 'off',
             '@typescript-eslint/no-unsafe-assignment': 'off',
