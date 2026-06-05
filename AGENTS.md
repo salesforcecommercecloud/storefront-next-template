@@ -259,7 +259,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns
 - [docs/README-ESLINT.md](./docs/README-ESLINT.md) — ESLint configuration
 - [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) — Story coverage enforcement
-- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) — Storybook setup
+- [docs/README-STORYBOOK.md](./docs/README-STORYBOOK.md) — Storybook setup
 
 **Development:**
 - [docs/README-HYBRID-PROXY.md](./docs/README-HYBRID-PROXY.md) — Hybrid proxy for local development

@@ -25,7 +25,7 @@ withRouter(StoryShell)
                           └── <Story />
 ```
 
-The pieces live in [`./decorators/`](./decorators/):
+The pieces live in [`../.storybook/decorators/`](../.storybook/decorators/):
 
 | File | Exports | Role |
 |------|---------|------|
@@ -52,7 +52,7 @@ The router decorator reads four story-level `parameters`:
 
 ### Default mock routes
 
-`buildDefaultMockRoutes(scapiMock, miniCartData)` provides a loader for basket-product enrichment and actions for cart updates, wishlist mutations, OTP verification, product/bundle/set adds, site-context (currency/locale) updates, tracking-consent, and place-order. See [`./decorators/mock-routes.ts`](./decorators/mock-routes.ts) for the full list.
+`buildDefaultMockRoutes(scapiMock, miniCartData)` provides a loader for basket-product enrichment and actions for cart updates, wishlist mutations, OTP verification, product/bundle/set adds, site-context (currency/locale) updates, tracking-consent, and place-order. See [`../.storybook/decorators/mock-routes.ts`](../.storybook/decorators/mock-routes.ts) for the full list.
 
 ## Quick Start
 
@@ -115,27 +115,61 @@ This Storybook setup includes the following addons:
 
 ## Project Structure
 
+Most components live in their own folder under `src/components/`. Source files (`.tsx`), unit tests (`.test.tsx`), and a `stories/` subfolder sit side by side. Story files, snapshot fixtures, and serialized snapshots all live inside `stories/`.
+
+Three folder shapes show up in this codebase:
+
+- **Single component per folder** (most common): an `index.tsx` plus supporting `.tsx` files, each paired with a `*.test.tsx`, and a `stories/` subfolder. Example: `email-update-form/`, `footer/`.
+- **Multi-component folder**: several sibling components share a folder, each with its own test and story. Includes an `index.tsx` only when one of the components is the folder's main export composing the others — `header/` has one (`<Header />` composes `Search`, `CartBadge`, etc.); `buttons/` doesn't, since each button is independent.
+- **Flat shadcn primitives** under `ui/`: one file per primitive, no per-component test or story folder. See [`src/components/ui/README.md`](../src/components/ui/README.md).
+
+For new components, default to **Single component per folder**. Use a multi-component folder only when the components are tightly coupled (e.g., variants of the same control); reserve `ui/` for shadcn primitives.
+
 ```
 src/
 ├── components/
 │   ├── __mocks__/                        # Shared fixtures (stories + unit tests)
-│   │   └── index.ts                      # Curated barrel
-│   ├── buttons/
-│   │   ├── login-submit-button.tsx
-│   │   └── login-submit-button.stories.tsx
-│   └── ui/
+│   │   ├── index.ts                      # Curated barrel
+│   │   └── *.ts                          # Individual fixtures (basket, products, search, ...)
+│   ├── footer/                           # Single component per folder
+│   │   ├── index.tsx
+│   │   ├── signup.tsx
+│   │   ├── signup.test.tsx
+│   │   └── stories/
+│   │       ├── index.stories.tsx
+│   │       ├── footer-snapshot.tsx       # Snapshot fixture (codegen — see test-wrapper.tsx)
+│   │       ├── signup.stories.tsx
+│   │       ├── signup-snapshot.tsx
+│   │       └── __snapshots__/            # Serialized snapshots (auto-generated)
+│   ├── buttons/                          # Multi-component folder (no index.tsx)
+│   │   ├── share-button.tsx
+│   │   ├── share-button.test.tsx
+│   │   ├── wishlist-button.tsx
+│   │   ├── wishlist-button.test.tsx
+│   │   └── stories/
+│   │       ├── share-button.stories.tsx
+│   │       └── wishlist-button.stories.tsx
+│   └── ui/                               # Flat shadcn primitives (no stories folder)
 │       ├── button.tsx
-│       └── button.stories.tsx
+│       ├── dialog.tsx
+│       └── ...
 └── .storybook/
-    ├── main.ts
-    ├── vite.config.ts
+    ├── main.ts                           # Storybook framework config
     ├── preview.tsx                       # Imports + parameters + decorator wiring
+    ├── preview-head.html                 # <head> tags injected into the preview iframe
+    ├── vite.config.ts                    # Storybook-only Vite overrides (incl. shim alias)
+    ├── vitest.setup.ts                   # Vitest setup for Storybook tests
+    ├── modes.ts                          # Viewport mode definitions
     ├── decorators/                       # withRouter, StorybookWrapper, StoryShell, mock-routes
-    ├── storybook-providers.tsx           # The provider stack (config/site/i18n/auth/...)
+    ├── storybook-providers.tsx           # Provider stack (config/site/i18n/auth/...)
     ├── test-wrapper.tsx                  # Snapshot-only wrapper (codegen — see header comment)
+    ├── test-utils.ts                     # Shared helpers for story tests
+    ├── coverage/                         # Story coverage tooling
     └── shims/
         └── shopper-agent-context-ui.ts   # Storybook-only (see below)
 ```
+
+Snapshot fixtures (`*-snapshot.tsx`) and `__snapshots__/` directories appear only for components with snapshot tests.
 
 ### Production vs Storybook: `shopper-agent-context-ui` shim
 
@@ -160,21 +194,6 @@ import { MyComponent } from './MyComponent';
 const meta: Meta<typeof MyComponent> = {
   title: 'Components/MyComponent',
   component: MyComponent,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component: 'Description of what this component does.',
-      },
-    },
-  },
-  argTypes: {
-    // Define controls for component props
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'outline'],
-    },
-  },
   tags: ['autodocs'],
 };
 
@@ -186,13 +205,9 @@ export const Default: Story = {
     variant: 'primary',
   },
 };
-
-export const Secondary: Story = {
-  args: {
-    variant: 'secondary',
-  },
-};
 ```
+
+Add `parameters` (e.g. `layout`, `docs`), `argTypes` (control configs), and additional named exports for variants only when the story needs them — keep the default minimal.
 
 ### Basic Story Structure with Play function for Interaction Tests
 
