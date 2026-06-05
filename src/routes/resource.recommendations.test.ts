@@ -215,6 +215,95 @@ describe('resource.recommendations', () => {
         );
     });
 
+    it('accepts the request when X-Forwarded-Host matches Origin despite mismatched Host (MRT scenario)', async () => {
+        const { fetchProductRecommendations } = await import('@/lib/product/recommendations.server');
+        (fetchProductRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({ recs: [] });
+        const { loader } = await import('./resource.recommendations');
+        const res = await loader({
+            request: new Request(buildUrl({ recommenderName: 'home' }), {
+                method: 'GET',
+                headers: {
+                    Origin: 'https://public.example.com',
+                    Host: 'internal.lambda.amazonaws.com',
+                    'X-Forwarded-Host': 'public.example.com',
+                    'X-Forwarded-Proto': 'https',
+                },
+            }),
+            context: new RouterContextProvider(),
+        } as never);
+        expect(res.status).toBe(200);
+    });
+
+    it('accepts the request when Referer matches X-Forwarded-Host despite mismatched Host (MRT Referer fallback)', async () => {
+        const { fetchProductRecommendations } = await import('@/lib/product/recommendations.server');
+        (fetchProductRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({ recs: [] });
+        const { loader } = await import('./resource.recommendations');
+        const res = await loader({
+            request: new Request(buildUrl({ recommenderName: 'home' }), {
+                method: 'GET',
+                headers: {
+                    Referer: 'https://public.example.com/some/page',
+                    Host: 'internal.lambda.amazonaws.com',
+                    'X-Forwarded-Host': 'public.example.com',
+                    'X-Forwarded-Proto': 'https',
+                },
+            }),
+            context: new RouterContextProvider(),
+        } as never);
+        expect(res.status).toBe(200);
+    });
+
+    it('returns 403 when Origin does not match X-Forwarded-Host', async () => {
+        const { loader } = await import('./resource.recommendations');
+        const res = await loader({
+            request: new Request(buildUrl({ recommenderName: 'home' }), {
+                method: 'GET',
+                headers: {
+                    Origin: 'https://evil.com',
+                    Host: 'internal.lambda.amazonaws.com',
+                    'X-Forwarded-Host': 'public.example.com',
+                    'X-Forwarded-Proto': 'https',
+                },
+            }),
+            context: new RouterContextProvider(),
+        } as never);
+        expect(res.status).toBe(403);
+    });
+
+    it('accepts the request when Origin matches request.url but not X-Forwarded-Host (local-dev with EXTERNAL_DOMAIN_NAME)', async () => {
+        const { fetchProductRecommendations } = await import('@/lib/product/recommendations.server');
+        (fetchProductRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({ recs: [] });
+        const { loader } = await import('./resource.recommendations');
+        const res = await loader({
+            request: new Request(buildUrl({ recommenderName: 'home' }), {
+                method: 'GET',
+                headers: {
+                    Origin: ORIGIN,
+                    'X-Forwarded-Host': 'my-store.commercecloud.salesforce.com',
+                    'X-Forwarded-Proto': 'https',
+                },
+            }),
+            context: new RouterContextProvider(),
+        } as never);
+        expect(res.status).toBe(200);
+    });
+
+    it('returns 403 (not 500) when X-Forwarded-Host contains invalid URL characters', async () => {
+        const { loader } = await import('./resource.recommendations');
+        const res = await loader({
+            request: new Request(buildUrl({ recommenderName: 'home' }), {
+                method: 'GET',
+                headers: {
+                    Origin: ORIGIN,
+                    'X-Forwarded-Host': 'invalid host with spaces',
+                    'X-Forwarded-Proto': 'https',
+                },
+            }),
+            context: new RouterContextProvider(),
+        } as never);
+        expect(res.status).toBe(403);
+    });
+
     it('omits currency when neither query param nor siteContext provides one', async () => {
         const { fetchProductRecommendations } = await import('@/lib/product/recommendations.server');
         (fetchProductRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({ recs: [] });

@@ -18,12 +18,20 @@ import type { Route } from './+types/resource.recommendations';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
 import { getLogger } from '@/lib/logger.server';
 import type { Product } from '@/hooks/recommenders/use-recommenders';
+import { resolveRequestOrigin } from '@/lib/origin';
 
 function isSameOrigin(request: Request): boolean {
-    const url = new URL(request.url);
+    let serverOrigin: string;
+    try {
+        serverOrigin = new URL(resolveRequestOrigin(request) ?? request.url).origin;
+    } catch {
+        return false;
+    }
+
+    const requestUrlOrigin = new URL(request.url).origin;
     const origin = request.headers.get('origin');
     if (origin) {
-        return origin === url.origin;
+        return origin === serverOrigin || origin === requestUrlOrigin;
     }
 
     const referer = request.headers.get('referer');
@@ -32,7 +40,8 @@ function isSameOrigin(request: Request): boolean {
     }
 
     try {
-        return new URL(referer).origin === url.origin;
+        const refererOrigin = new URL(referer).origin;
+        return refererOrigin === serverOrigin || refererOrigin === requestUrlOrigin;
     } catch {
         return false;
     }
