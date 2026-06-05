@@ -35,6 +35,13 @@ export interface JsonLdProps {
     data: Record<string, unknown>;
     /** Optional unique identifier for the script tag (useful when multiple JSON-LD scripts are on the same page) */
     id?: string;
+    /**
+     * Optional CSP nonce. When the security-headers middleware is enabled with a
+     * nonce-bearing CSP, browsers block any inline `<script>` (including JSON-LD)
+     * that lacks a matching nonce. Read the per-request value from the root
+     * loader and forward it here. Read from `useRouteLoaderData('root').nonce`.
+     */
+    nonce?: string;
 }
 
 /**
@@ -61,7 +68,7 @@ export interface JsonLdProps {
  * @returns A script element with JSON-LD structured data
  *
  */
-export function JsonLd({ data, id }: JsonLdProps): ReactElement | null {
+export function JsonLd({ data, id, nonce }: JsonLdProps): ReactElement | null {
     // Validate data is an object (not null, undefined, or primitive)
     if (!data || typeof data !== 'object' || Array.isArray(data)) {
         devError(
@@ -80,7 +87,7 @@ export function JsonLd({ data, id }: JsonLdProps): ReactElement | null {
     }
 
     return (
-        <script id={id} type="application/ld+json">
+        <script id={id} type="application/ld+json" nonce={nonce}>
             {jsonString}
         </script>
     );

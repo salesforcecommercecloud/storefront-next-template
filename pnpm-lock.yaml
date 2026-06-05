@@ -74,11 +74,11 @@ importers:
         specifier: 7.12.0
         version: 7.12.0(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.2)
       '@salesforce/storefront-next-dev':
-        specifier: 1.0.0-alpha.0
-        version: 1.0.0-alpha.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(@salesforce/storefront-next-runtime@1.0.0-alpha.0(d10a905cdfd7f46af46326af24a2581c))(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(@types/node@24.3.0)(body-parser@2.2.2)(http-errors@2.0.1)(react-dom@19.2.3(react@19.2.3))(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(reflect-metadata@0.2.2)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+        specifier: 1.0.0-alpha.1
+        version: 1.0.0-alpha.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(@salesforce/storefront-next-runtime@1.0.0-alpha.1(d10a905cdfd7f46af46326af24a2581c))(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(@types/node@24.3.0)(body-parser@2.2.2)(http-errors@2.0.1)(react-dom@19.2.3(react@19.2.3))(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(reflect-metadata@0.2.2)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
       '@salesforce/storefront-next-runtime':
-        specifier: 1.0.0-alpha.0
-        version: 1.0.0-alpha.0(d10a905cdfd7f46af46326af24a2581c)
+        specifier: 1.0.0-alpha.1
+        version: 1.0.0-alpha.1(d10a905cdfd7f46af46326af24a2581c)
       '@vis.gl/react-google-maps':
         specifier: 1.7.1
         version: 1.7.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -3101,20 +3101,20 @@ packages:
     peerDependencies:
       express: ^4.0.0 || ^5.0.0
 
-  '@salesforce/storefront-next-dev@1.0.0-alpha.0':
-    resolution: {integrity: sha512-t+T55nl8pzeOt0rHtTE0Rxb5EN16vuu2GvPxXtMZRfW+l4qBmFviYMspRgqNNNNbDXa1hxKyRqqvrsygWW5YFw==}
+  '@salesforce/storefront-next-dev@1.0.0-alpha.1':
+    resolution: {integrity: sha512-amcMx2XQ3UX8EE6vMW18faCTLC4AOSRNEuHAAhbZp3nTkPKZ0VfeF0aft85ilpd0KHUgKvGrXpiH0TR/CwrZKQ==}
     engines: {node: '>=24.0.0'}
     hasBin: true
     peerDependencies:
       '@react-router/dev': '>=7.0.0'
-      '@salesforce/storefront-next-runtime': 1.0.0-alpha.0
+      '@salesforce/storefront-next-runtime': 1.0.0-alpha.1
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
       react-router: '>=7.0.0'
       vite: '>=7.0.0'
 
-  '@salesforce/storefront-next-runtime@1.0.0-alpha.0':
-    resolution: {integrity: sha512-iKCwFjDgcD8bS2h1T4MGecoFXbYFuUBxjMNZjCcjU93gvQlY7xgA2HwoXgVMYiNqDQ/Sjwk0hW9QbOsAdLOLRA==}
+  '@salesforce/storefront-next-runtime@1.0.0-alpha.1':
+    resolution: {integrity: sha512-Tqh0/oUtGZJzLzbqqCmvBfX3+JkLPJkbGGIwiiiKZg2X24IXvOWqyQel/oFx0/M3GUOTSy9AP2pOW3yr3t0iHQ==}
     engines: {node: '>=24.0.0'}
     peerDependencies:
       '@react-router/dev': '>=7.0.0'
@@ -13124,7 +13124,7 @@ snapshots:
       - reflect-metadata
       - supports-color
 
-  '@salesforce/storefront-next-dev@1.0.0-alpha.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(@salesforce/storefront-next-runtime@1.0.0-alpha.0(d10a905cdfd7f46af46326af24a2581c))(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(@types/node@24.3.0)(body-parser@2.2.2)(http-errors@2.0.1)(react-dom@19.2.3(react@19.2.3))(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(reflect-metadata@0.2.2)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))':
+  '@salesforce/storefront-next-dev@1.0.0-alpha.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(@salesforce/storefront-next-runtime@1.0.0-alpha.1(d10a905cdfd7f46af46326af24a2581c))(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(@types/node@24.3.0)(body-parser@2.2.2)(http-errors@2.0.1)(react-dom@19.2.3(react@19.2.3))(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(reflect-metadata@0.2.2)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
       '@babel/generator': 7.28.5
       '@babel/parser': 7.29.7
@@ -13147,7 +13147,7 @@ snapshots:
       '@react-router/dev': 7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@react-router/express': 7.12.0(express@5.1.0)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.2)
       '@salesforce/b2c-tooling-sdk': 1.11.1(@oclif/core@4.11.4)(typescript@5.9.2)
-      '@salesforce/storefront-next-runtime': 1.0.0-alpha.0(d10a905cdfd7f46af46326af24a2581c)
+      '@salesforce/storefront-next-runtime': 1.0.0-alpha.1(d10a905cdfd7f46af46326af24a2581c)
       archiver: 7.0.1
       babel-dead-code-elimination: 1.0.12
       chalk: 5.6.2
@@ -13217,7 +13217,7 @@ snapshots:
       - unrun
       - vue-tsc
 
-  '@salesforce/storefront-next-runtime@1.0.0-alpha.0(d10a905cdfd7f46af46326af24a2581c)':
+  '@salesforce/storefront-next-runtime@1.0.0-alpha.1(d10a905cdfd7f46af46326af24a2581c)':
     dependencies:
       '@salesforce/mrt-utilities': 0.2.1(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(body-parser@2.2.2)(express@5.1.0)(http-errors@2.0.1)(reflect-metadata@0.2.2)
       jiti: 2.7.0
@@ -13225,6 +13225,7 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       react-router: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      zod: 4.1.13
     optionalDependencies:
       '@react-router/dev': 7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@react-router/fs-routes': 7.12.0(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(typescript@5.9.2)

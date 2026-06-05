@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useEffect, useRef, Suspense, Fragment } from 'react';
-import { Await } from 'react-router';
+import { Await, useRouteLoaderData } from 'react-router';
+import type { loader as rootLoader } from '@/root';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';
@@ -540,6 +541,9 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
     // This prevents showing skeleton when switching variants (pid parameter)
     const pageKey = loaderData.pageKey;
 
+    const rootData = useRouteLoaderData<typeof rootLoader>('root');
+    const nonce = rootData?.nonce ?? undefined;
+
     return (
         <WishlistProvider initialState={loaderData.wishlistInitialState}>
             <Fragment key={pageKey}>
@@ -551,7 +555,7 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
                 <Suspense fallback={null}>
                     <Await resolve={loaderData.productSchema} errorElement={null}>
                         {(productSchema) =>
-                            productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null
+                            productSchema ? <JsonLd data={productSchema} id="product-schema" nonce={nonce} /> : null
                         }
                     </Await>
                 </Suspense>

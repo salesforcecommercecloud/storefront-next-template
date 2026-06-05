@@ -41,4 +41,5 @@ export const pageObjects = {
     accountWishlistPage: './src/pages/account-wishlist.page.ts',
     wishlistPage: './src/pages/wishlist.page.ts',
     passwordlessLoginPage: './src/pages/passwordless-login.page.ts',
+    securityHeadersPage: './src/pages/security-headers.page.ts',
 };

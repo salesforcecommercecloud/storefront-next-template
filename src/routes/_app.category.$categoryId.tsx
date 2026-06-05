@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type ShouldRevalidateFunctionArgs, useAsyncError, useLocation, useNavigation } from 'react-router';
+import {
+    type ShouldRevalidateFunctionArgs,
+    useAsyncError,
+    useLocation,
+    useNavigation,
+    useRouteLoaderData,
+} from 'react-router';
+import type { loader as rootLoader } from '@/root';
 import type { Route } from './+types/_app.category.$categoryId';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
@@ -272,7 +279,9 @@ function CategoryJsonLd({
     categorySchemaPromise: Promise<ReturnType<typeof generateCategorySchema> | null>;
 }) {
     const categorySchema = use(categorySchemaPromise);
-    return categorySchema ? <JsonLd data={categorySchema} id="category-schema" /> : null;
+    const rootData = useRouteLoaderData<typeof rootLoader>('root');
+    const nonce = rootData?.nonce ?? undefined;
+    return categorySchema ? <JsonLd data={categorySchema} id="category-schema" nonce={nonce} /> : null;
 }
 
 export default function CategoryPage({

@@ -15,7 +15,7 @@
  */
 // Relative paths required here — this file is evaluated by vite-node during
 // react-router typegen (via routes.ts), before Vite aliases are resolved.
-import { defineConfig } from '@salesforce/storefront-next-runtime/config';
+import { defineConfig, defaultSecurityHeaders } from '@salesforce/storefront-next-runtime/config';
 import type { Config } from './src/types/config';
 import { TrackingConsent } from './src/types/tracking-consent';
 
@@ -547,6 +547,27 @@ export default defineConfig<Config>(
                         enabled: process.env.TURNSTILE_VERIFICATION_ENABLED === 'true',
                     },
                 },
+                // Security response headers. Default shape is imported from the SDK
+                // so customers can override individual fields via PUBLIC__ env vars
+                // (e.g. PUBLIC__app__security__headers__csp__reportOnly=true). The
+                // SDK middleware merges customer overrides over these defaults.
+                //
+                // To extend CSP, spread `defaultCspDirectives`:
+                //
+                //   import { defaultCspDirectives } from '@salesforce/storefront-next-runtime/security';
+                //   headers: {
+                //     ...defaultSecurityHeaders,
+                //     csp: {
+                //       directives: {
+                //         ...defaultCspDirectives,
+                //         'script-src': [...defaultCspDirectives['script-src']!, 'https://cdn.foo.com'],
+                //       },
+                //       reportOnly: false,
+                //     },
+                //   },
+                //
+                // See docs/README-SECURITY-HEADERS.md for the defaults table and recipes.
+                headers: defaultSecurityHeaders,
             },
         },
     },

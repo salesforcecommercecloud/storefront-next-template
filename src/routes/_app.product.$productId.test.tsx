@@ -21,6 +21,16 @@ import type { ShopperProducts } from '@/scapi';
 import { shouldRevalidate, type ProductPageData } from './_app.product.$productId';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
+// ProductPage reads `nonce` from the root loader. Tests render the page outside
+// a real data router, so stub `useRouteLoaderData` with a deterministic value.
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useRouteLoaderData: (id: string) => (id === 'root' ? { nonce: undefined } : undefined),
+    };
+});
+
 // Mock the components and utilities
 vi.mock('@/components/product-skeleton', () => ({
     default: () => <div data-testid="product-skeleton">Loading...</div>,
