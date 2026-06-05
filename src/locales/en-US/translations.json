@@ -269,7 +269,8 @@
             "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
             "noActiveBasket": "No active basket found. Refresh the page and try again.",
             "basketCalculationFailed": "Failed to calculate order total. Try again.",
-            "promoCodeInvalid": "Invalid promo code. Check and try again."
+            "promoCodeInvalid": "Invalid promo code. Check and try again.",
+            "placeOrderFailed": "Failed to finalize order. Please try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",

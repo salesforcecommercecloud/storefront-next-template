@@ -262,6 +262,7 @@ vi.mock('@/hooks/use-checkout-actions', () => ({
         submitShippingOptions: mockSubmitShippingOptions,
         submitPayment: mockSubmitPayment,
         submitPlaceOrder: mockSubmitPlaceOrder,
+        buildPlaceOrderFinalizeFormData: () => new FormData(),
         get contactFetcher() {
             return { data: mockContactFetcherData, state: mockContactFetcherState };
         },
@@ -334,6 +335,7 @@ vi.mock('./components/shipping-options', () => ({
 
 let mockPaymentFormDataGetter: (() => Record<string, unknown>) | null = null;
 let capturedSetFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null = null;
+let mockOnPlaceOrder: (() => Promise<string | null>) | null = null;
 
 vi.mock('./components/payment', () => ({
     default: ({ paymentSubmissionRef }: { paymentSubmissionRef?: { current: Record<string, unknown> } }) => {
@@ -344,6 +346,7 @@ vi.mock('./components/payment', () => ({
             ) => {
                 capturedSetFormErrors?.(errors);
             };
+            paymentSubmissionRef.current.onPlaceOrder = mockOnPlaceOrder;
         }
         return <div data-testid="payment">Payment Form</div>;
     },
@@ -445,6 +448,7 @@ describe('CheckoutFormPage', () => {
 
         mockPaymentFormDataGetter = null;
         capturedSetFormErrors = null;
+        mockOnPlaceOrder = null;
 
         // Setup checkout context mocks
         mockUseCustomerProfile.mockReturnValue(null); // Default to guest user
@@ -1596,6 +1600,287 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage({ emailVerificationEnabled: undefined });
 
             expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
+        });
+    });
+
+    describe('onPlaceOrder delegation (extension full delegation)', () => {
+        const basketWithPayment = {
+            basketId: 'test-basket',
+            productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pi-1',
+                    paymentMethodId: 'CREDIT_CARD',
+                    paymentCard: { cardType: 'Visa', holder: 'John Doe', maskedNumber: '***1111' },
+                },
+            ],
+        };
+
+        let originalFetch: typeof fetch;
+        let originalLocation: Location;
+        let assignedHref: string | null;
+
+        beforeEach(() => {
+            originalFetch = globalThis.fetch;
+            originalLocation = window.location;
+            assignedHref = null;
+            // Replace window.location with a stub that captures href assignment.
+            // jsdom's default location object's href setter triggers a real navigation
+            // (NotSupportedError); capturing here keeps the test environment stable.
+            Object.defineProperty(window, 'location', {
+                configurable: true,
+                value: {
+                    ...originalLocation,
+                    set href(v: string) {
+                        assignedHref = v;
+                    },
+                    get href() {
+                        return assignedHref ?? '';
+                    },
+                },
+            });
+        });
+
+        afterEach(() => {
+            globalThis.fetch = originalFetch;
+            Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
+        });
+
+        test('runs prepare, awaits onPlaceOrder, then runs finalize and navigates on success', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi
+                .fn()
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: true }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                )
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: true, redirectUrl: '/order-confirmation/ORD-9001' }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                // Allow async IIFE to advance through prepare → onPlaceOrder → finalize.
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+            expect(mockSubmitPayment).not.toHaveBeenCalled();
+            expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
+
+            // Two BFF calls: prepare first, then finalize after onPlaceOrder.
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(fetchMock.mock.calls[0]?.[0]).toBe('/action/place-order-prepare');
+            expect(fetchMock.mock.calls[1]?.[0]).toBe('/action/place-order-finalize');
+            const finalizeFormData = (fetchMock.mock.calls[1]?.[1] as { body: FormData }).body;
+            expect(finalizeFormData.get('orderNo')).toBe('ORD-9001');
+
+            await act(async () => {
+                await Promise.resolve();
+            });
+            expect(assignedHref).toBe('/order-confirmation/ORD-9001');
+        });
+
+        test('does not call onPlaceOrder or finalize when prepare rejects the basket', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi.fn().mockResolvedValueOnce(
+                new Response(JSON.stringify({ success: false, error: 'no-basket' }), {
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json' },
+                })
+            );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(fetchMock.mock.calls[0]?.[0]).toBe('/action/place-order-prepare');
+            expect(mockOnPlaceOrder).not.toHaveBeenCalled();
+            expect(assignedHref).toBeNull();
+        });
+
+        test('does not call finalize when onPlaceOrder resolves with null', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue(null);
+
+            const fetchMock = vi.fn().mockResolvedValueOnce(
+                new Response(JSON.stringify({ success: true }), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' },
+                })
+            );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+            // Prepare fired; finalize did not.
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(fetchMock.mock.calls[0]?.[0]).toBe('/action/place-order-prepare');
+            expect(assignedHref).toBeNull();
+        });
+
+        test('falls through to existing place-order flow when onPlaceOrder is null', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = null; // explicit, though already the default
+
+            const fetchMock = vi.fn();
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            expect(mockSubmitPlaceOrder).toHaveBeenCalledTimes(1);
+            expect(fetchMock).not.toHaveBeenCalled();
+        });
+
+        test('clears pending state and stays put when finalize returns non-success', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi
+                .fn()
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: true }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                )
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: false, error: 'place_order_finalize_failed' }), {
+                            status: 500,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(assignedHref).toBeNull();
+        });
+
+        test('clears pending state and stays put when finalize fetch throws', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi
+                .fn()
+                .mockResolvedValueOnce(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                )
+                .mockRejectedValueOnce(new Error('network'));
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(assignedHref).toBeNull();
+        });
+
+        test('handles malformed finalize response body without crashing', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi
+                .fn()
+                .mockResolvedValueOnce(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                )
+                .mockResolvedValueOnce(
+                    // Malformed JSON body — exercises the catch branch in the parse block.
+                    new Response('not-json', { status: 500, headers: { 'Content-Type': 'text/plain' } })
+                );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            await act(async () => {
+                fireEvent.click(placeOrderButton);
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(assignedHref).toBeNull();
         });
     });
 });

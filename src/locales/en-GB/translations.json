@@ -269,7 +269,8 @@
             "stockNotAvailable": "Insufficient stock for one or more items in your cart.",
             "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
-            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address."
+            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
+            "placeOrderFailed": "Failed to finalize order. Please try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",

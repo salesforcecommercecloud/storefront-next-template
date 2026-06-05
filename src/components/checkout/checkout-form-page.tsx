@@ -18,6 +18,7 @@ import { useFetcher } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
+import { resourceRoutes } from '@/route-paths';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
@@ -31,6 +32,8 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
+import { PaymentSubmissionRefProvider } from './payment-submission-context';
+import { clearCheckoutCorrelationId, getOrCreateCheckoutCorrelationId } from '@/lib/checkout/correlation';
 import { Spinner } from '@/components/spinner';
 import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
@@ -218,6 +221,7 @@ export default function CheckoutFormPage({
         shouldPlaceOrderAfterPayment: false,
         options: null,
         setFormErrors: null,
+        onPlaceOrder: null,
     });
     const otpFlowActiveRef = useRef(false);
     const noShippingMethodsRef = useRef(false);
@@ -231,6 +235,7 @@ export default function CheckoutFormPage({
         submitShippingOptions,
         submitPayment,
         submitPlaceOrder,
+        buildPlaceOrderFinalizeFormData,
         contactFetcher,
         shippingAddressFetcher,
         shippingOptionsFetcher,
@@ -395,6 +400,86 @@ export default function CheckoutFormPage({
                 goToStep(STEPS.SHIPPING_OPTIONS);
                 return;
             }
+        }
+
+        // Payment-extension delegation. The storefront owns the surrounding
+        // sequence (prepare -> extension's onPlaceOrder -> finalize) so the
+        // extension only does payment work. See `PaymentSubmissionRef.onPlaceOrder`.
+        const onPlaceOrder = paymentSubmissionRef.current.onPlaceOrder;
+        if (onPlaceOrder) {
+            setIsPlaceOrderPending(true);
+            // Checkout correlation id - shared across the cart-to-confirmation journey so log
+            // lines from any checkout-flow request can be stitched together. Sent on the
+            // standard `x-correlation-id` header that the storefront's correlationMiddleware
+            // already consumes, so the logger picks it up automatically with no per-route
+            // plumbing. SFP CAP can echo the same header on its own routes.
+            const correlationId = getOrCreateCheckoutCorrelationId();
+            const correlationHeaders = { 'x-correlation-id': correlationId };
+            void (async () => {
+                let orderNo: string | null = null;
+                try {
+                    // 1. Prepare: validate basket, resolve multiship shipments, recalculate.
+                    const prepareResponse = await fetch(resourceRoutes.placeOrderPrepare, {
+                        method: 'POST',
+                        headers: correlationHeaders,
+                    });
+                    if (!prepareResponse.ok) {
+                        const prepareBody = await prepareResponse.json().catch(() => ({}));
+                        // eslint-disable-next-line no-console
+                        console.error('[Checkout] place-order-prepare rejected the basket', {
+                            correlationId,
+                            status: prepareResponse.status,
+                            body: prepareBody,
+                        });
+                        setIsPlaceOrderPending(false);
+                        showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                        return;
+                    }
+
+                    // 2. Extension owns createOrder + PSP confirm. Resolves to orderNo or null.
+                    orderNo = await onPlaceOrder();
+                    if (!orderNo) {
+                        // Extension surfaced its own error UI before resolving null.
+                        setIsPlaceOrderPending(false);
+                        return;
+                    }
+
+                    // 3. Finalize: profile saves + basket teardown + confirmation URL.
+                    const finalizeFormData = buildPlaceOrderFinalizeFormData();
+                    finalizeFormData.set('orderNo', orderNo);
+                    const finalizeResponse = await fetch(resourceRoutes.placeOrderFinalize, {
+                        method: 'POST',
+                        headers: correlationHeaders,
+                        body: finalizeFormData,
+                    });
+                    const rawBody = await finalizeResponse.text();
+                    let body: { success?: boolean; redirectUrl?: string } = {};
+                    let parseError: unknown;
+                    try {
+                        body = rawBody ? JSON.parse(rawBody) : {};
+                    } catch (error) {
+                        parseError = error;
+                    }
+                    if (finalizeResponse.ok && body.success && body.redirectUrl) {
+                        clearCheckoutCorrelationId();
+                        window.location.href = body.redirectUrl;
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            '[Checkout] place-order-finalize returned non-success; order may need manual reconciliation',
+                            { correlationId, orderNo, status: finalizeResponse.status, rawBody, parseError }
+                        );
+                        setIsPlaceOrderPending(false);
+                        showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                    }
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error('[Checkout] place-order delegation failed', { correlationId, orderNo, error });
+                    setIsPlaceOrderPending(false);
+                    showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                }
+            })();
+            return;
         }
 
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
@@ -836,22 +921,24 @@ export default function CheckoutFormPage({
                             </>
                         )}
 
-                        <UITarget targetId="sfcc.checkout.payment.header.before" />
-                        <Suspense fallback={<PaymentSkeleton />}>
-                            <UITarget targetId="sfcc.checkout.payment.before" />
-                            <UITarget targetId="sfcc.checkout.payment">
-                                <Payment
-                                    onSubmit={handlePaymentSubmit}
-                                    isLoading={isSubmitting('payment')}
-                                    actionData={paymentFetcher.data}
-                                    showUseDifferentBilling={showAddressAndOptions}
-                                    paymentSubmissionRef={paymentSubmissionRef}
-                                    hidePaymentSaveCheckbox={shouldCreateAccount}
-                                    {...paymentState}
-                                />
-                            </UITarget>
-                            <UITarget targetId="sfcc.checkout.payment.after" />
-                        </Suspense>
+                        <PaymentSubmissionRefProvider refValue={paymentSubmissionRef}>
+                            <UITarget targetId="sfcc.checkout.payment.header.before" />
+                            <Suspense fallback={<PaymentSkeleton />}>
+                                <UITarget targetId="sfcc.checkout.payment.before" />
+                                <UITarget targetId="sfcc.checkout.payment">
+                                    <Payment
+                                        onSubmit={handlePaymentSubmit}
+                                        isLoading={isSubmitting('payment')}
+                                        actionData={paymentFetcher.data}
+                                        showUseDifferentBilling={showAddressAndOptions}
+                                        paymentSubmissionRef={paymentSubmissionRef}
+                                        hidePaymentSaveCheckbox={shouldCreateAccount}
+                                        {...paymentState}
+                                    />
+                                </UITarget>
+                                <UITarget targetId="sfcc.checkout.payment.after" />
+                            </Suspense>
+                        </PaymentSubmissionRefProvider>
 
                         {/* Place Order Section — hide when editing any step except Payment
                            (Payment has no separate Save button; Place Order acts as its submit) */}

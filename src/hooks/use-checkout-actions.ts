@@ -71,6 +71,27 @@ export type PaymentSubmissionRef = MutableRefObject<{
     shouldPlaceOrderAfterPayment: boolean;
     options: { savePaymentToProfile?: boolean; useDifferentBilling?: boolean } | null;
     setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
+    /**
+     * When set, the Place Order click handler delegates the payment-to-order
+     * step to this callback. The storefront wraps the call: it POSTs to
+     * `/action/place-order-prepare` first (basket validation, multiship
+     * resolution, totals refresh), invokes this callback to drive `createOrder`
+     * and any PSP confirm, then POSTs to `/action/place-order-finalize`
+     * (profile saves, basket teardown, navigation). The extension only owns
+     * the payment work between the two storefront actions.
+     *
+     * Resolve with the orderNo on success, or `null` on failure after
+     * surfacing the extension's own error UI.
+     *
+     * Extension components reach this ref via `usePaymentSubmissionRef()`
+     * from `@/components/checkout/payment-submission-context`. Assign in a
+     * `useEffect`, clear in cleanup so the registration is unwound when the
+     * extension unmounts.
+     *
+     * `beforePlaceOrder` / `afterPlaceOrder` hooks do NOT fire on this path.
+     * The hooks live inside `action.place-order`, which this flow bypasses.
+     */
+    onPlaceOrder: (() => Promise<string | null>) | null;
 }>;
 
 /**
@@ -80,7 +101,7 @@ export type PaymentSubmissionRef = MutableRefObject<{
  * using React Router's useFetcher for handling form submissions without navigation.
  * Each fetcher is keyed to maintain separate state for each checkout step.
  *
- * @param options.paymentSubmissionRef - Ref holding form data getter, place-order-after-payment flag, and options (preferred over placeOrderOptionsRef)
+ * @param options.paymentSubmissionRef - Coordination ref for the payment + place-order flow. See `PaymentSubmissionRef` for fields.
  * @param options.placeOrderOptionsRef - Optional ref for place-order options (legacy; use paymentSubmissionRef for new code)
  * @returns Object containing checkout action functions and fetcher states
  * @returns submitContactInfo - Function to submit contact information
@@ -399,12 +420,12 @@ export function useCheckoutActions(options?: {
     }, []);
 
     /**
-     * Submits the place-order action via fetcher so errors can be shown in-page.
+     * Build the form data the storefront sends to the place-order action and
+     * to the extension-driven `place-order-finalize` route. Both consume the
+     * same shopper-state inputs (registration intent, save-payment, billing
+     * choice, contact phone), so we centralize the construction here.
      */
-    const submitPlaceOrder = () => {
-        if (placeOrderFetcher.state === 'submitting') {
-            return;
-        }
+    const buildPlaceOrderFinalizeFormData = useCallback((): FormData => {
         const formData = new FormData();
         formData.append('shouldCreateAccount', shouldCreateAccount ? 'true' : 'false');
         const registrationFlowActive =
@@ -418,7 +439,7 @@ export function useCheckoutActions(options?: {
         if (typeof placeOrderOpts?.useDifferentBilling === 'boolean') {
             formData.append('useDifferentBilling', String(placeOrderOpts.useDifferentBilling));
         }
-        // Pass the contact phone captured at submission time (session + ref survive basket merge / reload)
+        // Phone may have been captured at submit time (session + ref survive basket merge / reload).
         const storedPhone =
             typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_CHECKOUT_CONTACT_PHONE) : null;
         const contactPhone =
@@ -429,6 +450,17 @@ export function useCheckoutActions(options?: {
         if (contactPhone) {
             formData.append('contactPhone', contactPhone);
         }
+        return formData;
+    }, [shouldCreateAccount, options?.paymentSubmissionRef, options?.placeOrderOptionsRef, basket]);
+
+    /**
+     * Submits the place-order action via fetcher so errors can be shown in-page.
+     */
+    const submitPlaceOrder = () => {
+        if (placeOrderFetcher.state === 'submitting') {
+            return;
+        }
+        const formData = buildPlaceOrderFinalizeFormData();
         void placeOrderFetcher.submit(formData, {
             method: 'post',
             action: resourceRoutes.placeOrder,
@@ -442,6 +474,7 @@ export function useCheckoutActions(options?: {
         submitShippingOptions,
         submitPayment,
         submitPlaceOrder,
+        buildPlaceOrderFinalizeFormData,
 
         // Fetcher objects
         contactFetcher,

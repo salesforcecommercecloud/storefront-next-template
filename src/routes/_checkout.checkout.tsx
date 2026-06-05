@@ -35,33 +35,48 @@ import { action as submitShippingAddress } from '@/lib/checkout/actions/submit-s
 import { action as submitShippingOptions } from '@/lib/checkout/actions/submit-shipping-options.server';
 import { action as submitPayment } from '@/lib/checkout/actions/submit-payment.server';
 import { getLogger } from '@/lib/logger.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 
 export { loader };
 
 /**
- * Skip loader revalidation when an action redirects (3xx).
+ * Opt-in flag on a 200 + JSON action response body that suppresses checkout-loader
+ * revalidation. Use it from extension server actions that consume the basket via
+ * SCAPI `createOrder` but do not redirect; without it the loader would re-run
+ * against the empty basket and unmount the extension's in-flight UI.
  *
- * Place-order actions (`/action/place-order`, `/action/payment-redirect-finalize`,
- * `/action/payment-express-complete`) destroy the basket as part of their
- * post-success teardown (see `src/lib/payment/post-order.server.ts`) and then
- * 302 to `/order-confirmation/<orderNo>`. Default revalidation would re-run the
- * checkout loader against the now-destroyed basket, causing the page to render
- * with `basket = null` for one frame and unmount mid-flow — this disrupts
- * payment-extension components that need to stay mounted until the redirect
- * navigation completes (e.g., for cleanup / final PSP iframe acks). Skipping
- * revalidation on 3xx avoids the unmount; the destination route's loaders run
- * fresh after the navigation.
+ * Importing the constant prevents typos that would silently disable the skip.
+ */
+export const FRAMEWORK_SKIP_REVALIDATION = 'framework_skipRevalidation' as const;
+
+/**
+ * Skip loader revalidation when:
+ *   1. The action returned a 3xx redirect (the default `action.place-order`
+ *      destroys the basket then 302s to confirmation).
+ *   2. The action returned 200 + JSON with `[FRAMEWORK_SKIP_REVALIDATION]: true`.
+ *      This is the rule extension-driven flows opt into when their action
+ *      consumes the basket via `createOrder` but does not redirect.
  *
- * For 4xx/5xx responses, React Router already sets `defaultShouldRevalidate`
- * to `false`, so the `defaultShouldRevalidate` return below preserves that
- * behavior. For 2xx responses without a redirect (e.g., regular form
- * submissions like contact-info or shipping updates), revalidation runs as
- * normal so the UI sees fresh data.
+ * 4xx/5xx already default to `false` via React Router. Regular 2xx without the
+ * flag refreshes as normal.
  *
  * @see https://reactrouter.com/start/framework/route-module#shouldrevalidate
  */
-export function shouldRevalidate({ actionStatus, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+export function shouldRevalidate({
+    actionStatus,
+    actionResult,
+    defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
     if (actionStatus !== undefined && actionStatus >= 300 && actionStatus < 400) {
+        return false;
+    }
+    if (
+        actionResult &&
+        typeof actionResult === 'object' &&
+        !Array.isArray(actionResult) &&
+        (actionResult as Record<string, unknown>)[FRAMEWORK_SKIP_REVALIDATION] === true
+    ) {
         return false;
     }
     return defaultShouldRevalidate;
@@ -85,7 +100,13 @@ export async function action({ request, context }: Route.ActionArgs) {
             return submitPayment(formData, context);
         default:
             logger.warn('Checkout: unknown action intent', { intent });
-            return Response.json({ success: false, error: 'Invalid action intent' }, { status: 400 });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.INVALID_INPUT, message: 'Invalid action intent' }),
+                },
+                { status: 400 }
+            );
     }
 }
 

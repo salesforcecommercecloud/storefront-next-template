@@ -73,6 +73,8 @@ const EXCLUDED_COMPONENTS = new Set([
     'ratings-reviews/components/target/reviews-summary-target',
     // Tiny per-line context provider used to forward props through a UITarget boundary.
     'ratings-reviews/components/order-line-review-context',
+    // Context provider that forwards the storefront's payment-submission ref to extension components rendered at a UITarget.
+    'checkout/payment-submission-context',
     'product-content/components/target/returns-and-warranty-target',
     'product-content/components/target/faq-target',
     'product-content/components/target/pdp-collapsibles-target',

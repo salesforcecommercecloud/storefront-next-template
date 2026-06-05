@@ -27,6 +27,7 @@ import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
+import { getOrCreateCheckoutCorrelationId } from '@/lib/checkout/correlation';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -285,7 +286,9 @@ export default function CartContent({
                                 {inventoryValidation.hasInventoryIssues ? (
                                     <span>{t('checkout.continueToCheckout')}</span>
                                 ) : (
-                                    <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
+                                    <Link to={routes.checkout} onClick={() => getOrCreateCheckoutCorrelationId()}>
+                                        {t('checkout.continueToCheckout')}
+                                    </Link>
                                 )}
                             </Button>
                             <UITarget targetId="sfcc.cart.payments.expressCheckout" />
