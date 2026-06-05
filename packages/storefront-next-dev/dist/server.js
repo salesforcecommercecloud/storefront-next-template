@@ -629,6 +629,7 @@ async function createServer(options) {
 	const bundleId = process.env.BUNDLE_ID ?? DEFAULT_BUNDLE_ID;
 	const app = express();
 	app.disable("x-powered-by");
+	app.set("trust proxy", true);
 	if (process.env.SFNEXT_OTEL_ENABLED === "true") app.use(createOtelExpressMiddleware());
 	app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({
 		projectDirectory,

@@ -23,6 +23,7 @@ import type { ServerConfig } from './config';
 vi.mock('express', () => {
     const mockExpressApp = {
         disable: vi.fn().mockReturnThis(),
+        set: vi.fn().mockReturnThis(),
         use: vi.fn().mockReturnThis(),
         get: vi.fn().mockReturnThis(),
         all: vi.fn().mockReturnThis(),
@@ -110,6 +111,7 @@ const { importTypescript } = await import('./ts-import');
 describe('server/index', () => {
     let mockExpressApp: {
         disable: ReturnType<typeof vi.fn>;
+        set: ReturnType<typeof vi.fn>;
         use: ReturnType<typeof vi.fn>;
         get: ReturnType<typeof vi.fn>;
         all: ReturnType<typeof vi.fn>;
@@ -212,6 +214,7 @@ describe('server/index', () => {
 
                 expect(app).toBe(mockExpressApp);
                 expect(mockExpressApp.disable).toHaveBeenCalledWith('x-powered-by');
+                expect(mockExpressApp.set).toHaveBeenCalledWith('trust proxy', true);
                 expect(mockExpressApp.use).toHaveBeenCalledWith(mockVite.middlewares);
                 expect(vi.mocked(loadConfigFromEnv)).toHaveBeenCalled();
             });
@@ -449,6 +452,7 @@ describe('server/index', () => {
 
                 expect(app).toBe(mockExpressApp);
                 expect(mockExpressApp.disable).toHaveBeenCalledWith('x-powered-by');
+                expect(mockExpressApp.set).toHaveBeenCalledWith('trust proxy', true);
                 expect(vi.mocked(createLoggingMiddleware)).toHaveBeenCalled();
                 expect(vi.mocked(createCompressionMiddleware)).toHaveBeenCalled();
                 expect(vi.mocked(createStaticMiddleware)).toHaveBeenCalledWith('local', '/test/project');
@@ -527,6 +531,7 @@ describe('server/index', () => {
 
                 expect(app).toBe(mockExpressApp);
                 expect(mockExpressApp.disable).toHaveBeenCalledWith('x-powered-by');
+                expect(mockExpressApp.set).toHaveBeenCalledWith('trust proxy', true);
                 // Production mode has compression and logging enabled by default, but not static serving or proxy
                 expect(vi.mocked(createLoggingMiddleware)).toHaveBeenCalled();
                 expect(vi.mocked(createCompressionMiddleware)).toHaveBeenCalled();

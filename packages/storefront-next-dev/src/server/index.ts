@@ -127,6 +127,11 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     // Create Express app
     const app = express();
     app.disable('x-powered-by');
+    // Trust X-Forwarded-{Host,Proto} so req.hostname/req.protocol (and therefore
+    // request.url seen by loaders) reflect the public origin on MRT. Safe because
+    // the eCDN is the sole proxy layer before Lambda, it strips client-supplied
+    // forwarded headers, and the Lambda function URL is not directly reachable.
+    app.set('trust proxy', true);
 
     // OTel server + streaming spans — must be first to wrap the entire request lifecycle
     if (process.env.SFNEXT_OTEL_ENABLED === 'true') {
