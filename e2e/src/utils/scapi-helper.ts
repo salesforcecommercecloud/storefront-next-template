@@ -102,6 +102,62 @@ function getBaseUrl(config: ScapiConfig): string {
 }
 
 /**
+ * Returns true for HTTP 409 rate-limit errors produced by the SLAS helpers.
+ *
+ * SLAS throttles logins to ~1 per second per tenant and answers an over-the-gate
+ * login with a 409 ("Tenant has already performed login in last 1 second").
+ * Back-to-back `@core` scenarios — each clearing cookies and re-authenticating —
+ * trip this easily, and the storefront's own post-signup auto-login adds to the
+ * pressure.
+ *
+ * Anchored on the helpers' two error-formatter prefixes — `Status: 409` or
+ * `failed (409)` — mirroring `isAuthError` in `token-cache.ts`, so we don't
+ * false-positive on a 5xx whose body echoes those digits in a request/correlation
+ * id. Note `isAuthError` deliberately matches only 401/403; the 1/sec gate is a
+ * distinct, retryable condition handled here, not an eviction trigger there.
+ *
+ * Exported for direct unit testing.
+ */
+export function isRateLimitError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /(?:Status:\s*409\b|failed\s*\(409\))/.test(message);
+}
+
+/**
+ * Run `fn`, retrying only when it rejects with a SLAS 409 rate-limit error
+ * (`isRateLimitError`). Any other rejection propagates immediately.
+ *
+ * The backoff sits at or above the ~1s SLAS gate so the retry lands after the
+ * window has cleared: with the defaults (`attempts: 3`, `baseDelayMs: 1200`) the
+ * waits are ~1200ms then ~2400ms (linear in attempt number). The final attempt's
+ * error is rethrown if every attempt rate-limits.
+ *
+ * Test-runner code — a real `setTimeout` delay is fine here (this is not a
+ * workflow script, so the `Date.now`-free constraint does not apply).
+ */
+export async function withSlasRetry<T>(
+    fn: () => Promise<T>,
+    options: { attempts?: number; baseDelayMs?: number } = {}
+): Promise<T> {
+    const attempts = options.attempts ?? 3;
+    const baseDelayMs = options.baseDelayMs ?? 1200;
+
+    // Every path inside the loop either returns the result or throws (on a
+    // non-409, or after the final attempt), so there's no fall-through — no
+    // trailing throw or `lastError` bookkeeping needed to satisfy the checker.
+    for (let attempt = 1; ; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (!isRateLimitError(error) || attempt >= attempts) {
+                throw error;
+            }
+            await new Promise((done) => setTimeout(done, baseDelayMs * attempt));
+        }
+    }
+}
+
+/**
  * Guest login via SLAS.
  *
  * Dispatches based on whether a `slasSecret` is available, mirroring the SDK
@@ -395,48 +451,62 @@ export async function loginRegistered(
         '/callback';
     const redirectUri = `${appOrigin}${callbackPath}`;
 
-    const codeVerifier = createCodeVerifier();
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-
     const authUrl = `${baseUrl}/shopper/auth/v1/organizations/${config.organizationId}/oauth2/login`;
 
-    const authBody = new URLSearchParams({
-        client_id: config.clientId,
-        channel_id: config.siteId,
-        redirect_uri: redirectUri,
-        response_type: 'code',
-        code_challenge: codeChallenge,
+    // Retry the login POST → code extraction on a SLAS 409 rate-limit (~1/sec
+    // tenant gate). Each attempt mints a fresh PKCE verifier/challenge because
+    // a code is bound to the challenge it was issued against — reusing a stale
+    // verifier on retry would fail the subsequent token exchange. The
+    // token-exchange POST below is intentionally left outside the retry: it is
+    // not the rate-limited request and a 409 cannot originate there.
+    const { code, usid, codeVerifier } = await withSlasRetry(async () => {
+        const verifier = createCodeVerifier();
+        const challenge = await generateCodeChallenge(verifier);
+
+        const authBody = new URLSearchParams({
+            client_id: config.clientId,
+            channel_id: config.siteId,
+            redirect_uri: redirectUri,
+            response_type: 'code',
+            code_challenge: challenge,
+        });
+
+        const authResponse = await fetch(authUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${Buffer.from(`${credentials.email}:${credentials.password}`).toString('base64')}`,
+            },
+            body: authBody.toString(),
+            redirect: 'manual',
+        });
+
+        // SLAS returns a 303 with the code in the Location header on success. On
+        // failure (bad credentials, rate limit, server error) it returns a non-3xx
+        // with no Location and a JSON body. Surface that explicitly — `new URL("")`
+        // throws `TypeError: Invalid URL` which buries the actual SLAS error. The
+        // `Status: <code>` suffix is what `isRateLimitError` keys off for the 409 retry.
+        const locationHeader = authResponse.headers.get('location');
+        if (!locationHeader) {
+            const text = await authResponse.text();
+            throw new Error(
+                `SLAS authenticateCustomer failed — no Location header. Status: ${authResponse.status}. Body: ${text}`
+            );
+        }
+
+        const locationUrl = new URL(locationHeader);
+        const authCode = locationUrl.searchParams.get('code');
+
+        if (!authCode) {
+            throw new Error(`SLAS authenticateCustomer failed — no code in redirect. Status: ${authResponse.status}`);
+        }
+
+        return {
+            code: authCode,
+            usid: locationUrl.searchParams.get('usid') || '',
+            codeVerifier: verifier,
+        };
     });
-
-    const authResponse = await fetch(authUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${Buffer.from(`${credentials.email}:${credentials.password}`).toString('base64')}`,
-        },
-        body: authBody.toString(),
-        redirect: 'manual',
-    });
-
-    // SLAS returns a 303 with the code in the Location header on success. On
-    // failure (bad credentials, rate limit, server error) it returns a non-3xx
-    // with no Location and a JSON body. Surface that explicitly — `new URL("")`
-    // throws `TypeError: Invalid URL` which buries the actual SLAS error.
-    const locationHeader = authResponse.headers.get('location');
-    if (!locationHeader) {
-        const text = await authResponse.text();
-        throw new Error(
-            `SLAS authenticateCustomer failed — no Location header. Status: ${authResponse.status}. Body: ${text}`
-        );
-    }
-
-    const locationUrl = new URL(locationHeader);
-    const code = locationUrl.searchParams.get('code');
-    const usid = locationUrl.searchParams.get('usid') || '';
-
-    if (!code) {
-        throw new Error(`SLAS authenticateCustomer failed — no code in redirect. Status: ${authResponse.status}`);
-    }
 
     const tokenUrl = `${baseUrl}/shopper/auth/v1/organizations/${config.organizationId}/oauth2/token`;
 

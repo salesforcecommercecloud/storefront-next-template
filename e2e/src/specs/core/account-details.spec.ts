@@ -16,15 +16,35 @@
 
 Feature('Account Details Tests').tag('@core').tag('@account').tag('@user-account');
 
-// TODO: Skipped pending fixes to (1) CheckoutPage.fillContactInfo
-// "Continue to Shipping Address" click timeout (the change-email scenario
-// routes through checkout) and (2) the SLAS 409 "Tenant has already performed
-// login in last 1 sec" rate-limit hit in the per-scenario Before hook.
-// Re-enable when both root causes are fixed.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
+// The signup-driven Before hook now uses apiSignupFlow (SCAPI register + cookie
+// injection) and loginRegistered retries SLAS 409s, so the per-scenario rate-limit
+// flake is resolved — the suite runs with Scenario.
+//
+// TODO: The positive change-email scenario stays scoped-skipped pending
+// investigation of an intermittent failure historically blamed on a checkout
+// fillContactInfo timeout. As written it does NOT route through checkout — it
+// triggers an internal SLAS re-auth, and the next scenario's login retries any
+// resulting SLAS 409 via withSlasRetry. Re-validate on the pool target
+// (5× consecutive); if it passes, drop this scoped-skip. Track in the
+// signup-stabilization follow-up.
+const isChangeEmailBroken = true;
+const changeEmailScenario = isChangeEmailBroken ? Scenario.skip : Scenario;
 
-const { I, storefrontPage, accountDetailsPage, apiLoginFlow, signupFlow } = inject();
+// TODO: "Email change fails with incorrect current password" is scoped-skipped —
+// NOT a signup issue (surfaced once the suite was re-enabled). The backend
+// ACCEPTS the email change despite a wrong current password ("Email updated
+// successfully, but automatic login failed" toast) instead of returning the
+// expected "Failed to update email address" error, so the negative assertion
+// fails. Looks like a real backend/SLAS gap (currentPassword not validated on
+// the email-change request), not a flake — it failed identically across two
+// consecutive pool-target runs. Track in a separate ticket and re-enable once
+// the backend rejects wrong-password email changes.
+// Failing CI run for debugging:
+// https://github.com/commerce-emu/storefront-next/actions/runs/26918763043/job/79414501985
+const isEmailChangeWrongPasswordBroken = true;
+const emailChangeWrongPasswordScenario = isEmailChangeWrongPasswordBroken ? Scenario.skip : Scenario;
+
+const { I, storefrontPage, accountDetailsPage, apiLoginFlow, apiSignupFlow } = inject();
 import { expect } from 'chai';
 
 /**
@@ -42,7 +62,7 @@ let specPassword = '';
 Before(async () => {
     if (!specEmail) {
         await storefrontPage.clearCookies();
-        const { signupData } = await signupFlow.execute({ createBasket: false });
+        const { signupData } = await apiSignupFlow.execute();
         specEmail = signupData.email;
         specPassword = signupData.password;
     } else {
@@ -60,7 +80,7 @@ Before(async () => {
  * 3. Validate authenticated session cookies
  * 4. Verify page title and structure
  */
-scenarioFn('Account details page loads successfully for authenticated user', async () => {
+Scenario('Account details page loads successfully for authenticated user', async () => {
     // Navigate to account details
     accountDetailsPage.navigate();
 
@@ -91,7 +111,7 @@ scenarioFn('Account details page loads successfully for authenticated user', asy
  * 2. Verify profile card displays user information
  * 3. Validate that all profile fields are visible
  */
-scenarioFn('Profile information is displayed correctly', async () => {
+Scenario('Profile information is displayed correctly', async () => {
     accountDetailsPage.navigate();
 
     // Get displayed profile data
@@ -117,7 +137,7 @@ scenarioFn('Profile information is displayed correctly', async () => {
  * 5. Verify success message
  * 6. Validate changes are displayed
  */
-scenarioFn('User can successfully update profile information', async () => {
+Scenario('User can successfully update profile information', async () => {
     accountDetailsPage.navigate();
 
     // Update profile with new data using helper method
@@ -151,7 +171,7 @@ scenarioFn('User can successfully update profile information', async () => {
  * 4. Click Cancel
  * 5. Verify changes are not saved
  */
-scenarioFn('User can cancel profile editing without saving changes', async () => {
+Scenario('User can cancel profile editing without saving changes', async () => {
     accountDetailsPage.navigate();
 
     // Get current data
@@ -192,7 +212,7 @@ scenarioFn('User can cancel profile editing without saving changes', async () =>
  * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-scenarioFn('Email card displays current email address and supports changing it', async () => {
+changeEmailScenario('Email card displays current email address and supports changing it', async () => {
     accountDetailsPage.navigate();
 
     // Verify email card is visible and shows the current email address
@@ -220,9 +240,10 @@ scenarioFn('Email card displays current email address and supports changing it',
     const currentUrl = await I.grabCurrentUrl();
     expect(currentUrl, 'Should remain on account page after email change').to.include('/account');
 
-    // SLAS enforces a 1-second cooldown between login operations for the same user.
-    // Email change triggers an internal re-auth; waiting here avoids a 409 on the next scenario's login.
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Note: this email change triggers an internal SLAS re-auth, and SLAS enforces
+    // a ~1s cooldown between login operations for the same user. No manual wait is
+    // needed here — the next scenario's Before-hook login goes through
+    // loginRegistered, which now retries a SLAS 409 with backoff (withSlasRetry).
 })
     .tag('@email')
     .tag('@edit')
@@ -242,7 +263,7 @@ scenarioFn('Email card displays current email address and supports changing it',
  * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-scenarioFn('Email change fails with incorrect current password', async () => {
+emailChangeWrongPasswordScenario('Email change fails with incorrect current password', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickChangeEmail();
@@ -278,7 +299,7 @@ scenarioFn('Email change fails with incorrect current password', async () => {
  * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-scenarioFn('Email change fails with invalid email format', async () => {
+Scenario('Email change fails with invalid email format', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickChangeEmail();
@@ -312,7 +333,7 @@ scenarioFn('Email change fails with invalid email format', async () => {
  * NOTE: Email verification status badges are only rendered when "Enable Email Verification" is enabled in
  * Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  */
-scenarioFn('Email verification badge is shown and Verify Email opens OTP modal when unverified', () => {
+Scenario('Email verification badge is shown and Verify Email opens OTP modal when unverified', () => {
     accountDetailsPage.navigate();
 
     // The spec account is created without verifying the email, so email is always unverified in this test
@@ -341,7 +362,7 @@ scenarioFn('Email verification badge is shown and Verify Email opens OTP modal w
  * 2. Refresh the page
  * 3. Verify updated data persists
  */
-scenarioFn('Profile changes persist after page refresh', async () => {
+Scenario('Profile changes persist after page refresh', async () => {
     accountDetailsPage.navigate();
 
     // Edit and save profile using helper method
@@ -376,7 +397,7 @@ scenarioFn('Profile changes persist after page refresh', async () => {
  * 5. Verify success message
  * 6. Verify automatic re-authentication
  */
-scenarioFn('User can successfully change password', async () => {
+Scenario('User can successfully change password', async () => {
     accountDetailsPage.navigate();
 
     // Click Change Password button
@@ -435,7 +456,7 @@ scenarioFn('User can successfully change password', async () => {
  * 4. Click Cancel
  * 5. Verify form closes without saving
  */
-scenarioFn('User can cancel password change without saving', async () => {
+Scenario('User can cancel password change without saving', async () => {
     accountDetailsPage.navigate();
 
     // Click Change Password button
@@ -470,7 +491,7 @@ scenarioFn('User can cancel password change without saving', async () => {
  * 4. Attempt to save
  * 5. Verify error message
  */
-scenarioFn('Password change fails with incorrect current password', () => {
+Scenario('Password change fails with incorrect current password', () => {
     accountDetailsPage.navigate();
 
     // Click Change Password button
@@ -506,7 +527,7 @@ scenarioFn('Password change fails with incorrect current password', () => {
  * 4. Verify password requirements indicators show errors
  * 5. Verify Save button is disabled or save fails
  */
-scenarioFn('Password change validates password strength requirements', () => {
+Scenario('Password change validates password strength requirements', () => {
     accountDetailsPage.navigate();
 
     // Use spec-scoped credentials
@@ -542,7 +563,7 @@ scenarioFn('Password change validates password strength requirements', () => {
  * 4. Attempt to save
  * 5. Verify validation error
  */
-scenarioFn('Password change fails when confirmation does not match', async () => {
+Scenario('Password change fails when confirmation does not match', async () => {
     accountDetailsPage.navigate();
 
     // Use spec-scoped credentials
@@ -602,7 +623,7 @@ scenarioFn('Password change fails when confirmation does not match', async () =>
  * E2E value: Confirms section renders in the live app with real auth/customerId,
  * which unit tests and stories cannot verify.
  */
-scenarioFn('Interests & Preferences section renders for authenticated user', () => {
+Scenario('Interests & Preferences section renders for authenticated user', () => {
     accountDetailsPage.navigate();
 
     I.seeElement(accountDetailsPage.locators.interestsPreferencesCard);
@@ -621,7 +642,7 @@ scenarioFn('Interests & Preferences section renders for authenticated user', () 
  *
  * E2E value: Verifies the flow in the real page layout with actual async timing.
  */
-scenarioFn('I&P edit mode toggle — cancel restores view mode', () => {
+Scenario('I&P edit mode toggle — cancel restores view mode', () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();
@@ -655,7 +676,7 @@ scenarioFn('I&P edit mode toggle — cancel restores view mode', () => {
  * E2E value: Full dialog flow (open → tab switch → checkbox → save → badge)
  * not covered by unit tests or stories.
  */
-scenarioFn('Add an interest via the tabbed dialog', async () => {
+Scenario('Add an interest via the tabbed dialog', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();
@@ -690,7 +711,7 @@ scenarioFn('Add an interest via the tabbed dialog', async () => {
  *
  * E2E value: Real browser aria-label button interaction not covered by unit tests.
  */
-scenarioFn('Remove an interest badge in edit mode', async () => {
+Scenario('Remove an interest badge in edit mode', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();
@@ -732,7 +753,7 @@ scenarioFn('Remove an interest badge in edit mode', async () => {
  *
  * E2E value: Tests the second dialog type (multi-select) end-to-end.
  */
-scenarioFn('Add a product category via multi-select dialog', async () => {
+Scenario('Add a product category via multi-select dialog', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();
@@ -765,7 +786,7 @@ scenarioFn('Add a product category via multi-select dialog', async () => {
  * E2E value: Full "edit → save → toast → view mode reflects changes" cycle, including
  * the success toast fired by the parent component — not covered by unit tests or stories.
  */
-scenarioFn('I&P full save flow shows success toast and reflects state in view mode', async () => {
+Scenario('I&P full save flow shows success toast and reflects state in view mode', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();
@@ -802,7 +823,7 @@ scenarioFn('I&P full save flow shows success toast and reflects state in view mo
  *
  * E2E value: Verifies full discard behavior across change types in the real browser.
  */
-scenarioFn('I&P cancel discards all pending changes', async () => {
+Scenario('I&P cancel discards all pending changes', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickEditInterestsPreferences();

@@ -16,18 +16,24 @@
 
 Feature('Reset Password').tag('@core').tag('@auth');
 
-// TODO: Skipped pending two independent fixes.
-//   1. "User can request password reset" — re-enabled in PR #1865 (commit
-//      a20304122) and immediately failing in nightly; the "Check Your Email"
-//      heading never appears after submitting a known account email.
-//   2. "User can reset password using magic link" — Before hook (signupFlow)
-//      flakes intermittently on the new pre-merge gate (cc-nx_RefArchGlobal
-//      cookie wait timeout one run, "Last Name Input" disappearing mid-form
-//      the next). Same signup fragility as account-details/account-addresses.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
-const { storefrontPage, forgotPasswordPage, resetPasswordPage, signupFlow } = inject();
+// The Before hook now uses apiSignupFlow (SCAPI register + cookie injection)
+// instead of the UI signup form, so the magic-link scenario's setup no longer
+// flakes (cc-nx_ cookie timeout / "Last Name Input" disappearing mid-form).
+//
+// "User can request password reset" previously failed because the "Check Your
+// Email" heading never appeared after submitting a known account email — the
+// SLAS client wasn't configured for the password-reset operation, so the
+// request failed and the success heading never rendered. With the SLAS client
+// now configured for password reset, the scenario is re-enabled.
+//
+// NOTE: that fix is NOT in this repo — it's a SLAS client change made in the
+// SLAS Admin UI: Clients > (select the client id) > Site Configuration > set the
+// Domain Identity. This spec's stability therefore depends on environment state
+// that isn't version-controlled here: if that SLAS client config regresses, this
+// scenario flakes again with no code-level signal. If it starts failing on
+// "Check Your Email", check the SLAS Admin UI client's Site Configuration
+// (Domain Identity) before looking for a code cause.
+const { storefrontPage, forgotPasswordPage, resetPasswordPage, apiSignupFlow } = inject();
 import { expect } from 'chai';
 
 /**
@@ -45,12 +51,12 @@ let specEmail = '';
 Before(async () => {
     if (!specEmail) {
         await storefrontPage.clearCookies();
-        const { signupData } = await signupFlow.execute({ createBasket: false });
+        const { signupData } = await apiSignupFlow.execute();
         specEmail = signupData.email;
     }
 });
 
-scenarioFn('User can request password reset', () => {
+Scenario('User can request password reset', () => {
     // Navigate to the forgot password page
     forgotPasswordPage.navigate();
 
@@ -69,7 +75,7 @@ scenarioFn('User can request password reset', () => {
     .tag('@reset-password')
     .tag('@forgot-password-form');
 
-scenarioFn('User can reset password using magic link', async () => {
+Scenario('User can reset password using magic link', async () => {
     // Test data
     const testToken = '12345678';
     const testPassword = 'NewSecureP@ssw0rd!';
