@@ -18,7 +18,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 import ProductRecommendations from '@/components/product-recommendations';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
 
 const { t } = getTranslation();
 

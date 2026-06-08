@@ -29,7 +29,7 @@ import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.se
 import type { WishlistInitialState } from '@/lib/wishlist/state';
 import { WishlistProvider } from '@/providers/wishlist';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 

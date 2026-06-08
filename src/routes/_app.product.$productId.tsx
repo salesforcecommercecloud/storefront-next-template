@@ -31,7 +31,7 @@ import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import { CategoryBreadcrumbsSkeleton } from '@/components/category-breadcrumbs/skeleton';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ProductRecommendations from '@/components/product-recommendations';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
