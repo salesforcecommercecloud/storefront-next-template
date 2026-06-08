@@ -457,8 +457,7 @@
             "lookupFallbackMessage": "La ricerca del cliente non è riuscita. Continuazione come ospite.",
             "saveError": "Impossibile salvare le informazioni di contatto",
             "sessionExpired": "Sessione scaduta. Accedi di nuovo.",
-            "verificationFailed": "Non è stato possibile verificare le tue informazioni. Riprova.",
-            "verificationRefreshed": "La verifica è scaduta. L'abbiamo aggiornata - riprova."
+            "verificationFailed": "Non è stato possibile verificare le tue informazioni. Riprova."
         },
         "addressModal": {
             "title": "Aggiungi nuovo indirizzo",

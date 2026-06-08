@@ -462,8 +462,7 @@
             "lookupFallbackMessage": "Customer lookup failed. Continuing as guest.",
             "saveError": "Failed to save contact information",
             "sessionExpired": "Session expired. Sign in again.",
-            "verificationFailed": "We couldn't verify your information. Please try again.",
-            "verificationRefreshed": "Verification timed out. We've refreshed it - please try again."
+            "verificationFailed": "We couldn't verify your information. Please try again."
         },
         "addressModal": {
             "title": "Add New Address",

@@ -19,6 +19,7 @@ import { verifyTurnstileToken } from '@/lib/turnstile/verify.server';
 import { getTurnstileSecretKey, getTurnstileSiteKey } from '@/lib/turnstile/utils';
 import { getSiteverifyMetricsSnapshot, isTurnstileDegraded } from '@/lib/turnstile/health.server';
 import { redactEmailForLog } from '@/lib/turnstile/log-redact.server';
+import { COOKIE_TURNSTILE_VERIFIED } from '@/lib/turnstile/constants';
 
 const INFRASTRUCTURE_ERROR_CODES = new Set(['internal-error']);
 // Only HTTP 5xx from siteverify is a CF-side failure. 4xx codes (400/401/403/etc.) mean
@@ -60,6 +61,24 @@ export async function enforceTurnstile({
 }: EnforceTurnstileOptions): Promise<boolean> {
     const verificationEnabled = config.security?.turnstile?.verification?.enabled ?? false;
     if (!verificationEnabled || !config.security?.turnstile?.enabled) {
+        return true;
+    }
+
+    // Skip when the cc-tv cookie has a non-empty value: this client cleared a Turnstile
+    // challenge recently within the cookie's max-age. The cookie is httpOnly + Secure
+    // and is set by /action/authorize-passwordless-email only after enforceTurnstile
+    // previously returned true, so it is a soft "passed-recently" attestation (not a
+    // signed token). This avoids re-challenging the shopper on subsequent
+    // Turnstile-protected actions in the same checkout flow.
+    const cookieHeader = request.headers.get('cookie') || '';
+    const ccTvPresent = cookieHeader.split(';').some((c) => {
+        const [name, ...rest] = c.trim().split('=');
+        return name === COOKIE_TURNSTILE_VERIFIED && rest.join('=').length > 0;
+    });
+    if (ccTvPresent) {
+        logger.debug('[Turnstile] Skipping verification - cc-tv cookie present', {
+            action: actionName,
+        });
         return true;
     }
 

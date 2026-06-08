@@ -293,11 +293,13 @@ export const WithValidationErrors: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Type an invalid email and submit to trigger validation
+        // Type an invalid email and tab out to trigger react-hook-form validation.
+        // The Continue button is now gated on form.formState.isValid, so clicking it is
+        // not a valid trigger - blurring the field is the standard way to surface a
+        // field-level error.
         const emailInput = canvas.getByRole('textbox', { name: /email address/i });
         await userEvent.type(emailInput, 'not-an-email');
-        const submitButton = canvas.getByRole('button', { name: /continue to shipping/i });
-        await userEvent.click(submitButton);
+        await userEvent.tab();
 
         // Field-level validation error should appear
         const errorMessage = await canvas.findByText(/please enter a valid email address/i);
