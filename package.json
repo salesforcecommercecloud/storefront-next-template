@@ -4,6 +4,11 @@
     "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
+    "storefrontNext": {
+        "templateRelease": "unreleased",
+        "templateVersion": "0.0.0-dev",
+        "minSdkVersion": "0.0.0-dev"
+    },
     "scripts": {
         "dev": "pnpm locales:aggregate-extensions && cross-env NODE_OPTIONS=--conditions=dev-data-store sfnext dev",
         "dev:debug": "cross-env NODE_OPTIONS=\"--inspect --conditions=dev-data-store\" sfnext dev",
