@@ -1,13 +1,13 @@
 {
     "name": "template-retail-rsc-app",
-    "version": "1.0.0-alpha.2",
+    "version": "2026.6.0",
     "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
     "storefrontNext": {
-        "templateRelease": "unreleased",
-        "templateVersion": "0.0.0-dev",
-        "minSdkVersion": "0.0.0-dev"
+        "templateRelease": "June 2026",
+        "templateVersion": "2026.6.0",
+        "minSdkVersion": "1.0.0-alpha.3"
     },
     "scripts": {
         "dev": "pnpm locales:aggregate-extensions && cross-env NODE_OPTIONS=--conditions=dev-data-store sfnext dev",
@@ -61,8 +61,8 @@
         "@radix-ui/react-switch": "1.2.2",
         "@radix-ui/react-tooltip": "1.2.8",
         "@react-router/node": "7.12.0",
-        "@salesforce/storefront-next-dev": "1.0.0-alpha.2",
-        "@salesforce/storefront-next-runtime": "1.0.0-alpha.2",
+        "@salesforce/storefront-next-dev": "1.0.0-alpha.3",
+        "@salesforce/storefront-next-runtime": "1.0.0-alpha.3",
         "@vis.gl/react-google-maps": "1.7.1",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
