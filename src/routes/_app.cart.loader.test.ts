@@ -196,6 +196,33 @@ describe('Cart route loader', () => {
         expect(mayAlsoLikeCall).toBeDefined();
         const mayAlsoLikeOpts = mayAlsoLikeCall?.[1] as { products?: unknown[] } | undefined;
         expect(mayAlsoLikeOpts?.products?.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('passes a deduplicated products array to CART_MAY_ALSO_LIKE', async () => {
+        // Two cart lines mapping to the same parent productId would double-count in Einstein
+        // if the loader passed `Object.values(productsByItemId)` directly. The loader's rec
+        // chain dedups by `product.id` before invoking `fetchProductRecommendations`.
+        const sharedProduct = { id: 'p-1', name: 'Shirt' } as any;
+        vi.mocked(fetchProductsInBasket).mockResolvedValue({
+            productsByItemId: {
+                'i-1': sharedProduct,
+                'i-2': sharedProduct,
+            },
+            bonusProductsById: {},
+        });
+
+        const result = loader(createLoaderArgs()) as any;
+        await result.basketDataPromise;
+        await result.cartMayAlsoLikePromise;
+
+        const fetchEnriched = vi.mocked(fetchProductRecommendations);
+        const mayAlsoLikeCall = fetchEnriched.mock.calls.find(
+            ([, opts]) => (opts as { name: string }).name === 'product-to-product-einstein'
+        );
+        const mayAlsoLikeOpts = mayAlsoLikeCall?.[1] as { products?: { id: string }[] } | undefined;
+        // Critically: 1 product, not 2.
+        expect(mayAlsoLikeOpts?.products).toHaveLength(1);
+        expect(mayAlsoLikeOpts?.products?.[0]?.id).toBe('p-1');
 
         const recentlyViewedCall = fetchEnriched.mock.calls.find(
             ([, opts]) => (opts as { name: string }).name === 'viewed-recently-einstein'

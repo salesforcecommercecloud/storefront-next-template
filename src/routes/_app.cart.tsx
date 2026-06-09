@@ -122,20 +122,31 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
 
     const wishlistProductIdsPromise = fetchWishlistProductIdsForCart(context);
 
-    // CART_MAY_ALSO_LIKE wants products as input — chain off basketDataPromise so we get productsByItemId without
-    // awaiting it inline. If basketDataPromise itself rejects, the surrounding cart UI already shows CartLoadError,
-    // so we silently degrade here.
+    // CART_MAY_ALSO_LIKE wants a deduplicated product list as input — chain off basketDataPromise so we get
+    // productsByItemId without awaiting it inline. The dedup runs in this loader closure (server-only); the
+    // resulting array never gets serialized to the client. Dedup matters because two cart lines mapping to
+    // the same parent productId would otherwise be sent to Einstein twice.
+    // If basketDataPromise itself rejects, the surrounding cart UI already shows CartLoadError, so we
+    // silently degrade here.
     const cartMayAlsoLikePromise = basketDataPromise
-        .then(({ productsByItemId }) =>
-            fetchProductRecommendations(
+        .then(({ productsByItemId }) => {
+            const seen = new Set<string>();
+            const products: ShopperProducts.schemas['Product'][] = [];
+            for (const p of Object.values(productsByItemId)) {
+                if (!seen.has(p.id)) {
+                    seen.add(p.id);
+                    products.push(p);
+                }
+            }
+            return fetchProductRecommendations(
                 { context, request },
                 {
                     name: EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE,
-                    products: Object.values(productsByItemId),
+                    products,
                     ...(currency ? { currency } : {}),
                 }
-            )
-        )
+            );
+        })
         .catch((): Recommendation => ({}));
 
     // CART_RECENTLY_VIEWED is identity-only (cookieId/userId), no product input — fire immediately.
