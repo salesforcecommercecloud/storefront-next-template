@@ -26,6 +26,11 @@ import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events
 import type { SecurityConfig } from '@salesforce/storefront-next-runtime/security';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
+// Auto-generated barrel of installed extensions' config defaults. Its type is the source
+// for `AppConfig['extension']`, so the type and the runtime value (config.server.ts) can't drift.
+// Explicit `/config/index`: a bare `@/extensions/config` resolves to the sibling config.json
+// extension registry instead of this barrel.
+import type GeneratedExtensionConfig from '@/extensions/config/index';
 
 import type { DetectionConfig, Site, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
@@ -35,6 +40,13 @@ export type BadgeDetail = {
     color: 'green' | 'yellow' | 'orange' | 'purple' | 'red' | 'blue' | 'pink';
     priority?: number;
 };
+
+/**
+ * Recursively strip `readonly` so an extension config authored with `as const` still merges
+ * into the mutable `AppConfig`. The generated barrel is the source of both the value (in
+ * config.server.ts) and this type, so the two can never drift.
+ */
+type DeepWritable<T> = T extends object ? { -readonly [K in keyof T]: DeepWritable<T[K]> } : T;
 
 export type AppConfig = {
     auth: {
@@ -104,6 +116,12 @@ export type AppConfig = {
             pageViewsResetDuration: number;
         };
     };
+    /**
+     * Config defaults contributed by installed extensions, keyed by the camelCase of each
+     * extension folder name. Auto-discovered from each extension's `config.ts` — the shape
+     * is derived from the generated barrel, never hand-edited. See docs/README-CONFIG.md.
+     */
+    extension?: DeepWritable<typeof GeneratedExtensionConfig>;
     features: {
         passwordlessLogin: {
             enabled?: boolean;

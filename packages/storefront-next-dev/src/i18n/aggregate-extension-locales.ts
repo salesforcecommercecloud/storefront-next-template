@@ -16,6 +16,7 @@
 import { readdir, writeFile, mkdir } from 'fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+import { GENERATED_EXTENSION_DIRS } from '../extensibility/constants.js';
 import { logger } from '../logger.js';
 
 /** Apache License 2.0 header text for generated files. Inlined to avoid path resolution issues in standalone projects. */
@@ -98,7 +99,13 @@ export async function discoverLocales(dirs: { SRC_DIR: string; EXTENSIONS_DIR: s
     try {
         const extensions = await readdir(EXTENSIONS_DIR, { withFileTypes: true });
         for (const extension of extensions) {
-            if (!extension.isDirectory() || extension.name === 'locales') continue;
+            // `locales` and `config` are generated barrel directories, not extensions.
+            if (
+                !extension.isDirectory() ||
+                extension.name === GENERATED_EXTENSION_DIRS.locales ||
+                extension.name === GENERATED_EXTENSION_DIRS.config
+            )
+                continue;
 
             const localesPath = join(EXTENSIONS_DIR, extension.name, 'locales');
             if (!existsSync(localesPath)) continue;
@@ -127,7 +134,13 @@ export async function findExtensionsWithLocale(
     try {
         const extensionEntries = await readdir(extensionsDir, { withFileTypes: true });
         for (const entry of extensionEntries) {
-            if (!entry.isDirectory() || entry.name === 'locales') continue;
+            // `locales` and `config` are generated barrel directories, not extensions.
+            if (
+                !entry.isDirectory() ||
+                entry.name === GENERATED_EXTENSION_DIRS.locales ||
+                entry.name === GENERATED_EXTENSION_DIRS.config
+            )
+                continue;
 
             const translationPath = join(extensionsDir, entry.name, 'locales', locale, 'translations.json');
             if (existsSync(translationPath)) {

@@ -365,6 +365,12 @@ export function loader({ context }: LoaderFunctionArgs) {
 }
 ```
 
+### Extension config auto-discovery
+
+The steps above are for config the template owns. **Extensions** add client-side config without editing `src/types/config.ts` or `config.server.ts`: drop a `config.ts` in the extension folder that default-exports a plain object, and the build prestep (`pnpm dev` / `pnpm build`) discovers it, merges it into `config.app.extension.<camelCaseFolder>`, and derives the type automatically. Merchants then override per environment with `PUBLIC__app__extension__<key>__<setting>` — no core-file edits. See [src/extensions/README.md](../src/extensions/README.md#extension-configuration) for the authoring guide.
+
+Extension keys are set via `PUBLIC__` env vars / `.env`; they are not added to `config-meta.json`, so they don't appear in the create-storefront prompts.
+
 ## How It Works
 
 1. **Types defined** in `src/types/config.ts` — `AppConfig` defines all app fields, `Config = BaseConfig<AppConfig>`

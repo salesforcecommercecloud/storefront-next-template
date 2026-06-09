@@ -159,6 +159,7 @@ export default defineConfig([
             'commands/validate-cartridge': 'src/commands/validate-cartridge.ts',
             // Config commands
             'commands/config/inspect': 'src/commands/config/inspect.ts',
+            'commands/config/aggregate-extensions': 'src/commands/config/aggregate-extensions.ts',
             // Extensions commands
             'commands/extensions/list': 'src/commands/extensions/list.ts',
             'commands/extensions/install': 'src/commands/extensions/install.ts',

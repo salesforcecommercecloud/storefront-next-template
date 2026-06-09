@@ -131,6 +131,60 @@ export function MyExtensionComponent() {
 
 For complete documentation on i18n, including usage patterns, best practices, and examples, see [README-I18N.md](../../docs/README-I18N.md#extension-translations).
 
+## Extension Configuration
+
+Extensions can ship client-side configuration defaults (API keys, feature toggles, TTLs) without editing core files. Add a `config.ts` to your extension that default-exports a plain object; it is discovered and merged during the build process (when you run `pnpm dev` or `pnpm build`).
+
+```
+src/extensions/
+  loqate-address-verification/
+    components/
+    config.ts
+    index.ts
+```
+
+```typescript
+// src/extensions/loqate-address-verification/config.ts
+export default {
+    apiKey: '',
+    cacheTTL: 900000,
+};
+```
+
+Your defaults are namespaced by the camelCase of the folder name, so the example above is available at `config.app.extension.loqateAddressVerification` with full type safety:
+
+```typescript
+// React component (client)
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+
+const config = useConfig();
+const apiKey = config.app.extension?.loqateAddressVerification?.apiKey ?? '';
+```
+
+To read the same config in a route loader or action, use `getConfig` (the server-side accessor):
+
+```typescript
+// Loader, action, or server component
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+
+const config = getConfig();
+const apiKey = config.app.extension?.loqateAddressVerification?.apiKey ?? '';
+```
+
+Merchants override values per environment with a `PUBLIC__` env var, no core-file edits:
+
+```
+PUBLIC__app__extension__loqateAddressVerification__apiKey=123456
+```
+
+Notes:
+- **`config.ts` is client-side and `PUBLIC__`.** Values are exposed to the browser via `window.__APP_CONFIG__`. Never put server-only secrets here — read those from `process.env` in a server route. See [README-CONFIG.md](../../docs/README-CONFIG.md).
+- **Author the default as a plain object, no `as const`,** so merchants can override it and the value types stay widened (`apiKey: string`, not the literal `''`).
+- **Use JSON-serializable values only** (strings, numbers, booleans, arrays, nested objects) — config is serialized into `window.__APP_CONFIG__`. Functions, `Date`, `Map`, etc. don't survive serialization and aren't supported.
+- **Use a folder name of letters, digits, and hyphens that starts with a letter** (`loqate-address-verification`). The build fails fast if a folder name can't form a valid config key.
+- **Don't import core config** (`config.server.ts`, `src/types/config.ts`) from `config.ts` — keep it a leaf module of defaults.
+- The discovered defaults are written to `src/extensions/config/index.ts` (auto-generated; do not edit). This is distinct from the `config.json` extension *registry* in this same directory.
+
 ## Generating Installation/Uninstallation Instructions
 If you’re building an extension for customer distribution, you can generate installation and uninstallation instructions that both humans and LLMs can follow to complete the install/uninstall steps.
 ```

@@ -1,6 +1,7 @@
 import { t as logger } from "../../logger.js";
 import "../../logger2.js";
 import { r as commonFlags } from "../../flags.js";
+import { t as GENERATED_EXTENSION_DIRS } from "../../constants.js";
 import { Command, Flags } from "@oclif/core";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -54,7 +55,7 @@ async function discoverLocales(dirs) {
 	try {
 		const extensions = await readdir(EXTENSIONS_DIR, { withFileTypes: true });
 		for (const extension of extensions) {
-			if (!extension.isDirectory() || extension.name === "locales") continue;
+			if (!extension.isDirectory() || extension.name === GENERATED_EXTENSION_DIRS.locales || extension.name === GENERATED_EXTENSION_DIRS.config) continue;
 			const localesPath = join(EXTENSIONS_DIR, extension.name, "locales");
 			if (!existsSync(localesPath)) continue;
 			const localeEntries = await readdir(localesPath, { withFileTypes: true });
@@ -71,7 +72,7 @@ async function findExtensionsWithLocale(locale, extensionsDir) {
 	try {
 		const extensionEntries = await readdir(extensionsDir, { withFileTypes: true });
 		for (const entry of extensionEntries) {
-			if (!entry.isDirectory() || entry.name === "locales") continue;
+			if (!entry.isDirectory() || entry.name === GENERATED_EXTENSION_DIRS.locales || entry.name === GENERATED_EXTENSION_DIRS.config) continue;
 			if (existsSync(join(extensionsDir, entry.name, "locales", locale, "translations.json"))) extensions.push({
 				name: entry.name,
 				path: `@/extensions/${entry.name}/locales/${locale}/translations.json`
