@@ -1,4 +1,4 @@
-import * as react_router10 from "react-router";
+import * as react_router0 from "react-router";
 import { MiddlewareFunction, RouterContextProvider } from "react-router";
 
 //#region src/security/types.d.ts
@@ -135,7 +135,7 @@ declare const defaultSecurityHeaders: ResolvedSecurityConfig;
 //#endregion
 //#region src/security/nonce.d.ts
 /** React Router context carrying the current request's CSP nonce. */
-declare const securityContext: react_router10.RouterContext<{
+declare const securityContext: react_router0.RouterContext<{
   nonce: string;
 } | null>;
 /**

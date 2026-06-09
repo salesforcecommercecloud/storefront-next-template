@@ -22,6 +22,8 @@
         "storybook": "storybook dev -p 6006",
         "storybook:build": "storybook build -o .storybook/storybook-static",
         "storybook:test": "node scripts/test-storybook.js",
+        "chromatic": "chromatic --build-script-name=storybook:build --exit-zero-on-changes",
+        "chromatic:core": "node scripts/chromatic-core.js",
         "e2e": "pnpm --filter ./e2e e2e",
         "a11y": "pnpm --filter ./e2e a11y",
         "cartridge:generate": "sfnext generate-cartridge",
@@ -93,6 +95,7 @@
     },
     "devDependencies": {
         "@chromatic-com/storybook": "4.1.2",
+        "chromatic": "^11.21.0",
         "@eslint/compat": "1.3.2",
         "@eslint/js": "9.34.0",
         "@lhci/cli": "0.15.1",

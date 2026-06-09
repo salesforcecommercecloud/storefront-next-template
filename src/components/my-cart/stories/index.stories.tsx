@@ -80,7 +80,7 @@ const discountedProductMap: Record<string, Record<string, unknown>> = {
 const meta: Meta<typeof MyCart> = {
     title: 'CART/My Cart',
     component: MyCart,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         ...checkoutStrictA11yParameters,
         layout: 'centered',

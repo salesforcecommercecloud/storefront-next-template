@@ -57,7 +57,7 @@ interface MegaStoryArgs {
 
 const meta: Meta<MegaStoryArgs> = {
     title: 'LAYOUT/Navigation Menu Mega',
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         layout: 'fullscreen',
         viewport: {
