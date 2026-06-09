@@ -19,6 +19,9 @@ import type { ShopperLogin } from '../types';
 import type { ProxyClient } from '../proxy-types';
 import type { operations as shopperLoginOps } from '../generated/auth-v1.operations';
 
+/** WebAuthn credential as returned by the browser's navigator.credentials API. */
+export type PublicKeyCredentialJson = ShopperLogin.schemas['PublicKeyCredentialJson'];
+
 /**
  * Re-export TokenResponse from the generated SLAS types for convenience.
  * This is the base response structure from SLAS token endpoints.
@@ -279,6 +282,167 @@ export interface SocialExchangeCodeOptions {
     usid?: string;
     /** Enable Do Not Track for the user */
     dnt?: boolean;
+}
+
+/**
+ * Options for authorizing WebAuthn registration.
+ * Sends a TOTP to the user via the specified channel to verify identity before passkey creation.
+ */
+export interface WebAuthnAuthorizeRegistrationOptions {
+    /** Shopper's email address — used as the SLAS login identifier (e.g. `'shopper@example.com'`). Obtain from the shopper's profile via Shopper Customers API. */
+    userId: string;
+    /** Delivery mode for the verification code */
+    mode: PasswordActionMode;
+    /** Callback URI (required when mode is 'callback') */
+    callbackUri?: string;
+    /** Locale for the verification message */
+    locale?: string;
+}
+
+/**
+ * Options for starting WebAuthn registration.
+ */
+export interface WebAuthnRegistrationStartOptions {
+    /** The OTP/TOTP received by the user */
+    pwdActionToken: string;
+    /** Shopper's email address — used as the SLAS login identifier (e.g. `'shopper@example.com'`). Must match the `userId` passed to `authorizeRegistration`. */
+    userId: string;
+    /** Display name for the passkey (e.g. user's full name) */
+    displayName?: string;
+    /** Nickname for the passkey device (e.g. "My iPhone") */
+    nickName?: string;
+}
+
+/**
+ * Options for finishing WebAuthn registration.
+ * The credential is the JSON response from the browser's WebAuthn API.
+ */
+export interface WebAuthnRegistrationFinishOptions {
+    /** Shopper's email address — used as the SLAS login identifier (e.g. `'shopper@example.com'`). Must match the `userId` passed to `authorizeRegistration` and `startRegistration`. */
+    userId: string;
+    /** The OTP token used in startRegistration */
+    pwdActionToken: string;
+    /** Serialized PublicKeyCredential from navigator.credentials.create() */
+    credential: PublicKeyCredentialJson;
+}
+
+/**
+ * Options for starting WebAuthn authentication.
+ */
+export interface WebAuthnAuthenticationStartOptions {
+    /** Shopper's email address (SLAS login identifier). When omitted, a discoverable-credential (usernameless) flow is used and the authenticator selects the credential. */
+    userId?: string;
+}
+
+/**
+ * Options for finishing WebAuthn authentication.
+ * The credential is the JSON response from the browser's WebAuthn API.
+ */
+export interface WebAuthnAuthenticationFinishOptions {
+    /** Serialized PublicKeyCredential from navigator.credentials.get() */
+    credential: PublicKeyCredentialJson;
+    /** Optional USID to carry over from the current guest session */
+    usid?: string;
+}
+
+/**
+ * Options for retrieving or deleting passkey user data.
+ */
+export interface WebAuthnPasskeyUserOptions {
+    /** Shopper access token */
+    accessToken: string;
+    /** Shopper's email address — used as the SLAS login identifier (e.g. `'shopper@example.com'`). Obtain from the shopper's profile via Shopper Customers API. */
+    loginId: string;
+}
+
+/**
+ * Options for deleting a specific passkey credential.
+ */
+export interface WebAuthnDeletePasskeyCredentialOptions {
+    /** Shopper access token */
+    accessToken: string;
+    /** Shopper's email address — used as the SLAS login identifier (e.g. `'shopper@example.com'`). Obtain from the shopper's profile via Shopper Customers API. */
+    loginId: string;
+    /** The credential ID to delete */
+    credentialId: string;
+}
+
+/**
+ * WebAuthn / passkey namespace.
+ * Requires `sfcc.pwdless_login` scope on the SLAS client and a private client secret.
+ */
+export interface WebAuthnNamespace {
+    /**
+     * Step 1 of passkey registration: authorize the user by sending them a TOTP.
+     *
+     * @param options - User ID and delivery mode
+     */
+    authorizeRegistration(
+        options: WebAuthnAuthorizeRegistrationOptions
+    ): ReturnType<ShopperLoginClient['authorizeWebauthnRegistration']>;
+
+    /**
+     * Step 2 of passkey registration: start registration and get credential creation options.
+     * Pass the returned options to `navigator.credentials.create()`.
+     *
+     * @param options - TOTP and user details
+     */
+    startRegistration(
+        options: WebAuthnRegistrationStartOptions
+    ): ReturnType<ShopperLoginClient['startWebauthnUserRegistration']>;
+
+    /**
+     * Step 3 of passkey registration: finish registration by submitting the authenticator response.
+     *
+     * @param options - Credential from `navigator.credentials.create()`
+     */
+    finishRegistration(
+        options: WebAuthnRegistrationFinishOptions
+    ): ReturnType<ShopperLoginClient['finishWebauthnUserRegistration']>;
+
+    /**
+     * Step 1 of passkey authentication: get credential request options.
+     * Pass the returned options to `navigator.credentials.get()`.
+     *
+     * @param options - Optional user ID (omit for discoverable-credential flow)
+     */
+    startAuthentication(
+        options?: WebAuthnAuthenticationStartOptions
+    ): ReturnType<ShopperLoginClient['startWebauthnAuthentication']>;
+
+    /**
+     * Step 2 of passkey authentication: verify the assertion and get tokens.
+     *
+     * @param options - Credential from `navigator.credentials.get()`
+     * @returns Promise resolving to AuthResponse with access tokens and dwsid
+     */
+    finishAuthentication(options: WebAuthnAuthenticationFinishOptions): Promise<AuthResponse>;
+
+    /**
+     * Retrieve passkey user information and all registered credentials.
+     * Requires a valid shopper access token.
+     *
+     * @param options - Access token and login ID
+     */
+    getPasskeyUser(options: WebAuthnPasskeyUserOptions): ReturnType<ShopperLoginClient['getPasskeyUserByLoginId']>;
+
+    /**
+     * Delete a passkey user and all associated credentials.
+     * Requires a valid shopper access token.
+     *
+     * @param options - Access token and login ID
+     */
+    deletePasskeyUser(options: WebAuthnPasskeyUserOptions): ReturnType<ShopperLoginClient['deletePasskeyUser']>;
+
+    /**
+     * Delete a specific passkey credential for a user.
+     * Requires a valid shopper access token.
+     *
+     * @param options - Access token, login ID, and credential ID
+     */
+    deletePasskeyCredential(
+        options: WebAuthnDeletePasskeyCredentialOptions
+    ): ReturnType<ShopperLoginClient['deletePasskeyCredential']>;
 }
 
 /**
@@ -576,4 +740,33 @@ export interface AuthNamespace {
      * ```
      */
     otp: OtpNamespace;
+
+    /**
+     * WebAuthn / passkey namespace.
+     * Only available when clientSecret is configured (private SLAS client).
+     * Requires the `sfcc.pwdless_login` scope on the SLAS client.
+     *
+     * @example
+     * ```typescript
+     * // Registration flow
+     * await clients.auth.webAuthn.authorizeRegistration({
+     *   userId: 'user@example.com',
+     *   mode: 'email',
+     * });
+     * const options = await clients.auth.webAuthn.startRegistration({
+     *   pwdActionToken: '12345678',
+     *   userId: 'user@example.com',
+     * });
+     * const credential = await navigator.credentials.create({ publicKey: options.data });
+     * await clients.auth.webAuthn.finishRegistration({ userId: 'user@example.com', credential });
+     *
+     * // Authentication flow
+     * const challengeOptions = await clients.auth.webAuthn.startAuthentication({
+     *   userId: 'user@example.com',
+     * });
+     * const assertion = await navigator.credentials.get({ publicKey: challengeOptions.data });
+     * const tokens = await clients.auth.webAuthn.finishAuthentication({ credential: assertion });
+     * ```
+     */
+    webAuthn: WebAuthnNamespace;
 }

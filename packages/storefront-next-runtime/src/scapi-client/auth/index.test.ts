@@ -66,6 +66,14 @@ describe('createAuthHelpers', () => {
         resetPassword: vi.fn(),
         requestOtp: vi.fn(),
         verifyOtp: vi.fn(),
+        authorizeWebauthnRegistration: vi.fn(),
+        startWebauthnUserRegistration: vi.fn(),
+        finishWebauthnUserRegistration: vi.fn(),
+        startWebauthnAuthentication: vi.fn(),
+        finishWebauthnAuthentication: vi.fn(),
+        getPasskeyUserByLoginId: vi.fn(),
+        deletePasskeyUser: vi.fn(),
+        deletePasskeyCredential: vi.fn(),
     };
 
     const baseConfig: AuthConfig = {
@@ -1426,6 +1434,376 @@ describe('createAuthHelpers', () => {
                         userId: 'user@example.com',
                     })
                 ).rejects.toThrow('Client secret is required for OTP operations');
+            });
+        });
+    });
+
+    describe('webAuthn', () => {
+        const mockCredential = {
+            id: 'cred-id',
+            rawId: 'cred-raw-id',
+            type: 'public-key' as const,
+            response: {
+                clientDataJSON: [],
+                attestationObject: [],
+            },
+        };
+
+        describe('authorizeRegistration', () => {
+            it('should send TOTP for webauthn registration', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.authorizeWebauthnRegistration.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.authorizeRegistration({
+                    userId: 'user@example.com',
+                    mode: 'email',
+                });
+
+                expect(mockShopperLoginClient.authorizeWebauthnRegistration).toHaveBeenCalledWith({
+                    params: {
+                        header: { Authorization: expect.stringContaining('Basic') },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        user_id: 'user@example.com',
+                        mode: 'email',
+                        channel_id: 'RefArch',
+                        client_id: 'test-client-id',
+                    },
+                });
+            });
+
+            it('should include callback_uri when mode is callback', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.authorizeWebauthnRegistration.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.authorizeRegistration({
+                    userId: 'user@example.com',
+                    mode: 'callback',
+                    callbackUri: 'https://example.com/webauthn-callback',
+                });
+
+                expect(mockShopperLoginClient.authorizeWebauthnRegistration).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        body: expect.objectContaining({
+                            mode: 'callback',
+                            callback_uri: 'https://example.com/webauthn-callback',
+                        }),
+                    })
+                );
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(
+                    auth.webAuthn.authorizeRegistration({ userId: 'user@example.com', mode: 'email' })
+                ).rejects.toThrow('Client secret is required for WebAuthn operations');
+            });
+
+            it('should throw error when mode is callback but callbackUri is not provided', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+                const auth = createAuthHelpers(config);
+
+                await expect(
+                    auth.webAuthn.authorizeRegistration({ userId: 'user@example.com', mode: 'callback' })
+                ).rejects.toThrow('callbackUri is required when mode is "callback"');
+            });
+        });
+
+        describe('startRegistration', () => {
+            it('should start webauthn registration', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.startWebauthnUserRegistration.mockResolvedValue({
+                    data: { challenge: 'mock-challenge' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.startRegistration({
+                    pwdActionToken: '12345678',
+                    userId: 'user@example.com',
+                    displayName: 'John Doe',
+                    nickName: 'My iPhone',
+                });
+
+                expect(mockShopperLoginClient.startWebauthnUserRegistration).toHaveBeenCalledWith({
+                    params: {
+                        header: { Authorization: expect.stringContaining('Basic') },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: 'test-client-id',
+                        pwd_action_token: '12345678',
+                        user_id: 'user@example.com',
+                        channel_id: 'RefArch',
+                        display_name: 'John Doe',
+                        nick_name: 'My iPhone',
+                    },
+                });
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(
+                    auth.webAuthn.startRegistration({ pwdActionToken: '12345678', userId: 'user@example.com' })
+                ).rejects.toThrow('Client secret is required for WebAuthn operations');
+            });
+        });
+
+        describe('finishRegistration', () => {
+            it('should finish webauthn registration', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.finishWebauthnUserRegistration.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.finishRegistration({
+                    userId: 'user@example.com',
+                    pwdActionToken: '12345678',
+                    credential: mockCredential,
+                });
+
+                expect(mockShopperLoginClient.finishWebauthnUserRegistration).toHaveBeenCalledWith({
+                    params: {
+                        header: { Authorization: expect.stringContaining('Basic') },
+                    },
+                    body: {
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                        username: 'user@example.com',
+                        pwd_action_token: '12345678',
+                        credential: mockCredential,
+                    },
+                });
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(
+                    auth.webAuthn.finishRegistration({
+                        userId: 'user@example.com',
+                        pwdActionToken: '12345678',
+                        credential: mockCredential,
+                    })
+                ).rejects.toThrow('Client secret is required for WebAuthn operations');
+            });
+        });
+
+        describe('startAuthentication', () => {
+            it('should start webauthn authentication', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.startWebauthnAuthentication.mockResolvedValue({
+                    data: { challenge: 'mock-challenge' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.startAuthentication();
+
+                expect(mockShopperLoginClient.startWebauthnAuthentication).toHaveBeenCalledWith({
+                    params: {
+                        header: { Authorization: expect.stringContaining('Basic') },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                    },
+                });
+            });
+
+            it('should include user_id when provided', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.startWebauthnAuthentication.mockResolvedValue({
+                    data: { challenge: 'mock-challenge' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.startAuthentication({ userId: 'user@example.com' });
+
+                expect(mockShopperLoginClient.startWebauthnAuthentication).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        body: expect.objectContaining({ user_id: 'user@example.com' }),
+                    })
+                );
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(auth.webAuthn.startAuthentication()).rejects.toThrow(
+                    'Client secret is required for WebAuthn operations'
+                );
+            });
+        });
+
+        describe('finishAuthentication', () => {
+            it('should finish webauthn authentication and return tokens', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.finishWebauthnAuthentication.mockResolvedValue({
+                    data: {
+                        credentialId: 'cred-id',
+                        success: true,
+                        tokenResponse: mockTokenResponse,
+                    },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                const result = await auth.webAuthn.finishAuthentication({ credential: mockCredential });
+
+                expect(mockShopperLoginClient.finishWebauthnAuthentication).toHaveBeenCalledWith({
+                    params: {
+                        header: { Authorization: expect.stringContaining('Basic') },
+                    },
+                    body: {
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                        credential: mockCredential,
+                    },
+                });
+                expect(result.access_token).toBe('mock-access-token');
+            });
+
+            it('should include usid when provided', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.finishWebauthnAuthentication.mockResolvedValue({
+                    data: { tokenResponse: mockTokenResponse },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.finishAuthentication({
+                    credential: mockCredential,
+                    usid: 'session-usid',
+                });
+
+                expect(mockShopperLoginClient.finishWebauthnAuthentication).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        body: expect.objectContaining({ usid: 'session-usid' }),
+                    })
+                );
+            });
+
+            it('should throw when tokenResponse is absent', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.finishWebauthnAuthentication.mockResolvedValue({
+                    data: { success: false },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+
+                await expect(auth.webAuthn.finishAuthentication({ credential: mockCredential })).rejects.toThrow(
+                    'WebAuthn authentication did not return a token response'
+                );
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(auth.webAuthn.finishAuthentication({ credential: mockCredential })).rejects.toThrow(
+                    'Client secret is required for WebAuthn operations'
+                );
+            });
+        });
+
+        describe('getPasskeyUser', () => {
+            it('should retrieve passkey user info', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.getPasskeyUserByLoginId.mockResolvedValue({
+                    data: { id: 26, userName: 'user@example.com' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.getPasskeyUser({
+                    accessToken: 'shopper-access-token',
+                    loginId: 'user@example.com',
+                });
+
+                expect(mockShopperLoginClient.getPasskeyUserByLoginId).toHaveBeenCalledWith({
+                    params: {
+                        path: { loginId: 'user@example.com' },
+                        query: { channel_id: 'RefArch' },
+                        header: { Authorization: 'Bearer shopper-access-token' },
+                    },
+                });
+            });
+        });
+
+        describe('deletePasskeyUser', () => {
+            it('should delete passkey user and all credentials', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.deletePasskeyUser.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.deletePasskeyUser({
+                    accessToken: 'shopper-access-token',
+                    loginId: 'user@example.com',
+                });
+
+                expect(mockShopperLoginClient.deletePasskeyUser).toHaveBeenCalledWith({
+                    params: {
+                        path: { loginId: 'user@example.com' },
+                        query: { channel_id: 'RefArch' },
+                        header: { Authorization: 'Bearer shopper-access-token' },
+                    },
+                });
+            });
+        });
+
+        describe('deletePasskeyCredential', () => {
+            it('should delete a specific passkey credential', async () => {
+                const config: AuthConfig = { ...baseConfig, clientSecret: 'test-secret' };
+
+                mockShopperLoginClient.deletePasskeyCredential.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.webAuthn.deletePasskeyCredential({
+                    accessToken: 'shopper-access-token',
+                    loginId: 'user@example.com',
+                    credentialId: 'Y3JlZGVudGlhbElkMTIz',
+                });
+
+                expect(mockShopperLoginClient.deletePasskeyCredential).toHaveBeenCalledWith({
+                    params: {
+                        path: { loginId: 'user@example.com', credentialId: 'Y3JlZGVudGlhbElkMTIz' },
+                        query: { channel_id: 'RefArch' },
+                        header: { Authorization: 'Bearer shopper-access-token' },
+                    },
+                });
             });
         });
     });

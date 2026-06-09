@@ -33,6 +33,13 @@ import type {
     SocialGetAuthorizationUrlOptions,
     SocialAuthorizationUrlResult,
     SocialExchangeCodeOptions,
+    WebAuthnAuthorizeRegistrationOptions,
+    WebAuthnRegistrationStartOptions,
+    WebAuthnRegistrationFinishOptions,
+    WebAuthnAuthenticationStartOptions,
+    WebAuthnAuthenticationFinishOptions,
+    WebAuthnPasskeyUserOptions,
+    WebAuthnDeletePasskeyCredentialOptions,
 } from './types';
 import {
     createCodeVerifier,
@@ -58,6 +65,17 @@ export type {
     SocialGetAuthorizationUrlOptions,
     SocialAuthorizationUrlResult,
     SocialExchangeCodeOptions,
+} from './types';
+export type {
+    WebAuthnAuthorizeRegistrationOptions,
+    WebAuthnRegistrationStartOptions,
+    WebAuthnRegistrationFinishOptions,
+    WebAuthnAuthenticationStartOptions,
+    WebAuthnAuthenticationFinishOptions,
+    WebAuthnPasskeyUserOptions,
+    WebAuthnDeletePasskeyCredentialOptions,
+    WebAuthnNamespace,
+    PublicKeyCredentialJson,
 } from './types';
 
 /**
@@ -622,6 +640,182 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                         pwd_action_token: pwdActionToken,
                         channel_id: siteId,
                         user_id: userId,
+                    },
+                });
+            },
+        },
+
+        /**
+         * WebAuthn / passkey namespace.
+         * Only available when clientSecret is configured (private SLAS client).
+         * Requires the `sfcc.pwdless_login` scope on the SLAS client.
+         */
+        webAuthn: {
+            authorizeRegistration: async (options: WebAuthnAuthorizeRegistrationOptions) => {
+                const { userId, mode, callbackUri, locale } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for WebAuthn operations');
+                }
+
+                if (mode === 'callback' && !callbackUri) {
+                    throw new Error('callbackUri is required when mode is "callback"');
+                }
+
+                return shopperLoginClient.authorizeWebauthnRegistration({
+                    params: {
+                        header: {
+                            Authorization: createBasicAuthHeader(clientId, clientSecret),
+                        },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        user_id: userId,
+                        mode,
+                        channel_id: siteId,
+                        client_id: clientId,
+                        ...(mode === 'callback' && callbackUri && { callback_uri: callbackUri }),
+                        ...(locale && { locale }),
+                    },
+                });
+            },
+
+            startRegistration: async (options: WebAuthnRegistrationStartOptions) => {
+                const { pwdActionToken, userId, displayName, nickName } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for WebAuthn operations');
+                }
+
+                return shopperLoginClient.startWebauthnUserRegistration({
+                    params: {
+                        header: {
+                            Authorization: createBasicAuthHeader(clientId, clientSecret),
+                        },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: clientId,
+                        pwd_action_token: pwdActionToken,
+                        user_id: userId,
+                        channel_id: siteId,
+                        ...(displayName && { display_name: displayName }),
+                        ...(nickName && { nick_name: nickName }),
+                    },
+                });
+            },
+
+            finishRegistration: async (options: WebAuthnRegistrationFinishOptions) => {
+                const { userId, pwdActionToken, credential } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for WebAuthn operations');
+                }
+
+                return shopperLoginClient.finishWebauthnUserRegistration({
+                    params: {
+                        header: {
+                            Authorization: createBasicAuthHeader(clientId, clientSecret),
+                        },
+                    },
+                    body: {
+                        client_id: clientId,
+                        channel_id: siteId,
+                        username: userId,
+                        pwd_action_token: pwdActionToken,
+                        credential,
+                    },
+                });
+            },
+
+            startAuthentication: async (options: WebAuthnAuthenticationStartOptions = {}) => {
+                const { userId } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for WebAuthn operations');
+                }
+
+                return shopperLoginClient.startWebauthnAuthentication({
+                    params: {
+                        header: {
+                            Authorization: createBasicAuthHeader(clientId, clientSecret),
+                        },
+                    },
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: clientId,
+                        channel_id: siteId,
+                        ...(userId && { user_id: userId }),
+                    },
+                });
+            },
+
+            finishAuthentication: async (options: WebAuthnAuthenticationFinishOptions): Promise<AuthResponse> => {
+                const { credential, usid } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for WebAuthn operations');
+                }
+
+                const result = await shopperLoginClient.finishWebauthnAuthentication({
+                    params: {
+                        header: {
+                            Authorization: createBasicAuthHeader(clientId, clientSecret),
+                        },
+                    },
+                    body: {
+                        client_id: clientId,
+                        channel_id: siteId,
+                        credential,
+                        ...(usid && { usid }),
+                    },
+                });
+
+                if (!result.data.tokenResponse) {
+                    throw new Error('WebAuthn authentication did not return a token response');
+                }
+
+                return addDwsidToTokenData({ data: result.data.tokenResponse, response: result.response });
+            },
+
+            getPasskeyUser: async (options: WebAuthnPasskeyUserOptions) => {
+                const { accessToken, loginId } = options;
+
+                return shopperLoginClient.getPasskeyUserByLoginId({
+                    params: {
+                        path: { loginId },
+                        query: { channel_id: siteId },
+                        header: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    },
+                });
+            },
+
+            deletePasskeyUser: async (options: WebAuthnPasskeyUserOptions) => {
+                const { accessToken, loginId } = options;
+
+                return shopperLoginClient.deletePasskeyUser({
+                    params: {
+                        path: { loginId },
+                        query: { channel_id: siteId },
+                        header: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    },
+                });
+            },
+
+            deletePasskeyCredential: async (options: WebAuthnDeletePasskeyCredentialOptions) => {
+                const { accessToken, loginId, credentialId } = options;
+
+                return shopperLoginClient.deletePasskeyCredential({
+                    params: {
+                        path: { loginId, credentialId },
+                        query: { channel_id: siteId },
+                        header: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
                     },
                 });
             },
