@@ -10,7 +10,7 @@ Use the table below to find the SDK version your template release needs.
 <!-- COMPAT:START -->
 | Template stamp | `templateVersion` | Min SDK |
 |---|---|---|
-| June 2026 | `2026.6.0` | 1.0.0-alpha.3 |
+| June 2026 | `2026.6.0` | 1.0.0 |
 <!-- COMPAT:END -->
 
 ## How to read this

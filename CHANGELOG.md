@@ -4,65 +4,6 @@
 
 ### Minor Changes
 
-- #1945 `2241fb2` Thanks @vmarta_sfemu! - Adopt a two-track versioning model: the SDK packages stay on SemVer (locked together), while the template moves to a CalVer date stamp (e.g. "June 2026"). Generated projects now record their origin in `package.json` under a namespaced `storefrontNext` block (`templateRelease`, `templateVersion`, `minSdkVersion`), so a customer can always tell which template release they generated from. `create-storefront` surfaces the template release in its completion banner and links the new compatibility matrix (`docs/COMPATIBILITY.md`), which maps each template stamp to the SDK version it needs.
-
-### Patch Changes
-
-- #1948 `3535909` Thanks @j-sheth_sfemu! - Allow the OOTB Einstein engagement adapter through the default CSP. The adapter fires browser `navigator.sendBeacon` calls to the CQuotient activities API (`https://api.cquotient.com/v3/activities/...`), which is governed by `connect-src`. The default `connect-src` did not list that host, so every Einstein beacon (viewPage, viewProduct, viewCategory, …) was blocked by CSP and reported a console violation on a freshly generated project. Added `https://api.cquotient.com` to the default `connect-src` directive.
-
-- #1939 `d273772` Thanks @arayanavarro_sfemu! - Fix three dev-server console errors in freshly generated projects (`pnpm dev`):
- - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
- - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
- - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
-
-- Updated dependencies [`f7e9554`, `3535909`, `d273772`, `2241fb2`]:
- - @salesforce/storefront-next-runtime@1.0.0-alpha.3
- - @salesforce/storefront-next-dev@1.0.0-alpha.3
-
-## 1.0.0-alpha.2
-
-### Patch Changes
-
-- #1923 `46b1ceb` Thanks @daniel-diaz_sfemu! - Fix `/resource/recommendations` returning HTTP 403 on MRT by enabling Express `trust proxy` and using `resolveRequestOrigin` in the same-origin gate
-
-- #1924 `7850ace` Thanks @daniel-diaz_sfemu! - Fix account details email section buttons overflowing on mobile by adding flex-wrap so Verify Email and Change Email buttons wrap below the email address on narrow viewports
-
-- #1926 `8f1d9ba` Thanks @daniel-diaz_sfemu! - Rewrite adapter pattern guide to reflect analytics-only scope; fix eventToggles casing in config example (snake_case keys, not camelCase)
-
-- Updated dependencies [`46b1ceb`, `b370405`, `9adf311`]:
- - @salesforce/storefront-next-dev@1.0.0-alpha.2
- - @salesforce/storefront-next-runtime@1.0.0-alpha.2
-
-## 1.0.0-alpha.1
-
-### Minor Changes
-
-- #1907 `3c9c3e5` Thanks @j-sheth_sfemu! - Wire SDK security-headers middleware into the React Router middleware chain. Apply per-request CSP nonce to the inline `__APP_CONFIG__` script. New customer-facing doc: `docs/README-SECURITY-HEADERS.md`.
-
-### Patch Changes
-
-- #1858 `6ee0b80` Thanks @daniel-diaz_sfemu! - Lazy-load below-the-fold UITarget extension components to fix TBT regression (#1858)
-
-- #1885 `0e568cf` Thanks @jie-dai_sfemu! - Fix: store `dwsourcecode_*` cookie value as the bare source-code string (e.g. `email`) instead of a JSON-encoded object so SFRA storefronts running side-by-side on the same cookie name can read it. The shopper-context cookie (`storefront-next-context_*`) is unchanged. An empty `?src=` parameter now writes an empty cookie (effectively clearing it) instead of `{"sourceCode":""}`.
-
-- #1898 `dee3c0a` Thanks @mjuraschik_sfemu! - Fall back to category-level page assignment during manifest resolution when a product-keyed page lookup misses. `resolveDynamicPageId` and `resolvePage` now accept an optional `categoryId` (string or Promise) consulted only after the product lookup misses, and the Page Designer resolution middleware threads the request's categoryId through whenever a productId is also present.
-
-- #1917 `51466d3` Thanks @vmarta_sfemu! - Make `en-GB` the authoritative locale for type-safe `t()` keys. Previously `en-GB` was the runtime fallback (`config.server.ts`) and the source the type augmentation read (`i18next.server.ts`), but every locale's `index.ts` — including `en-GB` itself — used `satisfies DeepPartial<typeof enUS>`, making `en-US` the compile-time root. The two only happened to agree because `en-GB` currently holds every key. This flips the `satisfies` chain to `DeepPartial<typeof enGB>` so the compile-time and runtime sources of truth match. No runtime behavior change.
-
-- #1918 `bbb0926` Thanks @vmarta_sfemu! - Merge `product.json` back into `translations.json` for all 17 locales. The split was originally introduced to dodge a TypeScript compiler crash; with the locale tree settled, the merge now typechecks cleanly. Keeps a single canonical translations file per locale. The runtime backend still registers `product` as a top-level i18next namespace, so all `t('product:…')` and `useTranslation('product')` call sites are unaffected.
-
-- #1909 `d7c73e1` Thanks @vmarta_sfemu! - Cut `pnpm lint` runtime by disabling `@typescript-eslint/no-misused-promises` `checksVoidReturn.attributes`. The sub-check scans every JSX event-handler attribute (`onClick`, `onChange`, …) against the value's return type, which fans out across thousands of TSX files and pushed `pnpm lint` past 30 minutes on customer 1x CI runners. The rule still fires on argument, property, return, and variable positions, so it continues to catch real misuse — only the JSX-attribute traversal is dropped.
-
-- #1893 `e0139ad` Thanks @alex-vuong_sfemu! - Fix: `getOrCreateWishlist` no longer blocks the loader for ~1.5s on every fresh `customerId`. The POST response from `createCustomerProductList` is now used directly when it carries an `id`, eliminating the hardcoded `setTimeout(1500)` + post-create GET that was previously waiting for index propagation. The sleep + re-fetch remains as a fallback for the rare case where the POST returns a body without `id`, gated by a `warn` log so production telemetry can confirm. Affects every wishlist-mounting route (homepage, cart, PDP, PLP, search, account overview) on first load after SLAS issues a new `gcid`.
-
-- Updated dependencies [`d355c50`, `dee3c0a`, `af03e94`, `3c9c3e5`]:
- - @salesforce/storefront-next-runtime@1.0.0-alpha.1
- - @salesforce/storefront-next-dev@1.0.0-alpha.1
-
-## 1.0.0-alpha.0
-
-### Minor Changes
-
 - #1706 `7a4224b` Thanks @j-sheth_sfemu! - Move `<WishlistProvider>` from the global `_app.tsx` shell to route-local mounts via a new `<DeferredWishlistProvider>` helper. Routes that render wishlist UI (home, PDP, PLP, search, cart) hydrate their own provider via the loader; routes without wishlist UI (about-us, account/\* non-wishlist pages, order confirmation) no longer pay the SCAPI `getOrCreateWishlist` cost on cold load. `<WishlistMergeToast>` stays at the app shell.
 
 - #1706 `7a4224b` Thanks @j-sheth_sfemu! - Add `useScapiFetchClient` / `useScapiFetchHelper` hooks and `<WishlistProvider>`: small UI mutations (e.g. PLP heart click) now hit a generic SCAPI resource route via `fetch` instead of `useFetcher`, so they no longer trigger React Router loader revalidation. Wishlist initial state is seeded once at the app shell behind `<Suspense>`/`<Await errorElement>`, so SCAPI failures still render the page 200 with empty hearts. Hydrates wishlists for both guest (gcid) and registered (rcid) sessions. Provider exposes topic-scoped subscription hooks (`useIsInWishlist`, `useWishlistEntry`, `useWishlistCount`, `useWishlistIds`, `useWishlistActions`) backed by `useSyncExternalStore` so a single heart toggle re-renders only that one tile, not every other heart in the grid
@@ -159,7 +100,11 @@
 
 - #1322 `60c6fbb` Thanks @clavery_sfemu! - Add `editorDefinition` support to the `@AttributeDefinition` decorator for Page Designer components. Custom attribute editors (e.g. `einstein.globalrecommenderselector`) can now be declared on a decorated attribute and are emitted as `editor_definition` in the generated cartridge JSON. Per the SFCC schema, `editor_definition` is only valid on attributes of type `custom`.
 
+- #1907 `3c9c3e5` Thanks @j-sheth_sfemu! - Wire SDK security-headers middleware into the React Router middleware chain. Apply per-request CSP nonce to the inline `__APP_CONFIG__` script. New customer-facing doc: `docs/README-SECURITY-HEADERS.md`.
+
 - #1827 `ae4d19a` Thanks @vcua_sfemu! - Add `id_token` and `idp_refresh_token` cookies to align sf-next with PWA Kit's SLAS cookie set, follow-up to the cookie-name alignment work in #1766. `id_token` (OIDC ID token) is written with the same expiry as the access token; `idp_refresh_token` (IDP refresh token, used during social login) is written with the same expiry as the SLAS refresh token. Both follow sf-next's existing convention: HttpOnly, Secure, siteId-namespaced (`id_token_<siteId>`, `idp_refresh_token_<siteId>`), and cleared on the destroy path alongside the rest of the auth cookies. Neither field is added to `PublicSessionData`, so the tokens stay server-only.
+
+- #1945 `2241fb2` Thanks @vmarta_sfemu! - Adopt a two-track versioning model: the SDK packages stay on SemVer (locked together), while the template moves to a CalVer date stamp (e.g. "June 2026"). Generated projects now record their origin in `package.json` under a namespaced `storefrontNext` block (`templateRelease`, `templateVersion`, `minSdkVersion`), so a customer can always tell which template release they generated from. `create-storefront` surfaces the template release in its completion banner and links the new compatibility matrix (`docs/COMPATIBILITY.md`), which maps each template stamp to the SDK version it needs.
 
 ### Patch Changes
 
@@ -173,11 +118,17 @@
 
 - #1856 `cc9d2eb` Thanks @daniel-diaz_sfemu! - Fix duplicate toast when saving customer preferences (#1856)
 
+- #1858 `6ee0b80` Thanks @daniel-diaz_sfemu! - Lazy-load below-the-fold UITarget extension components to fix TBT regression (#1858)
+
+- #1923 `46b1ceb` Thanks @daniel-diaz_sfemu! - Fix `/resource/recommendations` returning HTTP 403 on MRT by enabling Express `trust proxy` and using `resolveRequestOrigin` in the same-origin gate
+
 - #1777 `6af7f05` Thanks @yunakim_sfemu! - Add success toast for reset password for passwordless users
 
 - #1821 `8c62aeb` Thanks @seckardt_sfemu! - Defer the cart's below-the-fold product recommendations until the browser is idle. The two recommendation carousels in `CartContent` now mount through a `useDeferredRender`-gated wrapper, which keeps the lazy `ProductRecommendations` chunk request, the Einstein fetch, and the `<Suspense>` reconciliation off the critical render path on cart entry. This reduces TBT without changing what eventually renders.
 
 - #1830 `5fd7b12` Thanks @seckardt_sfemu! - Server-side recommendations (read path only): cart and account overview now load Einstein recommendations in their loaders, PD-placed ProductRecommendations load via component-loader, useRecommenders is rewired to a new /resource/recommendations BFF, and Einstein recs reads move from the engagement adapter to a plain server-side function. The engagement adapter's analytics surface (sendEvent) is unchanged.
+
+- #1885 `0e568cf` Thanks @jie-dai_sfemu! - Fix: store `dwsourcecode_*` cookie value as the bare source-code string (e.g. `email`) instead of a JSON-encoded object so SFRA storefronts running side-by-side on the same cookie name can read it. The shopper-context cookie (`storefront-next-context_*`) is unchanged. An empty `?src=` parameter now writes an empty cookie (effectively clearing it) instead of `{"sourceCode":""}`.
 
 - #1788 `e20b8cc` Thanks @seckardt_sfemu! - Prevent redundant client-side basket fetch on PDP by making `useBasket()` read-only by default; consumers that need a client-side `GET /baskets/{id}` opt in via `{ autoLoad: true }` (e.g. PDP edit-mode in `useProductActions`). BOPIS delivery-option validation now runs both client-side (toast) and server-side (cart-item / cart-bundle / cart-set add actions).
 
@@ -225,11 +176,28 @@
 
  Add SFDC_EXT_SHIPPING_DELIVERY extension with estimated delivery card and modal on PDP, zip-code-based shipping calculator integrated into the BOPIS delivery options, and a fulfillment & shipping info modal. Data is fetched server-side via route loader as a deferred Promise and rendered through UITargets. Includes extension markers for clean install/uninstall, locale strings, Storybook stories, and unit tests.
 
+- #1924 `7850ace` Thanks @daniel-diaz_sfemu! - Fix account details email section buttons overflowing on mobile by adding flex-wrap so Verify Email and Change Email buttons wrap below the email address on narrow viewports
+
 - #1767 `f94f6fe` Thanks @j-sheth_sfemu! - Fix auth callback URLs (social login, passwordless, password reset, SLAS `redirect_uri`) and SEO canonical/hreflang URLs on hybrid storefronts behind eCDN. These were built from `EXTERNAL_DOMAIN_NAME` (which resolves to the MRT-assigned host on hybrid deployments) instead of the customer's custom domain — social login redirected to the MRT host and 404'd, password-mode signup hit `redirect_uri doesn't match the registered redirects`, magic-link emails carried the wrong origin, and `<link rel="canonical">` / hreflang URLs pointed at the lambda-internal hostname.
 
  A new `requestOriginMiddleware` stashes the in-flight request in router context; `getAppOrigin(context)` lazily parses `x-forwarded-host` / `x-forwarded-proto` (with comma-split, leading-empty handling, and exact-match localhost detection) and memoizes per request. The SDK's host-header middleware already populates `x-forwarded-host` from `EXTERNAL_DOMAIN_NAME` when no upstream value is present, so a single deployment serves any custom domain without per-environment config. `createApiClients`, all auth-flow callbacks, the magic-link emailers, and `buildSeoMetaDescriptors` now resolve origin via context. `schema-url.ts` `getPublicOrigin` delegates to the same parser so JSON-LD URLs share the auth path's correctness fixes.
 
 - #1806 `4f73f0e` Thanks @daniel-diaz_sfemu! - Fix BNPL target render loop on PDP. The previous implementation combined two deferred loader Promises with `Promise.all([...])` inside render, producing a fresh Promise on every render. React Router's `<Await>` tracks resolution by Promise identity, so each new Promise re-suspended and re-rendered in a microtask-fast loop — starving `useFetcher({ key: 'basket-products' })` of stable commit cycles (mini-cart never opened) and driving express-payments image churn. Each deferred Promise now gets its own `<Suspense>`/`<Await>` boundary so the loader's original Promise references flow through unchanged.
+
+- #1948 `3535909` Thanks @j-sheth_sfemu! - Allow the OOTB Einstein engagement adapter through the default CSP. The adapter fires browser `navigator.sendBeacon` calls to the CQuotient activities API (`https://api.cquotient.com/v3/activities/...`), which is governed by `connect-src`. The default `connect-src` did not list that host, so every Einstein beacon (viewPage, viewProduct, viewCategory, …) was blocked by CSP and reported a console violation on a freshly generated project. Added `https://api.cquotient.com` to the default `connect-src` directive.
+
+- #1939 `d273772` Thanks @arayanavarro_sfemu! - Fix three dev-server console errors in freshly generated projects (`pnpm dev`):
+ - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
+ - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
+ - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
+
+- #1898 `dee3c0a` Thanks @mjuraschik_sfemu! - Fall back to category-level page assignment during manifest resolution when a product-keyed page lookup misses. `resolveDynamicPageId` and `resolvePage` now accept an optional `categoryId` (string or Promise) consulted only after the product lookup misses, and the Page Designer resolution middleware threads the request's categoryId through whenever a productId is also present.
+
+- #1917 `51466d3` Thanks @vmarta_sfemu! - Make `en-GB` the authoritative locale for type-safe `t()` keys. Previously `en-GB` was the runtime fallback (`config.server.ts`) and the source the type augmentation read (`i18next.server.ts`), but every locale's `index.ts` — including `en-GB` itself — used `satisfies DeepPartial<typeof enUS>`, making `en-US` the compile-time root. The two only happened to agree because `en-GB` currently holds every key. This flips the `satisfies` chain to `DeepPartial<typeof enGB>` so the compile-time and runtime sources of truth match. No runtime behavior change.
+
+- #1918 `bbb0926` Thanks @vmarta_sfemu! - Merge `product.json` back into `translations.json` for all 17 locales. The split was originally introduced to dodge a TypeScript compiler crash; with the locale tree settled, the merge now typechecks cleanly. Keeps a single canonical translations file per locale. The runtime backend still registers `product` as a top-level i18next namespace, so all `t('product:…')` and `useTranslation('product')` call sites are unaffected.
+
+- #1909 `d7c73e1` Thanks @vmarta_sfemu! - Cut `pnpm lint` runtime by disabling `@typescript-eslint/no-misused-promises` `checksVoidReturn.attributes`. The sub-check scans every JSX event-handler attribute (`onClick`, `onChange`, …) against the value's return type, which fans out across thousands of TSX files and pushed `pnpm lint` past 30 minutes on customer 1x CI runners. The rule still fires on argument, property, return, and variable positions, so it continues to catch real misuse — only the JSX-attribute traversal is dropped.
 
 - #1589 `a2602ce` Thanks @alex-vuong_sfemu! - Add a11y e2e tests for Order and Account page
 
@@ -331,6 +299,8 @@
 
 - #1699 `5ee459a` Thanks @alex-vuong_sfemu! - Unify sanitizePrefix and stripPathPrefix into one helper
 
+- #1926 `8f1d9ba` Thanks @daniel-diaz_sfemu! - Rewrite adapter pattern guide to reflect analytics-only scope; fix eventToggles casing in config example (snake_case keys, not camelCase)
+
 - #1825 `67f7c55` Thanks @kumaravinash_sfemu! - Dispatch OTP transparently when SLAS reports an unverified email at the checkout contact step (#1825)
 
 - #1817 `1b5723f` Thanks @joel-uong_sfemu! - PDP variation swatches now activate optimistically on click, eliminating the perceived lag while the variant loader resolves. The selected swatch styling is derived from the in-flight navigation target so the clicked button reflects as active on the next paint, then reconciles cleanly with the canonical URL once the navigation settles. Quick-view and cart-edit modal flows are unaffected — they pass an explicit selection override and continue to bypass URL-driven selection entirely.
@@ -345,11 +315,13 @@
 
 - #1794 `4a02487` Thanks @s-hussain_sfemu! - Replace exact inventory counts on the PDP with bucketed status messages — In stock, Few items left, 1 item left, Out of stock — and handle perpetual-quantity items cleanly so they no longer surface a literal unit count
 
+- #1893 `e0139ad` Thanks @alex-vuong_sfemu! - Fix: `getOrCreateWishlist` no longer blocks the loader for ~1.5s on every fresh `customerId`. The POST response from `createCustomerProductList` is now used directly when it carries an `id`, eliminating the hardcoded `setTimeout(1500)` + post-create GET that was previously waiting for index propagation. The sleep + re-fetch remains as a fallback for the rare case where the POST returns a body without `id`, gated by a `warn` log so production telemetry can confirm. Affects every wishlist-mounting route (homepage, cart, PDP, PLP, search, account overview) on first load after SLAS issues a new `gcid`.
+
 - #1796 `542bb24` Thanks @s-hussain_sfemu! - `/wishlist` no longer redirects shoppers with expired sessions to `/login`. Guest shoppers (and registered shoppers whose session is no longer usable) now see the guest wishlist with a persistent sign-in banner so they can recover at their own pace.
 
-- Updated dependencies [`0a3fcdc`, `ece6a58`, `26a7f95`, `8ae7030`, `d39ccce`, `65223d9`, `2fb0e1f`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `60c6fbb`, `0d500de`]:
- - @salesforce/storefront-next-runtime@1.0.0-alpha.0
- - @salesforce/storefront-next-dev@1.0.0-alpha.0
+- Updated dependencies [`46b1ceb`, `b370405`, `f7e9554`, `0a3fcdc`, `ece6a58`, `d355c50`, `26a7f95`, `8ae7030`, `3535909`, `d273772`, `9adf311`, `dee3c0a`, `d39ccce`, `65223d9`, `2fb0e1f`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `60c6fbb`, `0d500de`, `af03e94`, `3c9c3e5`, `2241fb2`]:
+ - @salesforce/storefront-next-dev@1.0.0
+ - @salesforce/storefront-next-runtime@1.0.0
 
 ## v0.4.0 (May 5, 2026)
 
