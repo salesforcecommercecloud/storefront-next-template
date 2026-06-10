@@ -47,8 +47,8 @@ interface OtpModalProps {
 // `otpLength` is the storefront's configured guess at the length, but SLAS owns
 // what it actually sends, so the two can drift. The modal renders `otpLength`
 // slots initially and expands toward this ceiling when a longer code is pasted,
-// so a code longer than the configured length is still enterable; the floor is
-// the shortest code SLAS can issue, below which Verify stays disabled.
+// so a code longer than the configured length is still enterable; MIN_OTP_LENGTH
+// is the shortest code SLAS can issue, the floor below which a code can't submit.
 const MIN_OTP_LENGTH = 6;
 const MAX_OTP_LENGTH = 8;
 
@@ -104,15 +104,8 @@ export default function OtpModal({
     // The hook manages a fixed pool of MAX_OTP_LENGTH slots so a code longer than
     // the configured `otpLength` can still be entered; the modal renders only as
     // many as the configured length or the entered code needs (see visibleCount).
-    // A pasted code auto-submits (it arrives whole, so it can't be a prefix of a
-    // longer code the way a typed code can); typed codes submit via the button.
     const { otpInputs, otpInputsRef, refCallbacks } = useOtpVerification({
         slotCount: MAX_OTP_LENGTH,
-        onPasteComplete: (code) => {
-            if (code.length >= MIN_OTP_LENGTH && code.length <= MAX_OTP_LENGTH) {
-                handleVerify(code);
-            }
-        },
     });
     // Resend countdown (same behavior as avinash branch)
     useEffect(() => {
@@ -175,6 +168,10 @@ export default function OtpModal({
             hasCalledOnSuccessRef.current = true;
             setError(null);
             setIsVerifying(false);
+            // Clearing here drops enteredOtp to empty so the auto-submit effect can't
+            // re-fire this now-consumed code if a caller keeps the modal mounted while
+            // closing (isVerifying flips back to false with the slots still full).
+            otpInputsRef.current.clear();
             onSuccess(
                 fetcher.data.tokenResponse,
                 fetcher.data.wishlistMerge ? { wishlistMerge: fetcher.data.wishlistMerge } : undefined
@@ -225,8 +222,28 @@ export default function OtpModal({
     // A gap (an empty slot before a filled one) would make `join('')` collapse to a
     // code that doesn't match what's shown, so only a gapless run of slots can submit.
     const hasGap = otpInputs.values.some((value, index) => value === '' && index < enteredOtp.length);
-    const canVerify = enteredOtp.length >= MIN_OTP_LENGTH && !hasGap && !isVerifying && !isLoading;
     const isResendDisabled = resendTimer > 0 || isVerifying || isLoading;
+
+    // Auto-submit once the visible slots are completely filled — whether the code was
+    // typed or pasted. Firing at `=== visibleCount` (rather than the moment MIN_OTP_LENGTH
+    // is reached) is what keeps a too-long delivered code safe: a paste expands
+    // visibleCount to the pasted length so the whole code submits at once, while a
+    // half-typed entry in a longer field never fires a short prefix. MIN_OTP_LENGTH
+    // floors a misconfigured `otpLength` below SLAS's shortest code; hasGap blocks a
+    // cleared middle slot, whose join('') would otherwise submit a code missing a digit.
+    // Submission flips isVerifying synchronously, so a completed code fires exactly once.
+    useEffect(() => {
+        if (
+            enteredOtp.length === visibleCount &&
+            enteredOtp.length >= MIN_OTP_LENGTH &&
+            !hasGap &&
+            !isVerifying &&
+            !isLoading
+        ) {
+            handleVerify(enteredOtp);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [enteredOtp, visibleCount, hasGap, isVerifying, isLoading]);
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -236,9 +253,12 @@ export default function OtpModal({
                     <DialogDescription>{t('otpModalDescription', { email, otpLength })}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-6 flex flex-col items-center w-full">
+                    {/* Cap each slot at 3rem (the design width) but let the tracks shrink
+                        to fit when there are many, so a full 8-slot row never overflows the
+                        dialog on a narrow viewport. */}
                     <div
                         className="grid gap-3 w-full justify-center"
-                        style={{ gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))` }}>
+                        style={{ gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 3rem))` }}>
                         {Array.from({ length: visibleCount }, (_, index) => `otp-input-${index}`).map(
                             (inputId, index) => (
                                 <Input
@@ -253,7 +273,7 @@ export default function OtpModal({
                                     onPaste={otpInputs.handlePaste}
                                     disabled={isVerifying || isLoading}
                                     autoFocus={index === 0}
-                                    className="w-12 h-14 text-center text-sm font-bold border-2"
+                                    className="w-full min-w-0 h-14 text-center text-sm font-bold border-2"
                                     aria-label={`${t('otpCodeLabel')} ${index + 1} of ${visibleCount}`}
                                 />
                             )
@@ -268,14 +288,6 @@ export default function OtpModal({
                         </Typography>
                     )}
                     <div className="flex gap-4 w-full justify-center">
-                        <Button
-                            type="button"
-                            onClick={() => handleVerify(enteredOtp)}
-                            disabled={!canVerify}
-                            size="lg"
-                            className="min-w-[160px]">
-                            {t('verify')}
-                        </Button>
                         {onCheckoutAsGuest && (
                             <Button
                                 type="button"

@@ -90,25 +90,48 @@ describe('OtpModal', () => {
         });
     });
 
+    // The modal auto-submits as soon as the visible slots are completely filled —
+    // no Verify button. Typing the last digit (or pasting a complete code) triggers it.
     describe('submission', () => {
-        it('submits the entered code via the Verify button', async () => {
+        it('auto-submits the entered code once all visible slots are filled', async () => {
             const user = userEvent.setup();
             renderModal();
 
             await typeCode(user, '111111');
-            await user.click(screen.getByRole('button', { name: 'Verify' }));
 
-            expect(mockSubmit).toHaveBeenCalled();
+            expect(mockSubmit).toHaveBeenCalledTimes(1);
             const [formData] = mockSubmit.mock.calls[0] as [FormData];
             expect(formData.get('email')).toBe('test@example.com');
             expect(formData.get('otpCode')).toBe('111111');
         });
 
-        it('does not submit until Verify is clicked (no auto-submit at full length)', async () => {
+        it('auto-submits an 8-digit code when configured for 8', async () => {
             const user = userEvent.setup();
-            renderModal();
+            renderModal({ otpLength: 8 });
 
-            await typeCode(user, '111111');
+            await typeCode(user, '12345678');
+
+            expect(mockSubmit).toHaveBeenCalledTimes(1);
+            const [formData] = mockSubmit.mock.calls[0] as [FormData];
+            expect(formData.get('otpCode')).toBe('12345678');
+        });
+
+        it('does not submit before every visible slot is filled', async () => {
+            const user = userEvent.setup();
+            renderModal({ otpLength: 6 });
+
+            await typeCode(user, '11111');
+
+            expect(mockSubmit).not.toHaveBeenCalled();
+        });
+
+        it('does not auto-submit a code shorter than the minimum', async () => {
+            const user = userEvent.setup();
+            renderModal({ otpLength: 6 });
+
+            // A 4-slot field can't occur via config (min is 6), but guards the floor.
+            screen.getAllByRole('textbox')[0].focus();
+            await user.paste('1234');
 
             expect(mockSubmit).not.toHaveBeenCalled();
         });
@@ -120,7 +143,6 @@ describe('OtpModal', () => {
             renderModal();
 
             await typeCode(user, '111111');
-            await user.click(screen.getByRole('button', { name: 'Verify' }));
 
             expect(mockSubmit).toHaveBeenCalledWith(
                 expect.any(FormData),
@@ -133,7 +155,6 @@ describe('OtpModal', () => {
             renderModal({ verifyActionUrl: '/action/verify-signup-otp' });
 
             await typeCode(user, '111111');
-            await user.click(screen.getByRole('button', { name: 'Verify' }));
 
             expect(mockSubmit).toHaveBeenCalledWith(
                 expect.any(FormData),
@@ -142,26 +163,9 @@ describe('OtpModal', () => {
         });
     });
 
-    describe('Verify button enablement', () => {
-        it('enables Verify only once the minimum code length is reached', async () => {
-            const user = userEvent.setup();
-            renderModal({ otpLength: 6 });
-
-            const verifyButton = screen.getByRole('button', { name: 'Verify' });
-            expect(verifyButton).toBeDisabled();
-
-            await typeCode(user, '11111');
-            expect(verifyButton).toBeDisabled();
-
-            const inputs = screen.getAllByRole('textbox');
-            await user.type(inputs[5], '1');
-            expect(verifyButton).toBeEnabled();
-        });
-    });
-
     // SLAS owns the delivered length and can drift from the configured `otpLength`.
-    // Pasting a longer code expands the inputs to fit it, and a paste auto-submits
-    // (it arrives whole, so it can't be a prefix of a longer code the way typing can).
+    // Pasting a longer code expands the inputs to fit it, then auto-submits the whole
+    // code — firing at the expanded length, never a short prefix.
     describe('paste expands and auto-submits', () => {
         it('grows from 6 slots to 8 and auto-submits the pasted 8-digit code', async () => {
             const user = userEvent.setup();
@@ -173,7 +177,6 @@ describe('OtpModal', () => {
             await user.paste('12345678');
 
             expect(screen.getAllByRole('textbox')).toHaveLength(8);
-            // Auto-submitted on paste — no Verify click needed.
             expect(mockSubmit).toHaveBeenCalledTimes(1);
             const [formData] = mockSubmit.mock.calls[0] as [FormData];
             expect(formData.get('otpCode')).toBe('12345678');
@@ -190,65 +193,40 @@ describe('OtpModal', () => {
             const [formData] = mockSubmit.mock.calls[0] as [FormData];
             expect(formData.get('otpCode')).toBe('123456');
         });
-
-        it('does not auto-submit a pasted code shorter than the minimum', async () => {
-            const user = userEvent.setup();
-            renderModal({ otpLength: 6 });
-
-            screen.getAllByRole('textbox')[0].focus();
-            await user.paste('1234');
-
-            expect(mockSubmit).not.toHaveBeenCalled();
-        });
     });
 
-    // Typing never auto-submits — a typed code could be a prefix of a longer one,
-    // so the shopper confirms with Verify.
-    describe('typed codes require the Verify button', () => {
-        it('does not auto-submit when the code is typed digit by digit', async () => {
-            const user = userEvent.setup();
-            renderModal({ otpLength: 6 });
-
-            await typeCode(user, '111111');
-
-            expect(mockSubmit).not.toHaveBeenCalled();
-        });
-    });
-
-    // The external onVerifyCode path (Change Email) verifies without the fetcher,
-    // which never sets the verifying state, so the button must still disable on
-    // click to stop a second submission while the parent is verifying.
-    describe('verifying state on the onVerifyCode path', () => {
-        it('disables Verify after the first click', async () => {
+    // The external onVerifyCode path (Change Email) verifies without the fetcher.
+    // Auto-submit fires it once on fill; isVerifying stays set on this path (the
+    // parent owns the outcome) so the effect can't fire a second time.
+    describe('the onVerifyCode path', () => {
+        it('invokes onVerifyCode exactly once when the code is completed', async () => {
             const user = userEvent.setup();
             const onVerifyCode = vi.fn();
             renderModal({ otpLength: 6, onVerifyCode });
 
             await typeCode(user, '111111');
 
-            const verifyButton = screen.getByRole('button', { name: 'Verify' });
-            await user.click(verifyButton);
-
             expect(onVerifyCode).toHaveBeenCalledTimes(1);
-            expect(verifyButton).toBeDisabled();
+            expect(onVerifyCode).toHaveBeenCalledWith('111111');
         });
     });
 
     // A gap (an empty slot before a filled one) collapses under join(''), so the
-    // submitted code would not match the boxes — Verify must stay disabled.
+    // submitted code would not match the boxes — auto-submit must not fire.
     describe('gapped entry', () => {
-        it('keeps Verify disabled when a middle slot is empty', async () => {
+        it('does not auto-submit when a middle slot is empty', async () => {
             const user = userEvent.setup();
             renderModal({ otpLength: 6 });
 
-            await typeCode(user, '111111');
-
-            const verifyButton = screen.getByRole('button', { name: 'Verify' });
-            expect(verifyButton).toBeEnabled();
-
+            // Fill all six, then clear a middle slot to open a gap before the last digit.
             const inputs = screen.getAllByRole('textbox');
-            await user.clear(inputs[2]);
-            expect(verifyButton).toBeDisabled();
+            await user.type(inputs[0], '1');
+            await user.type(inputs[1], '1');
+            await user.type(inputs[3], '1');
+            await user.type(inputs[4], '1');
+            await user.type(inputs[5], '1');
+
+            expect(mockSubmit).not.toHaveBeenCalled();
         });
     });
 });

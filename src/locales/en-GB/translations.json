@@ -136,7 +136,6 @@
         "otpModalTitle": "Enter Verification Code",
         "otpModalDescription": "We've sent a {{otpLength}}-digit code to {{email}}",
         "verifying": "Verifying...",
-        "verify": "Verify",
         "checkoutAsGuest": "Checkout as Guest",
         "resendCode": "Resend Code",
         "resendCodeTimer": "Resend in {{timer}}s",
