@@ -182,6 +182,7 @@ describe('useProductActions', () => {
         id: 'standard-123',
         name: 'Standard Product',
         type: { item: true },
+        price: 29.99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -193,6 +194,7 @@ describe('useProductActions', () => {
         id: 'variant-123',
         name: 'Variant Product',
         type: { variant: true },
+        price: 29.99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -204,6 +206,7 @@ describe('useProductActions', () => {
         id: 'bundle-123',
         name: 'Bundle Product',
         type: { bundle: true },
+        price: 99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -215,6 +218,7 @@ describe('useProductActions', () => {
         id: 'set-123',
         name: 'Set Product',
         type: { set: true },
+        price: 49,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -323,11 +327,14 @@ describe('useProductActions', () => {
             expect(result.current.canAddToCart).toBe(false);
         });
 
-        test('prevents adding master product', () => {
+        test('prevents adding master product without a selected variant', () => {
+            // Give the master a priced variant so the price gate doesn't short-circuit first —
+            // this test isolates the master-needs-variant rule, not the no-price rule.
             const product: ShopperProducts.schemas['Product'] = {
                 id: 'master-123',
                 name: 'Master Product',
                 type: { master: true },
+                variants: [{ productId: 'master-123-v1', price: 29.99, orderable: true }],
                 inventory: {
                     id: 'inventory-123',
                     ats: 10,
@@ -340,6 +347,123 @@ describe('useProductActions', () => {
                     useProductActions({
                         product,
                         currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('prevents adding a product with no price for the active currency', () => {
+            const product = createStandardProduct();
+            // Simulate a currency with no price-book entry: SCAPI omits the price field.
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('allows adding a product with an explicit price of 0', () => {
+            const product = createStandardProduct();
+            product.price = 0;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('allows adding a no-price product when allowMissingPrice is set (e.g. bonus products)', () => {
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        allowMissingPrice: true,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('does NOT bypass the price gate when itemId is an empty string', () => {
+            // Defensive: itemId='' must not be treated as edit-mode. Several callers in the repo
+            // pass `itemId || ''`, and a future drift could feed the empty string into this hook.
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        itemId: '',
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('allows updating a no-price product when itemId is set (edit mode)', () => {
+            // Edit-mode bypass: an item already in the basket must remain editable even if its
+            // catalog price is missing for the active currency (e.g. shopper switched currencies).
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        itemId: 'cart-line-1',
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('blocks a no-price product in the wishlist (skipInventoryValidation) path', () => {
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        skipInventoryValidation: true,
                     }),
                 {
                     wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),

@@ -1542,6 +1542,7 @@
         "failedToAddProductToCartError": "Produkt konnte nicht zum Warenkorb hinzugefügt werden:",
         "failedToAddProductToWishlistError": "Produkt konnte nicht zur Wunschliste hinzugefügt werden:",
         "price": {
+            "unavailable": "Preis nicht verfügbar",
             "currentPriceFrom": "Aktueller Preis ab {{price}}",
             "currentPrice": "Aktueller Preis: {{price}}",
             "from": "Von {{price}}",

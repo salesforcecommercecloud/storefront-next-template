@@ -103,6 +103,21 @@ exports[`ProductPrice stories snapshot > PriceRange story renders and matches sn
 </div>
 `;
 
+exports[`ProductPrice stories snapshot > PriceUnavailable story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="items-center gap-2"
+  >
+    <span
+      aria-label="Price unavailable"
+      class="font-semibold text-muted-foreground"
+    >
+      Price unavailable
+    </span>
+  </div>
+</div>
+`;
+
 exports[`ProductPrice stories snapshot > WithPromoCallout story renders and matches snapshot 1`] = `
 <div>
   <div

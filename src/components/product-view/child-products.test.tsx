@@ -80,6 +80,7 @@ const createSetProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'set-123',
     name: 'Test Set',
     type: { set: true },
+    price: 49,
     setProducts: setLineItems,
 });
 
@@ -87,6 +88,7 @@ const createBundleProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'bundle-123',
     name: 'Test Bundle',
     type: { bundle: true },
+    price: 99,
     bundledProducts: bundledLineItems,
 });
 
@@ -233,6 +235,53 @@ describe('ChildProducts', () => {
 
             expect(screen.getByTestId('child-product-child-1')).toHaveAttribute('data-selection-source', 'local');
             expect(screen.getByTestId('child-product-child-2')).toHaveAttribute('data-selection-source', 'local');
+        });
+    });
+
+    describe('price availability', () => {
+        const fullySelected = (overrides: any = {}) =>
+            createDefaultSetsBundlesMock({
+                areAllChildProductsSelected: true,
+                hasUnorderableChildProducts: false,
+                isCompletelyOutOfStock: false,
+                selectedChildProductCount: 2,
+                ...overrides,
+            });
+
+        test('disables "Add Set to Cart" when the set has no price for the active currency', async () => {
+            const setProduct = createSetProduct();
+            delete setProduct.price;
+
+            const { useProductSetsBundles } = await import('@/hooks/product/use-product-sets-bundles');
+            vi.mocked(useProductSetsBundles).mockReturnValue(fullySelected());
+
+            renderChildProducts({ parentProduct: setProduct, mode: 'add' });
+
+            expect(screen.getByRole('button', { name: /add set to cart/i })).toBeDisabled();
+        });
+
+        test('disables "Add Bundle to Cart" when the bundle has no price for the active currency', async () => {
+            const bundleProduct = createBundleProduct();
+            delete bundleProduct.price;
+
+            const { useProductSetsBundles } = await import('@/hooks/product/use-product-sets-bundles');
+            vi.mocked(useProductSetsBundles).mockReturnValue(fullySelected());
+
+            renderChildProducts({ parentProduct: bundleProduct, mode: 'add' });
+
+            expect(screen.getByRole('button', { name: /add bundle to cart/i })).toBeDisabled();
+        });
+
+        test('keeps "Add Set to Cart" enabled when the set price is an explicit 0', async () => {
+            const setProduct = createSetProduct();
+            setProduct.price = 0;
+
+            const { useProductSetsBundles } = await import('@/hooks/product/use-product-sets-bundles');
+            vi.mocked(useProductSetsBundles).mockReturnValue(fullySelected());
+
+            renderChildProducts({ parentProduct: setProduct, mode: 'add' });
+
+            expect(screen.getByRole('button', { name: /add set to cart/i })).toBeEnabled();
         });
     });
 

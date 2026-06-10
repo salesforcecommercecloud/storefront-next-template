@@ -1609,6 +1609,7 @@
         "failedToAddProductToCartError": "无法将产品添加到购物车：",
         "failedToAddProductToWishlistError": "无法将产品添加到愿望清单：",
         "price": {
+            "unavailable": "价格不可用",
             "currentPriceFrom": "当前价格从 {{price}} 起",
             "currentPrice": "当前价格：{{price}}",
             "from": "起始价格：{{price}}",

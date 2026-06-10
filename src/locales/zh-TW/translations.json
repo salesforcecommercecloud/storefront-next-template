@@ -1607,6 +1607,7 @@
         "failedToAddProductToCartError": "無法新增產品至購物車：",
         "failedToAddProductToWishlistError": "無法新增產品至願望清單：",
         "price": {
+            "unavailable": "價格無法使用",
             "currentPriceFrom": "目前價格自 {{price}} 起",
             "currentPrice": "目前價格：{{price}}",
             "from": "自 {{price}} 起",

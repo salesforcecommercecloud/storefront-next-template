@@ -1699,6 +1699,7 @@
         "failedToAddProductToCartError": "Impossibile aggiungere il prodotto al carrello:",
         "failedToAddProductToWishlistError": "Impossibile aggiungere il prodotto alla lista desideri:",
         "price": {
+            "unavailable": "Prezzo non disponibile",
             "currentPriceFrom": "Prezzo attuale a partire da {{price}}",
             "currentPrice": "Prezzo attuale: {{price}}",
             "from": "Da {{price}}",

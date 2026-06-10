@@ -29,6 +29,7 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
+import { hasPurchasablePrice } from '@/lib/product/price-utils';
 import { useAnalytics } from '../use-analytics';
 import {
     getEffectiveStockLevel,
@@ -50,6 +51,13 @@ interface UseProductActionsProps {
     maxQuantity?: number; // Max quantity allowed (for bonus products, etc.)
     itemId?: string; // Cart item ID for update operations
     skipInventoryValidation?: boolean; // Skip inventory/orderable validation in canAddToCart (for wishlist)
+    /**
+     * Skip the price-availability check in `canAddToCart`. By default a product with no price for
+     * the active currency cannot be added to cart (an explicit price of 0 is still allowed). Set
+     * this to `true` for items that are intentionally free and priced elsewhere — e.g. promotional
+     * bonus products, or bundle children that are charged at the parent bundle price.
+     */
+    allowMissingPrice?: boolean;
 }
 
 /**
@@ -95,6 +103,7 @@ export function useProductActions({
     maxQuantity,
     itemId,
     skipInventoryValidation = false,
+    allowMissingPrice = false,
 }: UseProductActionsProps) {
     const { t } = useTranslation();
     const location = useLocation();
@@ -259,8 +268,30 @@ export function useProductActions({
         return Boolean(effectiveInventory?.orderable || effectiveInventory?.backorderable);
     }, [effectiveInventory]);
 
+    /**
+     * Whether the selected product/variant has a usable price for the active currency.
+     * A product with no price-book entry for the currency has no price (SCAPI omits the field),
+     * which is distinct from a deliberate price of 0 — the former is not purchasable, the latter is.
+     *
+     * Bypassed when:
+     * - `allowMissingPrice` is set (e.g. promotional bonus products), or
+     * - `itemId` is set (edit mode for an item already in the basket): the line was already
+     *   purchased and editing quantity / variant must not depend on a current catalog price,
+     *   which can disappear if the shopper switches to a currency with no price book for it.
+     */
+    const hasPrice = useMemo(
+        // `Boolean(itemId)` (not `itemId != null`): the upstream guards in cart-item-modal use
+        // truthy checks, and other callers in the repo defensively pass `itemId || ''`. Without
+        // this, an empty string would silently bypass the gate.
+        () => allowMissingPrice || Boolean(itemId) || hasPurchasablePrice(product, currentVariant),
+        [allowMissingPrice, itemId, product, currentVariant]
+    );
+
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
+        // A product with no price for the active currency cannot be purchased (an explicit 0 can).
+        if (!hasPrice) return false;
+
         // Skip inventory/orderable validation if requested (for wishlist use case)
         // For wishlist, check quantity > 0 and variant selection (if needed), but ignore stock levels
         if (skipInventoryValidation) {
@@ -316,6 +347,7 @@ export function useProductActions({
         // Default: not allowed
         return false;
     }, [
+        hasPrice,
         quantity,
         maxQuantity,
         actualStockLevel,

@@ -1780,6 +1780,7 @@
         "failedToAddProductToCartError": "Failed to add product to cart:",
         "failedToAddProductToWishlistError": "Failed to add product to wishlist:",
         "price": {
+            "unavailable": "Price unavailable",
             "currentPriceFrom": "Current price from {{price}}",
             "currentPrice": "Current price: {{price}}",
             "from": "From {{price}}",

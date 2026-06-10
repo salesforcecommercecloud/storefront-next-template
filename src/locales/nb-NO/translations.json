@@ -1542,6 +1542,7 @@
         "failedToAddProductToCartError": "Kunne ikke legge produktet i kurven:",
         "failedToAddProductToWishlistError": "Kunne ikke legge til produktet på ønskelisten:",
         "price": {
+            "unavailable": "Pris ikke tilgjengelig",
             "currentPriceFrom": "Gjeldende pris fra {{price}}",
             "currentPrice": "Nåværende pris: {{price}}",
             "from": "Fra {{price}}",

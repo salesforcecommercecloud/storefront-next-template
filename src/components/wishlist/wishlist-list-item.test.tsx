@@ -446,6 +446,72 @@ describe('WishlistListItem', () => {
             expect(screen.queryByRole('button', { name: t('product:addToCart') })).not.toBeInTheDocument();
         });
 
+        test('disabled "Add to Cart" surfaces "Price unavailable" via aria-describedby + title', () => {
+            // Regression: when canAddToCart is false (e.g. no price for the active currency),
+            // the button shouldn't be a silent grey — assistive tech and hover users must see why.
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false,
+                isOrderable: true,
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            const btn = screen.getByRole('button', { name: t('product:addToCart') });
+            expect(btn).toBeDisabled();
+            expect(btn).toHaveAttribute('title', t('product:price.unavailable'));
+            const describedBy = btn.getAttribute('aria-describedby');
+            expect(describedBy).toBeTruthy();
+            expect(document.getElementById(describedBy as string)).toHaveTextContent(t('product:price.unavailable'));
+        });
+
+        test('passes the saved variant (not master) to ProductPrice when the variant has no price for the active currency', () => {
+            // Regression: the wishlist row used to always pass the master to <ProductPrice>, so a
+            // saved variant that lost its price for the active currency would render the
+            // master's lowest-priced fallback ("$X") right next to a disabled "Price unavailable"
+            // CTA — display and gate disagreed. When the saved variant is the unpriced one, send
+            // it to ProductPrice directly so the price area resolves to "Price unavailable" and
+            // matches the gate.
+            const unpricedVariant = (masterProduct.variants ?? []).find((v) => v.productId === '640188017041M');
+            const masterWithUnpricedSavedVariant = {
+                ...masterProduct,
+                variants: (masterProduct.variants ?? []).map((v) =>
+                    v.productId === '640188017041M' ? { ...v, price: undefined } : v
+                ),
+            };
+
+            renderWithRouter(
+                <WishlistListItem
+                    product={masterWithUnpricedSavedVariant}
+                    wishlistItem={variantWishlistItem}
+                    onRemove={vi.fn()}
+                />
+            );
+
+            // Sanity: the saved variant's price really is undefined in this fixture.
+            expect(unpricedVariant).toBeDefined();
+            // The master has a numeric `price`; the saved variant has none. If the master had been
+            // passed (the buggy behavior), `${product.price}` would render `$<number>`. With the
+            // unpriced variant passed instead, the rendered text is just `$` — proving the
+            // variant (not the master) reached <ProductPrice> and matches what the gate sees.
+            expect(screen.getByTestId('product-price')).toHaveTextContent(/^\$$/);
+        });
+
+        test('still passes the master to ProductPrice when the saved variant IS priced (preserves promo/range)', () => {
+            // When the saved variant has a price, keep passing the master so PromoCallout and
+            // range logic continue to work — variants don't carry productPromotions on getProduct.
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            // The mock renders `${product.price}`. The master's price reaches the element.
+            const expected = `$${masterProduct.price ?? ''}`;
+            expect(screen.getByTestId('product-price')).toHaveTextContent(expected);
+        });
+
         test('submits add to cart action when button is clicked', () => {
             renderWithRouter(
                 <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
