@@ -16,7 +16,7 @@
 import { useState, useLayoutEffect, useMemo, lazy, Suspense, type ReactElement, type ReactNode } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions, ShopperSearch } from '@/scapi';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';
@@ -81,6 +81,7 @@ interface CartContentProps {
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     wishlistProductIds?: readonly string[];
     recommendationsSlot?: ReactNode;
+    ruleBasedBonusProductsPromise: Promise<Record<string, ShopperSearch.schemas['ProductSearchHit'][]>>;
 }
 
 /**
@@ -104,6 +105,7 @@ export default function CartContent({
     promotions,
     wishlistProductIds = [],
     recommendationsSlot,
+    ruleBasedBonusProductsPromise,
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
 
@@ -353,40 +355,41 @@ export default function CartContent({
                     </div>
                 </div>
 
-                {/* Bonus Product Carousels - one per bonusDiscountLineItem (lazy chunks reduce cart script size for Lighthouse) */}
-                {bonusDiscountItems.length > 0 && (
-                    <Suspense fallback={null}>
-                        {bonusDiscountItems.map((bonusItem, index) => {
-                            const isRuleBased = isRuleBasedPromotion(bonusItem);
-                            if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
-                                return null;
-                            }
-                            const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
-                            const promotionName = promotion?.calloutMsg || promotion?.name;
-                            return (
-                                <div key={bonusItem.id || index} className="mt-6">
-                                    <LazyBonusProductSelection
-                                        bonusDiscountLineItem={bonusItem}
-                                        bonusProductsById={bonusProductsById}
-                                        basket={basket}
-                                        promotionName={promotionName}
-                                        onProductSelect={(productId, productName, requiresModal) => {
-                                            if (requiresModal) {
-                                                handleBonusProductSelect(
-                                                    productId,
-                                                    productName,
-                                                    bonusItem.promotionId || '',
-                                                    bonusItem.id || '',
-                                                    bonusItem.maxBonusItems || 0
-                                                );
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            );
-                        })}
-                    </Suspense>
-                )}
+                {/* Bonus Product Carousels - one per bonusDiscountLineItem (lazy chunks reduce cart script size) */}
+                {bonusDiscountItems.map((bonusItem, index) => {
+                    const isRuleBased = isRuleBasedPromotion(bonusItem);
+                    if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
+                        return null;
+                    }
+                    const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
+                    const promotionName = promotion?.calloutMsg || promotion?.name;
+                    return (
+                        <div key={bonusItem.id || index} className="mt-6">
+                            <Suspense fallback={null}>
+                                <LazyBonusProductSelection
+                                    bonusDiscountLineItem={bonusItem}
+                                    bonusProductsById={bonusProductsById}
+                                    basket={basket}
+                                    promotionName={promotionName}
+                                    ruleBasedBonusProductsPromise={
+                                        isRuleBased ? ruleBasedBonusProductsPromise : undefined
+                                    }
+                                    onProductSelect={(productId, productName, requiresModal) => {
+                                        if (requiresModal) {
+                                            handleBonusProductSelect(
+                                                productId,
+                                                productName,
+                                                bonusItem.promotionId || '',
+                                                bonusItem.id || '',
+                                                bonusItem.maxBonusItems || 0
+                                            );
+                                        }
+                                    }}
+                                />
+                            </Suspense>
+                        </div>
+                    );
+                })}
 
                 {recommendationsSlot}
 

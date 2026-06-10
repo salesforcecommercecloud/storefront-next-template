@@ -20,7 +20,13 @@ import { Await, useLoaderData } from 'react-router';
 import type { Route } from './+types/_app.cart';
 
 // Commerce SDK
-import { type ShopperBasketsV2, type ShopperProducts, type ShopperPromotions, type ShopperStores } from '@/scapi';
+import {
+    type ShopperBasketsV2,
+    type ShopperProducts,
+    type ShopperPromotions,
+    type ShopperSearch,
+    type ShopperStores,
+} from '@/scapi';
 
 // Middlewares
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
@@ -29,11 +35,13 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
 import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
+import { fetchRuleBasedBonusProductsForBasket } from '@/lib/cart/rule-based-bonus.server';
 import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
 import type { WishlistInitialState } from '@/lib/wishlist/state';
 import { WishlistProvider } from '@/providers/wishlist';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
 import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 
@@ -73,6 +81,7 @@ type CartPageData = {
     wishlistInitialState: Promise<WishlistInitialState>;
     cartMayAlsoLikePromise: Promise<Recommendation>;
     cartRecentlyViewedPromise: Promise<Recommendation>;
+    ruleBasedBonusProductsPromise: Promise<Record<string, ShopperSearch.schemas['ProductSearchHit'][]>>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
@@ -155,12 +164,26 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
         { name: EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED, ...(currency ? { currency } : {}) }
     );
 
+    // Rule-based bonus carousels live below the fold. Defer them so the cart shell paints without waiting on N
+    // parallel productSearch calls. The helper isolates per-promotion failures and never throws, so we don't need a
+    // route-level errorElement here.
+    const ruleBasedBonusProductsPromise = basketDataPromise
+        .then(({ basket }) =>
+            fetchRuleBasedBonusProductsForBasket(
+                context,
+                basket,
+                getConfig(context)?.pages?.cart?.ruleBasedProductLimit ?? 25
+            )
+        )
+        .catch((): Record<string, ShopperSearch.schemas['ProductSearchHit'][]> => ({}));
+
     return {
         basketDataPromise,
         wishlistProductIdsPromise,
         wishlistInitialState: fetchWishlistInitialState(context),
         cartMayAlsoLikePromise,
         cartRecentlyViewedPromise,
+        ruleBasedBonusProductsPromise,
         basketSnapshot: getBasketSnapshot(context),
         pageUrl,
     };
@@ -262,6 +285,7 @@ export default function Cart(): ReactElement {
                                     basketData={basketData}
                                     wishlistProductIds={[]}
                                     recommendationsSlot={recommendationsSlot}
+                                    ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                 />
                             }>
                             <Await
@@ -271,6 +295,7 @@ export default function Cart(): ReactElement {
                                         basketData={basketData}
                                         wishlistProductIds={[]}
                                         recommendationsSlot={recommendationsSlot}
+                                        ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                     />
                                 }>
                                 {(wishlistProductIds: string[]) => (
@@ -278,6 +303,7 @@ export default function Cart(): ReactElement {
                                         basketData={basketData}
                                         wishlistProductIds={wishlistProductIds}
                                         recommendationsSlot={recommendationsSlot}
+                                        ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                     />
                                 )}
                             </Await>
@@ -298,10 +324,12 @@ function CartBody({
     basketData,
     wishlistProductIds,
     recommendationsSlot,
+    ruleBasedBonusProductsPromise,
 }: {
     basketData: Awaited<CartPageData['basketDataPromise']>;
     wishlistProductIds: string[];
     recommendationsSlot: ReactElement;
+    ruleBasedBonusProductsPromise: CartPageData['ruleBasedBonusProductsPromise'];
 }): ReactElement {
     const content = (
         <CartContent
@@ -311,6 +339,7 @@ function CartBody({
             promotions={basketData.promotions}
             wishlistProductIds={wishlistProductIds}
             recommendationsSlot={recommendationsSlot}
+            ruleBasedBonusProductsPromise={ruleBasedBonusProductsPromise}
         />
     );
 

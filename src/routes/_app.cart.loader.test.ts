@@ -48,6 +48,10 @@ vi.mock('@/lib/product/recommendations.server', () => ({
     fetchProductRecommendations: vi.fn(),
 }));
 
+vi.mock('@/lib/cart/rule-based-bonus.server', () => ({
+    fetchRuleBasedBonusProductsForBasket: vi.fn(),
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
     fetchStoresForBasket: vi.fn(),
@@ -59,6 +63,7 @@ import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
 import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
+import { fetchRuleBasedBonusProductsForBasket } from '@/lib/cart/rule-based-bonus.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -93,6 +98,7 @@ describe('Cart route loader', () => {
         vi.mocked(fetchPromotionsForBasket).mockResolvedValue({});
         vi.mocked(fetchWishlistProductIdsForCart).mockResolvedValue([]);
         vi.mocked(fetchProductRecommendations).mockResolvedValue({ recs: [] });
+        vi.mocked(fetchRuleBasedBonusProductsForBasket).mockResolvedValue({});
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         vi.mocked(fetchStoresForBasket).mockResolvedValue(new Map());
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -237,6 +243,47 @@ describe('Cart route loader', () => {
 
         await expect(result.basketDataPromise).rejects.toThrow();
         await expect(result.cartMayAlsoLikePromise).resolves.toEqual({});
+    });
+
+    test('exposes ruleBasedBonusProductsPromise that chains off basketDataPromise', async () => {
+        vi.mocked(fetchRuleBasedBonusProductsForBasket).mockResolvedValue({ 'promo-1': [{ productId: 'h1' } as any] });
+
+        const result = loader(createLoaderArgs()) as any;
+
+        expect(result.ruleBasedBonusProductsPromise).toBeInstanceOf(Promise);
+        await result.basketDataPromise;
+        await expect(result.ruleBasedBonusProductsPromise).resolves.toEqual({
+            'promo-1': [{ productId: 'h1' }],
+        });
+    });
+
+    test('invokes the rule-based bonus helper exactly once with the resolved basket and configured limit', async () => {
+        vi.mocked(fetchRuleBasedBonusProductsForBasket).mockResolvedValue({});
+
+        const result = loader(createLoaderArgs()) as any;
+        await result.ruleBasedBonusProductsPromise;
+
+        expect(fetchRuleBasedBonusProductsForBasket).toHaveBeenCalledTimes(1);
+        // `createTestContext` wires `appConfigContext` from `@/config/server`, which sets
+        // `pages.cart.ruleBasedProductLimit: 50`. Pin the literal so a config drift or a typo in the
+        // loader's `?? 25` fallback gets caught here, not silently in CI.
+        expect(fetchRuleBasedBonusProductsForBasket).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ basketId: 'basket-123' }),
+            50
+        );
+    });
+
+    test('ruleBasedBonusProductsPromise silently degrades to {} when basketDataPromise rejects', async () => {
+        vi.mocked(getBasket).mockRejectedValue(new NormalizedApiError(new Error('basket down')));
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.basketDataPromise).rejects.toThrow();
+        await expect(result.ruleBasedBonusProductsPromise).resolves.toEqual({});
+        // When the basket-data chain rejects upstream of the helper, the helper itself must not be invoked
+        // — its caller (`basketDataPromise.then(...)`) never runs the success branch.
+        expect(fetchRuleBasedBonusProductsForBasket).not.toHaveBeenCalled();
     });
 
     test('loader works with empty basket', async () => {

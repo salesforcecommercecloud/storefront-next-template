@@ -77,27 +77,15 @@ vi.mock('@/lib/product/product-utils', () => ({
     isRuleBasedPromotion: (bonusItem: any) => mockIsRuleBasedPromotion(bonusItem),
 }));
 
-// Mock useConfig
+// Mock useConfig — still needed because `toImageUrl` reads it for DIS URL transforms.
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: vi.fn(() => ({
-        pages: {
-            cart: {
-                ruleBasedProductLimit: 50,
-            },
-        },
-    })),
+    useConfig: vi.fn(() => ({})),
 }));
 
-// Mock useRuleBasedBonusProducts
-const mockUseRuleBasedBonusProducts = vi.fn((_args?: any) => ({
-    products: [] as Array<{ productId?: string; id?: string; productName?: string; image?: any }>,
-    isLoading: false,
-    error: undefined,
-    total: 0,
-}));
-vi.mock('@/hooks/use-rule-based-bonus-products', () => ({
-    useRuleBasedBonusProducts: (args: any) => mockUseRuleBasedBonusProducts(args),
-}));
+// Rule-based bonus product hits arrive as a deferred `ruleBasedBonusProductsPromise`
+// keyed by `promotionId`. Tests construct an already-resolved promise via `ruleBasedPromise()`.
+const ruleBasedPromise = (hits: any[], promotionId = 'promo-1'): Promise<Record<string, any[]>> =>
+    Promise.resolve({ [promotionId]: hits });
 
 // Mock carousel components
 vi.mock('@/components/ui/carousel', () => ({
@@ -217,12 +205,6 @@ describe('BonusProductSelection', () => {
         mockRequiresVariantSelection.mockReturnValue(false);
         mockGetPrimaryProductImageUrl.mockReturnValue('https://example.com/image.jpg');
         mockIsRuleBasedPromotion.mockReturnValue(false); // Default to list-based
-        mockUseRuleBasedBonusProducts.mockReturnValue({
-            products: [],
-            isLoading: false,
-            error: undefined,
-            total: 0,
-        });
         // Use vi.spyOn for useFetcher hook
         vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue(mockFetcher as any);
     });
@@ -662,8 +644,13 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({
+                    bonusProducts: [], // Empty list-based products
+                }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'rule-product-1',
                         id: 'rule-product-1',
@@ -676,16 +663,8 @@ describe('BonusProductSelection', () => {
                         productName: 'Rule Based Product 2',
                         image: { link: 'https://example.com/rule2.jpg' },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 2,
-            });
-
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [], // Empty list-based products
-            });
+                ]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
@@ -707,8 +686,10 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'rule-product-1',
                         id: 'rule-product-1',
@@ -721,13 +702,8 @@ describe('BonusProductSelection', () => {
                         productName: 'Rule Product 2',
                         image: { link: 'https://example.com/rule2.jpg' },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 2,
-            });
-
-            const props = getDefaultProps();
+                ]),
+            };
             // Keep the list-based products from default props (product-1, product-2)
 
             renderWithRouter(<BonusProductSelection {...props} />);
@@ -757,9 +733,10 @@ describe('BonusProductSelection', () => {
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
 
-            // Rule-based products include product-1 which is also in list-based
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+            const props = {
+                ...getDefaultProps(),
+                // Rule-based products include product-1 which is also in list-based
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'product-1', // DUPLICATE with list-based
                         id: 'product-1',
@@ -772,13 +749,8 @@ describe('BonusProductSelection', () => {
                         productName: 'Unique Rule Product',
                         image: { link: 'https://example.com/unique.jpg' },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 2,
-            });
-
-            const props = getDefaultProps();
+                ]),
+            };
             // Default props have product-1 and product-2
 
             renderWithRouter(<BonusProductSelection {...props} />);
@@ -798,25 +770,24 @@ describe('BonusProductSelection', () => {
             });
         });
 
-        test('handles empty rule-based products gracefully', () => {
+        test('handles empty rule-based products gracefully', async () => {
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [],
-                isLoading: false,
-                error: undefined,
-                total: 0,
-            });
 
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [], // Also empty list-based
-            });
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({
+                    bonusProducts: [], // Also empty list-based
+                }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
             // Should render without crashing, but no products
-            const carouselItems = screen.queryAllByTestId('carousel-item');
-            expect(carouselItems).toHaveLength(0);
+            await waitFor(() => {
+                const carouselItems = screen.queryAllByTestId('carousel-item');
+                expect(carouselItems).toHaveLength(0);
+            });
         });
 
         test('uses disBaseLink for rule-based product images when available', async () => {
@@ -828,8 +799,11 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({ bonusProducts: [] }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'rule-product-1',
                         id: 'rule-product-1',
@@ -839,16 +813,8 @@ describe('BonusProductSelection', () => {
                             link: 'https://example.com/regular.jpg',
                         },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 1,
-            });
-
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [],
-            });
+                ]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
@@ -867,8 +833,11 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({ bonusProducts: [] }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'rule-product-1',
                         id: 'rule-product-1',
@@ -877,16 +846,8 @@ describe('BonusProductSelection', () => {
                             link: 'https://example.com/fallback.jpg',
                         },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 1,
-            });
-
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [],
-            });
+                ]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
@@ -905,24 +866,19 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({ bonusProducts: [] }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productId: 'rule-product-1',
                         id: 'rule-product-1',
                         productName: 'Rule Product without image',
                         // No image property
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 1,
-            });
-
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [],
-            });
+                ]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
@@ -941,8 +897,11 @@ describe('BonusProductSelection', () => {
             });
 
             mockIsRuleBasedPromotion.mockReturnValue(true);
-            mockUseRuleBasedBonusProducts.mockReturnValue({
-                products: [
+
+            const props = {
+                ...getDefaultProps(),
+                bonusDiscountLineItem: createMockBonusDiscountLineItem({ bonusProducts: [] }),
+                ruleBasedBonusProductsPromise: ruleBasedPromise([
                     {
                         productName: 'Invalid Product - No ID',
                         image: { link: 'https://example.com/image.jpg' },
@@ -954,16 +913,8 @@ describe('BonusProductSelection', () => {
                         productName: 'Valid Product',
                         image: { link: 'https://example.com/valid.jpg' },
                     },
-                ],
-                isLoading: false,
-                error: undefined,
-                total: 2,
-            });
-
-            const props = getDefaultProps();
-            props.bonusDiscountLineItem = createMockBonusDiscountLineItem({
-                bonusProducts: [],
-            });
+                ]),
+            };
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
