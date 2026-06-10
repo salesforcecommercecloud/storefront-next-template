@@ -15,7 +15,7 @@
  */
 import type { ReactElement } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router';
+import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -79,13 +79,19 @@ const meta: Meta<CarouselSectionArgs> = {
         </CarouselSection>
     ),
     // Snapshot harness uses composeStories, which runs OUTSIDE the global storybook decorator
-    // stack. CarouselSection -> @/components/link -> useSite() requires SiteProvider, so we
-    // declare the providers on the meta decorator to satisfy both the storybook UI and the
-    // snapshot path. (Pattern 18 / "composeStories runs outside the global decorator stack" in
-    // the storybook-component-audit skill.)
+    // stack. CarouselSection -> @/components/link -> useSite() requires SiteProvider + a router
+    // context, so we declare the providers on the meta decorator to satisfy both the storybook UI
+    // and the snapshot path. (Pattern 18 / "composeStories runs outside the global decorator stack"
+    // in the storybook-component-audit skill.)
+    //
+    // NOTE: We use useInRouterContext() to conditionally create a router. In the Storybook UI, the
+    // global withRouter decorator already provides a router, so we skip creating a nested one (which
+    // would cause "You cannot render a <Router> inside another <Router>"). In composeStories snapshot
+    // tests, no global decorator exists, so we create the router here. Pattern from .storybook/test-wrapper.tsx.
     decorators: [
-        (Story) => (
-            <MemoryRouter>
+        (Story) => {
+            const inRouter = useInRouterContext();
+            const content = (
                 <ConfigWrapper>
                     <SiteProvider
                         site={mockSiteObject}
@@ -95,8 +101,28 @@ const meta: Meta<CarouselSectionArgs> = {
                         <Story />
                     </SiteProvider>
                 </ConfigWrapper>
-            </MemoryRouter>
-        ),
+            );
+
+            // If already in a router (Storybook UI), just return the content
+            if (inRouter) {
+                return content;
+            }
+
+            // If not in a router (composeStories), create one
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '*',
+                        element: content,
+                    },
+                ],
+                {
+                    initialEntries: ['/'],
+                }
+            );
+
+            return <RouterProvider router={router} />;
+        },
     ],
 };
 
