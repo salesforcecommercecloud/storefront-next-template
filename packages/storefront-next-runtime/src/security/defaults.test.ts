@@ -28,6 +28,7 @@ describe('security defaults', () => {
               "https://*.commercecloud.salesforce.com",
               "https://*.demandware.net",
               "https://challenges.cloudflare.com",
+              "https://api.cquotient.com",
             ],
             "default-src": [
               "'self'",
@@ -50,6 +51,7 @@ describe('security defaults', () => {
               "data:",
               "https://*.commercecloud.salesforce.com",
               "https://*.demandware.net",
+              "https://*.cc.salesforce.com",
             ],
             "object-src": [
               "'none'",
@@ -78,6 +80,7 @@ describe('security defaults', () => {
                   "https://*.commercecloud.salesforce.com",
                   "https://*.demandware.net",
                   "https://challenges.cloudflare.com",
+                  "https://api.cquotient.com",
                 ],
                 "default-src": [
                   "'self'",
@@ -100,6 +103,7 @@ describe('security defaults', () => {
                   "data:",
                   "https://*.commercecloud.salesforce.com",
                   "https://*.demandware.net",
+                  "https://*.cc.salesforce.com",
                 ],
                 "object-src": [
                   "'none'",
@@ -139,6 +143,14 @@ describe('security defaults', () => {
 
     it('object-src is none', () => {
         expect(defaultCspDirectives['object-src']).toEqual(["'none'"]);
+    });
+
+    it('connect-src allows the Einstein engagement API host (OOTB browser beacons)', () => {
+        // The OOTB Einstein engagement adapter fires browser `navigator.sendBeacon`
+        // calls to https://api.cquotient.com/v3/activities/... — a cross-origin
+        // request governed by connect-src. Without this entry the beacons are
+        // blocked by CSP and the browser console reports a violation.
+        expect(defaultCspDirectives['connect-src']).toContain('https://api.cquotient.com');
     });
 
     it('referrer policy is strict-origin-when-cross-origin', () => {

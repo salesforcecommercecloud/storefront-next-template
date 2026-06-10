@@ -587,6 +587,82 @@ describe('Product Route Loaders', () => {
             await expect(result.category).rejects.toThrow(NormalizedApiError);
         });
 
+        test('passes primaryCategoryId to fetchPageWithComponentData as the category fallback', async () => {
+            mockFetchProductById.mockResolvedValueOnce(mockProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
+
+            const request = new Request('https://example.com/product/test-product-123');
+            const params = { productId: 'test-product-123' };
+
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context: mockContext,
+                unstable_pattern: '/product/:productId',
+            });
+
+            expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({
+                    aspectType: 'pdp',
+                    productId: 'test-product-123',
+                    categoryId: 'test-category-123',
+                })
+            );
+        });
+
+        test('omits categoryId from fetchPageWithComponentData when product has no primaryCategoryId', async () => {
+            const productWithoutCategory = {
+                ...mockProduct,
+                primaryCategoryId: null,
+            };
+            mockFetchProductById.mockResolvedValueOnce(productWithoutCategory);
+
+            const request = new Request('https://example.com/product/test-product-123');
+            const params = { productId: 'test-product-123' };
+
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context: mockContext,
+                unstable_pattern: '/product/:productId',
+            });
+
+            expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ aspectType: 'pdp', productId: 'test-product-123' })
+            );
+            expect(mockFetchPageWithComponentData).not.toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ categoryId: expect.anything() })
+            );
+        });
+
+        test('uses variant pid as productId for fetchPageWithComponentData', async () => {
+            const variantProduct = { ...mockProduct, id: 'variant-pid-123', primaryCategoryId: 'variant-cat-123' };
+            mockFetchProductById.mockResolvedValueOnce(variantProduct);
+            mockFetchCategory.mockResolvedValue(mockCategory);
+
+            const request = new Request('https://example.com/product/test-product-123?pid=variant-pid-123');
+            const params = { productId: 'test-product-123' };
+
+            await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context: mockContext,
+                unstable_pattern: '/product/:productId',
+            });
+
+            expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({
+                    aspectType: 'pdp',
+                    productId: 'variant-pid-123',
+                    categoryId: 'variant-cat-123',
+                })
+            );
+        });
+
         test('handles variant product with master product category lookup', async () => {
             const variantProduct = {
                 ...mockProduct,

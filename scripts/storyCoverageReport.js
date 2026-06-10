@@ -64,6 +64,11 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-recommendations/deferred',
     // Barrel re-export — `customer-reviews-section.tsx` (the implementation) has its own story.
     'ratings-reviews/components/customer-reviews-section/index',
+    // Barrel re-export — `ai-insight-card.tsx` (the implementation) has its own story.
+    'ai-insight-card/index',
+    // Lightweight skeleton fallback extracted into its own file so React.lazy() can keep the
+    // full section out of the eager bundle. Same convention as other *-skeleton excludes above.
+    'customer-preferences/components/interests-preferences-section/skeleton',
     // Extension UITarget wrappers — thin Suspense/Await wrappers that pull deferred data
     // from `useRouteLoaderData`. Underlying section components have their own stories.
     'customer-preferences/components/target/preferences-target',

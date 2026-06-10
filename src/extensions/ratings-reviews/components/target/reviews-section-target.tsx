@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
-import { Suspense, type ReactElement } from 'react';
+import { Suspense, lazy, type ReactElement } from 'react';
 import { Await } from 'react-router';
-import { CustomerReviewsSection } from '@/extensions/ratings-reviews/components/customer-reviews-section';
 import { useWriteReviewForm } from '@/extensions/ratings-reviews/context/write-review-form-context';
 import type { WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+
+const CustomerReviewsSection = lazy(() =>
+    import('@/extensions/ratings-reviews/components/customer-reviews-section').then((m) => ({
+        default: m.CustomerReviewsSection,
+    }))
+);
 
 /**
  * UITarget wrapper for the customer reviews accordion on PDP.
@@ -34,7 +39,7 @@ export default function ReviewsSectionTarget(): ReactElement | null {
     if (!writeReviewFormPromise) return null;
 
     return (
-        <Suspense fallback={<CustomerReviewsSection />}>
+        <Suspense fallback={null}>
             <Await resolve={writeReviewFormPromise} errorElement={<CustomerReviewsSection />}>
                 {(formConfig: WriteReviewFormData) => <CustomerReviewsSection writeReviewFormConfig={formConfig} />}
             </Await>

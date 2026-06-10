@@ -55,6 +55,10 @@ git clone --branch v1.0.0 --depth 1 \
 
 Check **[Releases](../../releases)** for all versions.
 
+### Template version & SDK compatibility
+
+This template is dated by a **release stamp** (e.g. "June 2026"), recorded in `package.json` under `storefrontNext` (`templateRelease`, `templateVersion`, `minSdkVersion`). The Storefront Next **SDK** (`@salesforce/storefront-next-dev` / `-runtime`) versions separately, with SemVer. See the **[compatibility matrix](./docs/COMPATIBILITY.md)** for which SDK version each template release needs.
+
 ## Configuration
 
 All settings are defined in `config.server.ts` and can be configured via environment variables—no code changes required.

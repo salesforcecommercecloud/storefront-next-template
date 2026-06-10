@@ -21,6 +21,7 @@ import { TrackingConsent } from '@/types/tracking-consent';
 import {
     appendWishlistMergeFlag,
     captureGuestWishlistSnapshot,
+    getOrCreateWishlist,
     getWishlist,
     loadWishlistPageData,
     mergeWishlist,
@@ -685,5 +686,58 @@ describe('appendWishlistMergeFlag', () => {
         });
         expect(result2.url).toBe('/account/wishlist?wishlistMerge=partial');
         expect(result2.setCookie).toContain('wishlist_merge');
+    });
+});
+
+describe('getOrCreateWishlist — create branch', () => {
+    const mockContext = {} as any;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    test('fast path: returns the POST body without re-fetching when id is present', async () => {
+        // No existing list: getCustomerProductLists returns empty.
+        mockGetCustomerProductLists.mockResolvedValueOnce({ data: { data: [] } });
+
+        const created = { id: 'list-new', type: 'wish_list', customerProductListItems: [] };
+        mockCreateCustomerProductList.mockResolvedValue({ data: created });
+
+        const result = await getOrCreateWishlist(mockContext, 'cust-1');
+
+        expect(result).toEqual(created);
+        expect(mockCreateCustomerProductList).toHaveBeenCalledTimes(1);
+        // Only the initial lookup before create — no second GET after the POST.
+        expect(mockGetCustomerProductLists).toHaveBeenCalledTimes(1);
+        expect(mockLoggerWarn).not.toHaveBeenCalled();
+    });
+
+    test('fallback path: waits for index, re-fetches when POST returns no id', async () => {
+        vi.useFakeTimers();
+        try {
+            // No existing list: initial lookup empty.
+            // After the create, the post-sleep GET returns the indexed list.
+            const created = { id: 'list-indexed', type: 'wish_list', customerProductListItems: [] };
+            mockGetCustomerProductLists
+                .mockResolvedValueOnce({ data: { data: [] } })
+                .mockResolvedValueOnce({ data: { data: [created] } });
+
+            // POST resolves with a body that lacks id (the schema-anomaly we're guarding against).
+            mockCreateCustomerProductList.mockResolvedValue({ data: { type: 'wish_list' } });
+
+            const promise = getOrCreateWishlist(mockContext, 'cust-1');
+            await vi.advanceTimersByTimeAsync(1500);
+            const result = await promise;
+
+            expect(result).toEqual(created);
+            expect(mockCreateCustomerProductList).toHaveBeenCalledTimes(1);
+            expect(mockGetCustomerProductLists).toHaveBeenCalledTimes(2);
+            expect(mockLoggerWarn).toHaveBeenCalledWith(
+                'Wishlist: createCustomerProductList returned without an id, waiting for index propagation',
+                expect.objectContaining({ customerId: 'cust-1' })
+            );
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

@@ -776,7 +776,9 @@ function AccountDetailsContent({
                 showHeaderSeparator
                 className="bg-card border-border">
                 <ToggleCardSummary>
-                    <div className="flex items-center justify-between" data-testid="sf-toggle-card-email-content">
+                    <div
+                        className="flex flex-wrap items-center justify-between gap-3"
+                        data-testid="sf-toggle-card-email-content">
                         <div className="space-y-2">
                             <p className="text-sm font-medium text-foreground">{t('email.title')}</p>
                             <div className="flex items-center gap-2">
@@ -842,7 +844,9 @@ function AccountDetailsContent({
                 showHeaderSeparator
                 className="bg-card border-border">
                 <ToggleCardSummary>
-                    <div className="flex items-center justify-between" data-testid="sf-toggle-card-password-content">
+                    <div
+                        className="flex flex-wrap items-center justify-between gap-3"
+                        data-testid="sf-toggle-card-password-content">
                         <div className="space-y-2">
                             <p className="text-sm font-medium leading-5 text-foreground">{t('password.password')}</p>
                             <p className="text-sm font-normal leading-5 text-muted-foreground">

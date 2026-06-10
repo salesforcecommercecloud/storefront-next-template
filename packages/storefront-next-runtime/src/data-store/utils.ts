@@ -230,14 +230,14 @@ async function loadDataStoreEntry<T>(args: {
         const entry = await getDataStoreEntry(entryKey);
 
         if (!entry?.value || typeof entry.value !== 'object') {
-            logger.warn(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
+            logger.debug(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
             return { state: 'missing' };
         }
 
         return { state: 'value', value: transform(entry.value as Record<string, unknown>) };
     } catch (error) {
         if (error instanceof DataStoreNotFoundError) {
-            logger.warn(`Data store entry '${entryKey}' not found.`, { entryKey, error });
+            logger.debug(`Data store entry '${entryKey}' not found.`, { entryKey });
             return { state: 'missing' };
         }
         if (error instanceof DataStoreUnavailableError || error instanceof DataStoreServiceError) {

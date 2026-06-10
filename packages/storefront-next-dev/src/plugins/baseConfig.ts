@@ -29,6 +29,17 @@ import type { Plugin } from 'vite';
  * - `optimizeDeps.include`: forces Vite's dep optimizer to pre-bundle
  *   `react-router` and its `/internal/react-server-client` entry so the
  *   React Router dev plugin resolves a single shared instance on the client.
+ *   It also pre-bundles the React-importing entry points of the runtime SDK
+ *   (`/config`, `/security/react`, `/site-context`, `/design/react/core`,
+ *   `/routing/app-wrapper`, `/i18n/client`). Without this, Vite optimizes the
+ *   app's own React first, then *discovers* these SDK subpaths the first time a
+ *   component imports them at request time, triggers a dep re-optimization, and
+ *   forces a full-page reload. During that window the SDK's React hooks
+ *   (`useConfig` → `useContext`) momentarily resolve against a second, freshly
+ *   optimized React instance — surfacing as "Invalid hook call" / "Cannot read
+ *   properties of null (reading 'useContext')" until the reload settles.
+ *   Including them up front means a single first-pass optimization with one
+ *   shared React, so no mid-session re-optimize and no transient duplicate.
  * - `ssr.noExternal`: forces the SDK through Vite's SSR transform pipeline
  *   in dev. The SDK exports module-level singletons (router contexts, etc.)
  *   whose object identity is load-bearing — they're used as `Map` keys, so
@@ -56,7 +67,33 @@ export const baseConfigPlugin = (): Plugin => ({
                 dedupe: ['react', 'react-dom', 'react-router'],
             },
             optimizeDeps: {
-                include: ['react-router', 'react-router/internal/react-server-client'],
+                include: [
+                    'react-router',
+                    'react-router/internal/react-server-client',
+                    // React-importing runtime SDK entry points. Pre-bundling these
+                    // in the first optimizer pass prevents a late discovery +
+                    // re-optimize that transiently loads a second React instance
+                    // (see optimizeDeps note above).
+                    '@salesforce/storefront-next-runtime/config',
+                    '@salesforce/storefront-next-runtime/security/react',
+                    '@salesforce/storefront-next-runtime/site-context',
+                    '@salesforce/storefront-next-runtime/design/react/core',
+                    '@salesforce/storefront-next-runtime/routing/app-wrapper',
+                    '@salesforce/storefront-next-runtime/i18n/client',
+                    // i18n peer deps that the runtime SDK imports *internally* and the
+                    // template does NOT import directly from its own source. Vite's
+                    // initial crawl scans the app's source graph, so a dep used only
+                    // inside the SDK is discovered late — the first time the SDK module
+                    // executes — triggering a re-optimize + reload (the same reload that
+                    // transiently duplicates React). `react-i18next` does NOT need listing
+                    // here because the template imports it directly in many components, so
+                    // the initial crawl already finds it.
+                    //   - i18next-browser-languagedetector: imported by `/i18n/client`.
+                    //   - remix-i18next/middleware: imported by the SDK's `/i18n` barrel
+                    //     (createI18nMiddleware), which the template reaches via getTranslation.
+                    'i18next-browser-languagedetector',
+                    'remix-i18next/middleware',
+                ],
             },
             ssr: {
                 noExternal: ['@salesforce/storefront-next-runtime'],

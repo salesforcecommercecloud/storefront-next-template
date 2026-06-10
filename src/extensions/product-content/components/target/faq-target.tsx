@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Await } from 'react-router';
-import Faq from '@/extensions/product-content/components/faq';
 import { useProductContentData } from '@/extensions/product-content/context/product-content-data-context';
+
+const Faq = lazy(() => import('@/extensions/product-content/components/faq'));
 
 export default function FaqTarget() {
     const ctx = useProductContentData();

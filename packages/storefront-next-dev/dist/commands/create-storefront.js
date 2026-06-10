@@ -100,6 +100,12 @@ const createStorefront = async (options = {}) => {
 		recursive: true,
 		force: true
 	});
+	let templateRelease;
+	const generatedPkgPath = path.join(outputPath, "package.json");
+	if (fs.existsSync(generatedPkgPath)) try {
+		templateRelease = JSON.parse(fs.readFileSync(generatedPkgPath, "utf8"))?.storefrontNext?.templateRelease;
+	} catch {}
+	if (!templateRelease) logger.warn("This template is missing its \"storefrontNext\" origin metadata in package.json. You can still build and run it, but it won’t record which template release it came from.");
 	const workspaceYamlPath = path.join(outputPath, "pnpm-workspace.yaml");
 	if (!fs.existsSync(workspaceYamlPath)) logger.warn(`Template is missing pnpm-workspace.yaml at ${workspaceYamlPath}. The generated project may not work correctly without a workspace configuration.`);
 	if (isLocalPath(template) || options.localPackagesDir) {
@@ -173,7 +179,7 @@ const createStorefront = async (options = {}) => {
     ║                       CONGRATULATIONS                            ║
     ╚══════════════════════════════════════════════════════════════════╝
 
-        🎉 Congratulations! Your storefront is ready to use! 🎉
+        🎉 Congratulations! Your storefront is ready to use! 🎉${templateRelease ? `\n        📦 Generated from template release: ${templateRelease}` : ""}
         What's next:
         - Navigate to the storefront directory: cd ${outputPath}
         - Install dependencies: pnpm install

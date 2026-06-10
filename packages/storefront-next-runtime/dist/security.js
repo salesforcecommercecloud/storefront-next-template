@@ -1,72 +1,9 @@
+import { n as isDesignModeActive, r as isPreviewModeActive } from "./modeDetection.js";
+import { n as defaultSecurityHeaders, r as pageDesignerFrameAncestors, t as defaultCspDirectives } from "./defaults.js";
 import { createContext } from "react-router";
 import { randomBytes } from "node:crypto";
 import { z } from "zod";
 
-//#region src/security/defaults.ts
-/**
-* SDK default CSP directives. Customers extending CSP should spread this:
-*
-* ```ts
-* import { defaultCspDirectives } from '@salesforce/storefront-next-runtime/security';
-* security: {
-*   csp: {
-*     directives: {
-*       ...defaultCspDirectives,
-*       'script-src': [...defaultCspDirectives['script-src']!, 'https://cdn.foo.com'],
-*     },
-*   },
-* }
-* ```
-*
-* The per-request nonce is appended to `script-src` at request time; it is
-* NOT in this static map.
-*/
-const defaultCspDirectives = {
-	"default-src": ["'self'"],
-	"script-src": ["'self'", "https://challenges.cloudflare.com"],
-	"style-src": ["'self'", "'unsafe-inline'"],
-	"img-src": [
-		"'self'",
-		"data:",
-		"https://*.commercecloud.salesforce.com",
-		"https://*.demandware.net"
-	],
-	"font-src": ["'self'", "data:"],
-	"connect-src": [
-		"'self'",
-		"https://*.commercecloud.salesforce.com",
-		"https://*.demandware.net",
-		"https://challenges.cloudflare.com"
-	],
-	"frame-src": ["https://challenges.cloudflare.com"],
-	"frame-ancestors": ["'self'"],
-	"form-action": ["'self'"],
-	"base-uri": ["'self'"],
-	"object-src": ["'none'"],
-	"upgrade-insecure-requests": true
-};
-const defaultSecurityHeaders = {
-	enabled: true,
-	csp: {
-		directives: defaultCspDirectives,
-		reportOnly: false
-	},
-	hsts: {
-		maxAge: 15552e3,
-		includeSubDomains: true,
-		preload: false
-	},
-	frameOptions: "SAMEORIGIN",
-	contentTypeOptions: "nosniff",
-	referrerPolicy: "strict-origin-when-cross-origin",
-	permissionsPolicy: {
-		camera: [],
-		microphone: [],
-		geolocation: []
-	}
-};
-
-//#endregion
 //#region src/security/nonce.ts
 /** 16 bytes (128 bits) of CSPRNG-grade entropy, base64-encoded → 24 chars. */
 const NONCE_BYTES = 16;
@@ -237,6 +174,16 @@ function serializeHsts(hsts) {
 * Read at boot. HSTS is suppressed when running locally (BUNDLE_ID unset
 * or 'local') because HSTS pins the host in browser caches — pinning
 * `localhost` would force HTTPS on every developer's `pnpm dev`.
+*
+* Operational invariant: this is the single signal that distinguishes a
+* deployed environment from local dev, and it now gates TWO security
+* behaviors — HSTS emission and the dev-only HMR websocket `connect-src`
+* relaxation below. Managed Runtime always injects a real, non-'local'
+* BUNDLE_ID, so a deployed response is always treated as remote. An unset
+* or empty BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets
+* allowed); a deployment that failed to set BUNDLE_ID would already be
+* broken in other ways (asset path resolution also keys off it), so we do
+* not add a redundant guard here.
 */
 function isRemote() {
 	const id = process.env.BUNDLE_ID;
@@ -321,15 +268,29 @@ function createSecurityHeadersMiddleware(input = {}) {
 	parseSecurityConfig(input);
 	const resolved = resolve(input);
 	warnIfUnsafe(resolved);
-	const staticHsts = isRemote() && resolved.hsts !== false ? serializeHsts(resolved.hsts) : null;
+	const remote = isRemote();
+	if (!remote && resolved.csp !== false) {
+		const connectSrc = resolved.csp.directives["connect-src"];
+		if (Array.isArray(connectSrc)) {
+			const devSocketSources = ["ws://localhost:*", "ws://127.0.0.1:*"];
+			resolved.csp.directives["connect-src"] = [...connectSrc, ...devSocketSources.filter((s) => !connectSrc.includes(s))];
+		}
+	}
+	const staticHsts = remote && resolved.hsts !== false ? serializeHsts(resolved.hsts) : null;
 	const permissionsHeader = resolved.permissionsPolicy === false ? null : serializePermissionsPolicy(resolved.permissionsPolicy);
 	const cspHeaderName = resolved.csp !== false && resolved.csp.reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 	let staticCspBody = null;
+	let staticCspBodyForPageDesigner = null;
 	let baseScriptSrc = "";
 	if (resolved.csp !== false) {
 		const { "script-src": scriptSrc,...rest } = resolved.csp.directives;
 		staticCspBody = serializeCsp(rest);
 		baseScriptSrc = (scriptSrc ?? []).join(" ");
+		const customerFrameAncestors = rest["frame-ancestors"] ?? [];
+		if (!customerFrameAncestors.some((src) => src !== "'self'")) staticCspBodyForPageDesigner = serializeCsp({
+			...rest,
+			"frame-ancestors": [...customerFrameAncestors, ...pageDesignerFrameAncestors]
+		});
 	}
 	/**
 	* Apply the resolved security headers to a response. Pulled into a helper
@@ -337,14 +298,14 @@ function createSecurityHeadersMiddleware(input = {}) {
 	* loaders/actions throw `Response` for 404/redirect/etc.). Without this,
 	* a 404 error response would ship without security headers.
 	*/
-	const applyHeaders = (response, nonce) => {
-		if (staticCspBody !== null && nonce !== null) {
+	const applyHeaders = (response, nonce, cspBody, isEmbeddable) => {
+		if (cspBody !== null && nonce !== null) {
 			const scriptSrcClause = baseScriptSrc.length > 0 ? `script-src ${baseScriptSrc} 'nonce-${nonce}'` : `script-src 'nonce-${nonce}'`;
-			const csp = staticCspBody.length > 0 ? `${staticCspBody}; ${scriptSrcClause}` : scriptSrcClause;
+			const csp = cspBody.length > 0 ? `${cspBody}; ${scriptSrcClause}` : scriptSrcClause;
 			response.headers.set(cspHeaderName, csp);
 		}
 		if (staticHsts !== null) response.headers.set("Strict-Transport-Security", staticHsts);
-		if (resolved.frameOptions !== false) response.headers.set("X-Frame-Options", resolved.frameOptions);
+		if (resolved.frameOptions !== false && !isEmbeddable) response.headers.set("X-Frame-Options", resolved.frameOptions);
 		if (resolved.contentTypeOptions !== false) response.headers.set("X-Content-Type-Options", resolved.contentTypeOptions);
 		if (resolved.referrerPolicy !== false) response.headers.set("Referrer-Policy", resolved.referrerPolicy);
 		if (permissionsHeader !== null) response.headers.set("Permissions-Policy", permissionsHeader);
@@ -354,10 +315,12 @@ function createSecurityHeadersMiddleware(input = {}) {
 		if (!resolved.enabled) return next();
 		const nonce = resolved.csp === false ? null : generateNonce();
 		if (nonce !== null) args.context.set(securityContext, { nonce });
+		const isEmbeddable = staticCspBodyForPageDesigner !== null && (isDesignModeActive(args.request) || isPreviewModeActive(args.request));
+		const cspBody = isEmbeddable ? staticCspBodyForPageDesigner : staticCspBody;
 		try {
-			return applyHeaders(await next(), nonce);
+			return applyHeaders(await next(), nonce, cspBody, isEmbeddable);
 		} catch (err) {
-			if (err instanceof Response) throw applyHeaders(err, nonce);
+			if (err instanceof Response) throw applyHeaders(err, nonce, cspBody, isEmbeddable);
 			throw err;
 		}
 	};

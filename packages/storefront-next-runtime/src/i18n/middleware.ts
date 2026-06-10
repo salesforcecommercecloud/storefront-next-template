@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 import { initReactI18next } from 'react-i18next';
+// NOTE: this dep is pre-bundled by the dev Vite plugin. The template reaches this
+// module via the `/i18n` barrel (e.g. getTranslation) rather than importing
+// `remix-i18next/middleware` directly, so Vite discovers it late (triggering a
+// re-optimize + reload). It is listed in `optimizeDeps.include` in
+// storefront-next-dev/src/plugins/baseConfig.ts — keep that list in sync if this
+// import is renamed or removed.
 import { createI18nextMiddleware } from 'remix-i18next/middleware';
 import { type MiddlewareFunction } from 'react-router';
 import { requestToLocaleMap } from '../site-context/index.js';

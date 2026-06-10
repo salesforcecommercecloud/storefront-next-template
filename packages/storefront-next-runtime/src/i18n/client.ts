@@ -20,6 +20,12 @@
 // `@salesforce/storefront-next-runtime/i18n` subpath.
 import i18next, { type i18n, type BackendModule, type ReadCallback } from 'i18next';
 import { initReactI18next } from 'react-i18next';
+// NOTE: this dep is pre-bundled by the dev Vite plugin. Because the template
+// does not import `i18next-browser-languagedetector` from its own source, it is
+// only reachable through this SDK module and Vite discovers it late (triggering
+// a re-optimize + reload). It is listed in `optimizeDeps.include` in
+// storefront-next-dev/src/plugins/baseConfig.ts — keep that list in sync if this
+// import is renamed or removed.
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { defaultInterpolation } from './defaults.js';
 import type { LocaleLoader } from './types.js';

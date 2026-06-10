@@ -199,7 +199,7 @@ describe('gcpPreferencesMiddleware', () => {
 });
 
 describe('getGcpPreferences', () => {
-    it('warns and returns empty preferences when the context is not populated', () => {
+    it('returns empty preferences without warning when the context is not populated', () => {
         const emptyContext = {
             set: vi.fn(),
             get: vi.fn().mockReturnValue(null),
@@ -208,9 +208,7 @@ describe('getGcpPreferences', () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
         expect(getGcpPreferences(emptyContext)).toEqual({ apiKey: '' });
-        expect(warnSpy).toHaveBeenCalledWith(
-            'GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.'
-        );
+        expect(warnSpy).not.toHaveBeenCalled();
 
         warnSpy.mockRestore();
     });

@@ -841,6 +841,68 @@ describe('create-storefront', () => {
         });
     });
 
+    describe('template origin metadata (storefrontNext)', () => {
+        it('should surface the template release label in the banner when present', async () => {
+            vi.mocked(fs.existsSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.git')) return false;
+                if (String(p).includes('config.json')) return false;
+                if (String(p).endsWith('.env.default')) return false;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                // The generated project's package.json carries the stamp (it survives
+                // the .git strip because it lives in the template's own package.json).
+                if (String(p).endsWith('package.json')) {
+                    return JSON.stringify({
+                        name: 'my-storefront',
+                        storefrontNext: {
+                            templateRelease: 'June 2026',
+                            templateVersion: '2026.6.0',
+                            minSdkVersion: '1.1.0',
+                        },
+                    });
+                }
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            // Banner is logged via logger.info; assert the release label appears.
+            expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('June 2026'));
+            // No warning about missing origin metadata.
+            expect(console.warn).not.toHaveBeenCalledWith(expect.anything(), expect.stringContaining('storefrontNext'));
+        });
+
+        it('should warn when the template has no storefrontNext origin metadata', async () => {
+            vi.mocked(fs.existsSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.git')) return false;
+                if (String(p).includes('config.json')) return false;
+                if (String(p).endsWith('.env.default')) return false;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                if (String(p).endsWith('package.json')) {
+                    return JSON.stringify({ name: 'my-storefront' }); // no storefrontNext
+                }
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            expect(console.warn).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('storefrontNext'));
+        });
+    });
+
     describe('--defaults flag', () => {
         it('should skip extension and config prompts when defaults is true', async () => {
             vi.mocked(fs.existsSync).mockImplementation((p: any) => {

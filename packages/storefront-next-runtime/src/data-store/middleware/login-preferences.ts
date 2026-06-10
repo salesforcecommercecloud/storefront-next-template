@@ -33,7 +33,7 @@ export const loginPreferencesContext = createDataStoreContext<LoginPreferences>(
 export function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences {
     const data = context.get(loginPreferencesContext);
     if (!data) {
-        getDataStoreLogger(context).warn(
+        getDataStoreLogger(context).debug(
             'Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};

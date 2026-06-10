@@ -875,26 +875,34 @@ function validateRule(rule, locale, context) {
 * Builds a component's `data` map by walking each attribute definition and
 * picking the first non-undefined value in priority order:
 *
-*   active-locale content → fallback-locale content → attrDef.defaultValue
+*   active-locale content → fallback content → attrDef.defaultValue
+*
+* The fallback bucket is selected whole-blob style (matching SCAPI/SFRA's
+* `__data` resolution): the site-default-locale bucket if it carries any
+* content, otherwise the literal-default ("default") bucket. Buckets are not
+* per-key merged with each other — only the active-locale bucket layers
+* per-key on top of the chosen fallback (preserving today's locale override
+* semantics).
 *
 * If none of those have a value the attribute is omitted from the result.
 *
 * When no `typeDefs` are supplied, we fall back to the legacy behavior:
-* `{ ...nodeData, ...defaultContent, ...localeContent }`. This keeps
+* `{ ...nodeData, ...fallbackContent, ...localeContent }`. This keeps
 * already-deployed manifests rendering until the manifest builder starts
 * emitting `componentTypes`.
 */
-function composeComponentData({ nodeData, defaultContent, localeContent, typeDefs }) {
+function composeComponentData({ nodeData, literalDefaultContent, defaultContent, localeContent, typeDefs }) {
+	const fallbackContent = Object.keys(defaultContent).length > 0 ? defaultContent : literalDefaultContent;
 	if (!typeDefs || Object.keys(typeDefs).length === 0) return {
 		...nodeData ?? {},
-		...defaultContent,
+		...fallbackContent,
 		...localeContent
 	};
 	const result = {};
 	for (const attrId of Object.keys(typeDefs)) {
 		const def = typeDefs[attrId];
 		if (Object.prototype.hasOwnProperty.call(localeContent, attrId)) result[attrId] = localeContent[attrId];
-		else if (Object.prototype.hasOwnProperty.call(defaultContent, attrId)) result[attrId] = defaultContent[attrId];
+		else if (Object.prototype.hasOwnProperty.call(fallbackContent, attrId)) result[attrId] = fallbackContent[attrId];
 		else if (def.defaultValue !== void 0) result[attrId] = def.defaultValue;
 	}
 	return result;
@@ -948,12 +956,14 @@ function processPage(page, processorContext) {
 					isVisible = false;
 				}
 			}
+			const literalDefaultContent = componentInfo?.content?.default ?? {};
 			const defaultContent = componentInfo?.content?.[processorContext.defaultLocale] ?? {};
 			const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
 			const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
 			const typeDefs = processorContext.componentTypes?.[ctx.node.typeId]?.attributeDefinitions;
 			const composedData = composeComponentData({
 				nodeData: ctx.node.data,
+				literalDefaultContent,
 				defaultContent,
 				localeContent,
 				typeDefs
@@ -1068,18 +1078,43 @@ const ContentAssignmentResolvers = new Map([["product", (key) => ({
 //#endregion
 //#region src/design/data/manifest/resolve-dynamic-page-id.ts
 /**
+* Looks up a single content assignment in the site manifest using the
+* resolver registered for the given identifier type, returning the first
+* matching `contentId` across the resolver's ordered key list. Returns
+* `null` when the identifier type has no resolver, or no key in the list
+* has an assignment for the requested aspect type.
+*/
+function lookupContentAssignment(id, identifierType, aspectType, siteManifest) {
+	const lookup = ContentAssignmentResolvers.get(identifierType)?.(id, siteManifest);
+	if (!lookup) return null;
+	for (const key of lookup.keys) {
+		const assignment = siteManifest?.contentObjectAssignments?.[aspectType]?.[lookup.objectType]?.[key];
+		if (assignment) return assignment.contentId;
+	}
+	return null;
+}
+/**
 * Converts a product or category identifier into a page ID by looking up
 * content assignments in the site manifest. For categories, the lookup
 * traverses the category hierarchy from the given category up to the root,
 * returning the first matching assignment.
 *
-* Returns `null` if no content assignment is found for the identifier or if
-* the identifier type has no registered resolver.
+* When the identifier type is `'product'` and no assignment is found, an
+* optional `categoryId` may be supplied as a fallback. The fallback is only
+* awaited and consulted after the product lookup misses, so callers that
+* resolve the product's category lazily (e.g. via a SCAPI request) don't
+* pay for the round trip on the happy path.
+*
+* Returns `null` if no content assignment is found for the identifier
+* (and the optional category fallback, when provided), or if the identifier
+* type has no registered resolver.
 *
 * @param options - The resolution options.
 * @param options.id - The identifier to resolve (product ID, category ID, or page ID).
 * @param options.identifierType - The type of identifier: `'product'`, `'category'`, or `'page'`.
+* @param options.aspectType - The aspect type to look up (e.g. `'pdp'`, `'plp'`).
 * @param options.siteManifest - The site manifest containing content assignments and category hierarchy.
+* @param options.categoryId - Optional fallback category ID (or a Promise resolving to one) used only when `identifierType` is `'product'` and the product lookup misses.
 * @returns The resolved page ID, or `null` if no assignment was found.
 *
 * @example
@@ -1104,25 +1139,31 @@ const ContentAssignmentResolvers = new Map([["product", (key) => ({
 * };
 *
 * // Direct match
-* resolveDynamicPageId({ id: 'mens-shoes', identifierType: 'category', siteManifest });
+* await resolveDynamicPageId({ id: 'mens-shoes', identifierType: 'category', aspectType: 'plp', siteManifest });
 * // => 'page-mens-shoes-plp'
 *
 * // Inherited from parent category
-* resolveDynamicPageId({ id: 'mens-running-shoes', identifierType: 'category', siteManifest });
+* await resolveDynamicPageId({ id: 'mens-running-shoes', identifierType: 'category', aspectType: 'plp', siteManifest });
 * // => 'page-mens-shoes-plp' (found via parent traversal)
 *
-* // No assignment found
-* resolveDynamicPageId({ id: 'womens-shoes', identifierType: 'category', siteManifest });
-* // => null
+* // Product missing but a category fallback is provided
+* await resolveDynamicPageId({
+*     id: 'unknown-product',
+*     identifierType: 'product',
+*     aspectType: 'plp',
+*     siteManifest,
+*     categoryId: 'mens-running-shoes',
+* });
+* // => 'page-mens-shoes-plp'
 * ```
 */
-function resolveDynamicPageId({ id, identifierType, siteManifest, aspectType }) {
-	const resolvedContentAssignmentLookup = ContentAssignmentResolvers.get(identifierType)?.(id, siteManifest);
-	if (resolvedContentAssignmentLookup) for (const key of resolvedContentAssignmentLookup.keys) {
-		const contentAssignment = siteManifest?.contentObjectAssignments?.[aspectType]?.[resolvedContentAssignmentLookup.objectType]?.[key];
-		if (contentAssignment) return contentAssignment.contentId;
-	}
-	return null;
+async function resolveDynamicPageId({ id, identifierType, siteManifest, aspectType, categoryId }) {
+	const direct = lookupContentAssignment(id, identifierType, aspectType, siteManifest);
+	if (direct) return direct;
+	if (identifierType !== "product" || categoryId == null) return null;
+	const resolvedCategoryId = await categoryId;
+	if (!resolvedCategoryId) return null;
+	return lookupContentAssignment(resolvedCategoryId, "category", aspectType, siteManifest);
 }
 
 //#endregion
@@ -1274,6 +1315,7 @@ function applyPageMetadataOverlay(variation, locale) {
 * @param options.manifestStorage - Storage implementation for fetching manifests.
 * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
 * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+* @param options.categoryId - Optional fallback category ID (or a Promise resolving to one) used only when `identifierType` is `'product'` and the product has no content assignment for the requested aspect type. The promise is awaited lazily — the happy path never pays for it.
 * @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
 * @returns The fully resolved and filtered page, or `null`.
 *
@@ -1311,21 +1353,23 @@ function applyPageMetadataOverlay(variation, locale) {
 * }
 * ```
 */
-async function resolvePage({ id, identifierType, aspectType, locale, defaultLocale, manifestStorage, contextResolver, attrCtx, pruneInvisible = true }) {
+async function resolvePage({ id, identifierType, aspectType, categoryId, locale, defaultLocale, manifestStorage, contextResolver, attrCtx, pruneInvisible = true }) {
 	let resolvedId = null;
 	if (ContentAssignmentResolvers.has(identifierType)) {
 		const siteManifest = await manifestStorage.getSiteManifest();
 		RequiredError.assert(aspectType, `Aspect type is required for identifier type ${identifierType}`, (v) => !v);
-		resolvedId = resolveDynamicPageId({
+		resolvedId = await resolveDynamicPageId({
 			id,
 			identifierType,
 			aspectType,
-			siteManifest
+			siteManifest,
+			categoryId
 		});
 	} else resolvedId = id;
 	if (!resolvedId) return null;
 	const pageManifest = await manifestStorage.getPageManifest(resolvedId);
 	if (!pageManifest) return null;
+	if (pageManifest.context?.dataBindings?.length > 0) return null;
 	const pageResults = await getPageFromManifest(pageManifest, {
 		contextResolver,
 		locale

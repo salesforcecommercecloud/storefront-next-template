@@ -1873,6 +1873,17 @@ function i18nPlugin(config) {
 * - `optimizeDeps.include`: forces Vite's dep optimizer to pre-bundle
 *   `react-router` and its `/internal/react-server-client` entry so the
 *   React Router dev plugin resolves a single shared instance on the client.
+*   It also pre-bundles the React-importing entry points of the runtime SDK
+*   (`/config`, `/security/react`, `/site-context`, `/design/react/core`,
+*   `/routing/app-wrapper`, `/i18n/client`). Without this, Vite optimizes the
+*   app's own React first, then *discovers* these SDK subpaths the first time a
+*   component imports them at request time, triggers a dep re-optimization, and
+*   forces a full-page reload. During that window the SDK's React hooks
+*   (`useConfig` → `useContext`) momentarily resolve against a second, freshly
+*   optimized React instance — surfacing as "Invalid hook call" / "Cannot read
+*   properties of null (reading 'useContext')" until the reload settles.
+*   Including them up front means a single first-pass optimization with one
+*   shared React, so no mid-session re-optimize and no transient duplicate.
 * - `ssr.noExternal`: forces the SDK through Vite's SSR transform pipeline
 *   in dev. The SDK exports module-level singletons (router contexts, etc.)
 *   whose object identity is load-bearing — they're used as `Map` keys, so
@@ -1901,7 +1912,18 @@ const baseConfigPlugin = () => ({
 				"react-dom",
 				"react-router"
 			] },
-			optimizeDeps: { include: ["react-router", "react-router/internal/react-server-client"] },
+			optimizeDeps: { include: [
+				"react-router",
+				"react-router/internal/react-server-client",
+				"@salesforce/storefront-next-runtime/config",
+				"@salesforce/storefront-next-runtime/security/react",
+				"@salesforce/storefront-next-runtime/site-context",
+				"@salesforce/storefront-next-runtime/design/react/core",
+				"@salesforce/storefront-next-runtime/routing/app-wrapper",
+				"@salesforce/storefront-next-runtime/i18n/client",
+				"i18next-browser-languagedetector",
+				"remix-i18next/middleware"
+			] },
 			ssr: { noExternal: ["@salesforce/storefront-next-runtime"] }
 		};
 	}

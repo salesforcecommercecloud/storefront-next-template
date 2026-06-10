@@ -39,7 +39,13 @@ export const defaultCspDirectives: CspDirectives = {
     // Tailwind v4 + shadcn rely on inline styles. Removing 'unsafe-inline'
     // breaks the design system out of the box.
     'style-src': ["'self'", "'unsafe-inline'"],
-    'img-src': ["'self'", 'data:', 'https://*.commercecloud.salesforce.com', 'https://*.demandware.net'],
+    'img-src': [
+        "'self'",
+        'data:',
+        'https://*.commercecloud.salesforce.com',
+        'https://*.demandware.net',
+        'https://*.cc.salesforce.com',
+    ],
     'font-src': ["'self'", 'data:'],
     'connect-src': [
         "'self'",
@@ -48,10 +54,15 @@ export const defaultCspDirectives: CspDirectives = {
         // Browser-initiated XHR/fetch from the Cloudflare Turnstile widget after
         // its api.js loads. (The server-side siteverify call is not subject to CSP.)
         'https://challenges.cloudflare.com',
+        // Browser `navigator.sendBeacon` calls from the OOTB Einstein engagement
+        // adapter to the CQuotient activities API (e.g. viewPage/viewProduct).
+        'https://api.cquotient.com',
     ],
     // Cloudflare Turnstile widget iframe.
     'frame-src': ['https://challenges.cloudflare.com'],
-    // Modern equivalent of X-Frame-Options.
+    // Modern equivalent of X-Frame-Options. Strict by default; the security
+    // middleware relaxes this per-request for Page Designer / Business Manager
+    // preview embeds (mode=EDIT|PREVIEW). See `pageDesignerFrameAncestors`.
     'frame-ancestors': ["'self'"],
     // Restrict form submissions to same-origin. CSP3 does NOT fall back to
     // default-src for form-action; without this, forms could POST anywhere.
@@ -60,6 +71,23 @@ export const defaultCspDirectives: CspDirectives = {
     'object-src': ["'none'"],
     'upgrade-insecure-requests': true,
 };
+
+/**
+ * Salesforce-owned host families that may legitimately embed the storefront
+ * in an iframe — Business Manager / Page Designer editor and preview frames.
+ *
+ * Used by the security middleware to relax `frame-ancestors` only on requests
+ * that are actually Page Designer EDIT/PREVIEW (`?mode=EDIT|PREVIEW`). Normal
+ * shopper traffic continues to ship `frame-ancestors 'self'`.
+ *
+ * Wildcards are bounded to Salesforce-registrable domains; only Salesforce
+ * can issue subdomains under these zones.
+ */
+export const pageDesignerFrameAncestors: string[] = [
+    'https://*.unified.demandware.net',
+    'https://*.commercecloud.salesforce.com',
+    'https://*.demandware.net',
+];
 
 export const defaultSecurityHeaders: ResolvedSecurityConfig = {
     enabled: true,

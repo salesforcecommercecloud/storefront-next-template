@@ -32,7 +32,7 @@ export const sitePreferencesContext = createDataStoreContext<SitePreferences>();
 export function getSitePreferences(context: Readonly<RouterContextProvider>): SitePreferences {
     const data = context.get(sitePreferencesContext);
     if (!data) {
-        getDataStoreLogger(context).warn(
+        getDataStoreLogger(context).debug(
             'Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};

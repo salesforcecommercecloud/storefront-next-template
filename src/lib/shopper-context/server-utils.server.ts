@@ -127,7 +127,9 @@ function extractQualifiersFromEntries(entries: Iterable<[string, string]>): {
             apiFieldName =
                 qualifierMapping[QUALIFIER_MAPPING_API_FIELD_NAME] ?? qualifierMapping[QUALIFIER_MAPPING_PARAM_NAME];
             if (apiFieldName === SOURCE_CODE_API_FIELD_NAME) {
-                sourceCodeQualifiers[apiFieldName] = searchParamValue.trim();
+                // Strip CR/LF before the value reaches the bare-string `dwsourcecode_*` cookie
+                // (Node `Headers.append` rejects CR/LF in Set-Cookie values, dropping the write).
+                sourceCodeQualifiers[apiFieldName] = searchParamValue.replace(/[\r\n]/g, '').trim();
             } else {
                 qualifiers[apiFieldName] = normalizeArrayQualifierValue(apiFieldName, searchParamValue);
             }
@@ -241,9 +243,10 @@ export async function updateShopperContext({
     const currentShopperContext = cookieHeader
         ? parseJsonToStringRecord(await shopperContextCookieHandler.parse(cookieHeader))
         : {};
-    const currentSourceCodeContext = cookieHeader
-        ? parseJsonToStringRecord(await sourceCodeCookieHandler.parse(cookieHeader))
-        : {};
+    // Source-code cookie is stored as a bare string for SFRA hybrid compatibility — SFRA reads
+    // the same `dwsourcecode_*` cookie name and expects the plain source-code value.
+    const rawSourceCode = cookieHeader ? await sourceCodeCookieHandler.parse(cookieHeader) : null;
+    const currentSourceCodeContext: Record<string, string> = rawSourceCode ? { sourceCode: rawSourceCode } : {};
 
     // Compute effective context by merging new with current
     const effectiveShopperContext = computeEffectiveShopperContext(newShopperContext, currentShopperContext);
@@ -262,10 +265,12 @@ export async function updateShopperContext({
         await createShopperContext(context, usid, shopperContextBody);
     }
 
-    // Serialize updated cookies as Set-Cookie headers (cookie-utils stores string values; we JSON-encode objects)
+    // Serialize updated cookies as Set-Cookie headers. The shopper-context cookie is JSON-encoded
+    // (carries multiple qualifiers); the source-code cookie is a bare string so SFRA storefronts
+    // sharing the same `dwsourcecode_*` cookie name can read it directly.
     try {
         if (hasNewSourceCodeContext) {
-            const header = await sourceCodeCookieHandler.serialize(JSON.stringify(effectiveSourceCodeContext), {
+            const header = await sourceCodeCookieHandler.serialize(effectiveSourceCodeContext.sourceCode ?? '', {
                 maxAge: SOURCE_CODE_COOKIE_EXPIRY_SECONDS,
             });
             setCookieHeaders.push(header);

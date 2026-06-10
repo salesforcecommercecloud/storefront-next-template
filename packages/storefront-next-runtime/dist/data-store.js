@@ -177,7 +177,7 @@ async function loadDataStoreEntry(args) {
 	try {
 		const entry = await getDataStoreEntry(entryKey);
 		if (!entry?.value || typeof entry.value !== "object") {
-			logger.warn(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
+			logger.debug(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
 			return { state: "missing" };
 		}
 		return {
@@ -186,10 +186,7 @@ async function loadDataStoreEntry(args) {
 		};
 	} catch (error) {
 		if (error instanceof DataStoreNotFoundError$1) {
-			logger.warn(`Data store entry '${entryKey}' not found.`, {
-				entryKey,
-				error
-			});
+			logger.debug(`Data store entry '${entryKey}' not found.`, { entryKey });
 			return { state: "missing" };
 		}
 		if (error instanceof DataStoreUnavailableError$1 || error instanceof DataStoreServiceError$1) return resolveDataStoreFallback({
@@ -268,7 +265,7 @@ const sitePreferencesContext = createDataStoreContext();
 function getSitePreferences(context) {
 	const data = context.get(sitePreferencesContext);
 	if (!data) {
-		getDataStoreLogger(context).warn("Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).debug("Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;
@@ -306,7 +303,7 @@ const customGlobalPreferencesContext = createDataStoreContext();
 function getCustomGlobalPreferences(context) {
 	const data = context.get(customGlobalPreferencesContext);
 	if (!data) {
-		getDataStoreLogger(context).warn("Custom global preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).debug("Custom global preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;
@@ -350,7 +347,7 @@ const gcpPreferencesContext = createDataStoreContext();
 function getGcpPreferences(context) {
 	const data = context.get(gcpPreferencesContext);
 	if (data === null) {
-		getDataStoreLogger(context).warn("GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.");
+		getDataStoreLogger(context).debug("GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.");
 		return { apiKey: "" };
 	}
 	return data;
@@ -407,7 +404,7 @@ const loginPreferencesContext = createDataStoreContext();
 function getLoginPreferences(context) {
 	const data = context.get(loginPreferencesContext);
 	if (!data) {
-		getDataStoreLogger(context).warn("Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).debug("Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;

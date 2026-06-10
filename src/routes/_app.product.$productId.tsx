@@ -272,6 +272,9 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         page: fetchPageWithComponentData(args, {
             aspectType: 'pdp',
             productId: productLookupId,
+            // Lets the manifest resolver fall back to a category-level PDP
+            // assignment when no page is assigned to this product directly.
+            ...(product.primaryCategoryId ? { categoryId: product.primaryCategoryId } : {}),
         }),
         pageKey: productId,
         pageUrl,

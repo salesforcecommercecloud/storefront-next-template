@@ -54,7 +54,7 @@ export const gcpPreferencesContext = createDataStoreContext<GcpPreferences>();
 export function getGcpPreferences(context: Readonly<RouterContextProvider>): GcpPreferences {
     const data = context.get(gcpPreferencesContext);
     if (data === null) {
-        getDataStoreLogger(context).warn(
+        getDataStoreLogger(context).debug(
             'GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.'
         );
         return { apiKey: '' };

@@ -120,30 +120,41 @@ export interface PageProcessorContext {
  * Builds a component's `data` map by walking each attribute definition and
  * picking the first non-undefined value in priority order:
  *
- *   active-locale content → fallback-locale content → attrDef.defaultValue
+ *   active-locale content → fallback content → attrDef.defaultValue
+ *
+ * The fallback bucket is selected whole-blob style (matching SCAPI/SFRA's
+ * `__data` resolution): the site-default-locale bucket if it carries any
+ * content, otherwise the literal-default ("default") bucket. Buckets are not
+ * per-key merged with each other — only the active-locale bucket layers
+ * per-key on top of the chosen fallback (preserving today's locale override
+ * semantics).
  *
  * If none of those have a value the attribute is omitted from the result.
  *
  * When no `typeDefs` are supplied, we fall back to the legacy behavior:
- * `{ ...nodeData, ...defaultContent, ...localeContent }`. This keeps
+ * `{ ...nodeData, ...fallbackContent, ...localeContent }`. This keeps
  * already-deployed manifests rendering until the manifest builder starts
  * emitting `componentTypes`.
  */
 function composeComponentData({
     nodeData,
+    literalDefaultContent,
     defaultContent,
     localeContent,
     typeDefs,
 }: {
     nodeData: Record<string, unknown> | undefined;
+    literalDefaultContent: Record<string, unknown>;
     defaultContent: Record<string, unknown>;
     localeContent: Record<string, unknown>;
     typeDefs: Record<string, AttributeDefinition> | undefined;
 }): Record<string, unknown> {
+    const fallbackContent = Object.keys(defaultContent).length > 0 ? defaultContent : literalDefaultContent;
+
     if (!typeDefs || Object.keys(typeDefs).length === 0) {
         return {
             ...(nodeData ?? {}),
-            ...defaultContent,
+            ...fallbackContent,
             ...localeContent,
         };
     }
@@ -155,8 +166,8 @@ function composeComponentData({
 
         if (Object.prototype.hasOwnProperty.call(localeContent, attrId)) {
             result[attrId] = localeContent[attrId];
-        } else if (Object.prototype.hasOwnProperty.call(defaultContent, attrId)) {
-            result[attrId] = defaultContent[attrId];
+        } else if (Object.prototype.hasOwnProperty.call(fallbackContent, attrId)) {
+            result[attrId] = fallbackContent[attrId];
         } else if (def.defaultValue !== undefined) {
             result[attrId] = def.defaultValue;
         }
@@ -262,10 +273,15 @@ export function processPage(
             }
 
             // Compose the component's `data` map per attribute definition with
-            // resolution priority: active-locale content → fallback-locale
-            // content → attribute-definition default value → key omitted.
+            // resolution priority: active-locale content → fallback content →
+            // attribute-definition default value → key omitted. The fallback
+            // is the site-default-locale bucket when present, otherwise the
+            // literal-default ("default") bucket. Whole-blob fallback matches
+            // SCAPI's `__data` resolution — the literal-default does not
+            // per-key merge with the site-default-locale blob.
             // When no type definitions are available, fall back to the legacy
             // merge so existing manifests still resolve.
+            const literalDefaultContent = componentInfo?.content?.default ?? {};
             const defaultContent = componentInfo?.content?.[processorContext.defaultLocale] ?? {};
             const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
             const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
@@ -273,6 +289,7 @@ export function processPage(
 
             const composedData = composeComponentData({
                 nodeData: ctx.node.data as Record<string, unknown> | undefined,
+                literalDefaultContent,
                 defaultContent,
                 localeContent,
                 typeDefs,

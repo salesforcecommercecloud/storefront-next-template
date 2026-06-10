@@ -45,5 +45,8 @@ export { getConfig, useConfig } from './get-config';
 // Context primitives (isomorphic)
 export { appConfigContext, ConfigProvider } from './context';
 
+// Security defaults (re-exported from security module for config convenience)
+export { defaultSecurityHeaders } from '../security/defaults.js';
+
 // Dynamic loading (for dev server / build tools — node-only)
 // Exported via separate entry point: @salesforce/storefront-next-runtime/config/load-config

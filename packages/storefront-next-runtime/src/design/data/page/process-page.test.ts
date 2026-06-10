@@ -567,6 +567,85 @@ describe('processPage', () => {
             expect(data.subtitle).toBe('Default Subtitle');
         });
 
+        test('falls back to "default" bucket when locale and default locale have no content', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'en_US',
+                defaultLocale: 'en_GB',
+                pageInfo: { regions: {} },
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            default: { heading: 'Willkommen' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Willkommen');
+        });
+
+        test('site-default-locale content overrides "default" bucket', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'en_US',
+                defaultLocale: 'en_GB',
+                pageInfo: { regions: {} },
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            default: { heading: 'Willkommen' },
+                            en_GB: { heading: 'Welcome' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            // en_US not authored -> falls back to en_GB (site default), not "default"
+            expect(data.heading).toBe('Welcome');
+        });
+
+        test('locale-specific content takes precedence over both default tiers', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'en_US',
+                defaultLocale: 'en_GB',
+                pageInfo: { regions: {} },
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            default: { heading: 'Willkommen' },
+                            en_GB: { heading: 'Welcome' },
+                            en_US: { heading: 'Howdy' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Howdy');
+        });
+
         test('data bindings override locale content for bound attributes', () => {
             const page = makePage([
                 makeRegion('main', [

@@ -46,7 +46,31 @@ describe('baseConfigPlugin', () => {
 
     it('pre-bundles React Router entries via optimizeDeps.include', () => {
         const config = invokeConfigHook(baseConfigPlugin());
-        expect(config.optimizeDeps?.include).toEqual(['react-router', 'react-router/internal/react-server-client']);
+        expect(config.optimizeDeps?.include).toEqual(
+            expect.arrayContaining(['react-router', 'react-router/internal/react-server-client'])
+        );
+    });
+
+    it('pre-bundles the React-importing runtime SDK entry points to prevent a late re-optimize that loads a second React instance', () => {
+        const config = invokeConfigHook(baseConfigPlugin());
+        // These subpaths import React (useContext/createContext). If Vite discovers
+        // them lazily at request time it re-optimizes and reloads, transiently
+        // creating a duplicate React → "Invalid hook call". Including them up front
+        // keeps a single first-pass optimization with one shared React.
+        expect(config.optimizeDeps?.include).toEqual(
+            expect.arrayContaining([
+                '@salesforce/storefront-next-runtime/config',
+                '@salesforce/storefront-next-runtime/security/react',
+                '@salesforce/storefront-next-runtime/site-context',
+                '@salesforce/storefront-next-runtime/design/react/core',
+                '@salesforce/storefront-next-runtime/routing/app-wrapper',
+                '@salesforce/storefront-next-runtime/i18n/client',
+                // Transitive i18n deps reached through the SDK entry points — must be
+                // pre-bundled too, or they trigger the same late re-optimize + reload.
+                'i18next-browser-languagedetector',
+                'remix-i18next/middleware',
+            ])
+        );
     });
 
     it('forces the SDK through Vite SSR transform via ssr.noExternal to keep module identity stable in dev', () => {

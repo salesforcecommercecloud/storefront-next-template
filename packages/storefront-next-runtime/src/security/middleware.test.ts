@@ -21,7 +21,7 @@ import { securityContext } from './nonce';
 type Args = Parameters<MiddlewareFunction<Response>>[0];
 type Next = Parameters<MiddlewareFunction<Response>>[1];
 
-function makeArgs(): { args: Args; context: RouterContextProvider } {
+function makeArgs(url = 'http://localhost/'): { args: Args; context: RouterContextProvider } {
     const store = new Map<unknown, unknown>();
     const context = {
         get: (k: unknown) => store.get(k),
@@ -29,7 +29,7 @@ function makeArgs(): { args: Args; context: RouterContextProvider } {
     } as unknown as RouterContextProvider;
     return {
         args: {
-            request: new Request('http://localhost/'),
+            request: new Request(url),
             context,
             params: {},
             unstable_pattern: '',
@@ -94,6 +94,59 @@ describe('createSecurityHeadersMiddleware', () => {
         const { args } = makeArgs();
         const res = await run(mw, args);
         expect(res.headers.get('strict-transport-security')).toBeNull();
+    });
+
+    it('allows localhost websocket in connect-src when running locally (HMR)', async () => {
+        process.env.BUNDLE_ID = 'local';
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        const csp = res.headers.get('content-security-policy') ?? '';
+        expect(csp).toContain('ws://localhost:*');
+        expect(csp).toContain('connect-src');
+    });
+
+    it('does NOT add websocket sources to connect-src when running remotely (MRT)', async () => {
+        process.env.BUNDLE_ID = 'abc123';
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        const csp = res.headers.get('content-security-policy') ?? '';
+        expect(csp).not.toContain('ws://localhost');
+        expect(csp).not.toContain('wss://');
+        // Also assert the production connect-src is intact (not accidentally emptied):
+        // this test must fail if the directive were dropped, not just if ws were added.
+        const connectSrc = csp.split(';').find((d) => d.trim().startsWith('connect-src')) ?? '';
+        expect(connectSrc).toContain("'self'");
+        expect(connectSrc).toContain('https://*.commercecloud.salesforce.com');
+        expect(connectSrc).toContain('https://*.demandware.net');
+    });
+
+    it('treats unset BUNDLE_ID as local and allows the HMR websocket (documents the boundary)', async () => {
+        // The dev-only websocket relaxation is gated by isRemote() === BUNDLE_ID set
+        // and not 'local'. An unset BUNDLE_ID resolves to "local", so ws sources ARE
+        // added. This is the same gate that governs HSTS suppression; a deployed env
+        // must always have BUNDLE_ID set. Pinning this behavior makes the boundary
+        // explicit so a future regression to the gate is caught here.
+        delete process.env.BUNDLE_ID;
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        const csp = res.headers.get('content-security-policy') ?? '';
+        expect(csp).toContain('ws://localhost:*');
+    });
+
+    it('does not mutate the shared default connect-src across multiple instantiations', async () => {
+        // resolve() shares the default connect-src array by reference when CSP is not
+        // overridden; the dev relaxation must REASSIGN a new array, never push onto it,
+        // or ws sources would leak onto the module-level default for every later
+        // middleware (including remote ones in the same process).
+        process.env.BUNDLE_ID = 'local';
+        await run(createSecurityHeadersMiddleware({}), makeArgs().args);
+        process.env.BUNDLE_ID = 'abc123';
+        const remoteRes = await run(createSecurityHeadersMiddleware({}), makeArgs().args);
+        const remoteCsp = remoteRes.headers.get('content-security-policy') ?? '';
+        expect(remoteCsp).not.toContain('ws://localhost');
     });
 
     it('writes a per-request nonce on context that matches the CSP nonce', async () => {
@@ -271,5 +324,61 @@ describe('createSecurityHeadersMiddleware', () => {
         // defaults.ts insertion order: default-src, then style-src (script-src is destructured out and appended last).
         expect(csp.indexOf('default-src')).toBeLessThan(csp.indexOf('style-src'));
         expect(csp.indexOf('style-src')).toBeLessThan(csp.indexOf('img-src'));
+    });
+
+    describe('Page Designer / preview embedding', () => {
+        it('ships strict frame-ancestors and X-Frame-Options for normal shopper traffic', async () => {
+            const mw = createSecurityHeadersMiddleware({});
+            const { args } = makeArgs('http://localhost/product/abc');
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toMatch(/frame-ancestors 'self'(?!\s+https)/);
+            expect(res.headers.get('x-frame-options')).toBe('SAMEORIGIN');
+        });
+
+        it('relaxes frame-ancestors and suppresses X-Frame-Options on Page Designer EDIT requests', async () => {
+            const mw = createSecurityHeadersMiddleware({});
+            const { args } = makeArgs('http://localhost/?mode=EDIT');
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toMatch(/frame-ancestors 'self' https:\/\/\*\.unified\.demandware\.net/);
+            expect(csp).toMatch(/https:\/\/\*\.commercecloud\.salesforce\.com/);
+            expect(csp).toMatch(/https:\/\/\*\.demandware\.net/);
+            // X-Frame-Options has no host-list form — must be omitted on embeddable requests.
+            expect(res.headers.get('x-frame-options')).toBeNull();
+        });
+
+        it('relaxes frame-ancestors on Business Manager PREVIEW requests', async () => {
+            const mw = createSecurityHeadersMiddleware({});
+            const { args } = makeArgs('http://localhost/?mode=PREVIEW');
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toMatch(/frame-ancestors 'self' https:\/\/\*\.unified\.demandware\.net/);
+            expect(res.headers.get('x-frame-options')).toBeNull();
+        });
+
+        it('does not relax for unrelated mode values', async () => {
+            const mw = createSecurityHeadersMiddleware({});
+            const { args } = makeArgs('http://localhost/?mode=foo');
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toMatch(/frame-ancestors 'self'(?!\s+https)/);
+            expect(res.headers.get('x-frame-options')).toBe('SAMEORIGIN');
+        });
+
+        it("respects a customer's explicit frame-ancestors override (no auto-relax)", async () => {
+            // If the customer extended frame-ancestors themselves, keep it
+            // consistent across requests rather than overlaying our PD list.
+            const mw = createSecurityHeadersMiddleware({
+                csp: { directives: { 'frame-ancestors': ["'self'", 'https://my-cms.example.com'] } },
+            });
+            const { args } = makeArgs('http://localhost/?mode=EDIT');
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toMatch(/frame-ancestors 'self' https:\/\/my-cms\.example\.com/);
+            expect(csp).not.toMatch(/unified\.demandware\.net/);
+            // X-Frame-Options is still emitted because we didn't auto-relax.
+            expect(res.headers.get('x-frame-options')).toBe('SAMEORIGIN');
+        });
     });
 });

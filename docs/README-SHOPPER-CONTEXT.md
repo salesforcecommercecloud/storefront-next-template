@@ -42,10 +42,12 @@ To add a validation layer on commerce API requests, consider the [Shopper Contex
 
 Shopper Context uses two `httpOnly` cookies to persist qualifier state on the server. This avoids re-reading context from SCAPI on every request and enables the middleware to include qualifiers in subsequent GET calls without additional API round-trips.
 
-| Cookie | Base Name | Default Expiry | Purpose |
-|--------|-----------|---------------|---------|
-| Shopper Context | `storefront-next-context` | 6 hours | All qualifiers except source code |
-| Source Code | `dwsourcecode` | 30 days | Source code qualifier |
+| Cookie | Base Name | Default Expiry | Format | Purpose |
+|--------|-----------|---------------|--------|---------|
+| Shopper Context | `storefront-next-context` | 6 hours | JSON object | All qualifiers except source code |
+| Source Code | `dwsourcecode` | 30 days | Bare string | Source code qualifier |
+
+The `dwsourcecode_*` cookie stores the bare source-code string (e.g. `email`) rather than a JSON object so SFRA storefronts running side-by-side can read the same cookie name and value format directly.
 
 On each request the middleware reads current state from cookies, merges in any new qualifiers, sends the merged context to SCAPI if anything changed, and writes updated cookies back. New values overwrite existing keys; unmentioned keys are preserved.
 

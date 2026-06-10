@@ -318,6 +318,20 @@ export function Layout({ children }: PropsWithChildren) {
                 ))}
                 <script
                     nonce={nonce}
+                    // Browsers strip the `nonce` content attribute from the DOM after
+                    // applying CSP (so scripts can't read each other's nonce), leaving
+                    // `nonce=""` in the client DOM while the server rendered the real
+                    // value. On this hand-written inline script that surfaces as a
+                    // hydration attribute mismatch. React's own <Scripts>/<ScrollRestoration>
+                    // handle this internally; here we suppress the warning for the same
+                    // browser behavior. The CSP nonce itself still applies correctly.
+                    //
+                    // Note: this also suppresses any server/client divergence of the
+                    // __APP_CONFIG__ body, not just the nonce attribute. Safe today
+                    // because appConfig is server-rendered and never mutated on the
+                    // client. If client-side config mutation is ever introduced, revisit
+                    // this — a real config mismatch would be silently hidden here.
+                    suppressHydrationWarning
                     dangerouslySetInnerHTML={{
                         __html: `
                         ${appConfigScript}

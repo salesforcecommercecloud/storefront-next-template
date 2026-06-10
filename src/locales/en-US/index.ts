@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import type { ResourceLanguage } from 'i18next';
+import type { DeepPartial } from '@/locales/types';
+import type enGB from '@/locales/en-GB/';
 import translations from '@/locales/en-US/translations.json';
-import product from '@/locales/en-US/product.json';
 import extensionTranslations from '@/extensions/locales/en-US/';
 
 const allTranslations = {
     ...translations,
-    product,
     ...extensionTranslations,
 };
 
-export default allTranslations satisfies ResourceLanguage;
+export default allTranslations satisfies ResourceLanguage satisfies DeepPartial<typeof enGB>;

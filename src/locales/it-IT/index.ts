@@ -15,15 +15,13 @@
  */
 import type { ResourceLanguage } from 'i18next';
 import type { DeepPartial } from '@/locales/types';
-import type enUS from '@/locales/en-US/';
+import type enGB from '@/locales/en-GB/';
 import translations from '@/locales/it-IT/translations.json';
-import product from '@/locales/it-IT/product.json';
 import extensionTranslations from '@/extensions/locales/it-IT/';
 
 const allTranslations = {
     ...translations,
-    product,
     ...extensionTranslations,
 };
 
-export default allTranslations satisfies ResourceLanguage satisfies DeepPartial<typeof enUS>;
+export default allTranslations satisfies ResourceLanguage satisfies DeepPartial<typeof enGB>;

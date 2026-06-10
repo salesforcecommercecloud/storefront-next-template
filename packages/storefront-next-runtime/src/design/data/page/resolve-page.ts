@@ -91,6 +91,7 @@ function applyPageMetadataOverlay(variation: VariationEntry, locale: string): Sh
  * @param options.manifestStorage - Storage implementation for fetching manifests.
  * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
  * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+ * @param options.categoryId - Optional fallback category ID (or a Promise resolving to one) used only when `identifierType` is `'product'` and the product has no content assignment for the requested aspect type. The promise is awaited lazily — the happy path never pays for it.
  * @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
  * @returns The fully resolved and filtered page, or `null`.
  *
@@ -132,6 +133,7 @@ export async function resolvePage({
     id,
     identifierType,
     aspectType,
+    categoryId,
     locale,
     defaultLocale,
     manifestStorage,
@@ -142,6 +144,13 @@ export async function resolvePage({
     id: string;
     identifierType: IdentifierType;
     aspectType?: string;
+    /**
+     * Fallback category ID (or a Promise resolving to one) consulted only
+     * when `identifierType === 'product'` and the product has no content
+     * assignment for the requested aspect type. Awaited lazily — the happy
+     * path skips it.
+     */
+    categoryId?: string | Promise<string | null | undefined> | null;
     locale: string;
     defaultLocale: string;
     manifestStorage: ManifestStorage;
@@ -163,7 +172,7 @@ export async function resolvePage({
 
         RequiredError.assert(aspectType, `Aspect type is required for identifier type ${identifierType}`, (v) => !v);
 
-        resolvedId = resolveDynamicPageId({ id, identifierType, aspectType, siteManifest });
+        resolvedId = await resolveDynamicPageId({ id, identifierType, aspectType, siteManifest, categoryId });
     } else {
         resolvedId = id;
     }
@@ -175,6 +184,14 @@ export async function resolvePage({
     const pageManifest = await manifestStorage.getPageManifest(resolvedId);
 
     if (!pageManifest) {
+        return null;
+    }
+
+    // Temporary patch fix (until 26.7): manifest-driven resolution does not
+    // yet handle data bindings. When the manifest declares any, bail out so
+    // the caller falls back to the regular SCAPI request flow which can
+    // resolve them. Tracked under W-22770039.
+    if (pageManifest.context?.dataBindings?.length > 0) {
         return null;
     }
 

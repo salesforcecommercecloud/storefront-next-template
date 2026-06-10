@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type MiddlewareFunction } from 'react-router';
-import { defaultSecurityHeaders } from './defaults.js';
+import { isDesignModeActive, isPreviewModeActive } from '../design/modeDetection.js';
+import { defaultSecurityHeaders, pageDesignerFrameAncestors } from './defaults.js';
 import { generateNonce, securityContext } from './nonce.js';
 import { parseSecurityConfig } from './schema.js';
 import { serializeCsp, serializeHsts, serializePermissionsPolicy } from './serialize.js';
@@ -24,6 +25,16 @@ import type { CspDirectives, HstsConfig, ResolvedSecurityConfig, SecurityConfig 
  * Read at boot. HSTS is suppressed when running locally (BUNDLE_ID unset
  * or 'local') because HSTS pins the host in browser caches — pinning
  * `localhost` would force HTTPS on every developer's `pnpm dev`.
+ *
+ * Operational invariant: this is the single signal that distinguishes a
+ * deployed environment from local dev, and it now gates TWO security
+ * behaviors — HSTS emission and the dev-only HMR websocket `connect-src`
+ * relaxation below. Managed Runtime always injects a real, non-'local'
+ * BUNDLE_ID, so a deployed response is always treated as remote. An unset
+ * or empty BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets
+ * allowed); a deployment that failed to set BUNDLE_ID would already be
+ * broken in other ways (asset path resolution also keys off it), so we do
+ * not add a redundant guard here.
  */
 function isRemote(): boolean {
     const id = process.env.BUNDLE_ID;
@@ -130,6 +141,26 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
 
     const remote = isRemote();
 
+    // Local dev only: Vite serves HMR over a WebSocket (e.g. ws://localhost:24678).
+    // The production connect-src has no ws: source, so on `pnpm dev` the browser
+    // blocks the HMR socket and live reload silently dies. Append the loopback
+    // websocket origins to connect-src when NOT running on MRT. This never affects
+    // deployed responses (remote === true there), so the production CSP stays
+    // byte-for-byte identical. Port is wildcarded because Vite's HMR port is
+    // configurable / auto-increments on collision. We only add `ws://` loopback:
+    // the local dev server is plain HTTP, and the workspace HMR path uses `wss://`
+    // to an EXTERNAL host (not localhost), which the deployed CSP already covers.
+    if (!remote && resolved.csp !== false) {
+        const connectSrc = resolved.csp.directives['connect-src'];
+        if (Array.isArray(connectSrc)) {
+            const devSocketSources = ['ws://localhost:*', 'ws://127.0.0.1:*'];
+            resolved.csp.directives['connect-src'] = [
+                ...connectSrc,
+                ...devSocketSources.filter((s) => !connectSrc.includes(s)),
+            ];
+        }
+    }
+
     // Pre-compute everything that doesn't depend on the per-request nonce.
     // The CSP serializer iterates ~11 directives + does string joins; doing
     // that once at boot instead of per-request saves ~10-25µs per response.
@@ -143,12 +174,31 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
 
     // Pre-build the static CSP body with everything except script-src.
     // Per request we append `; script-src <baseScriptSrc> 'nonce-<value>'`.
+    //
+    // We pre-build TWO variants: the default and a Page-Designer-relaxed
+    // variant where `frame-ancestors` is extended to allow Business Manager
+    // / Page Designer host families. The relaxed variant is selected only on
+    // requests with `?mode=EDIT` or `?mode=PREVIEW`. Normal shopper traffic
+    // continues to ship the default `frame-ancestors 'self'`.
     let staticCspBody: string | null = null;
+    let staticCspBodyForPageDesigner: string | null = null;
     let baseScriptSrc = '';
     if (resolved.csp !== false) {
         const { 'script-src': scriptSrc, ...rest } = resolved.csp.directives;
         staticCspBody = serializeCsp(rest as CspDirectives);
         baseScriptSrc = (scriptSrc ?? []).join(' ');
+
+        // Only build the relaxed variant if the customer hasn't already
+        // expanded frame-ancestors themselves. If they have, respect their
+        // override and keep behavior consistent across requests.
+        const customerFrameAncestors = rest['frame-ancestors'] ?? [];
+        const customerExpandedFrameAncestors = customerFrameAncestors.some((src) => src !== "'self'");
+        if (!customerExpandedFrameAncestors) {
+            staticCspBodyForPageDesigner = serializeCsp({
+                ...(rest as CspDirectives),
+                'frame-ancestors': [...customerFrameAncestors, ...pageDesignerFrameAncestors],
+            });
+        }
     }
 
     /**
@@ -157,17 +207,25 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
      * loaders/actions throw `Response` for 404/redirect/etc.). Without this,
      * a 404 error response would ship without security headers.
      */
-    const applyHeaders = (response: Response, nonce: string | null): Response => {
-        if (staticCspBody !== null && nonce !== null) {
+    const applyHeaders = (
+        response: Response,
+        nonce: string | null,
+        cspBody: string | null,
+        isEmbeddable: boolean
+    ): Response => {
+        if (cspBody !== null && nonce !== null) {
             const scriptSrcClause =
                 baseScriptSrc.length > 0
                     ? `script-src ${baseScriptSrc} 'nonce-${nonce}'`
                     : `script-src 'nonce-${nonce}'`;
-            const csp = staticCspBody.length > 0 ? `${staticCspBody}; ${scriptSrcClause}` : scriptSrcClause;
+            const csp = cspBody.length > 0 ? `${cspBody}; ${scriptSrcClause}` : scriptSrcClause;
             response.headers.set(cspHeaderName, csp);
         }
         if (staticHsts !== null) response.headers.set('Strict-Transport-Security', staticHsts);
-        if (resolved.frameOptions !== false) response.headers.set('X-Frame-Options', resolved.frameOptions);
+        // X-Frame-Options has no host-list form. On embeddable requests, suppress
+        // it and let the per-request `frame-ancestors` govern embedding instead.
+        if (resolved.frameOptions !== false && !isEmbeddable)
+            response.headers.set('X-Frame-Options', resolved.frameOptions);
         if (resolved.contentTypeOptions !== false)
             response.headers.set('X-Content-Type-Options', resolved.contentTypeOptions);
         if (resolved.referrerPolicy !== false) response.headers.set('Referrer-Policy', resolved.referrerPolicy);
@@ -182,8 +240,16 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
         const nonce = resolved.csp === false ? null : generateNonce();
         if (nonce !== null) args.context.set(securityContext, { nonce });
 
+        // Detect Page Designer EDIT / Business Manager PREVIEW requests so we
+        // can ship a relaxed `frame-ancestors` only for those. Falls back to
+        // the strict default for normal shopper traffic.
+        const isEmbeddable =
+            staticCspBodyForPageDesigner !== null &&
+            (isDesignModeActive(args.request) || isPreviewModeActive(args.request));
+        const cspBody = isEmbeddable ? staticCspBodyForPageDesigner : staticCspBody;
+
         try {
-            return applyHeaders(await next(), nonce);
+            return applyHeaders(await next(), nonce, cspBody, isEmbeddable);
         } catch (err) {
             // RR loaders/actions throw `Response` instances (e.g. 404, redirect).
             // Apply security headers to the thrown response and re-throw so RR
@@ -191,7 +257,7 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
             if (err instanceof Response) {
                 // RR's contract: loaders/actions throw `Response` for 404/redirect.
                 // eslint-disable-next-line @typescript-eslint/only-throw-error
-                throw applyHeaders(err, nonce);
+                throw applyHeaders(err, nonce, cspBody, isEmbeddable);
             }
             // For non-Response errors (unexpected exceptions), RR synthesizes a
             // 500 response. We can't reach that response here, but we re-throw

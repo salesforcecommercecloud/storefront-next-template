@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Await } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import CollapsibleSection from '@/components/collapsible-section';
-import ProductAdapterSection from '@/extensions/product-content/components/product-adapter-section';
 import { resolvePdpSections, type PdpSection } from '@/extensions/product-content/lib/pdp-sections';
 import { useProductContentData } from '@/extensions/product-content/context/product-content-data-context';
 import type { HtmlContent } from '@/extensions/product-content/lib/api/product-content.server';
+
+const ProductAdapterSection = lazy(() => import('@/extensions/product-content/components/product-adapter-section'));
 
 export default function PdpCollapsiblesTarget() {
     const ctx = useProductContentData();

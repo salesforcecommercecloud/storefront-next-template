@@ -1,3 +1,4 @@
+import { n as defaultSecurityHeaders } from "./defaults.js";
 import { createContext, useContext } from "react";
 import { jsx } from "react/jsx-runtime";
 import { createContext as createContext$1 } from "react-router";
@@ -346,5 +347,5 @@ function useConfig() {
 }
 
 //#endregion
-export { ConfigProvider, appConfigContext, defineConfig, getConfig, useConfig };
+export { ConfigProvider, appConfigContext, defaultSecurityHeaders, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.js.map

@@ -152,6 +152,28 @@ export const createStorefront = async (
         fs.rmSync(gitDir, { recursive: true, force: true });
     }
 
+    // The template records its own origin under `storefrontNext` in package.json
+    // (templateRelease label + CalVer + min SDK). The release pipeline stamps real
+    // values; on `main`/unreleased snapshots it's a placeholder. Surface the label
+    // so customers know which template snapshot they generated from, and warn if the
+    // field is missing entirely (e.g. an old or hand-rolled template).
+    let templateRelease: string | undefined;
+    const generatedPkgPath = path.join(outputPath, 'package.json');
+    if (fs.existsSync(generatedPkgPath)) {
+        try {
+            const generatedPkg = JSON.parse(fs.readFileSync(generatedPkgPath, 'utf8'));
+            templateRelease = generatedPkg?.storefrontNext?.templateRelease;
+        } catch {
+            // Unparseable package.json is surfaced later by pnpm install; don't block here.
+        }
+    }
+    if (!templateRelease) {
+        logger.warn(
+            'This template is missing its "storefrontNext" origin metadata in package.json. ' +
+                'You can still build and run it, but it won’t record which template release it came from.'
+        );
+    }
+
     const workspaceYamlPath = path.join(outputPath, 'pnpm-workspace.yaml');
     if (!fs.existsSync(workspaceYamlPath)) {
         logger.warn(
@@ -272,12 +294,13 @@ export const createStorefront = async (
     generateEnvFile(outputPath, configOverrides);
     // Print banner after setup is complete
     const installCmd = 'pnpm install';
+    const originLine = templateRelease ? `\n        📦 Generated from template release: ${templateRelease}` : '';
     const BANNER = `
     ╔══════════════════════════════════════════════════════════════════╗
     ║                       CONGRATULATIONS                            ║
     ╚══════════════════════════════════════════════════════════════════╝
 
-        🎉 Congratulations! Your storefront is ready to use! 🎉
+        🎉 Congratulations! Your storefront is ready to use! 🎉${originLine}
         What's next:
         - Navigate to the storefront directory: cd ${outputPath}
         - Install dependencies: ${installCmd}

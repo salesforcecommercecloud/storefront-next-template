@@ -22,7 +22,7 @@ Storefront Next ships default security response headers from the SDK. Every stor
 | `style-src` | `'self' 'unsafe-inline'` | Tailwind v4 + shadcn rely on inline styles. |
 | `img-src` | `'self' data: https://*.commercecloud.salesforce.com https://*.demandware.net` | DIS image URLs. |
 | `font-src` | `'self' data:` | Self-hosted web fonts. |
-| `connect-src` | `'self' https://*.commercecloud.salesforce.com https://*.demandware.net https://challenges.cloudflare.com` | SCAPI calls + browser-initiated XHR from the Turnstile widget. |
+| `connect-src` | `'self' https://*.commercecloud.salesforce.com https://*.demandware.net https://challenges.cloudflare.com https://api.cquotient.com` | SCAPI calls + browser-initiated XHR from the Turnstile widget + Einstein engagement beacons (CQuotient activities API). |
 | `frame-src` | `https://challenges.cloudflare.com` | Turnstile widget iframe. |
 | `frame-ancestors` | `'self'` | Modern equivalent of `X-Frame-Options`. |
 | `form-action` | `'self'` | Restricts form POST targets. CSP3 does NOT fall back to `default-src` for this directive — without it, forms can POST anywhere. |

@@ -747,6 +747,7 @@ declare class RequiredError extends Error {
  * @param options.manifestStorage - Storage implementation for fetching manifests.
  * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
  * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+ * @param options.categoryId - Optional fallback category ID (or a Promise resolving to one) used only when `identifierType` is `'product'` and the product has no content assignment for the requested aspect type. The promise is awaited lazily — the happy path never pays for it.
  * @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
  * @returns The fully resolved and filtered page, or `null`.
  *
@@ -788,6 +789,7 @@ declare function resolvePage({
   id,
   identifierType,
   aspectType,
+  categoryId,
   locale,
   defaultLocale,
   manifestStorage,
@@ -798,6 +800,13 @@ declare function resolvePage({
   id: string;
   identifierType: IdentifierType;
   aspectType?: string;
+  /**
+   * Fallback category ID (or a Promise resolving to one) consulted only
+   * when `identifierType === 'product'` and the product has no content
+   * assignment for the requested aspect type. Awaited lazily — the happy
+   * path skips it.
+   */
+  categoryId?: string | Promise<string | null | undefined> | null;
   locale: string;
   defaultLocale: string;
   manifestStorage: ManifestStorage;

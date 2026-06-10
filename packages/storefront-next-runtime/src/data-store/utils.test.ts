@@ -298,7 +298,7 @@ describe('createDataStoreMiddleware', () => {
         context.set(dataStoreLoggerContext, injected);
 
         // Empty response triggers DataStoreNotFoundError inside getEntry — the path that emits the
-        // structured 'not found' warning we want to assert.
+        // structured 'not found' debug log we want to assert.
         DataStore._testDocumentClient = {
             send: vi.fn().mockResolvedValue({}),
         } as unknown as typeof DataStore._testDocumentClient;
@@ -315,7 +315,7 @@ describe('createDataStoreMiddleware', () => {
         );
 
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(injected.warn).toHaveBeenCalledWith(
+        expect(injected.debug).toHaveBeenCalledWith(
             `Data store entry 'site-preferences' not found.`,
             expect.objectContaining({ entryKey: 'site-preferences' })
         );
@@ -520,7 +520,7 @@ describe('prefixWithSiteId', () => {
 });
 
 describe('getSitePreferences', () => {
-    it('warns when data-store context is missing', () => {
+    it('returns empty object without warning when data-store context is missing', () => {
         const emptyContext = {
             set: vi.fn(),
             get: vi.fn().mockReturnValue(null),
@@ -529,9 +529,7 @@ describe('getSitePreferences', () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
         expect(getSitePreferences(emptyContext)).toEqual({});
-        expect(warnSpy).toHaveBeenCalledWith(
-            'Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
-        );
+        expect(warnSpy).not.toHaveBeenCalled();
 
         warnSpy.mockRestore();
     });

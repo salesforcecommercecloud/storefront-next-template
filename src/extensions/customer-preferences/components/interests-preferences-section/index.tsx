@@ -23,7 +23,6 @@ import { XIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Skeleton } from '@/components/ui/skeleton';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -690,38 +689,6 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
 /**
  * Skeleton fallback used by the Suspense boundary while the loader Promise resolves.
  */
-export function InterestsPreferencesSectionSkeleton() {
-    return (
-        <Card className="rounded-none shadow-none">
-            <CardHeader className="flex flex-row items-start justify-between border-b border-muted-foreground/20 pb-4">
-                <div className="space-y-1">
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-72" />
-                </div>
-                <Skeleton className="h-9 w-16" />
-            </CardHeader>
-            <CardContent className="pt-6">
-                <div className="space-y-6">
-                    <div className="space-y-3">
-                        <Skeleton className="h-4 w-24" />
-                        <div className="flex flex-wrap gap-2">
-                            <Skeleton className="h-8 w-24 rounded-none" />
-                            <Skeleton className="h-8 w-20 rounded-none" />
-                        </div>
-                    </div>
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="space-y-2">
-                            <Skeleton className="h-4 w-32" />
-                            <div className="flex gap-2">
-                                <Skeleton className="h-8 w-24 rounded-none" />
-                                <Skeleton className="h-8 w-20 rounded-none" />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
+export { InterestsPreferencesSectionSkeleton } from './skeleton';
 
 export default InterestsPreferencesSection;
