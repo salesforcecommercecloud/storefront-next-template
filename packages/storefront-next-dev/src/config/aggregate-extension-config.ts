@@ -55,6 +55,46 @@ export interface Dirs {
     OUTPUT_DIR: string;
 }
 
+/**
+ * Discovery + barrel-generation parameters. The aggregator runs in two modes — the public
+ * `config.ts` path (merged into `app.extension` and reachable from the client) and the
+ * server-only `server-config.ts` path (merged into `app.serverExtension`, never serialized
+ * to the browser). Mode is the only axis they vary on, so it's threaded through here as
+ * data instead of duplicated as code.
+ */
+export interface AggregateMode {
+    /** `config.ts` (client-public) or `server-config.ts` (server-only). */
+    sourceFileName: string;
+    /** Barrel output filename inside `src/extensions/config/`. `index.ts` for client, `server.ts` for server. */
+    outputFileName: string;
+    /** Footer comment placed above the default export — explains how the namespace is reached and (for the client mode) the merchant-override convention. */
+    barrelFooterComment: string;
+}
+
+export const CLIENT_MODE: AggregateMode = {
+    sourceFileName: 'config.ts',
+    outputFileName: 'index.ts',
+    barrelFooterComment: [
+        "// Each extension's config.ts default export is namespaced by the camelCase of its folder",
+        '// name (e.g. loqate-address-verification -> loqateAddressVerification), making it available',
+        '// at config.app.extension.<key> and overridable via PUBLIC__app__extension__<key>__<setting>.',
+    ].join('\n'),
+};
+
+export const SERVER_MODE: AggregateMode = {
+    sourceFileName: 'server-config.ts',
+    outputFileName: 'server.ts',
+    barrelFooterComment: [
+        "// Each extension's server-config.ts default export is namespaced by the camelCase of its",
+        '// folder name (e.g. loqate-address-verification -> loqateAddressVerification), making it',
+        '// available at config.app.serverExtension.<key> on the server only. Values never reach the',
+        '// browser: the client extractor strips app.serverExtension before window.__APP_CONFIG__,',
+        '// and a Vite plugin fails the build if any client chunk imports this barrel. There is no',
+        '// PUBLIC__ override path by design — the AST validator forbids process.env, so server-only',
+        '// secrets must be read from process.env in a route handler instead.',
+    ].join('\n'),
+};
+
 export interface AggregateExtensionConfigOptions {
     projectDirectory?: string;
     /** Override directory paths — used in tests. Takes precedence over projectDirectory. */
@@ -106,12 +146,15 @@ const STATIC_VALUE_TYPES = new Set([
 ]);
 
 /**
- * Assert an extension's `config.ts` is a static, default-exported object literal — and nothing
- * more. The generated barrel imports each `config.ts` as a live ES module, evaluated at build,
- * typegen, `pnpm dev`, and server startup; since extensions are third-party and distributable,
- * any top-level statement (an import, a `fetch`, a `process.env` read) would run arbitrary
- * vendor code in those contexts and could leak secrets into the client bundle. Validating the
- * shape at discovery time turns that supply-chain risk into a clear build-time error.
+ * Assert an extension's config module is a static, default-exported object literal — and nothing
+ * more. Generated barrels import each module as a live ES module, evaluated at build, typegen,
+ * `pnpm dev`, and server startup; since extensions are third-party and distributable, any
+ * top-level statement (an import, a `fetch`, a `process.env` read) would run arbitrary vendor
+ * code in those contexts and could leak secrets into the client bundle. Validating the shape
+ * at discovery time turns that supply-chain risk into a clear build-time error. The same rule
+ * applies to both client `config.ts` and server `server-config.ts` — the server barrel is
+ * structurally fenced from the client, but a vendor calling out to a network or reading env
+ * at module-eval time is still a build-time hazard we don't want to inherit.
  */
 function assertStaticConfigModule(filePath: string, source: string): void {
     const reject = (reason: string): never => {
@@ -170,30 +213,42 @@ function assertStaticConfigModule(filePath: string, source: string): void {
 }
 
 /**
- * Find every extension folder that ships a `config.ts`. The output `config/` directory and
- * the locale aggregator's `locales/` directory are siblings of real extensions, so both are
- * skipped. Each `config.ts` is validated as a static object literal before it joins the list
- * (see `assertStaticConfigModule`). Results are sorted by folder name for stable output.
+ * Find every extension folder that ships the mode's source file. The output `config/`
+ * directory and the locale aggregator's `locales/` directory are siblings of real
+ * extensions, so both are skipped. Each discovered file is validated as a static object
+ * literal before it joins the list (see `assertStaticConfigModule`). Results are sorted
+ * by folder name for stable output.
+ *
+ * Imports in the generated barrel target the source file's basename without extension —
+ * `../<ext>/config` for client, `../<ext>/server-config` for server. The server barrel
+ * sits alongside the client barrel in `src/extensions/config/`, so both barrels resolve
+ * extension paths through the same `../` parent.
  */
-export async function findExtensionsWithConfig(extensionsDir: string): Promise<Array<{ name: string; path: string }>> {
+export async function findExtensionsWithConfigByMode(
+    extensionsDir: string,
+    mode: AggregateMode
+): Promise<Array<{ name: string; path: string }>> {
     const extensions: Array<{ name: string; path: string }> = [];
+    // `config.ts` → `config`, `server-config.ts` → `server-config`. The barrel imports the
+    // module without the `.ts` extension to match the client convention and bundler defaults.
+    const importBasename = mode.sourceFileName.replace(/\.ts$/, '');
 
     try {
         const entries = await readdir(extensionsDir, { withFileTypes: true });
         for (const entry of entries) {
             if (!entry.isDirectory() || entry.name === OUTPUT_DIR_NAME || entry.name === LOCALES_DIR_NAME) continue;
 
-            const configPath = join(extensionsDir, entry.name, 'config.ts');
-            if (existsSync(configPath)) {
-                assertStaticConfigModule(`${entry.name}/config.ts`, await readFile(configPath, 'utf8'));
+            const sourcePath = join(extensionsDir, entry.name, mode.sourceFileName);
+            if (existsSync(sourcePath)) {
+                assertStaticConfigModule(`${entry.name}/${mode.sourceFileName}`, await readFile(sourcePath, 'utf8'));
                 extensions.push({
-                    // Imports are relative to the generated barrel (src/extensions/config/index.ts),
-                    // not aliased: config.server.ts pulls this barrel in transitively, and route
+                    // Imports are relative to the generated barrel (src/extensions/config/<name>.ts),
+                    // not aliased: config.server.ts pulls these barrels in transitively, and route
                     // typegen loads config.server.ts through a jiti instance with no `@/` alias
                     // resolver — so an aliased import here would fail to resolve. config.server.ts
                     // imports by relative path for the same reason.
                     name: entry.name,
-                    path: `../${entry.name}/config`,
+                    path: `../${entry.name}/${importBasename}`,
                 });
             }
         }
@@ -206,13 +261,13 @@ export async function findExtensionsWithConfig(extensionsDir: string): Promise<A
 
 /**
  * Build the barrel that re-exports each extension's config default under its camelCase key.
- * Imports are widened (no `as const`) so the merged `app.extension` type stays mutable and
- * a value like `apiKey: ''` types as `string`, not the literal `''`.
+ * Imports are widened (no `as const`) so the merged `app.extension` / `app.serverExtension`
+ * type stays mutable and a value like `apiKey: ''` types as `string`, not the literal `''`.
  *
  * Throws if two folders collapse to the same camelCase key — config feeds runtime values
  * like API keys, so a silent last-wins could route a setting to the wrong extension.
  */
-export function generateConfigFile(extensions: Array<{ name: string; path: string }>): string {
+export function generateBarrelByMode(extensions: Array<{ name: string; path: string }>, mode: AggregateMode): string {
     const licenseLines = APACHE_LICENSE_HEADER.split('\n');
     const licenseHeader = `/**\n${licenseLines.map((line) => (line ? ` * ${line}` : ' *')).join('\n')}\n */`;
 
@@ -275,9 +330,7 @@ export function generateConfigFile(extensions: Array<{ name: string; path: strin
 
     return `${header}${imports}
 
-// Each extension's config.ts default export is namespaced by the camelCase of its folder
-// name (e.g. loqate-address-verification -> loqateAddressVerification), making it available
-// at config.app.extension.<key> and overridable via PUBLIC__app__extension__<key>__<setting>.
+${mode.barrelFooterComment}
 export default {
 ${exports}
 };
@@ -285,12 +338,14 @@ ${exports}
 }
 
 /**
- * Discover every `src/extensions/<name>/config.ts` and regenerate the
- * `src/extensions/config/index.ts` barrel that `config.server.ts` merges into
- * `app.extension`. Runs as a build prestep (mirrors `sfnext locales aggregate-extensions`).
+ * Discover every extension's source file under the given mode and write the matching barrel
+ * if its content has changed. Skipping the write when content is unchanged keeps the Vite
+ * watcher quiet — a no-op rewrite would touch the file's mtime and trigger a self-induced
+ * reload loop on every `pnpm dev` prestep.
  */
-export async function aggregateExtensionConfig(
-    options: AggregateExtensionConfigOptions = {}
+export async function aggregateByMode(
+    options: AggregateExtensionConfigOptions,
+    mode: AggregateMode
 ): Promise<AggregateResult> {
     const { projectDirectory = process.cwd(), silent = false } = options;
     const dirs = options.dirs ?? getDefaultDirs(projectDirectory);
@@ -301,26 +356,50 @@ export async function aggregateExtensionConfig(
     };
 
     try {
-        log('🔍 Scanning for extension config files...');
+        log(`🔍 Scanning for extension ${mode.sourceFileName} files...`);
 
-        const extensions = await findExtensionsWithConfig(EXTENSIONS_DIR);
-        const content = generateConfigFile(extensions);
+        const extensions = await findExtensionsWithConfigByMode(EXTENSIONS_DIR, mode);
+        const content = generateBarrelByMode(extensions, mode);
 
         await mkdir(OUTPUT_DIR, { recursive: true });
-        const filePath = join(OUTPUT_DIR, 'index.ts');
+        const filePath = join(OUTPUT_DIR, mode.outputFileName);
 
-        // Skip the write when the barrel is already current. The prestep runs on every `pnpm dev`
-        // and an unconditional write touches the file's mtime, which the Vite watcher reads as a
-        // change and rebuilds — a self-triggered reload loop. Only write when content differs.
         const current = await readFile(filePath, 'utf8').catch(() => null);
         if (current !== content) {
             await writeFile(filePath, content, 'utf8');
         }
 
-        log(`✅ Generated: src/extensions/config/index.ts (${extensions.length} extension(s))`);
+        log(`✅ Generated: src/extensions/config/${mode.outputFileName} (${extensions.length} extension(s))`);
         return { extensions: extensions.map((ext) => toCamelCase(ext.name)), filePath };
     } catch (error) {
-        if (!silent) logger.error(`❌ Error generating extension config: ${String(error)}`);
+        if (!silent) logger.error(`❌ Error generating extension ${mode.outputFileName}: ${String(error)}`);
         throw error;
     }
+}
+
+/**
+ * Discover every extension's `config.ts` AND `server-config.ts` and regenerate both barrels:
+ * `src/extensions/config/index.ts` (merged into `app.extension`, reaches the client) and
+ * `src/extensions/config/server.ts` (merged into `app.serverExtension`, server-only — the
+ * loader strips it before React Router serializes the hydration payload, and a Vite plugin
+ * fails the build if any client chunk imports the server barrel).
+ *
+ * Runs both modes in parallel: the source files are distinct (`config.ts` vs
+ * `server-config.ts`), the output files are distinct (`index.ts` vs `server.ts`), and each
+ * mode does its own mtime-aware write — there's no shared state between them. Folding both
+ * into one CLI invocation closes a class of footgun where a contributor regenerates one
+ * barrel but not the other and ships an inconsistent `app.extension` / `app.serverExtension`
+ * pair (see PR #1964 review).
+ *
+ * Used as the `sfnext config aggregate-extensions` build prestep (mirrors `sfnext locales
+ * aggregate-extensions`).
+ */
+export async function aggregateExtensionConfig(
+    options: AggregateExtensionConfigOptions = {}
+): Promise<{ client: AggregateResult; server: AggregateResult }> {
+    const [client, server] = await Promise.all([
+        aggregateByMode(options, CLIENT_MODE),
+        aggregateByMode(options, SERVER_MODE),
+    ]);
+    return { client, server };
 }

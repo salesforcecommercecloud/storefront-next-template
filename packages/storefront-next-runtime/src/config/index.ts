@@ -21,6 +21,7 @@
  * - `defineConfig()` — define a typed config in `config.server.ts` (merges `PUBLIC__*` env vars at call time)
  * - `getConfig()` / `useConfig()` — access the resolved app config in loaders/actions/components
  * - `appConfigContext` — router context populated by template middleware (read with `context.get(appConfigContext)`)
+ * - `clientAppConfigContext` — router context for the precomputed client-safe view (template strips server-only namespaces once at startup)
  * - `ConfigProvider` — React provider that powers `useConfig()`
  * - `BaseConfig`, `DefineConfigOptions` — types for `defineConfig`
  * - `Locale`, `Site`, `Url` — opt-in baseline shapes templates can use in their `AppConfig`
@@ -43,7 +44,7 @@ export { defineConfig } from './schema';
 export { getConfig, useConfig } from './get-config';
 
 // Context primitives (isomorphic)
-export { appConfigContext, ConfigProvider } from './context';
+export { appConfigContext, clientAppConfigContext, ConfigProvider } from './context';
 
 // Security defaults (re-exported from security module for config convenience)
 export { defaultSecurityHeaders } from '../security/defaults.js';

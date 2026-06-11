@@ -2,8 +2,8 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import { n as defaultSecurityHeaders } from "./defaults.js";
 import { ReactNode } from "react";
-import * as react_jsx_runtime0 from "react/jsx-runtime";
-import * as react_router1 from "react-router";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
+import * as react_router15 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/config/context.d.ts
@@ -23,7 +23,23 @@ interface AppConfigShape {
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
  * actions, and other middleware. Returns the augmented `AppConfigShape`.
  */
-declare const appConfigContext: react_router1.RouterContext<AppConfigShape>;
+declare const appConfigContext: react_router15.RouterContext<AppConfigShape>;
+/**
+ * Router context for the **client-safe view** of the application configuration —
+ * `appConfigContext` minus any server-only namespaces (which namespaces are server-only
+ * is template-defined; the SDK only owns the slot). The template's app-config middleware
+ * populates this with a precomputed view (the strip is identical on every request, so
+ * computing it per-request allocates a fresh object every render for no behavioral
+ * difference); the root loader reads from this context for the value it returns to React
+ * Router, which then ships in the SSR hydration payload. Reading the unstripped
+ * `appConfigContext` for the loader return would leak server-only namespaces into the
+ * browser via that channel.
+ *
+ * Type is `Partial<AppConfigShape>` because the client view is always a subset of the
+ * full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
+ * or a branded `ClientAppConfig` type at the read site.
+ */
+declare const clientAppConfigContext: react_router15.RouterContext<Partial<AppConfigShape>>;
 interface ConfigProviderProps {
   config: AppConfigShape;
   children: ReactNode;
@@ -37,7 +53,7 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime0.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime2.JSX.Element;
 //#endregion
 //#region src/config/get-config.d.ts
 declare global {
@@ -58,5 +74,5 @@ declare function getConfig<T extends Record<string, unknown> = AppConfigShape>(c
  */
 declare function useConfig<T extends Record<string, unknown> = AppConfigShape>(): T;
 //#endregion
-export { type AppConfigShape, type BaseConfig, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, defaultSecurityHeaders, defineConfig, getConfig, useConfig };
+export { type AppConfigShape, type BaseConfig, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, clientAppConfigContext, defaultSecurityHeaders, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.d.ts.map

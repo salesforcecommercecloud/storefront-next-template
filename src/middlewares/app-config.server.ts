@@ -15,8 +15,19 @@
  */
 import type { MiddlewareFunction } from 'react-router';
 import config from '@/config/server';
-import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { appConfigContext, clientAppConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { extractClientConfig } from '@/lib/app-config-client';
 import { getLogger } from '@/lib/logger.server';
+
+/**
+ * Client-safe view of `config.app`, computed once at module init. The strip is identical
+ * on every request (the underlying `config.app` is a static module import that doesn't
+ * mutate at runtime), so doing it per-request would allocate a fresh shallow copy every
+ * render for no behavioral difference. The middleware below stashes this in
+ * `clientAppConfigContext` so the root loader's return — the value React Router serializes
+ * into the SSR hydration payload — can read it as a zero-cost lookup.
+ */
+const CLIENT_APP_CONFIG = extractClientConfig(config.app);
 
 let validationRun = false;
 
@@ -135,5 +146,6 @@ export const appConfigMiddlewareServer: MiddlewareFunction<Response> = ({ contex
     // Ensure commerceAgent is not tree-shaken from the config (used by root.tsx and header for shopper agent)
     void config.app.commerceAgent;
     context.set(appConfigContext, config.app);
+    context.set(clientAppConfigContext, CLIENT_APP_CONFIG);
     return next();
 };

@@ -31,6 +31,11 @@ import type { TrackingConsent } from '@/types/tracking-consent';
 // Explicit `/config/index`: a bare `@/extensions/config` resolves to the sibling config.json
 // extension registry instead of this barrel.
 import type GeneratedExtensionConfig from '@/extensions/config/index';
+// Auto-generated barrel of installed extensions' server-only config defaults. Its type is the
+// source for `AppConfig['serverExtension']`. Values are reachable via getConfig(context) on the
+// server only — the client extractor strips this namespace before window.__APP_CONFIG__, and a
+// Vite plugin fails the build if any client chunk imports the runtime barrel.
+import type GeneratedServerExtensionConfig from '@/extensions/config/server';
 
 import type { DetectionConfig, Site, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
@@ -122,6 +127,17 @@ export type AppConfig = {
      * is derived from the generated barrel, never hand-edited. See docs/README-CONFIG.md.
      */
     extension?: DeepWritable<typeof GeneratedExtensionConfig>;
+    /**
+     * Server-only config defaults contributed by installed extensions, keyed by the camelCase
+     * of each extension folder name. Auto-discovered from each extension's `server-config.ts`.
+     * Reachable via `getConfig(context).serverExtension.<key>` in server loaders, actions, and
+     * middleware. The client config extractor strips this namespace before serializing into
+     * `window.__APP_CONFIG__`, and a Vite plugin fails the build if any client chunk imports
+     * the generated barrel. Use this for vendor-side defaults that aren't merchant-overridable
+     * (SCAPI service overrides, retry budgets, internal endpoints) — for true secrets, read
+     * `process.env` from a server route handler instead.
+     */
+    serverExtension?: DeepWritable<typeof GeneratedServerExtensionConfig>;
     features: {
         passwordlessLogin: {
             enabled?: boolean;

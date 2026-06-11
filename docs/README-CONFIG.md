@@ -371,6 +371,36 @@ The steps above are for config the template owns. **Extensions** add client-side
 
 Extension keys are set via `PUBLIC__` env vars / `.env`; they are not added to `config-meta.json`, so they don't appear in the create-storefront prompts.
 
+### Server-only extension config (`server-config.ts`)
+
+`config.ts` reaches the browser by design. For values an extension needs at runtime that must **never** be serialized into `window.__APP_CONFIG__` (vendor-side SCAPI service overrides, retry budgets, internal-only endpoints), drop a `server-config.ts` next to `config.ts`:
+
+```typescript
+// src/extensions/loqate-address-verification/server-config.ts
+export default {
+    scapiOverride: '',
+    retryBudget: 3,
+};
+```
+
+Read the value from a server loader, action, or middleware:
+
+```typescript
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+
+export function loader({ context }: LoaderFunctionArgs) {
+    const { scapiOverride } = getConfig(context).serverExtension?.loqateAddressVerification ?? {};
+    // …
+}
+```
+
+Same drop-a-file ergonomics as the client side — the build prestep aggregates every extension's `server-config.ts` into `src/extensions/config/server.ts` (auto-generated, do not edit) and merges it into `config.app.serverExtension.<camelCaseFolder>`. Two structural guarantees keep the values off the client:
+
+- The client config extractor (`src/lib/app-config-client.ts`) strips `app.serverExtension` before writing `window.__APP_CONFIG__`.
+- A Vite plugin (`vite-plugins/server-only-config-guard.ts`) fails the build if any client chunk imports `src/extensions/config/server`.
+
+There is no `PUBLIC__` override path by design — the same AST validator runs on `server-config.ts`, so a `process.env.X` read still throws at discovery time. For true secrets that *must* vary per environment (SLAS secrets, Marketing Cloud credentials), keep using `process.env` from a server route — never put them in `server-config.ts`.
+
 ## How It Works
 
 1. **Types defined** in `src/types/config.ts` — `AppConfig` defines all app fields, `Config = BaseConfig<AppConfig>`

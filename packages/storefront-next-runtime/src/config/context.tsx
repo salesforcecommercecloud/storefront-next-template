@@ -49,6 +49,24 @@ export interface AppConfigShape {
 export const appConfigContext = createRouterContext<AppConfigShape>();
 
 /**
+ * Router context for the **client-safe view** of the application configuration —
+ * `appConfigContext` minus any server-only namespaces (which namespaces are server-only
+ * is template-defined; the SDK only owns the slot). The template's app-config middleware
+ * populates this with a precomputed view (the strip is identical on every request, so
+ * computing it per-request allocates a fresh object every render for no behavioral
+ * difference); the root loader reads from this context for the value it returns to React
+ * Router, which then ships in the SSR hydration payload. Reading the unstripped
+ * `appConfigContext` for the loader return would leak server-only namespaces into the
+ * browser via that channel.
+ *
+ * Type is `Partial<AppConfigShape>` because the client view is always a subset of the
+ * full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
+ * or a branded `ClientAppConfig` type at the read site.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const clientAppConfigContext = createRouterContext<Partial<AppConfigShape>>();
+
+/**
  * Internal React context backing `useConfig()`.
  *
  * Not exported from the public barrel — components must read config via

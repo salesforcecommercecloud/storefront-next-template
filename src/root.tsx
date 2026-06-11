@@ -59,8 +59,9 @@ import {
 } from '@/middlewares/performance-metrics';
 import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
-import { ConfigProvider, getConfig } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider, getConfig, clientAppConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import type { ClientAppConfig } from '@/lib/app-config-client';
 import { siteContextMiddleware } from '@/middlewares/site-context.server';
 import { i18nextMiddleware } from '@/middlewares/i18next.server';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
@@ -187,7 +188,12 @@ export const loader = ({
 }: Route.LoaderArgs): {
     // Public auth data - only non-sensitive fields, safe to serialize
     clientAuth: PublicSessionData;
-    appConfig: AppConfig;
+    // Client-safe view: extractClientConfig strips app.serverExtension before this loader
+    // returns, since React Router serializes the loader return into the SSR hydration
+    // payload and reaches the browser. Server-only reads of those values still go through
+    // getConfig(context).serverExtension, which reads from appConfigContext (set by
+    // appConfigMiddlewareServer with the full AppConfig), not the loader return.
+    appConfig: ClientAppConfig;
     basketSnapshot: BasketSnapshot | null;
     maintenance: Maintenance;
     locale: Locale;
@@ -257,7 +263,13 @@ export const loader = ({
     const nonce = getSecurityNonce(context);
 
     return {
-        appConfig,
+        // Read the precomputed client view from the context — `appConfigMiddlewareServer`
+        // strips server-only namespaces once at module init and stashes the result, so this
+        // is a zero-cost lookup, not a per-request allocation. The loader return is
+        // serialized by React Router into the SSR hydration payload and reaches the browser
+        // unconditionally; server-side reads of the stripped namespaces stay available
+        // through getConfig(context), which reads the unstripped appConfigContext.
+        appConfig: context.get(clientAppConfigContext) as ClientAppConfig,
         basketSnapshot,
         locale,
         site,
@@ -282,6 +294,11 @@ type LoaderData = ServerLoaderData;
 
 export function Layout({ children }: PropsWithChildren) {
     const data = useRouteLoaderData<LoaderData>('root');
+    // The root loader already strips server-only namespaces (app.serverExtension) from
+    // `appConfig` before returning it, so window.__APP_CONFIG__ inherits the same clean
+    // shape \u2014 the loader return is the single source of truth for the client view, since
+    // React Router serializes that return into the SSR hydration payload regardless of
+    // what the inline window.__APP_CONFIG__ script contains.
     const appConfig = data?.appConfig;
     const appConfigScript = appConfig
         ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)

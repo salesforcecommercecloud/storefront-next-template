@@ -18,7 +18,8 @@ import { aggregateExtensionConfig } from '../../config/aggregate-extension-confi
 import { commonFlags } from '../../flags.js';
 
 export default class AggregateExtensions extends Command {
-    static description = 'Aggregate extension config.ts files into the app.extension config barrel';
+    static description =
+        'Aggregate extension config.ts and server-config.ts files into the app.extension and app.serverExtension barrels';
 
     static examples = [
         '<%= config.bin %> <%= command.id %>',
