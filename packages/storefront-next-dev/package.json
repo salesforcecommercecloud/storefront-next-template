@@ -123,7 +123,7 @@
   "license": "Apache-2.0",
   "peerDependencies": {
     "@react-router/dev": ">=7.0.0",
-    "@salesforce/storefront-next-runtime": "workspace:*",
+    "@salesforce/storefront-next-runtime": "workspace:^",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0",
     "react-router": ">=7.0.0",

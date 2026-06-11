@@ -508,7 +508,7 @@ importers:
         specifier: ^1.11.0
         version: 1.12.0(@oclif/core@4.11.4)(typescript@5.9.2)
       '@salesforce/storefront-next-runtime':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../storefront-next-runtime
       archiver:
         specifier: ^7.0.1
