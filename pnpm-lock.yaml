@@ -187,7 +187,7 @@ importers:
         version: 7.12.0(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0))(typescript@5.9.2)
       '@salesforce/b2c-cli':
         specifier: ^1.12.0
-        version: 1.12.1(@types/node@24.3.0)(typescript@5.9.2)
+        version: 1.14.1(@types/node@24.3.0)(typescript@5.9.2)
       '@storybook/addon-a11y':
         specifier: 10.0.6
         version: 10.0.6(storybook@10.0.6(@testing-library/dom@10.4.1)(msw@2.11.3(@types/node@24.3.0)(typescript@5.9.2))(prettier@3.6.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)))
@@ -3576,19 +3576,10 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@salesforce/b2c-cli@1.12.1':
-    resolution: {integrity: sha512-hhst66u8d3Z0vo5fQ9VhoSH/VYM2UtelOksc9FPo3BShDczdvw3OJDH6EKiS5R3rtvfz91jgeQMu/0nG0sNwoA==}
+  '@salesforce/b2c-cli@1.14.1':
+    resolution: {integrity: sha512-gXVi94I3YFzMT3GlKMF9ro9D34ZYIALFfBh7UrzqyL4G9CFTVpFsq5Mrv9aVYMzCMXP6J+WgbNsybmKKsKKPgg==}
     engines: {node: '>=22.16.0'}
     hasBin: true
-
-  '@salesforce/b2c-tooling-sdk@1.11.1':
-    resolution: {integrity: sha512-01OByakKVCrfzcHrx7XGJHQkbBx5bNP/YjASH0yrv2pm+kZ7rBejA7l0e7c2iAvj0TGlANlIUa6+mmyQYZCjeg==}
-    engines: {node: '>=22.16.0'}
-    peerDependencies:
-      '@oclif/core': ^4
-    peerDependenciesMeta:
-      '@oclif/core':
-        optional: true
 
   '@salesforce/b2c-tooling-sdk@1.12.0':
     resolution: {integrity: sha512-iIhlKNGH6sqHlv4OxBFzf8ug24WsK6g+brRT5l8CB7aPP+AWNbbM+fUyK/2IaRM62nZ4ON8Ip9FbhtDj1hzgVA==}
@@ -14009,7 +14000,7 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-cli@1.12.1(@types/node@24.3.0)(typescript@5.9.2)':
+  '@salesforce/b2c-cli@1.14.1(@types/node@24.3.0)(typescript@5.9.2)':
     dependencies:
       '@inquirer/prompts': 8.2.0(@types/node@24.3.0)
       '@oclif/core': 4.8.0
@@ -14019,7 +14010,7 @@ snapshots:
       '@oclif/plugin-plugins': 5.4.53
       '@oclif/plugin-version': 2.2.36
       '@oclif/plugin-warn-if-update-available': 3.1.52
-      '@salesforce/b2c-tooling-sdk': 1.11.1(@oclif/core@4.8.0)(typescript@5.9.2)
+      '@salesforce/b2c-tooling-sdk': 1.12.0(@oclif/core@4.8.0)(typescript@5.9.2)
       cliui: 9.0.1
       glob: 13.0.0
       marked: 15.0.12
@@ -14027,38 +14018,6 @@ snapshots:
       open: 11.0.0
     transitivePeerDependencies:
       - '@types/node'
-      - applicationinsights-native-metrics
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
-      - typescript
-
-  '@salesforce/b2c-tooling-sdk@1.11.1(@oclif/core@4.8.0)(typescript@5.9.2)':
-    dependencies:
-      '@vscode/debugadapter': 1.68.0
-      applicationinsights: 2.9.8
-      chokidar: 5.0.0
-      cliui: 9.0.1
-      ejs: 3.1.10
-      fuse.js: 7.1.0
-      glob: 13.0.0
-      i18next: 25.7.4(typescript@5.9.2)
-      js-yaml: 4.1.1
-      jsonschema: 1.5.0
-      jszip: 3.10.1
-      minimatch: 10.1.1
-      open: 11.0.0
-      openapi-fetch: 0.15.0
-      pino: 10.1.0
-      pino-pretty: 13.1.2
-      protobufjs: 7.5.4
-      tar-fs: 3.1.2
-      undici: 7.19.2
-      xml2js: 0.6.2
-    optionalDependencies:
-      '@oclif/core': 4.8.0
-    transitivePeerDependencies:
       - applicationinsights-native-metrics
       - bare-abort-controller
       - bare-buffer
@@ -14090,6 +14049,38 @@ snapshots:
       xml2js: 0.6.2
     optionalDependencies:
       '@oclif/core': 4.11.4
+    transitivePeerDependencies:
+      - applicationinsights-native-metrics
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
+      - typescript
+
+  '@salesforce/b2c-tooling-sdk@1.12.0(@oclif/core@4.8.0)(typescript@5.9.2)':
+    dependencies:
+      '@vscode/debugadapter': 1.68.0
+      applicationinsights: 2.9.8
+      chokidar: 5.0.0
+      cliui: 9.0.1
+      ejs: 3.1.10
+      fuse.js: 7.1.0
+      glob: 13.0.0
+      i18next: 25.7.4(typescript@5.9.2)
+      js-yaml: 4.1.1
+      jsonschema: 1.5.0
+      jszip: 3.10.1
+      minimatch: 10.1.1
+      open: 11.0.0
+      openapi-fetch: 0.15.0
+      pino: 10.1.0
+      pino-pretty: 13.1.2
+      protobufjs: 7.5.4
+      tar-fs: 3.1.2
+      undici: 7.19.2
+      xml2js: 0.6.2
+    optionalDependencies:
+      '@oclif/core': 4.8.0
     transitivePeerDependencies:
       - applicationinsights-native-metrics
       - bare-abort-controller

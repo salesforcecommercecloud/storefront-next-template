@@ -81,6 +81,7 @@ import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 import { securityHeadersMiddleware } from '@/middlewares/security-headers.server';
 import { getSecurityNonce } from '@salesforce/storefront-next-runtime/security';
 import { useSecurityNonceFromContext } from '@salesforce/storefront-next-runtime/security/react';
+import { errorCacheControlMiddleware } from '@/middlewares/error-cache-control.server';
 
 // Providers
 import AuthProvider from '@/providers/auth';
@@ -140,6 +141,7 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
+    errorCacheControlMiddleware,
     requestOriginMiddleware,
     loggingMiddleware,
     modeDetectionMiddlewareServer,

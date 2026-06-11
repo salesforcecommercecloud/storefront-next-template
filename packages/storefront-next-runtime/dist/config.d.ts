@@ -2,8 +2,8 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import { n as defaultSecurityHeaders } from "./defaults.js";
 import { ReactNode } from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
-import * as react_router14 from "react-router";
+import * as react_jsx_runtime0 from "react/jsx-runtime";
+import * as react_router1 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/config/context.d.ts
@@ -23,7 +23,7 @@ interface AppConfigShape {
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
  * actions, and other middleware. Returns the augmented `AppConfigShape`.
  */
-declare const appConfigContext: react_router14.RouterContext<AppConfigShape>;
+declare const appConfigContext: react_router1.RouterContext<AppConfigShape>;
 interface ConfigProviderProps {
   config: AppConfigShape;
   children: ReactNode;
@@ -37,7 +37,7 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime1.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime0.JSX.Element;
 //#endregion
 //#region src/config/get-config.d.ts
 declare global {
