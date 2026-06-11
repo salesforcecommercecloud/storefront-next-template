@@ -77,8 +77,8 @@ export const fetchPage = async (
                 query: {
                     // Required by SCAPI; the API will surface a 400 if missing.
                     aspectTypeId: aspectType as string,
-                    ...(categoryId && { categoryId }),
-                    ...(productId && { productId }),
+                    // SCAPI rejects calls with both productId and categoryId.
+                    ...(productId ? { productId } : categoryId ? { categoryId } : {}),
                     ...aspectAttributesQuery,
                 },
             },
