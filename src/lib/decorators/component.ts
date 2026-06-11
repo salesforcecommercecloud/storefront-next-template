@@ -38,6 +38,10 @@ export interface ComponentTypeMetadata {
     group?: string;
     /** Region definitions of a component */
     regions?: RegionDefinitionConfig[];
+    /** Whether this is an embedded content block (singleton, fetched independently via getComponent) */
+    embedded?: boolean;
+    /** Predictable instance ID for SCAPI getComponent fetch (requires embedded: true) */
+    component_id?: string;
 }
 
 function defineComponentMetadata<T extends object>(typeId: string, metadata: ComponentTypeMetadata, target: T): T {

@@ -3314,4 +3314,134 @@ describe('generateMetadata integration tests', () => {
         // Verify files WERE written in regular mode
         expect(writeFile).toHaveBeenCalled();
     });
+
+    describe('embedded content blocks', () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        function setupSingleComponentMocks(componentCode: string, fileName: string) {
+            vi.mocked(readdir)
+                .mockResolvedValueOnce([{ name: 'components', isDirectory: () => true, isFile: () => false } as any])
+                .mockResolvedValueOnce([{ name: fileName, isDirectory: () => false, isFile: () => true } as any]);
+
+            vi.mocked(readFile).mockResolvedValueOnce(componentCode);
+            vi.mocked(rm).mockResolvedValue(undefined);
+            vi.mocked(mkdir).mockResolvedValue(undefined);
+            vi.mocked(access).mockResolvedValue(undefined);
+            vi.mocked(writeFile).mockResolvedValue(undefined);
+        }
+
+        function getWrittenData(): Record<string, unknown> {
+            const writeCall = vi.mocked(writeFile).mock.calls[0];
+            return JSON.parse(writeCall[1] as string);
+        }
+
+        test('should generate embedded component with embedded: true and component_id in JSON', async () => {
+            setupSingleComponentMocks(
+                `
+                @Component('global-header', {
+                    name: 'Global Header',
+                    embedded: true,
+                    component_id: 'global-header-instance'
+                })
+                class GlobalHeader {
+                    @AttributeDefinition()
+                    title: string;
+                }
+                `,
+                'GlobalHeader.tsx'
+            );
+
+            await generateMetadata(projectDir, metadataDir);
+
+            const writtenData = getWrittenData();
+            expect(writtenData.embedded).toBe(true);
+            expect(writtenData.component_id).toBe('global-header-instance');
+        });
+
+        test('should not include embedded or component_id for non-embedded components', async () => {
+            setupSingleComponentMocks(
+                `
+                @Component('regular-component', { name: 'Regular Component' })
+                class RegularComponent {
+                    @AttributeDefinition()
+                    title: string;
+                }
+                `,
+                'RegularComponent.tsx'
+            );
+
+            await generateMetadata(projectDir, metadataDir);
+
+            const writtenData = getWrittenData();
+            expect(writtenData).not.toHaveProperty('embedded');
+            expect(writtenData).not.toHaveProperty('component_id');
+        });
+
+        test('should include embedded: false in JSON when explicitly set to false', async () => {
+            setupSingleComponentMocks(
+                `
+                @Component('hero', { name: 'Hero Banner', group: 'Content', embedded: false })
+                class HeroMetadata {
+                    @AttributeDefinition()
+                    title: string;
+                }
+                `,
+                'Hero.tsx'
+            );
+
+            await generateMetadata(projectDir, metadataDir);
+
+            const writtenData = getWrittenData();
+            expect(writtenData.embedded).toBe(false);
+            expect(writtenData).not.toHaveProperty('component_id');
+        });
+
+        test('should omit component_id from JSON when embedded but no component_id specified', async () => {
+            setupSingleComponentMocks(
+                `
+                @Component('banner', { name: 'Banner', group: 'Content', embedded: true })
+                class BannerMetadata {
+                    @AttributeDefinition()
+                    text: string;
+                }
+                `,
+                'Banner.tsx'
+            );
+
+            await generateMetadata(projectDir, metadataDir);
+
+            const writtenData = getWrittenData();
+            expect(writtenData.embedded).toBe(true);
+            expect(writtenData).not.toHaveProperty('component_id');
+        });
+
+        test('should generate correct JSON for embedded component with regions', async () => {
+            setupSingleComponentMocks(
+                `
+                @Component('header', { name: 'Header', group: 'Layout', embedded: true, component_id: 'site-header' })
+                @RegionDefinition([
+                    { id: 'announcement', name: 'Announcement Region', maxComponents: 1 }
+                ])
+                class HeaderMetadata {
+                    @AttributeDefinition()
+                    variant: string;
+                }
+                `,
+                'Header.tsx'
+            );
+
+            await generateMetadata(projectDir, metadataDir);
+
+            const writtenData = getWrittenData();
+            expect(writtenData.component_id).toBe('site-header');
+            expect(writtenData.embedded).toBe(true);
+            expect(writtenData.name).toBe('Header');
+            expect(writtenData.group).toBe('Layout');
+            expect(writtenData.arch_type).toBe('headless');
+            expect(writtenData.region_definitions).toEqual([
+                expect.objectContaining({ id: 'announcement', name: 'Announcement Region' }),
+            ]);
+        });
+    });
 });

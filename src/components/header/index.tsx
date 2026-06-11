@@ -28,9 +28,26 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { launchChat } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
+import { Component } from '@/lib/decorators/component';
+import { RegionDefinition } from '@/lib/decorators';
+
+@Component('header', {
+    name: 'Header',
+    group: 'Layout',
+    description: 'Global site header with navigation, search, and cart',
+    embedded: true,
+    component_id: 'header',
+})
+@RegionDefinition([{ id: 'announcement', name: 'Announcement' }])
+export class HeaderMetadata {}
 
 interface HeaderProps extends PropsWithChildren {
     beforeHeader?: ReactNode;
+    /**
+     * Slot rendered above the header's main row. Used for announcement banners
+     * or other above-the-fold content that should sit at the top of the page.
+     */
+    announcementSlot?: ReactNode;
     variant?: 'full' | 'checkout';
 }
 
@@ -42,7 +59,12 @@ function LocationKeyedSearch() {
     return <Search key={`${location.pathname}${location.search}`} />;
 }
 
-export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
+export default function Header({
+    children,
+    beforeHeader,
+    announcementSlot,
+    variant = 'full',
+}: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
     const headerRef = useRef<HTMLElement>(null);
     const config = useConfig();
@@ -89,6 +111,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
 
     return (
         <header ref={headerRef} className="bg-header-background text-header-foreground sticky top-0 z-50">
+            {announcementSlot}
             <div className="flex justify-end section-container">{beforeHeader}</div>
             <div className="section-container py-6">
                 {/* Top row: Logo left, Icons right */}

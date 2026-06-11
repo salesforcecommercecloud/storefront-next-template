@@ -23,9 +23,14 @@ import { registry } from '@/lib/page-designer/registry';
  *
  * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
  *
- * Components registered: Content.contentCard, Content.hero, Content.pdImage, Content.popularCategory, Content.productRecommendations, Content.productTile, Layout.grid, Layout.heroCarousel, Layout.popularCategories, Layout.productCarousel
+ * Components registered: Content.announcementBanner, Content.contentCard, Content.hero, Content.pdImage, Content.popularCategory, Content.productRecommendations, Content.productTile, Layout.grid, Layout.header, Layout.heroCarousel, Layout.popularCategories, Layout.productCarousel
  */
 export function initializeRegistry(targetRegistry = registry): void {
+    targetRegistry.registerImporter(
+        'Content.announcementBanner',
+        () => import('../../components/announcement-banner/index'),
+        { fallback: 'fallback' }
+    );
     targetRegistry.registerImporter('Content.contentCard', () => import('../../components/content-card/index'));
     targetRegistry.registerImporter('Content.hero', () => import('../../components/hero/index'));
     targetRegistry.registerImporter('Content.pdImage', () => import('../../components/dynamic-image/index'));
@@ -43,6 +48,7 @@ export function initializeRegistry(targetRegistry = registry): void {
         loader: 'loader',
     });
     targetRegistry.registerImporter('Layout.grid', () => import('../../components/grid/index'));
+    targetRegistry.registerImporter('Layout.header', () => import('../../components/header/index'));
     targetRegistry.registerImporter('Layout.heroCarousel', () => import('../../components/hero-carousel/index'), {
         fallback: 'fallback',
     });

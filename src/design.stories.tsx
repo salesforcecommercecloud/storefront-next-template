@@ -756,8 +756,12 @@ function RegionRenderer({ region, depth = 0 }: { region: ShopperExperience.schem
             </h2>
             <RegionWrapper region={region}>
                 {region.components && region.components.length > 0 ? (
-                    region.components.map((component: ComponentType) => (
-                        <ComponentRenderer key={component.id} component={component} depth={depth} />
+                    region.components.map((component) => (
+                        <ComponentRenderer
+                            key={component.id}
+                            component={component as unknown as ComponentType}
+                            depth={depth}
+                        />
                     ))
                 ) : (
                     <div

@@ -63,7 +63,14 @@ export function validateRule(rule: VisibilityRuleDef, locale: string, context?: 
     // paths, mirroring the server's if/else-if branching.
     if (rule.campaignQualifiers?.length) {
         for (const campaignQualifier of rule.campaignQualifiers) {
-            if (!context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) {
+            // When promotionId is provided, qualification is keyed by campaign+promotion
+            // in `campaignQualifiers`. When omitted, the campaign-only result lives under
+            // `campaigns` per the QualifierResolveResponse schema.
+            const qualified =
+                campaignQualifier.promotionId !== undefined
+                    ? context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]
+                    : context?.campaigns?.[campaignQualifier.campaignId];
+            if (!qualified) {
                 return false;
             }
         }

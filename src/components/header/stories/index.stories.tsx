@@ -18,6 +18,7 @@ import { type ReactElement } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import Header from '../index';
+import AnnouncementBanner from '@/components/announcement-banner';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
@@ -173,5 +174,40 @@ export const MobileView: Story = {
         await waitFor(() => {
             expect(canvas.getByRole('navigation', { name: /mobile navigation menu/i })).toBeInTheDocument();
         });
+    },
+};
+
+export const WithAnnouncementBanner: Story = {
+    render: (args) => (
+        <AuthProvider value={guestSession}>
+            <div data-skip-action-logger>
+                <AnnouncementBanner message="FREE WORLDWIDE SHIPPING from $90" />
+            </div>
+            <HeaderHarness {...args} />
+        </AuthProvider>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Header with an announcement banner stacked on top.',
+            },
+        },
+    },
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const banner = canvas.queryByRole('status');
+        if (banner) {
+            await expect(banner).toBeInTheDocument();
+            await expect(banner).toHaveTextContent('FREE WORLDWIDE SHIPPING from $90');
+        }
+        const logo = canvas.queryByTestId('header-logo');
+        if (logo) {
+            await expect(logo).toBeInTheDocument();
+        }
     },
 };

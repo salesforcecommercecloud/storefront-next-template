@@ -113,7 +113,7 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
         typeId: 'plp',
         designMetadata: {
             regionDefinitions: regions.map((region) => ({ id: region.id })),
-        },
+        } as never,
         regions,
     }) as ShopperExperience.schemas['Page'];
 

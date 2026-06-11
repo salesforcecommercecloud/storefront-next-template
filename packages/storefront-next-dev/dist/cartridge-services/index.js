@@ -449,6 +449,8 @@ async function processComponentFile(filePath, _projectRoot) {
 					regionDefinitions,
 					attributes
 				};
+				if (typeof componentConfig.embedded === "boolean") componentMetadata.embedded = componentConfig.embedded;
+				if (componentConfig.component_id !== void 0) componentMetadata.component_id = String(componentConfig.component_id);
 				components.push(componentMetadata);
 			}
 		} catch (error) {
@@ -548,6 +550,8 @@ async function generateComponentCartridge(component, outputDir, dryRun = false) 
 			description: component.description,
 			group: component.group,
 			arch_type: ARCH_TYPE_HEADLESS,
+			...typeof component.embedded === "boolean" && { embedded: component.embedded },
+			component_id: component.component_id,
 			region_definitions: component.regionDefinitions || [],
 			attribute_definition_groups: attributeDefinitionGroups
 		};

@@ -16854,7 +16854,7 @@ interface paths$9 {
      *     You must provide the `aspectTypeId` along with either a `categoryId` or a `productId`. Since you can only create one page-to-product or page-to-category assignment per aspect type, the result contains at most one element.
      *
      *     **Important**:
-     *     - Currently, you can't use the Shopper Experience Pages endpoints when the [storefront password protection](https://documentation.b2c.commercecloud.salesforce.com/DOC1/index.jsp?topic=%2Fcom.demandware.dochelp%2Fcontent%2Fb2c_commerce%2Ftopics%2Fpermissions%2Fb2c_storefront_password_protection.html&resultof=%22%73%74%6f%72%65%66%72%6f%6e%74%22%20%22%70%72%6f%74%65%63%74%69%6f%6e%22%20%22%70%72%6f%74%65%63%74%22%20) feature is enabled.
+     *     - Currently, you can't use the Shopper Experience Pages endpoints when the [storefront password protection](https://help.salesforce.com/s/articleView?id=cc.b2c_storefront_password_protection.htm&type=5) feature is enabled.
      *     - Because this resource uses the GET method, you must not pass sensitive data, for example: payment card information, and must not perform transactional processes within the server-side scripts that are run for the page and components.
      *     - Be aware that pagecache during fingerprint calculation will only be leveraged for pages and their components that don't use visibility rules. Furthermore the pagecaching of the actual response assembly solely depends on the response instrumentation with the serverside page type and component type script implementations. For more details also see the [Page Designer Caching Guide](https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/b2c-dev-for-page-designer.html#page-caching).
      */
@@ -16879,11 +16879,34 @@ interface paths$9 {
      * @description Get a Page Designer page for a specific page ID. The results apply the visibility rules for the page's components, such as personalization or scheduled visibility.
      *
      *     **Important**:
-     *     - Currently, you can't use the Shopper Experience Pages endpoints when the [storefront password protection](https://documentation.b2c.commercecloud.salesforce.com/DOC1/index.jsp?topic=%2Fcom.demandware.dochelp%2Fcontent%2Fb2c_commerce%2Ftopics%2Fpermissions%2Fb2c_storefront_password_protection.html&resultof=%22%73%74%6f%72%65%66%72%6f%6e%74%22%20%22%70%72%6f%74%65%63%74%69%6f%6e%22%20%22%70%72%6f%74%65%63%74%22%20) feature is enabled.
+     *     - Currently, you can't use the Shopper Experience Pages endpoints when the [storefront password protection](https://help.salesforce.com/s/articleView?id=cc.b2c_storefront_password_protection.htm&type=5) feature is enabled.
      *     - Because this resource uses the GET method, you must not pass sensitive data, for example: payment card information, and must not perform transactional processes within the server-side scripts that are run for the page and components.
      *     - Be aware that pagecache during fingerprint calculation will only be leveraged for pages and their components that don't use visibility rules. Furthermore the pagecaching of the actual response assembly solely depends on the response instrumentation with the serverside page type and component type script implementations. For more details also see the [Page Designer Caching Guide](https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/b2c-dev-for-page-designer.html#page-caching).
      */
     get: operations$26["getPage"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/components/{componentId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a component by ID.
+     * @description Get a Page Designer component by its unique identifier. The results apply the visibility rules for the component, such as personalization or scheduled visibility.
+     *
+     *     **Important**:
+     *     - Because this resource uses the GET method, you must not pass sensitive data, for example: payment card information, and must not perform transactional processes within the server-side scripts that are run for the component.
+     */
+    get: operations$26["getComponent"];
     put?: never;
     post?: never;
     delete?: never;
@@ -17047,7 +17070,7 @@ interface paths$9 {
 interface components$9 {
   schemas: {
     /**
-     * @description An identifier for the organization the request is being made by
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
      * @example f_ecom_zzxy_prd
      */
     OrganizationId: string;
@@ -17126,6 +17149,12 @@ interface components$9 {
        */
       fragment?: boolean;
       /**
+       * Embedded
+       * @description Indicates whether the component is embedded in another component. True if the component is embedded, otherwise false.
+       * @example false
+       */
+      embedded?: boolean;
+      /**
        * Content Link UUID
        * @description Represents a globally unique identifier for every instance of a content component (or fragment) rendered on a page.
        * @example 0e1f329d4ac66ff2c3bbf70301
@@ -17160,6 +17189,16 @@ interface components$9 {
        *     }
        */
       custom?: Record<string, never>;
+      /**
+       * Design Metadata
+       * @description Design metadata of the component. This includes information about the component type definition needed by the page designer for design-time functionality.
+       * @example {
+       *       "id": "commerce_assets.carousel",
+       *       "name": "Carousel Component",
+       *       "archType": "headless"
+       *     }
+       */
+      designMetadata?: Record<string, never>;
       /**
        * Regions
        * @description The regions (and their assigned components) for the component.
@@ -17252,6 +17291,28 @@ interface components$9 {
        *     }
        */
       custom?: Record<string, never>;
+      /**
+       * Visibility
+       * @description Whether the page is visible based on the current visiblity rules and context.
+       * @example true
+       */
+      visible?: boolean;
+      /**
+       * Localized
+       * @description Whether the page has been localized with content in the current locale. If false, the page content will fallback to the default locale.
+       * @example true
+       */
+      localized?: boolean;
+      /**
+       * Design Metadata
+       * @description Design metadata of the page. This includes information about the page type definition needed by the page designer for design-time functionality.
+       * @example {
+       *       "id": "storePage",
+       *       "name": "Store Page",
+       *       "archType": "headless"
+       *     }
+       */
+      designMetadata?: Record<string, never>;
       /**
        * Regions
        * @description The regions (and their assigned components) for the page.
@@ -17571,6 +17632,21 @@ interface components$9 {
        */
       data: components$9["schemas"]["ContentFolder"][];
     } & components$9["schemas"]["ResultBase"];
+    /** @description A campaign qualifier, optionally scoped to a specific promotion within the campaign. When promotionId is omitted, the qualifier matches if the campaign itself is active and its scenario rule applies. */
+    CampaignQualifier: {
+      /**
+       * Campaign ID
+       * @description The campaign identifier.
+       * @example my-campaign
+       */
+      campaignId: string;
+      /**
+       * Promotion ID
+       * @description Optional promotion identifier. When provided, qualification requires both the campaign and the specific promotion-campaign assignment to apply.
+       * @example my-promotion
+       */
+      promotionId?: string;
+    };
     /** @description A data binding requirement specifying a provider type and record identifier to resolve. */
     DataBindingRequirement: {
       /**
@@ -17586,33 +17662,6 @@ interface components$9 {
        */
       id: string;
     };
-    /**
-     * @description A resolved data binding object containing arbitrary key-value pairs returned by the data provider for a specific record. The shape of the object is determined by the data provider and may include any user-defined fields.
-     * @example {
-     *       "title": "Winter Sale",
-     *       "body": "<div>Shop our winter collection</div>",
-     *       "c_showCountdown": true,
-     *       "c_endDate": "2026-03-31T23:59:59Z"
-     *     }
-     */
-    ResolvedDataBinding: {
-      [key: string]: unknown;
-    };
-    /** @description A campaign and promotion pair to resolve qualification for. */
-    CampaignQualifier: {
-      /**
-       * Campaign ID
-       * @description The identifier of the campaign.
-       * @example my-campaign
-       */
-      campaignId: string;
-      /**
-       * Promotion ID
-       * @description The identifier of the promotion within the campaign.
-       * @example my-promotion
-       */
-      promotionId: string;
-    };
     /** @description Request body for resolving customer group qualifications, campaign promotion eligibility, and data bindings. All fields are optional. An empty body is valid and returns an empty response. */
     QualifierResolveRequest: {
       /**
@@ -17625,7 +17674,7 @@ interface components$9 {
       customerGroups?: string[];
       /**
        * Campaign Qualifiers
-       * @description List of campaign and promotion pairs to resolve qualification for.
+       * @description List of campaign qualifiers to resolve. Each qualifier must include a campaignId and may optionally include a promotionId.
        */
       campaignQualifiers?: components$9["schemas"]["CampaignQualifier"][];
       /**
@@ -17633,6 +17682,18 @@ interface components$9 {
        * @description List of data binding requirements to resolve, each specifying a provider type and record identifier.
        */
       dataBindings?: components$9["schemas"]["DataBindingRequirement"][];
+    };
+    /**
+     * @description A resolved data binding object containing arbitrary key-value pairs returned by the data provider for a specific record. The shape of the object is determined by the data provider and may include any user-defined fields.
+     * @example {
+     *       "title": "Winter Sale",
+     *       "body": "<div>Shop our winter collection</div>",
+     *       "c_showCountdown": true,
+     *       "c_endDate": "2026-03-31T23:59:59Z"
+     *     }
+     */
+    ResolvedDataBinding: {
+      [key: string]: unknown;
     };
     /** @description Response containing the resolved qualification results for customer groups, campaign qualifiers, and data bindings. */
     QualifierResolveResponse: {
@@ -17648,7 +17709,7 @@ interface components$9 {
       };
       /**
        * Campaign Qualifiers
-       * @description Map of campaign identifiers to a map of promotion identifiers and their qualification status. True if the user is applicable, false otherwise.
+       * @description Map of campaign ID to promotion qualification results. Each value is a map of promotion ID to qualification result. Only contains entries for request qualifiers that included a promotionId.
        * @example {
        *       "my-campaign": {
        *         "my-promotion": false
@@ -17659,6 +17720,16 @@ interface components$9 {
         [key: string]: {
           [key: string]: boolean;
         };
+      };
+      /**
+       * Campaigns
+       * @description Map of campaign ID to qualification result for request qualifiers that did not include a promotionId. A value of true means the campaign is active and its scenario rule applies to the shopper context.
+       * @example {
+       *       "winter-promo": false
+       *     }
+       */
+      campaigns?: {
+        [key: string]: boolean;
       };
       /**
        * Data Bindings
@@ -17703,7 +17774,7 @@ interface components$9 {
   };
   parameters: {
     /**
-     * @description An identifier for the organization the request is being made by
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
      * @example f_ecom_zzxy_prd
      */
     organizationId: components$9["schemas"]["OrganizationId"];
@@ -17723,6 +17794,8 @@ interface components$9 {
     locale: components$9["schemas"]["LocaleCode"];
     /** @description Identifier for the requested page. */
     pageId: string;
+    /** @description Identifier for the requested component. */
+    componentId: string;
     /** @description Identifier for the requested content asset. */
     contentId: components$9["schemas"]["ContentId"];
     /**
@@ -17782,7 +17855,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -17837,7 +17910,7 @@ interface operations$26 {
         /** @description Identifier for the requested page. */
         pageId: components$9["parameters"]["pageId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -17884,6 +17957,77 @@ interface operations$26 {
       };
     };
   };
+  getComponent: {
+    parameters: {
+      query: {
+        /** @description A free-form definition of parameters that influences the page rendering according to its implementation. This parameter must not contain more than 256 characters after URL decoding. */
+        parameters?: components$9["parameters"]["parameters"];
+        /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
+        siteId: components$9["parameters"]["siteId"];
+        /** @description A descriptor for a geographical region by both a language and country code. By combining these two, regional differences in a language can be addressed, such as with the request header parameter `Accept-Language` following [RFC 2616](https://tools.ietf.org/html/rfc2616) & [RFC 1766](https://tools.ietf.org/html/rfc1766). This can also just refer to a language code, also RFC 2616/1766 compliant, as a default if there is no specific match for a country. Finally, can also be used to define default behavior if there is no locale specified. */
+        locale?: components$9["parameters"]["locale"];
+      };
+      header?: never;
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$9["parameters"]["organizationId"];
+        /** @description Identifier for the requested component. */
+        componentId: components$9["parameters"]["componentId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Success. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components$9["schemas"]["Component"];
+        };
+      };
+      /** @description Invalid Parameter */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$9["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized Access */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$9["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Component Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$9["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$9["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   getContent: {
     parameters: {
       query: {
@@ -17895,7 +18039,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -17942,7 +18086,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -17994,7 +18138,7 @@ interface operations$26 {
         siteId: components$9["parameters"]["siteId"];
         /** @description A descriptor for a geographical region by both a language and country code. By combining these two, regional differences in a language can be addressed, such as with the request header parameter `Accept-Language` following [RFC 2616](https://tools.ietf.org/html/rfc2616) & [RFC 1766](https://tools.ietf.org/html/rfc1766). This can also just refer to a language code, also RFC 2616/1766 compliant, as a default if there is no specific match for a country. Finally, can also be used to define default behavior if there is no locale specified. */
         locale?: components$9["parameters"]["locale"];
-        /** @description Maximum records to retrieve per request, not to exceed 200. Defaults to 50. */
+        /** @description Number of records to retrieve per request. Must be between 1 (minimum) and 200 (maximum). Defaults to 50. */
         limit?: number;
         /** @description Used to retrieve the results based on a particular resource offset. */
         offset?: number;
@@ -18002,7 +18146,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -18044,7 +18188,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -18104,7 +18248,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -18146,7 +18290,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$9["parameters"]["organizationId"];
@@ -30861,6 +31005,11 @@ declare const operations$7: {
     readonly m: "GET";
     readonly b: "/organizations/{organizationId}";
     readonly s: "/pages/{pageId}";
+  };
+  readonly getComponent: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}";
+    readonly s: "/components/{componentId}";
   };
   readonly getContent: {
     readonly m: "GET";

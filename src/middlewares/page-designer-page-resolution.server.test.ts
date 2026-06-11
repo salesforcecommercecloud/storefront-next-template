@@ -27,6 +27,8 @@ import {
     DataStoreServiceError,
 } from '@salesforce/storefront-next-runtime/data-store';
 import { mockSiteObject } from '@/test-utils/config';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import type { Cookie } from 'react-router';
 
 const mockGetEntry = vi.fn();
 const mockResolveQualifiers = vi.fn();
@@ -159,6 +161,18 @@ async function invokeMiddlewareAndGetHandler(context: ReturnType<typeof createTe
 async function setupHandler() {
     const context = createTestContext({
         appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
+    });
+    // Pin the site context to the mock site so manifest storage keys are
+    // deterministic regardless of the developer's local config.app.defaultSiteId.
+    const localeObj =
+        mockSiteObject.supportedLocales.find((l) => l.id === 'en-GB') ?? mockSiteObject.supportedLocales[0];
+    context.set(siteContext, {
+        site: { ...mockSiteObject, alias: 'global', name: mockSiteObject.id },
+        locale: { ...localeObj },
+        currency: localeObj.preferredCurrency,
+        siteCookie: { name: 'site_id' } as unknown as Cookie,
+        localeCookie: { name: 'locale_id' } as unknown as Cookie,
+        currencyCookie: { name: 'currency' } as unknown as Cookie,
     });
     // The lazy middleware stores a loader function rather than a value;
     // mirror that shape here so `getSiteUrlConfig` resolves correctly.

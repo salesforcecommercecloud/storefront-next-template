@@ -442,7 +442,7 @@ describe('Component', () => {
             };
             (registry.getComponent as any).mockReturnValue(Dynamic);
 
-            const component: ComponentType = {
+            const component = {
                 id: 'meta-comp',
                 typeId: 'hero',
                 designMetadata: {
@@ -455,7 +455,7 @@ describe('Component', () => {
                 },
                 visible: true,
                 localized: true,
-            };
+            } as unknown as ComponentType;
 
             mockUseComponentDataById.mockReturnValue(undefined);
 
@@ -512,7 +512,7 @@ describe('Component', () => {
             };
             (registry.getComponent as any).mockReturnValue(Dynamic);
 
-            const component: ComponentType = {
+            const component = {
                 id: 'fragment-comp',
                 typeId: 'hero',
                 fragment: true,
@@ -526,7 +526,7 @@ describe('Component', () => {
                     isLocalized: false,
                 },
                 visible: true,
-            };
+            } as unknown as ComponentType;
 
             mockUseComponentDataById.mockReturnValue(undefined);
 

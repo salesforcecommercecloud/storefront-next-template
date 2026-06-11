@@ -518,7 +518,7 @@ async function processComponentFile(filePath: string, _projectRoot: string): Pro
                 const attributes = extractAttributesFromSource(sourceFile, className);
                 const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className, componentGroup);
 
-                const componentMetadata = {
+                const componentMetadata: Record<string, unknown> = {
                     typeId: componentConfig.id || className.toLowerCase(),
                     name: componentConfig.name || toHumanReadableName(className),
                     group: componentGroup,
@@ -526,6 +526,13 @@ async function processComponentFile(filePath: string, _projectRoot: string): Pro
                     regionDefinitions,
                     attributes,
                 };
+
+                if (typeof componentConfig.embedded === 'boolean') {
+                    componentMetadata.embedded = componentConfig.embedded;
+                }
+                if (componentConfig.component_id !== undefined) {
+                    componentMetadata.component_id = String(componentConfig.component_id);
+                }
 
                 components.push(componentMetadata);
             }
@@ -680,11 +687,13 @@ async function generateComponentCartridge(
             },
         ];
 
-        const cartridgeData = {
+        const cartridgeData: Record<string, unknown> = {
             name: component.name,
             description: component.description,
             group: component.group,
             arch_type: ARCH_TYPE_HEADLESS,
+            ...(typeof component.embedded === 'boolean' && { embedded: component.embedded }),
+            component_id: component.component_id,
             region_definitions: component.regionDefinitions || [],
             attribute_definition_groups: attributeDefinitionGroups,
         };
