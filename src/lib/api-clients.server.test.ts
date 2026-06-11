@@ -21,7 +21,12 @@ import type { SessionData } from '@/lib/api/types';
 import type { Logger } from '@/lib/logger';
 import { loggerContext } from '@/lib/logger.server';
 import { scapiMiddlewareContext } from './scapi-middleware';
-import { createApiClients, createDedupedFetch, createTimeoutFetch } from './api-clients.server';
+import {
+    createApiClients,
+    createDedupedFetch,
+    createHealthObserverFetch,
+    createTimeoutFetch,
+} from './api-clients.server';
 
 const scapiMocks = vi.hoisted(() => {
     const mockUse = vi.fn();
@@ -1395,6 +1400,246 @@ describe('createTimeoutFetch', () => {
             // Caller A's later abort is a no-op; the timeout already won.
             controllerA.abort(new Error('too late'));
             expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+        });
+    });
+});
+
+// ===========================================================================
+// SCAPI health observer — tests for `createHealthObserverFetch`, the innermost
+// wrapper that emits one concrete log line for otherwise-lost failure
+// categories: load shedding (`sfdc_load_status` header) and rate limiting
+// (HTTP 429). Detection and logging only — it never retries and always passes
+// the original response through. All lines share the `SCAPI health` token.
+// ===========================================================================
+
+describe('createHealthObserverFetch', () => {
+    function makeResponse(headers: Record<string, string>, status = 200): Response {
+        return new Response('ok', { status, headers });
+    }
+
+    describe('load shedding', () => {
+        it('does not log when no sfdc_load_status header is present', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({})));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const response = await fetch('https://api.example.com/x');
+
+            expect(response.status).toBe(200);
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+
+        it('logs at warn level on sfdc_load_status: WARN (served 2xx)', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'WARN', sfdc_load: '82' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/products/abc?siteId=site&locale=en-US&token=secret');
+
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+            expect(ctx.logger.warn).toHaveBeenCalledWith(
+                expect.stringContaining('SCAPI health load GET /products/abc?locale=en-US&siteId=site&token=*'),
+                { status: 'warn', load: '82' }
+            );
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+
+        it('logs at warn level on sfdc_load_status: THROTTLE when the response is still served (2xx)', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() =>
+                Promise.resolve(makeResponse({ sfdc_load_status: 'THROTTLE', sfdc_load: '93' }))
+            );
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/products/abc');
+
+            // The request succeeded despite advertised pressure — a warning, not an error.
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+            expect(ctx.logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCAPI health load GET '), {
+                status: 'throttle',
+                load: '93',
+            });
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+
+        it('logs at error level when the request is shed with a 503 (sfdc_load drops, status carries THROTTLE)', async () => {
+            const ctx = makeContext();
+            // SCAPI's worker generates the shed 503 itself: it sets sfdc_load_status: THROTTLE but has no origin
+            // sfdc_load value to copy through, so that header is absent.
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'THROTTLE' }, 503)));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/products/abc');
+
+            expect(ctx.logger.error).toHaveBeenCalledTimes(1);
+            expect(ctx.logger.error).toHaveBeenCalledWith(expect.stringContaining('SCAPI health load GET '), {
+                status: 'throttle',
+                load: null,
+            });
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+        });
+
+        it('logs with load: null when sfdc_load_status is set but sfdc_load is absent', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'WARN' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+
+            expect(ctx.logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCAPI health load'), {
+                status: 'warn',
+                load: null,
+            });
+        });
+
+        it('normalizes the status to lower case in the meta property', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'WARN', sfdc_load: '82' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+
+            expect(ctx.logger.warn).toHaveBeenCalledWith(
+                expect.not.stringContaining('WARN'),
+                expect.objectContaining({ status: 'warn' })
+            );
+        });
+
+        it('does not log on sfdc_load alone without sfdc_load_status', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load: '50' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+
+        it('reads the request method from a Request input', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'WARN' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch(new Request('https://api.example.com/baskets/abc', { method: 'POST' }));
+
+            expect(ctx.logger.warn).toHaveBeenCalledWith(
+                expect.stringContaining('SCAPI health load POST /baskets/abc'),
+                { status: 'warn', load: null }
+            );
+        });
+
+        it('masks the URL from a URL object input', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ sfdc_load_status: 'WARN' })));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch(new URL('https://api.example.com/products/abc?siteId=site&token=secret'));
+
+            expect(ctx.logger.warn).toHaveBeenCalledWith(
+                expect.stringContaining('SCAPI health load GET /products/abc?siteId=site&token=*'),
+                { status: 'warn', load: null }
+            );
+        });
+    });
+
+    describe('rate limiting (HTTP 429)', () => {
+        it('logs at error level on a 429 with a Retry-After header (verbatim)', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ 'Retry-After': '30' }, 429)));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/products/abc?siteId=site&locale=en-US&token=secret');
+
+            expect(ctx.logger.error).toHaveBeenCalledTimes(1);
+            expect(ctx.logger.error).toHaveBeenCalledWith(
+                expect.stringContaining('SCAPI health rate GET /products/abc?locale=en-US&siteId=site&token=*'),
+                { retryAfter: '30' }
+            );
+        });
+
+        it('logs at error level on a 429 without a Retry-After header (retryAfter: null)', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({}, 429)));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+
+            expect(ctx.logger.error).toHaveBeenCalledWith(expect.stringContaining('SCAPI health rate'), {
+                retryAfter: null,
+            });
+        });
+
+        it('reads the request method from a Request input for 429', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({ 'Retry-After': '5' }, 429)));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch(new Request('https://api.example.com/baskets/abc', { method: 'POST' }));
+
+            expect(ctx.logger.error).toHaveBeenCalledWith(
+                expect.stringContaining('SCAPI health rate POST /baskets/abc'),
+                { retryAfter: '5' }
+            );
+        });
+
+        it('does not log on non-429 error statuses', async () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn(() => Promise.resolve(makeResponse({}, 500)));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('passthrough and composition', () => {
+        it('passes through the response unchanged', async () => {
+            const ctx = makeContext();
+            const original = makeResponse({ sfdc_load_status: 'WARN', sfdc_load: '80' });
+            const baseFetch = vi.fn(() => Promise.resolve(original));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const response = await fetch('https://api.example.com/x');
+
+            expect(response).toBe(original);
+            expect(await response.text()).toBe('ok');
+        });
+
+        it('does not log and rethrows a rejected fetch unchanged', async () => {
+            const ctx = makeContext();
+            const err = new TypeError('fetch failed');
+            const baseFetch = vi.fn(() => Promise.reject(err));
+            const fetch = createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await expect(fetch('https://api.example.com/x')).rejects.toBe(err);
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+            expect(ctx.logger.error).not.toHaveBeenCalled();
+        });
+
+        it('logs once per real fetch when wrapped beneath createTimeoutFetch', async () => {
+            const ctx = makeContext();
+            const responses = [
+                makeResponse({ sfdc_load_status: 'WARN', sfdc_load: '85' }),
+                makeResponse({ sfdc_load_status: 'WARN', sfdc_load: '88' }),
+            ];
+            let call = 0;
+            const baseFetch = vi.fn(() => Promise.resolve(responses[call++]));
+            const fetch = createTimeoutFetch(
+                ctx,
+                createHealthObserverFetch(ctx, baseFetch as unknown as typeof globalThis.fetch),
+                5000
+            );
+
+            // Each real network call must produce exactly one observer log line, regardless of the timeout layer.
+            await fetch('https://api.example.com/x');
+            await fetch('https://api.example.com/y');
+
+            expect(baseFetch).toHaveBeenCalledTimes(2);
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(2);
         });
     });
 });
