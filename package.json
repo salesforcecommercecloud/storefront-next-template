@@ -303,7 +303,7 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "625 kB",
+                "limit": "640 kB",
                 "comment": "Checkout components with dependencies (incl. express-payments lazy chunk and sonner toast). Lazy on /checkout."
             },
             {

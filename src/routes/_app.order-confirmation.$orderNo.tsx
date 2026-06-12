@@ -16,7 +16,7 @@
 import { type ReactElement, Suspense, useEffect } from 'react';
 import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
-import { Await, useFetcher } from 'react-router';
+import { Await, useFetcher, useParams, useRouteError } from 'react-router';
 import type { action as postOrderRegisterAction } from '@/routes/action.post-order-register';
 import type { Route } from './+types/_app.order-confirmation.$orderNo';
 import { Link } from '@/components/link';
@@ -27,15 +27,17 @@ import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { formatCurrency } from '@/lib/currency';
 import { fetchOrderWithProducts } from '@/lib/api/order.server';
+import { destroyBasket } from '@/middlewares/basket.server';
 import { useBasketReset } from '@/providers/basket';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { routes } from '@/route-paths';
-import type {
-    ShopperOrders,
-    ShopperProducts,
+import {
+    ApiError,
+    type ShopperOrders,
+    type ShopperProducts,
     // @sfdc-extension-line SFDC_EXT_BOPIS
-    ShopperStores,
+    type ShopperStores,
 } from '@/scapi';
 import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
 import { getDisplayVariationValues } from '@/lib/product/product-utils';
@@ -112,6 +114,21 @@ export function loader({ context, params }: Route.LoaderArgs): CheckoutConfirmat
     logger.debug('OrderConfirmation: loader starting', { orderNo });
     const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo);
 
+    // Idempotent basket teardown safety net. The default action.place-order and the
+    // extension-driven place-order-finalize both tear the basket down before sending the
+    // shopper here, but a failure between createOrder and that teardown would leave a
+    // phantom basket cookie. Tearing down here is safe (the basket was consumed by
+    // createOrder regardless) and self-heals any path that lands on confirmation with
+    // stale state. Gated on a successful order lookup so an erroneous orderNo can't
+    // strip a still-valid basket.
+    orderPromise
+        .then(() => {
+            destroyBasket(context);
+        })
+        .catch(() => {
+            // Order lookup failed - error UI handles it; do not touch the basket.
+        });
+
     // Determine if we should show post-order registration (guest + email verification disabled)
     const userIsRegistered = isRegisteredCustomer(context);
     const { emailVerificationEnabled } = getLoginPreferences(context);
@@ -143,28 +160,48 @@ export function loader({ context, params }: Route.LoaderArgs): CheckoutConfirmat
 }
 
 /**
- * Error boundary component for handling order not found and other errors.
- * This component catches errors thrown in the loader and displays an appropriate error message
- * to the user with options to continue shopping or view their account.
- * @returns JSX element representing the error state with user-friendly messaging
+ * Error boundary for the order-confirmation route. Handles two distinct cases:
+ *
+ *   - SCAPI 404: order genuinely doesn't exist or isn't visible to this shopper.
+ *     Show the standard "order not found" copy.
+ *   - Anything else (5xx, network, transient): the order may very well exist - we
+ *     just can't load it right now. This is the path the extension-driven
+ *     place-order recovery routes through when finalize couldn't read the order
+ *     back. Show different copy that surfaces the orderNo and asks the shopper
+ *     to check their email / contact support, instead of misleadingly claiming
+ *     the order doesn't exist.
  */
 export function ErrorBoundary() {
     const { t } = useTranslation('checkout');
-    // NOTE: We are making the decision to use custom error messages. If you want to use the default messages
-    // from the API, you can use the `useRouteError` hook to get the error message.
-    const errorMessage: string = t('confirmation.orderNotFoundDescription');
+    const error = useRouteError();
+    const params = useParams();
+    const orderNo = params.orderNo;
+
+    const isNotFound = error instanceof ApiError && error.status === 404;
+    const title = isNotFound ? t('confirmation.orderNotFound') : t('confirmation.orderPlacedDetailsUnavailable');
+    const description = isNotFound
+        ? t('confirmation.orderNotFoundDescription')
+        : t('confirmation.orderPlacedDetailsUnavailableDescription');
+    // Surface the orderNo only in the "order placed but details unavailable" branch -
+    // for a 404 the orderNo is presumed bogus, so showing it just adds noise.
+    const showOrderNo = !isNotFound && Boolean(orderNo);
 
     return (
         <div className="min-h-screen bg-background">
             <div className="max-w-4xl mx-auto section-container py-8">
                 <Card className="rounded-none shadow-none">
                     <CardHeader>
-                        <CardTitle className="text-center">{t('confirmation.orderNotFound')}</CardTitle>
+                        <CardTitle className="text-center">{title}</CardTitle>
                     </CardHeader>
                     <CardContent className="text-center space-y-4">
                         <Typography variant="p" className="text-muted-foreground">
-                            {errorMessage}
+                            {description}
                         </Typography>
+                        {showOrderNo ? (
+                            <Typography variant="p" className="text-foreground font-medium">
+                                {t('confirmation.orderNumberLabel', { orderNo })}
+                            </Typography>
+                        ) : null}
                         <Button asChild>
                             <Link to={routes.home}>{t('confirmation.actions.continueShopping')}</Link>
                         </Button>
@@ -204,7 +241,7 @@ function OrderConfirmationContent({
     let deliveryShipments = order.shipments;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    // note: this BOPIS implementation assumes at mose 1 pickup store is used for the order
+    // note: this BOPIS implementation assumes at most 1 pickup store is used for the order
     const { t: tBopis } = useTranslation('extBopis');
     deliveryShipments = getOrderDeliveryShipments(order);
     const store = getPickupStoreFromMap(
@@ -497,7 +534,7 @@ function OrderConfirmationContent({
                                                 row.bold
                                                     ? 'font-semibold text-foreground'
                                                     : isPromotion
-                                                      ? 'text-sm text-green-600 font-semibold'
+                                                      ? 'text-sm text-success font-semibold'
                                                       : 'text-foreground'
                                             }>
                                             {row.key === 'shipping' && row.value === 0

@@ -36,7 +36,9 @@ import { ApiError } from '@/scapi';
  *
  * POST { orderNo, shouldCreateAccount?, checkoutRegistrationIntent?,
  *        useDifferentBilling?, savePaymentToProfile?, contactPhone? }
- *   -> 200 { success: true, redirectUrl } | 4xx/5xx { success: false, error }
+ *   -> 200 { success: true, redirectUrl }
+ *   -> 5xx { success: false, error, redirectUrl }  // basket torn down, client should still navigate
+ *   -> 4xx { success: false, error }               // basket preserved, retry possible
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     const logger = getLogger(context);
@@ -76,21 +78,49 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         order = await getOrderWithRetry(clients, orderNo, logger);
     } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
-            logger.warn('[Checkout] place-order-finalize: order not found for current shopper', { orderNo });
+            // 404 means the orderNo isn't visible to the current shopper - could be a stale
+            // orderNo from a previous session, or a session/identity change between
+            // onPlaceOrder and finalize. Do NOT tear down the basket: the shopper's current
+            // basket may still be valid for a fresh checkout attempt.
+            logger.warn(
+                '[Checkout] place-order-finalize: extension supplied an orderNo but SCAPI getOrder returned 404 for the current shopper - possible stale orderNo or session change; basket preserved, may need manual reconciliation if order actually exists',
+                {
+                    orderNo,
+                    customerId: auth.customerId,
+                    userType,
+                    scapiStatus: error.status,
+                }
+            );
             const notFoundError = createActionError({ code: ErrorCode.NOT_FOUND, message: 'Order not found' });
             return Response.json(
                 { success: false, error: notFoundError },
                 { status: httpStatusForErrorCode(notFoundError.code) }
             );
         }
-        logger.error('[Checkout] place-order-finalize: getOrder failed after retry', { orderNo, error });
+        logger.error(
+            '[Checkout] place-order-finalize: extension supplied an orderNo but SCAPI getOrder failed after retry - basket torn down and shopper redirected to confirmation; manual reconciliation may be required if profile saves were missed',
+            {
+                orderNo,
+                customerId: auth.customerId,
+                userType,
+                scapiStatus: error instanceof ApiError ? error.status : undefined,
+                error,
+            }
+        );
         const failureError = createActionError({ error, code: ErrorCode.OPERATION_FAILED });
         // Forward the upstream SCAPI status when known (preserves observability for 5xx).
         const status =
             error instanceof ApiError && error.status >= 400 && error.status < 600
                 ? error.status
                 : httpStatusForErrorCode(failureError.code);
-        return Response.json({ success: false, error: failureError }, { status });
+        // 5xx / network failure on getOrder: the extension's onPlaceOrder already
+        // created the order, so the basket is consumed in SCAPI. Tear down the cookie
+        // and return a confirmation URL so the client can navigate instead of stranding
+        // the shopper on /checkout with a phantom basket. Profile saves are skipped
+        // (no order data); the confirmation loader is the safety net for any state we
+        // didn't reach here.
+        const redirectUrl = finalizeOrderSuccess(context, { orderNo });
+        return Response.json({ success: false, error: failureError, redirectUrl }, { status });
     }
 
     // Profile save (non-fatal: the order is already created; we always continue to teardown).
@@ -155,8 +185,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 const GET_ORDER_RETRY_DELAY_MS = 500;
 
 /**
- * Retry once on transient failures: SCAPI 5xx and non-ApiError throws (network,
- * timeout). 4xx (including 404) skip the retry since they're terminal.
+ * Retry once on transient failures: SCAPI 5xx, 429 (rate-limited), and
+ * non-ApiError throws (network, timeout). Other 4xx skip the retry since
+ * they're terminal.
  */
 async function getOrderWithRetry(
     clients: ReturnType<typeof createApiClients>,
@@ -167,7 +198,7 @@ async function getOrderWithRetry(
         const response = await clients.shopperOrders.getOrder({ params: { path: { orderNo } } });
         return response.data;
     } catch (error) {
-        const isTransient = !(error instanceof ApiError) || error.status >= 500;
+        const isTransient = !(error instanceof ApiError) || error.status >= 500 || error.status === 429;
         if (!isTransient) throw error;
         logger.warn('[Checkout] place-order-finalize: getOrder failed, retrying once', { orderNo, error });
         await new Promise((resolve) => setTimeout(resolve, GET_ORDER_RETRY_DELAY_MS));

@@ -138,28 +138,42 @@ describe('action.place-order-finalize', () => {
         expect(finalizeOrderSuccessMock).toHaveBeenCalledOnce();
     });
 
-    it('propagates the SCAPI status when getOrder returns 5xx on both attempts and does not finalize', async () => {
+    it('retries once and succeeds when the first getOrder call hits a 429 (rate-limited)', async () => {
+        getOrderMock
+            .mockRejectedValueOnce(createApiError(429))
+            .mockResolvedValueOnce({ data: { orderNo: '00001234', customerInfo: { email: '[email protected]' } } });
+        const response = await action({ request: buildRequest({ orderNo: '00001234' }), context: ctx, params: {} });
+        expect(response.status).toBe(200);
+        const body = await response.json();
+        expect(body).toEqual({ success: true, redirectUrl: '/site/order-confirmation/00001234' });
+        expect(getOrderMock).toHaveBeenCalledTimes(2);
+        expect(finalizeOrderSuccessMock).toHaveBeenCalledOnce();
+    });
+
+    it('tears down basket and returns redirectUrl when getOrder returns 5xx on both attempts (order already created)', async () => {
         getOrderMock.mockRejectedValue(createApiError(500));
         const response = await action({ request: buildRequest({ orderNo: '00001234' }), context: ctx, params: {} });
         expect(response.status).toBe(500);
         const body = await response.json();
         expect(body.success).toBe(false);
         expect(body.error).toEqual(expect.objectContaining({ code: 'OPERATION_FAILED' }));
+        expect(body.redirectUrl).toBe('/site/order-confirmation/00001234');
         expect(getOrderMock).toHaveBeenCalledTimes(2);
+        expect(finalizeOrderSuccessMock).toHaveBeenCalledWith(ctx, { orderNo: '00001234' });
         expect(saveCheckoutDataToProfileMock).not.toHaveBeenCalled();
-        expect(finalizeOrderSuccessMock).not.toHaveBeenCalled();
     });
 
-    it('retries non-ApiError throws (network/timeout) and returns 500 OPERATION_FAILED on persistent failure', async () => {
+    it('tears down basket and returns redirectUrl when getOrder throws non-ApiError (network/timeout) twice', async () => {
         getOrderMock.mockRejectedValue(new Error('boom'));
         const response = await action({ request: buildRequest({ orderNo: '00001234' }), context: ctx, params: {} });
         expect(response.status).toBe(500);
         const body = await response.json();
         expect(body.success).toBe(false);
         expect(body.error).toEqual(expect.objectContaining({ code: 'OPERATION_FAILED' }));
+        expect(body.redirectUrl).toBe('/site/order-confirmation/00001234');
         expect(getOrderMock).toHaveBeenCalledTimes(2);
+        expect(finalizeOrderSuccessMock).toHaveBeenCalledWith(ctx, { orderNo: '00001234' });
         expect(saveCheckoutDataToProfileMock).not.toHaveBeenCalled();
-        expect(finalizeOrderSuccessMock).not.toHaveBeenCalled();
     });
 
     it('rejects a missing orderNo with 400 and does not call SCAPI', async () => {
@@ -219,7 +233,7 @@ describe('action.place-order-finalize', () => {
             paymentInstruments: [],
         });
 
-        // shouldCreateAccount + checkoutRegistrationIntent omitted → registeredViaCheckout=false.
+        // shouldCreateAccount + checkoutRegistrationIntent omitted -> registeredViaCheckout=false.
         const response = await action({ request: buildRequest({ orderNo: '00001234' }), context: ctx, params: {} });
         expect(response.status).toBe(200);
         const arg = saveCheckoutDataToProfileMock.mock.calls[0]?.[1];

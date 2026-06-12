@@ -269,7 +269,7 @@
             "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
             "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
-            "placeOrderFailed": "Failed to finalize order. Please try again."
+            "placeOrderFailed": "Failed to finalize order. Try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -640,6 +640,9 @@
             "confirmationEmailSent": "We've sent a confirmation email to {{email}}",
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
+            "orderPlacedDetailsUnavailable": "You placed an order",
+            "orderPlacedDetailsUnavailableDescription": "You placed an order, but we can't load the full details right now. Check your email for confirmation. If you don't receive an email, contact Salesforce Customer Support.",
+            "orderNumberLabel": "Order number: {{orderNo}}",
             "orderNumberRequired": "Order number is required",
             "sections": {
                 "orderSummary": "Order Summary",

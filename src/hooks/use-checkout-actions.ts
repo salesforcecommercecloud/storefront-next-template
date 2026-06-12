@@ -83,6 +83,17 @@ export type PaymentSubmissionRef = MutableRefObject<{
      * Resolve with the orderNo on success, or `null` on failure after
      * surfacing the extension's own error UI.
      *
+     * Latency: the framework imposes no client-side timeout because it
+     * cannot reliably conclude a reasonable ceiling that applies to all
+     * extensions in all situations - 3DS challenges can legitimately run
+     * 30-90s, wallet flows resolve in seconds, and PSP redirects can run
+     * minutes when the shopper switches to a banking app for OTP. The
+     * extension should decide its own ceiling and act on it (e.g.
+     * `AbortController` on the create-order fetch, PSP-SDK timeout hooks
+     * for 3DS) and resolve `null` after surfacing its own error UI when
+     * its budget elapses. A hung promise that never resolves leaves the
+     * Place Order spinner spinning indefinitely.
+     *
      * Extension components reach this ref via `usePaymentSubmissionRef()`
      * from `@/components/checkout/payment-submission-context`. Assign in a
      * `useEffect`, clear in cleanup so the registration is unwound when the

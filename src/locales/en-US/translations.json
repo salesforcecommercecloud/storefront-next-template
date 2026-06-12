@@ -269,7 +269,7 @@
             "noActiveBasket": "No active basket found. Refresh the page and try again.",
             "basketCalculationFailed": "Failed to calculate order total. Try again.",
             "promoCodeInvalid": "Invalid promo code. Check and try again.",
-            "placeOrderFailed": "Failed to finalize order. Please try again."
+            "placeOrderFailed": "We couldn't finalize the order. Try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -641,6 +641,9 @@
             "confirmationEmailSent": "We've sent a confirmation email to {{email}}",
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
+            "orderPlacedDetailsUnavailable": "You placed an order",
+            "orderPlacedDetailsUnavailableDescription": "You placed an order, but we can't load the full details right now. Check your email for confirmation. If you don't receive an email, contact Salesforce Customer Support.",
+            "orderNumberLabel": "Order number: {{orderNo}}",
             "orderNumberRequired": "Order number is required",
             "sections": {
                 "orderSummary": "Order Summary",

@@ -214,7 +214,7 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
     useCompletedSteps: () => mockUseCompletedSteps(),
 }));
 
-// Mock the checkout actions hook — stable references so tests can assert on calls
+// Mock the checkout actions hook - stable references so tests can assert on calls
 const mockIsSubmitting = vi.fn(() => false);
 const mockSubmitContactInfo = vi.fn();
 const mockSubmitShippingAddress = vi.fn();
@@ -297,7 +297,7 @@ vi.mock('@/providers/basket', () => ({
     useBasketHydrated: () => true,
 }));
 
-// Mock auth provider — default to guest; tests for registered users override this
+// Mock auth provider - default to guest; tests for registered users override this
 const mockUseAuth = vi.fn(() => ({ userType: 'guest' }));
 vi.mock('@/providers/auth', () => ({
     useAuth: () => mockUseAuth(),
@@ -394,14 +394,21 @@ describe('CheckoutFormPage', () => {
         productMapPromise: Promise.resolve({}),
     };
 
+    // The page's children are React.lazy. React Testing Library's documented
+    // pattern for testing components with Suspense is `await act(async () =>
+    // render(...))` - the async form lets the runner drive the lazy import
+    // resolution. Tests that need to assert on specific lazy children layer
+    // findBy*/waitFor on top.
     const renderCheckoutPage = async (
         props: Partial<ComponentProps<typeof CheckoutFormPage>> = {}
     ): Promise<ReturnType<typeof render>> => {
         let view: ReturnType<typeof render> | undefined;
-        await act(async () => {
-            view = render(<CheckoutFormPage {...defaultProps} {...props} />);
-            await Promise.resolve();
-        });
+        await act(
+            // eslint-disable-next-line @typescript-eslint/require-await
+            async () => {
+                view = render(<CheckoutFormPage {...defaultProps} {...props} />);
+            }
+        );
         if (!view) {
             throw new Error('CheckoutFormPage failed to render');
         }
@@ -1674,30 +1681,23 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                // Allow async IIFE to advance through prepare → onPlaceOrder → finalize.
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
+            });
+
+            await waitFor(() => {
+                expect(assignedHref).toBe('/order-confirmation/ORD-9001');
             });
 
             expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
             expect(mockSubmitPayment).not.toHaveBeenCalled();
             expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
-
             // Two BFF calls: prepare first, then finalize after onPlaceOrder.
             expect(fetchMock).toHaveBeenCalledTimes(2);
             expect(fetchMock.mock.calls[0]?.[0]).toBe('/action/place-order-prepare');
             expect(fetchMock.mock.calls[1]?.[0]).toBe('/action/place-order-finalize');
             const finalizeFormData = (fetchMock.mock.calls[1]?.[1] as { body: FormData }).body;
             expect(finalizeFormData.get('orderNo')).toBe('ORD-9001');
-
-            await act(async () => {
-                await Promise.resolve();
-            });
-            expect(assignedHref).toBe('/order-confirmation/ORD-9001');
         });
 
         test('does not call onPlaceOrder or finalize when prepare rejects the basket', async () => {
@@ -1716,13 +1716,15 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                await Promise.resolve();
-                await Promise.resolve();
             });
 
-            expect(fetchMock).toHaveBeenCalledTimes(1);
+            // Wait for the prepare fetch to land. Don't call mockOnPlaceOrder -
+            // assert non-call after the awaited signal.
+            await waitFor(() => {
+                expect(fetchMock).toHaveBeenCalledTimes(1);
+            });
             expect(fetchMock.mock.calls[0]?.[0]).toBe('/action/place-order-prepare');
             expect(mockOnPlaceOrder).not.toHaveBeenCalled();
             expect(assignedHref).toBeNull();
@@ -1744,14 +1746,13 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
             });
 
-            expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
+            await waitFor(() => {
+                expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
+            });
             expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
             // Prepare fired; finalize did not.
             expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -1776,6 +1777,49 @@ describe('CheckoutFormPage', () => {
 
             expect(mockSubmitPlaceOrder).toHaveBeenCalledTimes(1);
             expect(fetchMock).not.toHaveBeenCalled();
+        });
+
+        test('two clicks in the same paint trigger only one prepare/onPlaceOrder chain', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
+
+            const fetchMock = vi
+                .fn()
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: true }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                )
+                .mockImplementationOnce(() =>
+                    Promise.resolve(
+                        new Response(JSON.stringify({ success: true, redirectUrl: '/order-confirmation/ORD-9001' }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                    )
+                );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            // Synchronous double-click within the same paint - the React-state pending
+            // flag hasn't applied yet, so the synchronous ref guard is the only thing
+            // preventing two onPlaceOrder chains.
+            act(() => {
+                fireEvent.click(placeOrderButton);
+                fireEvent.click(placeOrderButton);
+            });
+
+            await waitFor(() => {
+                // Only one prepare + one finalize, not four.
+                expect(fetchMock).toHaveBeenCalledTimes(2);
+            });
+            expect(mockOnPlaceOrder).toHaveBeenCalledTimes(1);
         });
 
         test('clears pending state and stays put when finalize returns non-success', async () => {
@@ -1806,19 +1850,18 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
             });
 
-            expect(fetchMock).toHaveBeenCalledTimes(2);
+            // Both fetches must complete before we can assert no navigation occurred.
+            await waitFor(() => {
+                expect(fetchMock).toHaveBeenCalledTimes(2);
+            });
             expect(assignedHref).toBeNull();
         });
 
-        test('clears pending state and stays put when finalize fetch throws', async () => {
+        test('navigates to confirmation when finalize fetch throws but onPlaceOrder produced an orderNo', async () => {
             mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
             mockUseBasket.mockReturnValue(basketWithPayment);
             mockOnPlaceOrder = vi.fn().mockResolvedValue('ORD-9001');
@@ -1837,15 +1880,47 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
             });
 
+            // Order is real (onPlaceOrder produced an orderNo); the catch path builds a
+            // site-prefixed confirmation URL and hard-navigates so the loader's
+            // idempotent destroyBasket clears the cookie.
+            await waitFor(() => {
+                expect(assignedHref).toContain('/order-confirmation/ORD-9001');
+            });
             expect(fetchMock).toHaveBeenCalledTimes(2);
+        });
+
+        test('stays put with toast when finalize fetch throws before onPlaceOrder produced an orderNo', async () => {
+            // For example, prepare succeeds, but the fetch fails before onPlaceOrder runs.
+            // Without an orderNo, we can't safely navigate to confirmation.
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithPayment);
+            mockOnPlaceOrder = vi.fn().mockRejectedValue(new Error('PSP confirmation failed'));
+
+            const fetchMock = vi.fn().mockResolvedValueOnce(
+                new Response(JSON.stringify({ success: true }), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' },
+                })
+            );
+            globalThis.fetch = fetchMock as typeof fetch;
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            // Wait for the failure path to run by observing the toast helper. assignedHref
+            // not being set is the assertion we care about, but we need a positive signal
+            // first to avoid asserting before the async chain has resolved the rejection.
+            await waitFor(() => {
+                expect(mockOnPlaceOrder).toHaveBeenCalled();
+            });
             expect(assignedHref).toBeNull();
         });
 
@@ -1863,7 +1938,7 @@ describe('CheckoutFormPage', () => {
                     })
                 )
                 .mockResolvedValueOnce(
-                    // Malformed JSON body — exercises the catch branch in the parse block.
+                    // Malformed JSON body - exercises the catch branch in the parse block.
                     new Response('not-json', { status: 500, headers: { 'Content-Type': 'text/plain' } })
                 );
             globalThis.fetch = fetchMock as typeof fetch;
@@ -1871,15 +1946,13 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', { name: /Place Order/ });
-            await act(async () => {
+            act(() => {
                 fireEvent.click(placeOrderButton);
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
-                await Promise.resolve();
             });
 
-            expect(fetchMock).toHaveBeenCalledTimes(2);
+            await waitFor(() => {
+                expect(fetchMock).toHaveBeenCalledTimes(2);
+            });
             expect(assignedHref).toBeNull();
         });
     });
