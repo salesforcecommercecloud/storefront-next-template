@@ -3,7 +3,7 @@ import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./
 import { n as defaultSecurityHeaders } from "./defaults.js";
 import { ReactNode } from "react";
 import * as react_jsx_runtime1 from "react/jsx-runtime";
-import * as react_router15 from "react-router";
+import * as react_router1 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/config/context.d.ts
@@ -23,7 +23,7 @@ interface AppConfigShape {
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
  * actions, and other middleware. Returns the augmented `AppConfigShape`.
  */
-declare const appConfigContext: react_router15.RouterContext<AppConfigShape>;
+declare const appConfigContext: react_router1.RouterContext<AppConfigShape>;
 /**
  * Router context for the **client-safe view** of the application configuration —
  * `appConfigContext` minus any server-only namespaces (which namespaces are server-only
@@ -39,7 +39,7 @@ declare const appConfigContext: react_router15.RouterContext<AppConfigShape>;
  * full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
  * or a branded `ClientAppConfig` type at the read site.
  */
-declare const clientAppConfigContext: react_router15.RouterContext<Partial<AppConfigShape>>;
+declare const clientAppConfigContext: react_router1.RouterContext<Partial<AppConfigShape>>;
 interface ConfigProviderProps {
   config: AppConfigShape;
   children: ReactNode;

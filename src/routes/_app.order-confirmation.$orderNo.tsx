@@ -343,51 +343,55 @@ function OrderConfirmationContent({
                 {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
                 {/* Shipping Details section - supports multiple shipments if present */}
-                {deliveryShipments.map((shipment) => {
-                    const shippingAddress = shipment.shippingAddress;
-                    const shippingMethodName =
-                        shipment.shippingMethod?.name || t('confirmation.fields.defaultShippingMethod');
-                    const estimatedDeliveryTime =
-                        shipment.shippingMethod?.description ||
-                        t('confirmation.summaryLabels.estimatedDatePlaceholder');
-                    return (
-                        <Card key={shipment.shipmentId} className="border border-border/70 rounded-none shadow-none">
-                            <CardContent className="grid gap-6 p-6 md:grid-cols-3">
-                                <div>
-                                    <p className="text-base font-semibold tracking-wide text-foreground">
-                                        {t('confirmation.summaryLabels.arriving')}
-                                    </p>
-                                    <p className="mt-3 text-sm font-medium text-muted-foreground">
-                                        {estimatedDeliveryTime}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-base font-semibold tracking-wide text-foreground">
-                                        {t('confirmation.summaryLabels.shippingAddress')}
-                                    </p>
-                                    <div className="mt-3 space-y-2">
-                                        {shippingAddress ? (
-                                            <AddressDisplay address={shippingAddress} />
-                                        ) : (
-                                            <p className="text-sm font-medium text-muted-foreground">
-                                                {t('confirmation.summaryLabels.noAddress')}
-                                            </p>
-                                        )}
+                <UITarget targetId="sfcc.orderConfirmation.shipping.details">
+                    {deliveryShipments.map((shipment) => {
+                        const shippingAddress = shipment.shippingAddress;
+                        const shippingMethodName =
+                            shipment.shippingMethod?.name || t('confirmation.fields.defaultShippingMethod');
+                        const estimatedDeliveryTime =
+                            shipment.shippingMethod?.description ||
+                            t('confirmation.summaryLabels.estimatedDatePlaceholder');
+                        return (
+                            <Card
+                                key={shipment.shipmentId}
+                                className="border border-border/70 rounded-none shadow-none">
+                                <CardContent className="grid gap-6 p-6 md:grid-cols-3">
+                                    <div>
+                                        <p className="text-base font-semibold tracking-wide text-foreground">
+                                            {t('confirmation.summaryLabels.arriving')}
+                                        </p>
+                                        <p className="mt-3 text-sm font-medium text-muted-foreground">
+                                            {estimatedDeliveryTime}
+                                        </p>
                                     </div>
-                                </div>
-                                <div>
-                                    <p className="text-base font-semibold tracking-wide text-foreground">
-                                        {t('confirmation.summaryLabels.shippingMethod')}
-                                    </p>
-                                    <p className="mt-3 text-sm font-medium text-muted-foreground">
-                                        {shippingMethodName}
-                                    </p>
-                                </div>
-                                <UITarget targetId="sfcc.orderConfirmation.shipping.tracking" />
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                                    <div>
+                                        <p className="text-base font-semibold tracking-wide text-foreground">
+                                            {t('confirmation.summaryLabels.shippingAddress')}
+                                        </p>
+                                        <div className="mt-3 space-y-2">
+                                            {shippingAddress ? (
+                                                <AddressDisplay address={shippingAddress} />
+                                            ) : (
+                                                <p className="text-sm font-medium text-muted-foreground">
+                                                    {t('confirmation.summaryLabels.noAddress')}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-base font-semibold tracking-wide text-foreground">
+                                            {t('confirmation.summaryLabels.shippingMethod')}
+                                        </p>
+                                        <p className="mt-3 text-sm font-medium text-muted-foreground">
+                                            {shippingMethodName}
+                                        </p>
+                                    </div>
+                                    <UITarget targetId="sfcc.orderConfirmation.shipping.tracking" />
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </UITarget>
 
                 {/* Product Items Summary section */}
                 <Card className="border border-border/70 rounded-none shadow-none">
