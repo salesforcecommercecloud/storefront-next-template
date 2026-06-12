@@ -47,7 +47,12 @@ class WishlistPage {
     }
 
     validatePageLoaded(): void {
-        I.seeElement(this.locators.savedItemsHeading);
+        // The heading sits inside the route's <Suspense> around an Await on SCAPI
+        // product details (_app.wishlist.tsx). Under load on the shared pool target
+        // the Await can resolve later than seeElement's first check, producing
+        // flaky failures (~2s) where the heading would otherwise appear shortly
+        // after. Wait up to 10s for the post-resolve render.
+        I.waitForElement(this.locators.savedItemsHeading, 10);
     }
 
     async getSignInCtaHref(): Promise<string> {

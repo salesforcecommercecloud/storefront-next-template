@@ -20,29 +20,10 @@ Feature('Account Details Tests').tag('@core').tag('@account').tag('@user-account
 // injection) and loginRegistered retries SLAS 409s, so the per-scenario rate-limit
 // flake is resolved — the suite runs with Scenario.
 //
-// TODO: The positive change-email scenario stays scoped-skipped pending
-// investigation of an intermittent failure historically blamed on a checkout
-// fillContactInfo timeout. As written it does NOT route through checkout — it
-// triggers an internal SLAS re-auth, and the next scenario's login retries any
-// resulting SLAS 409 via withSlasRetry. Re-validate on the pool target
-// (5× consecutive); if it passes, drop this scoped-skip. Track in the
-// signup-stabilization follow-up.
-const isChangeEmailBroken = true;
-const changeEmailScenario = isChangeEmailBroken ? Scenario.skip : Scenario;
-
-// TODO: "Email change fails with incorrect current password" is scoped-skipped —
-// NOT a signup issue (surfaced once the suite was re-enabled). The backend
-// ACCEPTS the email change despite a wrong current password ("Email updated
-// successfully, but automatic login failed" toast) instead of returning the
-// expected "Failed to update email address" error, so the negative assertion
-// fails. Looks like a real backend/SLAS gap (currentPassword not validated on
-// the email-change request), not a flake — it failed identically across two
-// consecutive pool-target runs. Track in a separate ticket and re-enable once
-// the backend rejects wrong-password email changes.
-// Failing CI run for debugging:
-// https://github.com/commerce-emu/storefront-next/actions/runs/26918763043/job/79414501985
-const isEmailChangeWrongPasswordBroken = true;
-const emailChangeWrongPasswordScenario = isEmailChangeWrongPasswordBroken ? Scenario.skip : Scenario;
+// Change-email scenarios (positive + wrong-password) require the backend
+// capability documented in docs/README-EMAIL-VERIFICATION.md: B2C >= 24.7 with
+// "Enable Loginid Updates for SCAPI" on. The shared zzrf-001 instance behind
+// every MRT pool env meets this, so both scenarios run unconditionally.
 
 const { I, storefrontPage, accountDetailsPage, apiLoginFlow, apiSignupFlow } = inject();
 import { expect } from 'chai';
@@ -212,7 +193,7 @@ Scenario('User can cancel profile editing without saving changes', async () => {
  * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-changeEmailScenario('Email card displays current email address and supports changing it', async () => {
+Scenario('Email card displays current email address and supports changing it', async () => {
     accountDetailsPage.navigate();
 
     // Verify email card is visible and shows the current email address
@@ -263,7 +244,7 @@ changeEmailScenario('Email card displays current email address and supports chan
  * - "Enable Email Verification" to be enabled in Business Manager > Merchant Tools > Site Preferences > Storefront Login Preferences.
  * - "Enable Loginid Updates for SCAPI" to be enabled in Business Manager > Administration > Global Preferences > Feature Switches
  */
-emailChangeWrongPasswordScenario('Email change fails with incorrect current password', async () => {
+Scenario('Email change fails with incorrect current password', async () => {
     accountDetailsPage.navigate();
 
     accountDetailsPage.clickChangeEmail();
