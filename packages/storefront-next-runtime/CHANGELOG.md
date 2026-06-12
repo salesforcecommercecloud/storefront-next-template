@@ -6,35 +6,35 @@
 
 - #1823 `0a3fcdc` Thanks @arayanavarro_sfemu! - w:
 
- Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
+    Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
 
- **Removed from public exports** (followups to #1741):
- - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
- - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
- - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
+    **Removed from public exports** (followups to #1741):
+    - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
+    - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
+    - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
 
- **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
+    **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
 
- ```ts
- // In your template's src/types/config.ts:
- declare module '@salesforce/storefront-next-runtime/config' {
- interface AppConfigShape extends AppConfig {}
- }
- ```
+    ```ts
+    // In your template's src/types/config.ts:
+    declare module '@salesforce/storefront-next-runtime/config' {
+        interface AppConfigShape extends AppConfig {}
+    }
+    ```
 
- **Other changes**
- - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
- - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
- - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
- - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
- - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
- - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
- - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
- - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
+    **Other changes**
+    - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
+    - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
+    - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
+    - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
+    - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
+    - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
+    - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
+    - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
 
- Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
+    Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
 
- > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
+    > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
 
 - #1787 `d39ccce` Thanks @kevin-he_sfemu! - Remove internal data-store context objects and key constants from public exports (`sitePreferencesContext`, `customGlobalPreferencesContext`, `gcpPreferencesContext`, `loginPreferencesContext`, `DEFAULT_SITE_PREFERENCES_KEY`, `DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY`, `DEFAULT_GCP_PREFERENCES_KEY`) and remove subpath entry points (`./data-store/custom-site-preferences`, `./data-store/custom-global-preferences`, `./data-store/gcp-preferences`) — these are internal plumbing that allows bypassing middleware invariants.
 
@@ -66,14 +66,14 @@
 
 - #1779 `8ae7030` Thanks @joel-uong_sfemu! - Stop the data-store middleware from crashing MRT requests on transient DAL failures. `DataStoreServiceError` and `DataStoreUnavailableError` now both honor `onUnavailable`, and the four built-in middlewares (`customSitePreferencesMiddleware`, `customGlobalPreferencesMiddleware`, `gcpPreferencesMiddleware`, `loginPreferencesMiddleware`) default to `'fallback'` so the request continues with the configured fallback value instead of throwing. `SFNEXT_DATA_STORE_UNAVAILABLE_MODE` is preserved as an opt-in escape hatch — set it to `'throw'` to restore fail-fast behavior. `DataStoreNotFoundError` keeps its existing missing-state semantics; errors thrown from `transform` still propagate. `createDataStoreMiddleware`'s factory default for customer-authored middlewares stays at `'throw'` (no change to the public API contract).
 
- Adds `dataStoreLoggerContext`, `getDataStoreLogger`, and the `DataStoreLogger` interface under `@salesforce/storefront-next-runtime/data-store`. Hosts can inject a request-scoped structured logger so SDK warnings emit with `correlationId`, `method`, and `path` bindings instead of bare `console.warn`. The storefront template's `loggingMiddleware` wires this automatically; when unset, falls back to a console-based logger that fail-soft serializes metadata (cyclic / unserializable values won't crash the request).
+    Adds `dataStoreLoggerContext`, `getDataStoreLogger`, and the `DataStoreLogger` interface under `@salesforce/storefront-next-runtime/data-store`. Hosts can inject a request-scoped structured logger so SDK warnings emit with `correlationId`, `method`, and `path` bindings instead of bare `console.warn`. The storefront template's `loggingMiddleware` wires this automatically; when unset, falls back to a console-based logger that fail-soft serializes metadata (cyclic / unserializable values won't crash the request).
 
 - #1948 `3535909` Thanks @j-sheth_sfemu! - Allow the OOTB Einstein engagement adapter through the default CSP. The adapter fires browser `navigator.sendBeacon` calls to the CQuotient activities API (`https://api.cquotient.com/v3/activities/...`), which is governed by `connect-src`. The default `connect-src` did not list that host, so every Einstein beacon (viewPage, viewProduct, viewCategory, …) was blocked by CSP and reported a console violation on a freshly generated project. Added `https://api.cquotient.com` to the default `connect-src` directive.
 
 - #1939 `d273772` Thanks @arayanavarro_sfemu! - Fix three dev-server console errors in freshly generated projects (`pnpm dev`):
- - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
- - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
- - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
+    - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
+    - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
+    - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
 
 - #1898 `dee3c0a` Thanks @mjuraschik_sfemu! - Fall back to category-level page assignment during manifest resolution when a product-keyed page lookup misses. `resolveDynamicPageId` and `resolvePage` now accept an optional `categoryId` (string or Promise) consulted only after the product lookup misses, and the Page Designer resolution middleware threads the request's categoryId through whenever a productId is also present.
 
@@ -98,16 +98,16 @@
 ## v0.4.0 (May 5, 2026)
 
 - Design layer: Add `contentLinkUuid` support for duplicate component handling
- - Make `contentLinkUuid` required on component interaction events (select, delete, move, hover, focus)
- - Add `fragmentId` support to drag-and-drop events for content block instances
- - Design state fields (`selected`, `hovered`, `focused`) now expose `contentLinkUuid` as the primary identifier instead of `componentId`
- - Regions track `contentLinkUuids` instead of `componentIds`, enabling correct self-drop detection and drag validation for duplicate components
+    - Make `contentLinkUuid` required on component interaction events (select, delete, move, hover, focus)
+    - Add `fragmentId` support to drag-and-drop events for content block instances
+    - Design state fields (`selected`, `hovered`, `focused`) now expose `contentLinkUuid` as the primary identifier instead of `componentId`
+    - Regions track `contentLinkUuids` instead of `componentIds`, enabling correct self-drop detection and drag validation for duplicate components
 - Bump `@salesforce/mrt-utilities` to 0.1.6 to fix strict `express@5.1.0` peer dependency (now accepts `^4.0.0 || ^5.0.0`)
 - Update Shopper Experience API spec to v1.3.0 with `contentLinkUuid` field support
- - Add `contentLinkUuid` to Component schema for content link UUID tracking
- - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
- - Regenerate TypeScript types for all SCAPI clients
- - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
+    - Add `contentLinkUuid` to Component schema for content link UUID tracking
+    - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
+    - Regenerate TypeScript types for all SCAPI clients
+    - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
 - Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests (#1533)
 - Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure (#1533)
 - Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`

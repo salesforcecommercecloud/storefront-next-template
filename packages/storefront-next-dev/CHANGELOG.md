@@ -6,35 +6,35 @@
 
 - #1823 `0a3fcdc` Thanks @arayanavarro_sfemu! - w:
 
- Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
+    Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
 
- **Removed from public exports** (followups to #1741):
- - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
- - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
- - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
+    **Removed from public exports** (followups to #1741):
+    - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
+    - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
+    - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
 
- **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
+    **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
 
- ```ts
- // In your template's src/types/config.ts:
- declare module '@salesforce/storefront-next-runtime/config' {
- interface AppConfigShape extends AppConfig {}
- }
- ```
+    ```ts
+    // In your template's src/types/config.ts:
+    declare module '@salesforce/storefront-next-runtime/config' {
+        interface AppConfigShape extends AppConfig {}
+    }
+    ```
 
- **Other changes**
- - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
- - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
- - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
- - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
- - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
- - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
- - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
- - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
+    **Other changes**
+    - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
+    - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
+    - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
+    - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
+    - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
+    - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
+    - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
+    - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
 
- Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
+    Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
 
- > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
+    > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
 
 - #1511 `4c9db91` Thanks @alafemina_sfemu! - Add action hooks Vite plugin: generates `virtual:action-hooks` module from extension `target-config.json` registrations, enabling server-side extension points in checkout actions
 
@@ -63,13 +63,13 @@
 - #1848 `26a7f95` Thanks @clavery_sfemu! - Bump `@salesforce/b2c-tooling-sdk` to `^1.11.0` and `@salesforce/b2c-cli` to `^1.12.0` (latest published versions). Scope the oclif `init` hook to sfnext commands only so it no-ops cleanly when the package is loaded as a plugin under a host CLI (e.g. `b2c sfnext`); standalone `sfnext` behavior is unchanged.
 
 - #1939 `d273772` Thanks @arayanavarro_sfemu! - Fix three dev-server console errors in freshly generated projects (`pnpm dev`):
- - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
- - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
- - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
+    - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
+    - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
+    - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
 
 - #1921 `9adf311` Thanks @vcua_sfemu! - Fix Managed Runtime returning HTTP 502 for any response that ends with no body. Previously, routes that returned `Response(null, { status: <any> })` — for example analytics beacon proxies, `204 No Content` responses, and 5xx error responses returned without a body — produced a generic `502 InternalServerErrorException` from API Gateway instead of the application's intended status code. Empty-body 3xx redirects already had a workaround; this extends it to all status codes.
 
- If your storefront uses the built-in Active Data analytics adapter, every `__Analytics-Start` beacon was failing in production with this 502, silently dropping analytics events. Recent Active Data dashboards may underreport — review with that in mind after deploying.
+    If your storefront uses the built-in Active Data analytics adapter, every `__Analytics-Start` beacon was failing in production with this 502, silently dropping analytics events. Recent Active Data dashboards may underreport — review with that in mind after deploying.
 
 - #1751 `65223d9` Thanks @j-sheth_sfemu! - Fix the hybrid-proxy Vite plugin dropping the original request's query params when SFCC redirects to a canonical SFRA URL (e.g. `/cart` → `/s/{siteId}/{locale}/Cart-Show`). The proxy now merges the request's query string into the redirect target, with the redirect target winning on key collisions and multi-value keys (e.g. `pmid=PROMO1&pmid=PROMO2`) preserved on both sides. Local-development only — MRT/eCDN deployments are unaffected.
 
@@ -94,7 +94,7 @@
 - #1907 `af03e94` Thanks @j-sheth_sfemu! - When a strict CSP with nonces is in use, the SDK now propagates the request nonce to its internal bundle-config inline script (the SDK transparently substitutes the customer's `<Scripts>` import with its own wrapper at build time, so this happens automatically). No customer action required.
 
 - Updated dependencies [`b370405`, `f7e9554`, `0a3fcdc`, `d355c50`, `8ae7030`, `3535909`, `d273772`, `dee3c0a`, `d39ccce`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `0d500de`, `3c9c3e5`]:
- - @salesforce/storefront-next-runtime@1.0.0
+    - @salesforce/storefront-next-runtime@1.0.0
 
 ## v0.4.0 (May 5, 2026)
 
