@@ -8,6 +8,7 @@ Use optimization strategies to build fast storefronts. Follow performance best p
 | Topic                                    | Key Areas                                                                                      |
 |------------------------------------------|------------------------------------------------------------------------------------------------|
 | [Data Fetching](README-DATA.md)          | Server-load everything, data classification, loaders, actions, fetchers, SCAPI request shape   |
+| [Revalidation](README-REVALIDATION.md)   | When loaders re-run after actions, the scale cost of the default, gating with `shouldRevalidate`|
 | [Loading States](README-SUSPENSE.md)     | Suspense boundary granularity, skeleton vs. spinner, visual feedback patterns                  |
 | [State Management](README-STATE.md)      | URL state, context selector pattern, optimistic UI, avoiding derived state                     |
 | [Images](README-IMAGES.md)               | DIS integration, `<DynamicImage>`, `DynamicImageProvider`, responsive sources, alt text        |
