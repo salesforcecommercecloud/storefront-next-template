@@ -572,6 +572,11 @@ export default defineConfig<Config>(
                             | 'invisible') || 'managed',
                     verification: {
                         enabled: process.env.TURNSTILE_VERIFICATION_ENABLED === 'true',
+                        mode:
+                            (process.env.PUBLIC__app__security__turnstile__verification__mode as
+                                | 'enforce'
+                                | 'log-only'
+                                | 'disabled') || undefined,
                     },
                 },
                 // Security response headers. Default shape is imported from the SDK

@@ -28,6 +28,7 @@ const INFRASTRUCTURE_ERROR_CODES = new Set(['internal-error']);
 const HTTP_INFRASTRUCTURE_ERROR_PATTERN = /^http-error-5\d{2}$/;
 
 interface TurnstileEnforceLogger {
+    info(message: string, meta?: Record<string, unknown>): void;
     warn(message: string, meta?: Record<string, unknown>): void;
     debug(message: string, meta?: Record<string, unknown>): void;
 }
@@ -41,6 +42,138 @@ interface EnforceTurnstileOptions {
     email?: string;
 }
 
+interface EnforcementOutcome {
+    allowed: boolean;
+    logLevel: 'debug' | 'warn';
+    message: string;
+    meta: Record<string, unknown>;
+    /** Routing key for log-only mode — not included in enforce-mode log meta. */
+    reason: string;
+}
+
+/**
+ * Resolves the effective verification mode from config.
+ *
+ * `mode` takes precedence when set explicitly. Falls back to the legacy
+ * `enabled` boolean so existing deployments continue to work unchanged:
+ *   enabled=true  -> 'enforce'
+ *   enabled=false -> 'disabled'
+ */
+export function resolveVerificationMode(config: AppConfig): 'enforce' | 'log-only' | 'disabled' {
+    const explicit = config.security?.turnstile?.verification?.mode;
+    if (explicit) return explicit;
+    return config.security?.turnstile?.verification?.enabled ? 'enforce' : 'disabled';
+}
+
+/**
+ * Runs the full verification pipeline and returns the outcome without logging
+ * or returning early. Callers use the outcome to decide whether to enforce
+ * or merely record the would-be decision (log-only mode).
+ */
+async function computeOutcome(
+    options: EnforceTurnstileOptions & { siteKey: string; secretKey: string }
+): Promise<EnforcementOutcome> {
+    const { request, turnstileToken, actionName, email, secretKey } = options;
+
+    // Email redaction: at scale (fail-open during a CF outage) raw emails accumulate as
+    // PII in MRT logs. Redacted form keeps the domain visible (forensics signal — many
+    // domains vs. single domain) and replaces the local-part with a stable hash so the
+    // same shopper still correlates across log lines.
+    const redactedEmail = redactEmailForLog(email);
+
+    const remoteIp =
+        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+        request.headers.get('cf-connecting-ip') ||
+        undefined;
+    const userAgent = request.headers.get('user-agent') || undefined;
+
+    if (!turnstileToken) {
+        const degraded = await isTurnstileDegraded();
+        if (degraded) {
+            return {
+                allowed: true,
+                logLevel: 'warn',
+                reason: 'missing-token-degraded',
+                message: '[Turnstile] Missing token — allowed (Turnstile platform degraded)',
+                meta: {
+                    email: redactedEmail,
+                    remoteIp,
+                    userAgent,
+                    action: actionName,
+                    metrics: getSiteverifyMetricsSnapshot(),
+                },
+            };
+        }
+        return {
+            allowed: false,
+            logLevel: 'warn',
+            reason: 'missing-token',
+            message: '[Turnstile] Missing token — blocked request without challenge completion',
+            meta: {
+                email: redactedEmail,
+                remoteIp,
+                userAgent,
+                action: actionName,
+            },
+        };
+    }
+
+    const verification = await verifyTurnstileToken({
+        token: turnstileToken,
+        secretKey,
+        remoteIp,
+    });
+
+    if (!verification.success) {
+        const isInfrastructureError = verification.errorCodes.some(
+            (code) => INFRASTRUCTURE_ERROR_CODES.has(code) || HTTP_INFRASTRUCTURE_ERROR_PATTERN.test(code)
+        );
+
+        if (isInfrastructureError) {
+            return {
+                allowed: true,
+                logLevel: 'warn',
+                reason: 'infrastructure-error',
+                message: '[Turnstile] Verification failed due to infrastructure issue — allowed (fail-open)',
+                meta: {
+                    errorCodes: verification.errorCodes,
+                    email: redactedEmail,
+                    remoteIp,
+                    userAgent,
+                    action: actionName,
+                    metrics: getSiteverifyMetricsSnapshot(),
+                },
+            };
+        }
+
+        return {
+            allowed: false,
+            logLevel: 'warn',
+            reason: 'bot-detected',
+            message: '[Turnstile] Verification failed — potential bot or replay attack',
+            meta: {
+                errorCodes: verification.errorCodes,
+                email: redactedEmail,
+                remoteIp,
+                userAgent,
+                action: actionName,
+                hasToken: !!turnstileToken,
+            },
+        };
+    }
+
+    return {
+        allowed: true,
+        logLevel: 'debug',
+        reason: 'passed',
+        message: '[Turnstile] Verification passed',
+        meta: {
+            challengeTs: verification.challengeTs,
+            action: actionName,
+        },
+    };
+}
+
 /**
  * Enforces Turnstile verification when enabled in config.
  *
@@ -50,6 +183,11 @@ interface EnforceTurnstileOptions {
  * Returns `false` if the request must be blocked (missing token, failed
  * verification, origin mismatch, etc.). The reason is logged at `warn` level
  * with the supplied `actionName` for traceability.
+ *
+ * In `log-only` mode the full verification pipeline still runs, but the
+ * function always returns `true`. The would-be decision is logged at `info`
+ * level with `would_block: true|false` so merchants can safely observe what
+ * would happen in enforce mode before committing to it.
  */
 export async function enforceTurnstile({
     request,
@@ -59,8 +197,8 @@ export async function enforceTurnstile({
     actionName,
     email,
 }: EnforceTurnstileOptions): Promise<boolean> {
-    const verificationEnabled = config.security?.turnstile?.verification?.enabled ?? false;
-    if (!verificationEnabled || !config.security?.turnstile?.enabled) {
+    const mode = resolveVerificationMode(config);
+    if (mode === 'disabled' || !config.security?.turnstile?.enabled) {
         return true;
     }
 
@@ -82,12 +220,6 @@ export async function enforceTurnstile({
         return true;
     }
 
-    // Email redaction: at scale (fail-open during a CF outage) raw emails accumulate as
-    // PII in MRT logs. Redacted form keeps the domain visible (forensics signal — many
-    // domains vs. single domain) and replaces the local-part with a stable hash so the
-    // same shopper still correlates across log lines.
-    const redactedEmail = redactEmailForLog(email);
-
     const requestUrl = request.headers.get('origin') || request.headers.get('referer') || '';
 
     if (!requestUrl) {
@@ -95,99 +227,63 @@ export async function enforceTurnstile({
             '[Turnstile] No Origin or Referer header — cannot determine site key. Check reverse-proxy config.',
             {
                 action: actionName,
-                email: redactedEmail,
+                email: redactEmailForLog(email),
             }
         );
-        return false;
+        return mode === 'log-only' ? true : false;
     }
 
     const siteKey = getTurnstileSiteKey(config, requestUrl);
-    const secretKey = siteKey ? getTurnstileSecretKey(siteKey) : null;
-    const remoteIp =
-        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-        request.headers.get('cf-connecting-ip') ||
-        undefined;
-    const userAgent = request.headers.get('user-agent') || undefined;
-
     if (!siteKey) {
         logger.warn('[Turnstile] No site key match for request origin — blocked', {
             requestUrl,
-            remoteIp,
-            userAgent,
-            email: redactedEmail,
+            remoteIp:
+                request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                request.headers.get('cf-connecting-ip') ||
+                undefined,
+            userAgent: request.headers.get('user-agent') || undefined,
+            email: redactEmailForLog(email),
             action: actionName,
         });
-        return false;
+        return mode === 'log-only' ? true : false;
     }
 
+    const secretKey = getTurnstileSecretKey(siteKey);
     if (!secretKey) {
         logger.warn('[Turnstile] No secret key configured for site — blocked', {
             siteKey,
             requestUrl,
             action: actionName,
         });
-        return false;
+        return mode === 'log-only' ? true : false;
     }
 
-    if (!turnstileToken) {
-        const degraded = await isTurnstileDegraded();
-        if (degraded) {
-            logger.warn('[Turnstile] Missing token — allowed (Turnstile platform degraded)', {
-                email: redactedEmail,
-                remoteIp,
-                userAgent,
-                action: actionName,
-                metrics: getSiteverifyMetricsSnapshot(),
-            });
-            return true;
-        }
-        logger.warn('[Turnstile] Missing token — blocked request without challenge completion', {
-            email: redactedEmail,
-            remoteIp,
-            userAgent,
-            action: actionName,
-        });
-        return false;
-    }
-
-    const verification = await verifyTurnstileToken({
-        token: turnstileToken,
+    const outcome = await computeOutcome({
+        request,
+        config,
+        turnstileToken,
+        logger,
+        actionName,
+        email,
+        siteKey,
         secretKey,
-        remoteIp,
     });
 
-    if (!verification.success) {
-        const isInfrastructureError = verification.errorCodes.some(
-            (code) => INFRASTRUCTURE_ERROR_CODES.has(code) || HTTP_INFRASTRUCTURE_ERROR_PATTERN.test(code)
-        );
-
-        if (isInfrastructureError) {
-            logger.warn('[Turnstile] Verification failed due to infrastructure issue — allowed (fail-open)', {
-                errorCodes: verification.errorCodes,
-                email: redactedEmail,
-                remoteIp,
-                userAgent,
-                action: actionName,
-                metrics: getSiteverifyMetricsSnapshot(),
-            });
-            return true;
-        }
-
-        logger.warn('[Turnstile] Verification failed — potential bot or replay attack', {
-            errorCodes: verification.errorCodes,
-            email: redactedEmail,
-            remoteIp,
-            userAgent,
+    if (mode === 'log-only') {
+        logger.info('[Turnstile] log-only — recording would-be decision', {
+            mode: 'log-only',
+            would_block: !outcome.allowed,
+            reason: outcome.reason,
             action: actionName,
-            hasToken: !!turnstileToken,
+            siteKey,
+            ...(outcome.meta.errorCodes !== undefined && { errorCodes: outcome.meta.errorCodes }),
+            ...(outcome.meta.remoteIp !== undefined && { remoteIp: outcome.meta.remoteIp }),
+            ...(outcome.meta.metrics !== undefined && { metrics: outcome.meta.metrics }),
         });
-        return false;
+        return true;
     }
 
-    logger.debug('[Turnstile] Verification passed', {
-        challengeTs: verification.challengeTs,
-        action: actionName,
-    });
-
-    return true;
+    // enforce mode: log at the outcome's level and return the actual decision
+    logger[outcome.logLevel](outcome.message, outcome.meta);
+    return outcome.allowed;
 }

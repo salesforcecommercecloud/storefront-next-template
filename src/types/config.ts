@@ -341,7 +341,10 @@ export type AppConfig = {
             enabled?: boolean;
             mode?: 'managed' | 'non-interactive' | 'invisible';
             verification?: {
+                /** @deprecated Use `mode` instead. */
                 enabled: boolean;
+                /** Controls server-side verification behaviour. Takes precedence over `enabled`. */
+                mode?: 'enforce' | 'log-only' | 'disabled';
             };
         };
         /**
