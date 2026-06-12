@@ -2,9 +2,6 @@
 
 A production-ready React storefront template for Salesforce B2C Commerce, built with React Router 7 and React 19.
 
-> [!IMPORTANT]
-> Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -182,8 +179,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## Support
 
-- 📖 [Documentation (Pilot)](https://d1ahe7q2dhpmux.cloudfront.net/docs/commerce/storefront-next/overview)
-  - Use the username and password that were shared with you in the pilot Slack channel
+- 📖 [Documentation](https://developer.salesforce.com/docs/commerce/sfnext/guide/sfnext-get-started.html)
 - 🐛 [Report Issues](https://github.com/SalesforceCommerceCloud/storefront-next/issues)
 
 ## License
