@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { use, useLayoutEffect } from 'react';
-import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { loader, type CheckoutPageData } from '@/lib/checkout/loaders.server';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import type { Route } from './+types/_checkout.checkout';
@@ -39,48 +38,7 @@ import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 
 export { loader };
-
-/**
- * Opt-in flag on a 200 + JSON action response body that suppresses checkout-loader
- * revalidation. Use it from extension server actions that consume the basket via
- * SCAPI `createOrder` but do not redirect; without it the loader would re-run
- * against the empty basket and unmount the extension's in-flight UI.
- *
- * Importing the constant prevents typos that would silently disable the skip.
- */
-export const FRAMEWORK_SKIP_REVALIDATION = 'framework_skipRevalidation' as const;
-
-/**
- * Skip loader revalidation when:
- *   1. The action returned a 3xx redirect (the default `action.place-order`
- *      destroys the basket then 302s to confirmation).
- *   2. The action returned 200 + JSON with `[FRAMEWORK_SKIP_REVALIDATION]: true`.
- *      This is the rule extension-driven flows opt into when their action
- *      consumes the basket via `createOrder` but does not redirect.
- *
- * 4xx/5xx already default to `false` via React Router. Regular 2xx without the
- * flag refreshes as normal.
- *
- * @see https://reactrouter.com/start/framework/route-module#shouldrevalidate
- */
-export function shouldRevalidate({
-    actionStatus,
-    actionResult,
-    defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-    if (actionStatus !== undefined && actionStatus >= 300 && actionStatus < 400) {
-        return false;
-    }
-    if (
-        actionResult &&
-        typeof actionResult === 'object' &&
-        !Array.isArray(actionResult) &&
-        (actionResult as Record<string, unknown>)[FRAMEWORK_SKIP_REVALIDATION] === true
-    ) {
-        return false;
-    }
-    return defaultShouldRevalidate;
-}
+export { shouldRevalidate, FRAMEWORK_SKIP_REVALIDATION } from '@/lib/routes/revalidation/checkout';
 
 export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);

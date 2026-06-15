@@ -16,7 +16,15 @@
 import { describe, expect, test } from 'vitest';
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { shouldRevalidate as rootShouldRevalidate } from './root';
-import { resourceRoutes } from '@/route-paths';
+import { resourceRoutes, routes } from '@/route-paths';
+import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
+
+/** Build a FormData with `intent` set to the given string. Used by checkout-step submission tests. */
+function formDataWithIntent(intent: string): FormData {
+    const fd = new FormData();
+    fd.set('intent', intent);
+    return fd;
+}
 
 /** Builds a full ShouldRevalidateFunctionArgs with sensible defaults, overridable per test. */
 function buildArgs(overrides: Partial<ShouldRevalidateFunctionArgs>): ShouldRevalidateFunctionArgs {
@@ -178,6 +186,62 @@ describe('rootShouldRevalidate', () => {
             expect(rootShouldRevalidate(buildArgs({ formMethod: 'GET', formAction: resourceRoutes.cartItemAdd }))).toBe(
                 true
             );
+        });
+    });
+
+    describe('checkout step submissions are skipped', () => {
+        // Each step intent posts back to /checkout with `intent=<value>`. The action only mutates the basket; root
+        // would otherwise revalidate for nothing. Use a site-prefixed checkout path to mirror production traffic.
+        const checkoutPath = `/global/en-GB${routes.checkout}`;
+
+        test.each(Object.values(CHECKOUT_ACTION_INTENTS))(
+            'skips revalidation for intent=%s on the checkout route',
+            (intent) => {
+                expect(
+                    rootShouldRevalidate(
+                        buildArgs({
+                            formMethod: 'POST',
+                            formAction: checkoutPath,
+                            formData: formDataWithIntent(intent),
+                        })
+                    )
+                ).toBe(false);
+            }
+        );
+
+        test('revalidates an unknown intent on the checkout route (denylist is intent-specific)', () => {
+            expect(
+                rootShouldRevalidate(
+                    buildArgs({
+                        formMethod: 'POST',
+                        formAction: checkoutPath,
+                        formData: formDataWithIntent('placeOrder'),
+                    })
+                )
+            ).toBe(true);
+        });
+
+        test('revalidates a checkout submission with no intent (cannot confirm it is safe to skip)', () => {
+            expect(
+                rootShouldRevalidate(
+                    buildArgs({ formMethod: 'POST', formAction: checkoutPath, formData: new FormData() })
+                )
+            ).toBe(true);
+        });
+
+        test('does not skip a colliding intent on a non-checkout, non-denylisted path', () => {
+            // Guard against a future action elsewhere that happens to use the same `intent` string. The intent rule
+            // must only fire when the path is the checkout route; an unrelated action with `intent=payment` should
+            // fall through to defaultShouldRevalidate.
+            expect(
+                rootShouldRevalidate(
+                    buildArgs({
+                        formMethod: 'POST',
+                        formAction: '/some/unrelated/action',
+                        formData: formDataWithIntent(CHECKOUT_ACTION_INTENTS.PAYMENT),
+                    })
+                )
+            ).toBe(true);
         });
     });
 });

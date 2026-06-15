@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
-import { resourceRoutes } from '@/route-paths';
+import { resourceRoutes, routes } from '@/route-paths';
+import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
 
 /**
  * Mutations that change none of the fields the root loader returns. The root loader is synchronous (no SCAPI I/O), but
@@ -66,6 +67,12 @@ const ROOT_IRRELEVANT_MUTATIONS: readonly string[] = [
     resourceRoutes.addReview,
 ];
 
+// Checkout step intents — same two axes as ROOT_IRRELEVANT_MUTATIONS: each step action touches only the basket, no
+// `updateAuth`, no site/locale/currency cookie write. Step submissions post back to `/checkout` itself, so they need
+// an intent check (below) rather than a path-only match. Derived from CHECKOUT_ACTION_INTENTS so a new step intent
+// automatically participates in the skip.
+const CHECKOUT_STEP_INTENTS: ReadonlySet<string> = new Set(Object.values(CHECKOUT_ACTION_INTENTS));
+
 /**
  * `shouldRevalidate` policy for the root route. Suppresses the root loader's post-action revalidation only for
  * mutations proven not to affect any root field ({@link ROOT_IRRELEVANT_MUTATIONS}).
@@ -83,6 +90,7 @@ export function shouldRevalidate({
     currentUrl,
     formMethod,
     formAction,
+    formData,
     defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean {
     if (formMethod && formMethod !== 'GET') {
@@ -91,6 +99,13 @@ export function shouldRevalidate({
         const actionPath = formAction ? new URL(formAction, currentUrl.origin).pathname : undefined;
         if (actionPath && ROOT_IRRELEVANT_MUTATIONS.includes(actionPath)) {
             return false;
+        }
+        // Checkout step submissions: post back to `/checkout` itself; dispatch on the `intent` form field.
+        if (actionPath?.endsWith(routes.checkout)) {
+            const intent = formData?.get('intent');
+            if (typeof intent === 'string' && CHECKOUT_STEP_INTENTS.has(intent)) {
+                return false;
+            }
         }
     }
 
