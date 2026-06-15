@@ -32,6 +32,7 @@ import {
 } from 'react-router';
 import type { Route } from './+types/root';
 import { routes } from '@/route-paths';
+import { shouldRevalidate as shouldRevalidateRoot } from '@/lib/routes/revalidation/root';
 
 // Third-party libraries
 import { createInstance, type i18n } from 'i18next';
@@ -181,6 +182,8 @@ const i18nextOnClient =
               loadLocale: (language) => import(`@/locales/${language}/index.ts`),
           })
         : undefined;
+
+export const shouldRevalidate = shouldRevalidateRoot;
 
 export const loader = ({
     context,
