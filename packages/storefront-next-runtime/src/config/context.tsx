@@ -41,6 +41,31 @@ export interface AppConfigShape {
 }
 
 /**
+ * Augmentation hook for `useConfig()`'s narrowed return type. When templates
+ * fill this with an explicit shape (typically `Omit<AppConfig, 'serverExtension'>`),
+ * `useConfig()` returns that narrowed shape instead of the full `AppConfigShape`,
+ * making server-only namespace reads from client modules a TypeScript error.
+ * Empty by default — un-augmented customers see today's behavior on upgrade
+ * (the SDK falls back to `AppConfigShape` for the `useConfig()` return when this
+ * slot is empty). See README-CONFIG.md.
+ *
+ * Defined as a separate slot rather than `Omit<AppConfigShape, KeySet>` because
+ * the latter doesn't compose with `AppConfigShape`'s `[key: string]: unknown`
+ * index signature: `Omit` over an index-signatured interface produces a mapped
+ * type that subsumes the augmented members.
+ *
+ * Caveat for templates: keep your `AppConfig` itself **index-signature-free at
+ * the top level**. If your template's `AppConfig` carries a `[key: string]:
+ * unknown`, then `Omit<AppConfig, 'serverExtension'>` keeps that signature,
+ * which makes `serverExtension` resolve to `unknown` at the call site
+ * (accessible, not removed) and silently defeats the narrow. The retail
+ * template's `AppConfig` (`src/types/config.ts`) demonstrates the
+ * index-signature-free shape.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ClientFacingAppConfigShape {}
+
+/**
  * Router context for application configuration. Populated by the template's
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
  * actions, and other middleware. Returns the augmented `AppConfigShape`.
@@ -60,8 +85,8 @@ export const appConfigContext = createRouterContext<AppConfigShape>();
  * browser via that channel.
  *
  * Type is `Partial<AppConfigShape>` because the client view is always a subset of the
- * full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
- * or a branded `ClientAppConfig` type at the read site.
+ * full shape. For a stronger narrow at the read site, augment `ClientFacingAppConfigShape`
+ * (the same slot that narrows `useConfig()`) and cast through `ClientFacingAppConfig`.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export const clientAppConfigContext = createRouterContext<Partial<AppConfigShape>>();

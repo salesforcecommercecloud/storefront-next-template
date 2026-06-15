@@ -15,7 +15,6 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { getAuth } from '@/middlewares/auth.server';
 import { getClientRequestInfo } from '@/lib/client-request-info.server';
@@ -131,7 +130,7 @@ export async function getEinsteinRecommendations({
     args,
     signal,
 }: GetEinsteinRecommendationsArgs): Promise<EinsteinRecommendationResponse> {
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const config = appConfig.engagement?.adapters?.einstein;
     if (!config?.enabled || !validateEinsteinConfig(config).valid) {
         return {};

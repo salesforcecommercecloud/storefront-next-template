@@ -20,8 +20,10 @@ import type { AppConfig } from '@/types/config';
  * Get enabled recommendation types from config
  */
 export function getEnabledRecommendationTypes(configParam?: AppConfig): string[] {
-    // Use provided config or fallback to getConfig()
-    const config = configParam ?? getConfig<AppConfig>();
+    // Explicit `: AppConfig` annotation: in the `??` chain, TypeScript otherwise instantiates
+    // `getConfig`'s `T` against the wider `Record<string, unknown>` constraint, dropping the
+    // augmented members and typing `config.global` as `unknown`. Naming the lhs type fixes it.
+    const config: AppConfig = configParam ?? getConfig();
     const typesConfig = config.global.recommendations.types;
     return Object.entries(typesConfig)
         .filter(([, typeConfig]) => (typeConfig as { enabled: boolean }).enabled)

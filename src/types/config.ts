@@ -25,6 +25,10 @@ import type { BaseConfig, Url } from '@salesforce/storefront-next-runtime/config
 import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { SecurityConfig } from '@salesforce/storefront-next-runtime/security';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
+// `import type` only — app-config-client.ts also imports `AppConfig` from this file,
+// so a value import here would create a runtime cycle. Erased at emit by
+// verbatimModuleSyntax; do not promote to `import { ClientAppConfig }`.
+import type { ClientAppConfig } from '@/lib/app-config-client';
 import type { TrackingConsent } from '@/types/tracking-consent';
 // Auto-generated barrel of installed extensions' config defaults. Its type is the source
 // for `AppConfig['extension']`, so the type and the runtime value (config.server.ts) can't drift.
@@ -359,11 +363,19 @@ export type AppConfig = {
 export type Config = BaseConfig<AppConfig>;
 
 /**
- * Augment the SDK so `getConfig()` and `useConfig()` return `AppConfig` without
- * a generic argument at every call site. Customers writing additional templates
- * augment this interface in their own template's types file.
+ * Augment the SDK so `getConfig()` and `useConfig()` return the right shapes
+ * without a generic argument at every call site. `getConfig()` returns the full
+ * `AppConfig` (server callers correctly read `serverExtension`); `useConfig()`
+ * returns the narrowed `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`),
+ * so client modules see a TypeScript error on `useConfig().serverExtension`.
+ * Both slots are filled from types defined in `src/lib/app-config-client.ts`,
+ * which keeps `SERVER_ONLY_NAMESPACES` the single source: the runtime extractor
+ * and the type narrow can't drift. Customers writing additional templates
+ * augment both interfaces in their own template's types file.
  */
 declare module '@salesforce/storefront-next-runtime/config' {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface AppConfigShape extends AppConfig {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface ClientFacingAppConfigShape extends ClientAppConfig {}
 }

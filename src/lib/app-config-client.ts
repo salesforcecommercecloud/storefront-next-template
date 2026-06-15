@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// `import type` only — types/config.ts also imports `ClientAppConfig` from this file,
+// so a value import here would create a runtime cycle. Erased at emit by
+// verbatimModuleSyntax; do not promote to `import { AppConfig }`.
 import type { AppConfig } from '@/types/config';
 
 /**

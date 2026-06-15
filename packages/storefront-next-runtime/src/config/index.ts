@@ -26,6 +26,8 @@
  * - `BaseConfig`, `DefineConfigOptions` — types for `defineConfig`
  * - `Locale`, `Site`, `Url` — opt-in baseline shapes templates can use in their `AppConfig`
  * - `AppConfigShape` — augmentation hook for typing `getConfig()` / `useConfig()` (see JSDoc on `AppConfigShape`)
+ * - `ClientFacingAppConfigShape` — augmentation hook for `useConfig()`'s narrowed return type (see JSDoc)
+ * - `ClientFacingAppConfig` — `useConfig()`'s default return type (resolves to `ClientFacingAppConfigShape` when augmented, `AppConfigShape` otherwise)
  *
  * Templates own their own validating server/client middleware that read `defineConfig`'s output
  * and write `config.app` into `appConfigContext`. The SDK does not ship a generic config middleware
@@ -35,7 +37,7 @@
 // Types
 export type { Locale, Site, Url } from './types';
 export type { BaseConfig, DefineConfigOptions } from './schema';
-export type { AppConfigShape } from './get-config';
+export type { AppConfigShape, ClientFacingAppConfigShape, ClientFacingAppConfig } from './get-config';
 
 // Config definition (server-only by convention — reads process.env at call time)
 export { defineConfig } from './schema';

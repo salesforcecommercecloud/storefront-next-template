@@ -35,9 +35,11 @@ export function MyComponent() {
 }
 ```
 
-> Both functions return `AppConfig` because the template augments
-> `AppConfigShape` once in `src/types/config.ts`. Future templates do the same
-> for their own `AppConfig` shape.
+> `getConfig()` returns the full `AppConfig`; `useConfig()` returns the narrowed
+> `Omit<AppConfig, 'serverExtension'>` so client-side reads can't reach
+> server-only namespaces. Both shapes come from the template's two augmentations
+> in `src/types/config.ts` (`AppConfigShape` and `ClientFacingAppConfigShape`).
+> Future templates fill the same two slots for their own shapes.
 
 ## Required vs Optional Variables
 
@@ -394,10 +396,11 @@ export function loader({ context }: LoaderFunctionArgs) {
 }
 ```
 
-Same drop-a-file ergonomics as the client side — the build prestep aggregates every extension's `server-config.ts` into `src/extensions/config/server.ts` (auto-generated, do not edit) and merges it into `config.app.serverExtension.<camelCaseFolder>`. Two structural guarantees keep the values off the client:
+Same drop-a-file ergonomics as the client side — the build prestep aggregates every extension's `server-config.ts` into `src/extensions/config/server.ts` (auto-generated, do not edit) and merges it into `config.app.serverExtension.<camelCaseFolder>`. Three structural guarantees keep the values off the client:
 
 - The client config extractor (`src/lib/app-config-client.ts`) strips `app.serverExtension` before writing `window.__APP_CONFIG__`.
 - A Vite plugin (`vite-plugins/server-only-config-guard.ts`) fails the build if any client chunk imports `src/extensions/config/server`.
+- `useConfig()` is type-narrowed to omit `app.serverExtension`, so reading `useConfig().serverExtension` is a TypeScript error. The narrow is wired through the SDK's `ClientFacingAppConfigShape` augmentation slot, which the template fills with `ClientAppConfig` (= `Omit<AppConfig, ServerOnlyNamespace>`, derived from `SERVER_ONLY_NAMESPACES` in `src/lib/app-config-client.ts`) — adding a server-only namespace to that list updates both the runtime extractor and the type narrow. **Today only `useConfig()` is narrowed; `getConfig()` (no-context overload) still types `serverExtension` as accessible. Tracked as W-22952767 — the runtime stripping and the Vite plugin still cover the client `getConfig()` path.**
 
 There is no `PUBLIC__` override path by design — the same AST validator runs on `server-config.ts`, so a `process.env.X` read still throws at discovery time. For true secrets that *must* vary per environment (SLAS secrets, Marketing Cloud credentials), keep using `process.env` from a server route — never put them in `server-config.ts`.
 
@@ -412,15 +415,18 @@ There is no `PUBLIC__` override path by design — the same AST validator runs o
    - `useConfig()` for React components
    - `window.__APP_CONFIG__` for client code
 
-   `getConfig` and `useConfig` return `AppConfig` automatically because the template augments `AppConfigShape` in `src/types/config.ts`:
+   `getConfig()` returns the full `AppConfig` and `useConfig()` returns the narrowed `Omit<AppConfig, 'serverExtension'>` (see "Server-only extension config" above) — both automatic because the template fills two augmentation slots in `src/types/config.ts`:
 
    ```typescript
    declare module '@salesforce/storefront-next-runtime/config' {
        interface AppConfigShape extends AppConfig {}
+       interface ClientFacingAppConfigShape extends ClientAppConfig {}
    }
    ```
 
-   > **Multi-template caveat:** if you build two templates in the same TS program (rare — usually each template has its own `tsconfig`), only one `AppConfigShape extends ...` wins. Fall back to an explicit per-call generic in the loser: `getConfig<MyAppConfig>(context)`.
+   `ClientAppConfig` is `Omit<AppConfig, ServerOnlyNamespace>` from `src/lib/app-config-client.ts`, which keeps the runtime extractor and the type narrow reading the same source.
+
+   > **Multi-template caveat:** if you build two templates in the same TS program (rare — usually each template has its own `tsconfig`), only one `extends ...` per slot wins. Fall back to explicit per-call generics in the loser: `getConfig<MyAppConfig>(context)` and `useConfig<MyClientAppConfig>()`.
 
 5. **Custom middleware** can read the resolved app config from `appConfigContext` — this is the same context that `getConfig(context)` reads from internally:
 

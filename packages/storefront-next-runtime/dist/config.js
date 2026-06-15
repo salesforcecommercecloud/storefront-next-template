@@ -311,8 +311,8 @@ const appConfigContext = createContext$1();
 * browser via that channel.
 *
 * Type is `Partial<AppConfigShape>` because the client view is always a subset of the
-* full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
-* or a branded `ClientAppConfig` type at the read site.
+* full shape. For a stronger narrow at the read site, augment `ClientFacingAppConfigShape`
+* (the same slot that narrows `useConfig()`) and cast through `ClientFacingAppConfig`.
 */
 const clientAppConfigContext = createContext$1();
 /**
@@ -354,7 +354,10 @@ function getConfig(context) {
 }
 /**
 * Get configuration in React components (use this instead of `getConfig` —
-* React Context requires `useContext`). Returns the augmented `AppConfigShape`.
+* React Context requires `useContext`). Returns `ClientFacingAppConfig`, which
+* is the template's `ClientFacingAppConfigShape` augmentation (typically
+* `Omit<AppConfig, 'serverExtension'>`) when present, and falls back to the full
+* `AppConfigShape` otherwise. The fallback keeps the upgrade zero-breakage.
 */
 function useConfig() {
 	const config = useContext(ConfigContext);

@@ -2,7 +2,7 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import { n as defaultSecurityHeaders } from "./defaults.js";
 import { ReactNode } from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
 import * as react_router14 from "react-router";
 import { RouterContextProvider } from "react-router";
 
@@ -18,6 +18,29 @@ import { RouterContextProvider } from "react-router";
 interface AppConfigShape {
   [key: string]: unknown;
 }
+/**
+ * Augmentation hook for `useConfig()`'s narrowed return type. When templates
+ * fill this with an explicit shape (typically `Omit<AppConfig, 'serverExtension'>`),
+ * `useConfig()` returns that narrowed shape instead of the full `AppConfigShape`,
+ * making server-only namespace reads from client modules a TypeScript error.
+ * Empty by default — un-augmented customers see today's behavior on upgrade
+ * (the SDK falls back to `AppConfigShape` for the `useConfig()` return when this
+ * slot is empty). See README-CONFIG.md.
+ *
+ * Defined as a separate slot rather than `Omit<AppConfigShape, KeySet>` because
+ * the latter doesn't compose with `AppConfigShape`'s `[key: string]: unknown`
+ * index signature: `Omit` over an index-signatured interface produces a mapped
+ * type that subsumes the augmented members.
+ *
+ * Caveat for templates: keep your `AppConfig` itself **index-signature-free at
+ * the top level**. If your template's `AppConfig` carries a `[key: string]:
+ * unknown`, then `Omit<AppConfig, 'serverExtension'>` keeps that signature,
+ * which makes `serverExtension` resolve to `unknown` at the call site
+ * (accessible, not removed) and silently defeats the narrow. The retail
+ * template's `AppConfig` (`src/types/config.ts`) demonstrates the
+ * index-signature-free shape.
+ */
+interface ClientFacingAppConfigShape {}
 /**
  * Router context for application configuration. Populated by the template's
  * app-config middleware; read via `context.get(appConfigContext)` in loaders,
@@ -36,8 +59,8 @@ declare const appConfigContext: react_router14.RouterContext<AppConfigShape>;
  * browser via that channel.
  *
  * Type is `Partial<AppConfigShape>` because the client view is always a subset of the
- * full shape. Templates may further narrow with `Omit<AppConfigShape, 'serverExtension'>`
- * or a branded `ClientAppConfig` type at the read site.
+ * full shape. For a stronger narrow at the read site, augment `ClientFacingAppConfigShape`
+ * (the same slot that narrows `useConfig()`) and cast through `ClientFacingAppConfig`.
  */
 declare const clientAppConfigContext: react_router14.RouterContext<Partial<AppConfigShape>>;
 interface ConfigProviderProps {
@@ -53,9 +76,21 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime1.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime2.JSX.Element;
 //#endregion
 //#region src/config/get-config.d.ts
+/**
+ * `useConfig()`'s default return type. Resolves to the template's
+ * `ClientFacingAppConfigShape` augmentation (typically `Omit<AppConfig, 'serverExtension'>`)
+ * when present, and falls back to the full `AppConfigShape` otherwise. The fallback
+ * is what keeps the upgrade zero-breakage for customers who haven't augmented yet.
+ *
+ * The conditional shape is load-bearing — do not rewrite as
+ * `AppConfigShape & ClientFacingAppConfigShape`. An intersection re-introduces every
+ * member from the wider `AppConfigShape` augmentation, which silently disables the
+ * narrow.
+ */
+type ClientFacingAppConfig = keyof ClientFacingAppConfigShape extends never ? AppConfigShape : ClientFacingAppConfigShape;
 declare global {
   interface Window {
     __APP_CONFIG__?: Record<string, unknown>;
@@ -70,9 +105,12 @@ declare global {
 declare function getConfig<T extends Record<string, unknown> = AppConfigShape>(context?: Readonly<RouterContextProvider>): T;
 /**
  * Get configuration in React components (use this instead of `getConfig` —
- * React Context requires `useContext`). Returns the augmented `AppConfigShape`.
+ * React Context requires `useContext`). Returns `ClientFacingAppConfig`, which
+ * is the template's `ClientFacingAppConfigShape` augmentation (typically
+ * `Omit<AppConfig, 'serverExtension'>`) when present, and falls back to the full
+ * `AppConfigShape` otherwise. The fallback keeps the upgrade zero-breakage.
  */
-declare function useConfig<T extends Record<string, unknown> = AppConfigShape>(): T;
+declare function useConfig<T extends Record<string, unknown> = ClientFacingAppConfig>(): T;
 //#endregion
-export { type AppConfigShape, type BaseConfig, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, clientAppConfigContext, defaultSecurityHeaders, defineConfig, getConfig, useConfig };
+export { type AppConfigShape, type BaseConfig, type ClientFacingAppConfig, type ClientFacingAppConfigShape, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, clientAppConfigContext, defaultSecurityHeaders, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.d.ts.map

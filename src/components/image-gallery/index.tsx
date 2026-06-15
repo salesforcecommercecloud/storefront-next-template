@@ -33,7 +33,6 @@ import { useTranslation } from 'react-i18next';
 import { useDeferredRenderSequence } from '@/hooks/use-deferred-render';
 import { cn } from '@/lib/utils';
 import type { DynamicImageDimensions } from '@/lib/images/dynamic-image';
-import type { AppConfig } from '@/types/config';
 import { UITarget } from '@/targets/ui-target';
 
 export interface GalleryImage {
@@ -145,7 +144,7 @@ export default function ImageGallery({
 }: ImageGalleryProps): ReactElement {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const thumbStripRef = useRef<HTMLDivElement>(null);
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const mainWidths = widths?.main ?? DEFAULT_WIDTHS_MAIN;
     const thumbnailWidths = widths?.thumbnail ?? DEFAULT_WIDTHS_THUMBNAIL_GRID;
 

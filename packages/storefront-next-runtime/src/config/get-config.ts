@@ -26,11 +26,26 @@
 
 import { useContext } from 'react';
 import type { RouterContextProvider } from 'react-router';
-import { ConfigContext, appConfigContext, type AppConfigShape } from './context';
+import { ConfigContext, appConfigContext, type AppConfigShape, type ClientFacingAppConfigShape } from './context';
 
 // Re-export so consumers can `import type { AppConfigShape } from '.../config'`
 // from the package barrel without reaching into `./context`.
-export type { AppConfigShape };
+export type { AppConfigShape, ClientFacingAppConfigShape };
+
+/**
+ * `useConfig()`'s default return type. Resolves to the template's
+ * `ClientFacingAppConfigShape` augmentation (typically `Omit<AppConfig, 'serverExtension'>`)
+ * when present, and falls back to the full `AppConfigShape` otherwise. The fallback
+ * is what keeps the upgrade zero-breakage for customers who haven't augmented yet.
+ *
+ * The conditional shape is load-bearing — do not rewrite as
+ * `AppConfigShape & ClientFacingAppConfigShape`. An intersection re-introduces every
+ * member from the wider `AppConfigShape` augmentation, which silently disables the
+ * narrow.
+ */
+export type ClientFacingAppConfig = keyof ClientFacingAppConfigShape extends never
+    ? AppConfigShape
+    : ClientFacingAppConfigShape;
 
 declare global {
     interface Window {
@@ -72,9 +87,12 @@ export function getConfig<T extends Record<string, unknown> = AppConfigShape>(
 
 /**
  * Get configuration in React components (use this instead of `getConfig` —
- * React Context requires `useContext`). Returns the augmented `AppConfigShape`.
+ * React Context requires `useContext`). Returns `ClientFacingAppConfig`, which
+ * is the template's `ClientFacingAppConfigShape` augmentation (typically
+ * `Omit<AppConfig, 'serverExtension'>`) when present, and falls back to the full
+ * `AppConfigShape` otherwise. The fallback keeps the upgrade zero-breakage.
  */
-export function useConfig<T extends Record<string, unknown> = AppConfigShape>(): T {
+export function useConfig<T extends Record<string, unknown> = ClientFacingAppConfig>(): T {
     const config = useContext(ConfigContext);
     if (!config) {
         throw new Error(

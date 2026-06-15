@@ -206,7 +206,7 @@ export default {
 };
 ```
 
-Reach the value from a server loader, action, or middleware — `useConfig()` cannot see it on the client:
+Reach the value from a server loader, action, or middleware — `useConfig().serverExtension` is a TypeScript error on the client (the namespace is stripped from `useConfig()`'s return type) and the runtime value would be `undefined` even with a cast:
 
 ```typescript
 // Loader, action, or server-only middleware
@@ -219,7 +219,7 @@ const override = config.serverExtension?.loqateAddressVerification?.scapiOverrid
 The same authoring rules apply (plain object literal, JSON-serializable static values, hyphen-cased folder), with three differences:
 
 - **No `PUBLIC__` override path.** Server-only defaults are not merchant-configurable via env vars — by design. For values that must vary per environment, the existing `process.env.*` path in a server route is the right tool.
-- **No client access.** A Vite plugin fails the build if any client module imports `src/extensions/config/server`. Reads belong in server-only code.
+- **No client access.** Three layers stop a client module from reading these values: (1) `useConfig()` is type-narrowed to omit `app.serverExtension`, (2) the client config extractor strips the namespace before `window.__APP_CONFIG__`, (3) a Vite plugin fails the build if any client chunk imports `src/extensions/config/server`. Reads belong in server-only code.
 - **Different namespace.** Values land at `config.app.serverExtension.<camelCaseFolder>`, parallel to `config.app.extension.<camelCaseFolder>`.
 
 The discovered defaults are written to `src/extensions/config/server.ts` (auto-generated; do not edit). The same AST validator runs over `server-config.ts` — anything beyond a static object literal still throws, including `process.env` reads.

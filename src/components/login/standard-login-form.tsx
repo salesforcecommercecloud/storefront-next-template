@@ -18,7 +18,6 @@ import { Form as RouterForm, useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
-import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -58,7 +57,7 @@ export default function StandardLoginForm({
     const { t } = useTranslation('login');
     // Submit to the site/locale-prefixed login route so this form works whether rendered
     // standalone at /login or inside a modal on another page (e.g. checkout).
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const loginActionPath = buildUrl({
         to: '/login',
