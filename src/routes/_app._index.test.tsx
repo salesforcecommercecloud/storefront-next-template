@@ -502,4 +502,14 @@ describe('HomePage', () => {
             });
         });
     });
+
+    describe('shouldRevalidate export', () => {
+        // The policy itself is covered by src/lib/routes/revalidation/home.test.ts. Here we only
+        // assert home wires up that exact function, so the behavior isn't re-tested at the route.
+        test('re-exports the home page revalidation policy', async () => {
+            const { shouldRevalidate } = await import('./_app._index');
+            const { shouldRevalidate: shouldRevalidateHome } = await import('@/lib/routes/revalidation/home');
+            expect(shouldRevalidate).toBe(shouldRevalidateHome);
+        });
+    });
 });

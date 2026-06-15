@@ -84,6 +84,18 @@ describe('rootShouldRevalidate', () => {
             expect(rootShouldRevalidate(buildArgs({ formMethod, formAction }))).toBe(false);
         });
 
+        // Drift guard, tested through behavior rather than the internal denylist (which stays unexported). Every
+        // resource route the storefront exposes is classified by the policy as either skipped or revalidating; this
+        // asserts the set the policy actually skips matches the set this table claims to skip. A new denylist entry
+        // that isn't given a row here flips its route from "expected revalidate" to "actually skipped" and fails.
+        test('the skipped-mutation table matches every route the policy actually skips', () => {
+            const expectedSkipped = new Set(skippedMutations.map((m) => m.formAction));
+            const actuallySkipped = Object.values(resourceRoutes).filter(
+                (formAction) => rootShouldRevalidate(buildArgs({ formMethod: 'POST', formAction })) === false
+            );
+            expect(new Set(actuallySkipped)).toEqual(expectedSkipped);
+        });
+
         test('matches a denylisted action even when formAction is absolute with a query string', () => {
             expect(
                 rootShouldRevalidate(
