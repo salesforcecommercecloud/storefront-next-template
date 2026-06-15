@@ -213,21 +213,30 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         throw new Response('Product not found', { status: 404 });
     }
 
+    const masterProductPromise = (() => {
+        if (product.master?.masterId) {
+            return fetchProductById(context, product.master.masterId, {
+                ...(currency ? { currency } : {}),
+            });
+        }
+
+        return null;
+    })();
+
     // Build the deferred category promise. Category is optional context for the
     // breadcrumbs — failures degrade silently via the route-level <Await errorElement={null}>.
     const categoryPromise: Promise<ShopperProducts.schemas['Category'] | undefined> = (async () => {
         if (product.primaryCategoryId) {
             return fetchCategory(context, product.primaryCategoryId, 1);
         }
+
         // For variant products, try to get the master product's category.
-        if (product.master?.masterId) {
-            const masterProduct = await fetchProductById(context, product.master.masterId, {
-                ...(currency ? { currency } : {}),
-            });
-            if (masterProduct?.primaryCategoryId) {
-                return fetchCategory(context, masterProduct.primaryCategoryId, 1);
-            }
+        const masterProduct = await masterProductPromise;
+
+        if (masterProduct?.primaryCategoryId) {
+            return fetchCategory(context, masterProduct.primaryCategoryId, 1);
         }
+
         return undefined;
     })();
 
@@ -255,6 +264,16 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         }
     );
 
+    const pagePromise = (async () => {
+        const primaryCategoryId = product.primaryCategoryId ?? (await masterProductPromise)?.primaryCategoryId;
+
+        return fetchPageWithComponentData(args, {
+            aspectType: 'pdp',
+            productId: productLookupId,
+            ...(primaryCategoryId ? { categoryId: primaryCategoryId } : {}),
+        });
+    })();
+
     // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     // Await the summary started earlier (ran in parallel with fetchProductById).
     const reviewsSummary = await reviewsSummaryPromise;
@@ -269,13 +288,7 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
          * Fetch page data from Page Designer API with nested componentData promises.
          * Handle errors gracefully - return page with empty componentData if fetch failed.
          */
-        page: fetchPageWithComponentData(args, {
-            aspectType: 'pdp',
-            productId: productLookupId,
-            // Lets the manifest resolver fall back to a category-level PDP
-            // assignment when no page is assigned to this product directly.
-            ...(product.primaryCategoryId ? { categoryId: product.primaryCategoryId } : {}),
-        }),
+        page: pagePromise,
         pageKey: productId,
         pageUrl,
         productSchema: productSchemaPromise,

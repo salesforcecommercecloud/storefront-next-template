@@ -663,6 +663,51 @@ describe('Product Route Loaders', () => {
             );
         });
 
+        test('falls back to the master product category for fetchPageWithComponentData when the variant has none', async () => {
+            const variantProduct = {
+                ...mockProduct,
+                id: 'variant-product-123',
+                primaryCategoryId: null,
+                master: { masterId: 'master-product-123' },
+            };
+            const masterProduct = {
+                ...mockProduct,
+                id: 'master-product-123',
+                primaryCategoryId: 'master-category-123',
+            };
+
+            mockFetchProductById
+                .mockResolvedValueOnce(variantProduct) // loader's awaited product fetch
+                .mockResolvedValueOnce(masterProduct); // shared master fetch
+            mockFetchCategory.mockResolvedValue(mockCategory);
+
+            const request = new Request('https://example.com/product/variant-product-123');
+            const params = { productId: 'variant-product-123' };
+
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context: mockContext,
+                unstable_pattern: '/product/:productId',
+            });
+
+            // Resolve the deferred page promise so the master-category fallback runs.
+            await result.page;
+
+            expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({
+                    aspectType: 'pdp',
+                    productId: 'variant-product-123',
+                    categoryId: 'master-category-123',
+                })
+            );
+
+            // The master is fetched once and shared by both the breadcrumb category
+            // promise and the page-fallback promise — not re-fetched per consumer.
+            expect(mockFetchProductById).toHaveBeenCalledTimes(2);
+        });
+
         test('handles variant product with master product category lookup', async () => {
             const variantProduct = {
                 ...mockProduct,
