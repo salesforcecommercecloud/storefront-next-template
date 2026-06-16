@@ -14,33 +14,13 @@
  * limitations under the License.
  */
 import { type MiddlewareFunction } from 'react-router';
+import { isRemote } from '../env';
 import { isDesignModeActive, isPreviewModeActive } from '../design/modeDetection.js';
 import { defaultSecurityHeaders, pageDesignerFrameAncestors } from './defaults.js';
 import { generateNonce, securityContext } from './nonce.js';
 import { parseSecurityConfig } from './schema.js';
 import { serializeCsp, serializeHsts, serializePermissionsPolicy } from './serialize.js';
 import type { CspDirectives, HstsConfig, ResolvedSecurityConfig, SecurityConfig } from './types.js';
-
-/**
- * Read at boot. HSTS is suppressed when running locally (BUNDLE_ID unset
- * or 'local') because HSTS pins the host in browser caches — pinning
- * `localhost` would force HTTPS on every developer's `pnpm dev`.
- *
- * Operational invariant: this is the single signal that distinguishes a
- * deployed environment from local dev, and it now gates THREE security
- * behaviors — HSTS emission, the dev-only HMR websocket `connect-src`
- * relaxation, and suppression of `upgrade-insecure-requests` (all below).
- * Managed Runtime always injects a real, non-'local' BUNDLE_ID, so a
- * deployed response is always treated as remote. An unset or empty
- * BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets allowed,
- * upgrade-insecure-requests dropped); a deployment that failed to set
- * BUNDLE_ID would already be broken in other ways (asset path resolution
- * also keys off it), so we do not add a redundant guard here.
- */
-function isRemote(): boolean {
-    const id = process.env.BUNDLE_ID;
-    return Boolean(id) && id !== 'local';
-}
 
 /**
  * Merge customer config with SDK defaults. Per-directive replace: any

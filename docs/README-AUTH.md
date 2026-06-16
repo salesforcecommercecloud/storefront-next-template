@@ -113,7 +113,7 @@ sites: [
 ],
 ```
 
-Cookie attribute defaults (`path: '/'`, `sameSite: 'lax'`, `secure: true`) are applied automatically; the site `cookies.domain` takes precedence over them.
+Cookie attribute defaults (`path: '/'`, `sameSite: 'lax'`, `secure`) are applied automatically; the site `cookies.domain` takes precedence over them. `secure` is gated on `isRemote()` (the `BUNDLE_ID` signal): `true` on deployed (HTTPS) environments, `false` on local `pnpm dev` / `pnpm preview`, which serve plain HTTP over `localhost`. Without this, Safari/WebKit silently refuses to persist `Secure` cookies on loopback and login never sticks (Chrome/Firefox mask it with a localhost exception). `SameSite=None` cookies — used in Page Designer design mode — always stay `Secure`, as the spec requires.
 
 ## Usage
 

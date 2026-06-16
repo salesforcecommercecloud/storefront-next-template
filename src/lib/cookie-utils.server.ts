@@ -17,6 +17,7 @@ import type { RouterContextProvider } from 'react-router';
 import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 import { modeDetectionContext } from '@/middlewares/mode-detection';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { isRemote } from '@salesforce/storefront-next-runtime/env';
 
 /**
  * List of cookie names that should NOT be namespaced.
@@ -100,9 +101,11 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
  * // Result includes domain from config if set
  *
  * @example
- * // Provided options override defaults, but .env takes precedence over both
+ * // Provided options override defaults, but .env takes precedence over both.
+ * // `secure` defaults to isRemote() — true on deployed (HTTPS) environments,
+ * // false on local `pnpm dev` / `pnpm preview` (plain HTTP over loopback).
  * const cookieConfig = getCookieConfig({ path: '/custom', domain: '.code.com' }, context);
- * // If PUBLIC_COOKIE_DOMAIN=.env.com is set:
+ * // If PUBLIC_COOKIE_DOMAIN=.env.com is set (deployed):
  * // Result: { path: '/custom', sameSite: 'lax', secure: true, domain: '.env.com' }
  *
  * @example
@@ -147,7 +150,14 @@ export const getCookieConfig = <T extends object = CookieConfig>(
     const defaults: CookieConfig = {
         path: '/',
         sameSite: 'lax',
-        secure: true,
+        // `Secure` only in deployed (HTTPS) environments. Local `pnpm dev` and `pnpm
+        // preview` both serve plain HTTP over loopback, where Safari/WebKit refuses to
+        // persist `Secure` cookies (Chrome/Firefox have a localhost exception that hides
+        // it) — so auth cookies silently fail to stick and login never persists.
+        // isRemote() (BUNDLE_ID) is the same signal that gates HSTS and
+        // upgrade-insecure-requests, so cookies, HSTS, and CSP all agree on "is this real
+        // HTTPS?". It is NOT NODE_ENV: `pnpm preview` is a production build over http.
+        secure: isRemote(),
         ...(modeDetection?.isDesignMode && {
             sameSite: 'none',
             partitioned: true,
@@ -159,6 +169,14 @@ export const getCookieConfig = <T extends object = CookieConfig>(
         ...defaults,
         ...cookieOptions,
     };
+
+    // `SameSite=None` cookies are rejected by browsers unless they are also `Secure`.
+    // Page Designer design-mode cookies are embedded cross-site in the Business Manager
+    // iframe (always HTTPS) and must be `SameSite=None`, so they stay `Secure` even in
+    // local dev where the default is otherwise non-secure.
+    if (merged.sameSite === 'none') {
+        merged.secure = true;
+    }
 
     // 1. Apply app config cookie overrides (highest priority)
     const cookieConfigOverrides: CookieConfig = {};

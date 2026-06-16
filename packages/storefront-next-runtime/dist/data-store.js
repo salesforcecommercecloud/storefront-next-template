@@ -1,3 +1,4 @@
+import "./env2.js";
 import { i as siteContext } from "./site-context2.js";
 import "./apply-url-config.js";
 import { createContext } from "react-router";

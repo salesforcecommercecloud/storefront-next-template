@@ -27,7 +27,15 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(),
 }));
 
+// isRemote() decides the default `secure` flag. Default it to `true` (deployed) so the
+// bulk of the assertions below exercise the production cookie shape; the dedicated
+// "local development" block flips it to `false` to cover the Safari-on-localhost fix.
+vi.mock('@salesforce/storefront-next-runtime/env', () => ({
+    isRemote: vi.fn(() => true),
+}));
+
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import { isRemote } from '@salesforce/storefront-next-runtime/env';
 import type { AppConfig } from '@/types/config';
 
 describe('cookie-utils', () => {
@@ -117,6 +125,9 @@ describe('cookie-utils', () => {
 
         beforeEach(() => {
             vi.mocked(getConfig).mockReturnValue(mockAppConfig);
+            // clearAllMocks (below) does not restore implementations, so re-assert the
+            // deployed default before every test; the local-dev block overrides it.
+            vi.mocked(isRemote).mockReturnValue(true);
         });
 
         afterEach(() => {
@@ -299,7 +310,9 @@ describe('cookie-utils', () => {
 
             expect(config).toEqual({
                 path: '/api',
-                secure: false,
+                // SameSite=None forces Secure (browsers reject None without Secure),
+                // overriding the provided secure:false.
+                secure: true,
                 sameSite: 'none',
                 expires: expiryDate,
                 maxAge: 7200,
@@ -467,6 +480,50 @@ describe('cookie-utils', () => {
                 });
             });
         });
+
+        describe('local development (not deployed)', () => {
+            beforeEach(() => {
+                // Local `pnpm dev` / `pnpm preview`: BUNDLE_ID unset or 'local'.
+                vi.mocked(isRemote).mockReturnValue(false);
+            });
+
+            it('omits Secure so Safari persists cookies over http://localhost', () => {
+                const config = getCookieConfig({}, defaultMockContext);
+
+                expect(config).toEqual({
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: false,
+                });
+            });
+
+            it('still applies provided options, with Secure off by default', () => {
+                const config = getCookieConfig({ httpOnly: true, maxAge: 3600 }, defaultMockContext);
+
+                expect(config).toEqual({
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: false,
+                    httpOnly: true,
+                    maxAge: 3600,
+                });
+            });
+
+            it('still forces Secure in design mode (SameSite=None requires Secure)', () => {
+                const designModeContext = {
+                    get: vi.fn(() => ({ isDesignMode: true, isPreviewMode: false })),
+                } as any;
+
+                const config = getCookieConfig({}, designModeContext);
+
+                expect(config).toEqual({
+                    path: '/',
+                    sameSite: 'none',
+                    secure: true,
+                    partitioned: true,
+                });
+            });
+        });
     });
 
     describe('parseAllCookies', () => {
@@ -533,6 +590,7 @@ describe('cookie-utils', () => {
 
         beforeEach(() => {
             vi.mocked(getConfig).mockReturnValue(mockAppConfig);
+            vi.mocked(isRemote).mockReturnValue(true);
         });
 
         afterEach(() => {

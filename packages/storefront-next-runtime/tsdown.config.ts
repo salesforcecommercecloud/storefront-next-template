@@ -19,6 +19,7 @@ export default defineConfig([
             'design-react-core': 'src/design/react/core/index.ts',
             config: 'src/config/index.ts',
             'config-load': 'src/config/load-config.ts',
+            env: 'src/env/index.ts',
             events: 'src/events/index.ts',
             'data-store': 'src/data-store/index.ts',
             'site-context': 'src/site-context/index.ts',

@@ -56,6 +56,12 @@
         "default": "./dist/config-load.js"
       }
     },
+    "./env": {
+      "import": {
+        "types": "./dist/env.d.ts",
+        "default": "./dist/env.js"
+      }
+    },
     "./events": {
       "import": {
         "types": "./dist/events.d.ts",

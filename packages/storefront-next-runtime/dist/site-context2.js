@@ -1,3 +1,4 @@
+import { t as isRemote } from "./env2.js";
 import { createContext, useContext, useMemo } from "react";
 import { jsx } from "react/jsx-runtime";
 import { createContext as createContext$1, createCookie } from "react-router";
@@ -261,14 +262,36 @@ const DEFAULT_LOCALE_DETECTION = {
 //#endregion
 //#region src/site-context/cookies.ts
 /**
-* Cookie options for site context cookies (site and locale)
+* Base cookie options for site context cookies (site, locale, currency).
+*
+* Internal: `secure` is intentionally absent so it can be resolved per call via
+* {@link isRemote} in {@link resolveCookieOptions} (reflecting `BUNDLE_ID` at
+* request time rather than at module load). Because it is incomplete on its own,
+* it is not exported — consumers use the factory functions below, which always
+* apply the correct `secure` value.
 */
 const COOKIE_OPTIONS = {
 	path: "/",
 	sameSite: "lax",
-	secure: process.env.NODE_ENV === "production",
 	httpOnly: true
 };
+/**
+* Build the per-call cookie options.
+*
+* `secure` is gated on {@link isRemote} (BUNDLE_ID), NOT `NODE_ENV`: `pnpm
+* preview` runs a production build over plain-HTTP `localhost`, where a
+* `NODE_ENV` gate would emit `Secure` and Safari/WebKit would then refuse to
+* persist these cookies. This keeps the signal consistent with the auth-cookie
+* defaults and the HSTS / upgrade-insecure-requests gates. Caller `options` win,
+* so an explicit `secure` still overrides the default.
+*/
+function resolveCookieOptions(options) {
+	return {
+		...COOKIE_OPTIONS,
+		secure: isRemote(),
+		...options
+	};
+}
 /**
 * Creates a cookie instance with the given name.
 *
@@ -276,10 +299,7 @@ const COOKIE_OPTIONS = {
 * @returns Cookie instance configured with site context options
 */
 function createSiteContextCookie(name, options) {
-	return createCookie(name, {
-		...COOKIE_OPTIONS,
-		...options
-	});
+	return createCookie(name, resolveCookieOptions(options));
 }
 /**
 * Creates a currency cookie instance with the given name.
@@ -288,10 +308,7 @@ function createSiteContextCookie(name, options) {
 * @returns Cookie instance configured with site context cookie options
 */
 function createCurrencyCookie(name, options) {
-	return createCookie(name, {
-		...COOKIE_OPTIONS,
-		...options
-	});
+	return createCookie(name, resolveCookieOptions(options));
 }
 /**
 * WeakMap to pass resolved locale from site context middleware to i18next's findLocale.
