@@ -337,12 +337,6 @@ function ConfigProvider({ config, children }) {
 
 //#endregion
 //#region src/config/get-config.ts
-/**
-* Get configuration in loaders, actions, and utilities. Pass `context` on the
-* server; omit it on the client (reads `window.__APP_CONFIG__`). Returns the
-* augmented `AppConfigShape` — pass an explicit generic only for narrower or
-* unrelated shapes (rare).
-*/
 function getConfig(context) {
 	if (context) {
 		const config = context.get(appConfigContext);

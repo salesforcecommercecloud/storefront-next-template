@@ -400,7 +400,7 @@ Same drop-a-file ergonomics as the client side — the build prestep aggregates 
 
 - The client config extractor (`src/lib/app-config-client.ts`) strips `app.serverExtension` before writing `window.__APP_CONFIG__`.
 - A Vite plugin (`vite-plugins/server-only-config-guard.ts`) fails the build if any client chunk imports `src/extensions/config/server`.
-- `useConfig()` is type-narrowed to omit `app.serverExtension`, so reading `useConfig().serverExtension` is a TypeScript error. The narrow is wired through the SDK's `ClientFacingAppConfigShape` augmentation slot, which the template fills with `ClientAppConfig` (= `Omit<AppConfig, ServerOnlyNamespace>`, derived from `SERVER_ONLY_NAMESPACES` in `src/lib/app-config-client.ts`) — adding a server-only namespace to that list updates both the runtime extractor and the type narrow. **Today only `useConfig()` is narrowed; `getConfig()` (no-context overload) still types `serverExtension` as accessible. Tracked as W-22952767 — the runtime stripping and the Vite plugin still cover the client `getConfig()` path.**
+- `useConfig()` and `getConfig()`'s client-facing overloads (no-arg and `getConfig(ctx | undefined)`) are type-narrowed to omit `app.serverExtension`, so reading `.serverExtension` from any of them is a TypeScript error in client code. The server `getConfig(context)` overload still returns the full shape. The narrow is wired through the SDK's `ClientFacingAppConfigShape` slot, which the template fills with `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`); adding a server-only namespace to `SERVER_ONLY_NAMESPACES` (`src/lib/app-config-client.ts`) updates the runtime extractor and the type narrow together.
 
 There is no `PUBLIC__` override path by design — the same AST validator runs on `server-config.ts`, so a `process.env.X` read still throws at discovery time. For true secrets that *must* vary per environment (SLAS secrets, Marketing Cloud credentials), keep using `process.env` from a server route — never put them in `server-config.ts`.
 
@@ -415,7 +415,7 @@ There is no `PUBLIC__` override path by design — the same AST validator runs o
    - `useConfig()` for React components
    - `window.__APP_CONFIG__` for client code
 
-   `getConfig()` returns the full `AppConfig` and `useConfig()` returns the narrowed `Omit<AppConfig, 'serverExtension'>` (see "Server-only extension config" above) — both automatic because the template fills two augmentation slots in `src/types/config.ts`:
+   `getConfig(context)` returns the full `AppConfig`; `getConfig()` (no-context) and `useConfig()` return the narrowed `Omit<AppConfig, 'serverExtension'>` (see "Server-only extension config" above) — all automatic because the template fills two augmentation slots in `src/types/config.ts`:
 
    ```typescript
    declare module '@salesforce/storefront-next-runtime/config' {

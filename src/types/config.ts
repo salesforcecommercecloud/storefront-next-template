@@ -364,14 +364,15 @@ export type Config = BaseConfig<AppConfig>;
 
 /**
  * Augment the SDK so `getConfig()` and `useConfig()` return the right shapes
- * without a generic argument at every call site. `getConfig()` returns the full
- * `AppConfig` (server callers correctly read `serverExtension`); `useConfig()`
- * returns the narrowed `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`),
- * so client modules see a TypeScript error on `useConfig().serverExtension`.
- * Both slots are filled from types defined in `src/lib/app-config-client.ts`,
- * which keeps `SERVER_ONLY_NAMESPACES` the single source: the runtime extractor
- * and the type narrow can't drift. Customers writing additional templates
- * augment both interfaces in their own template's types file.
+ * without a generic argument at every call site. `getConfig(context)` (server)
+ * returns the full `AppConfig` so server callers correctly read `serverExtension`;
+ * `getConfig()` (no context, client) and `useConfig()` return the narrowed
+ * `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`), so client modules
+ * see a TypeScript error on `.serverExtension`. Both slots are filled from
+ * types defined in `src/lib/app-config-client.ts`, which keeps
+ * `SERVER_ONLY_NAMESPACES` the single source: the runtime extractor and the
+ * type narrow can't drift. Customers writing additional templates augment both
+ * interfaces in their own template's types file.
  */
 declare module '@salesforce/storefront-next-runtime/config' {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type

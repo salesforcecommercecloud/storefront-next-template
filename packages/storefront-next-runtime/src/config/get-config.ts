@@ -33,10 +33,11 @@ import { ConfigContext, appConfigContext, type AppConfigShape, type ClientFacing
 export type { AppConfigShape, ClientFacingAppConfigShape };
 
 /**
- * `useConfig()`'s default return type. Resolves to the template's
+ * Default return type for the client-facing reads — `useConfig()` and
+ * `getConfig()`'s no-arg + maybe-context overloads. Resolves to the template's
  * `ClientFacingAppConfigShape` augmentation (typically `Omit<AppConfig, 'serverExtension'>`)
- * when present, and falls back to the full `AppConfigShape` otherwise. The fallback
- * is what keeps the upgrade zero-breakage for customers who haven't augmented yet.
+ * when present, and falls back to `AppConfigShape` otherwise — the fallback is
+ * what keeps the upgrade zero-breakage for un-augmented customers.
  *
  * The conditional shape is load-bearing — do not rewrite as
  * `AppConfigShape & ClientFacingAppConfigShape`. An intersection re-introduces every
@@ -55,10 +56,26 @@ declare global {
 
 /**
  * Get configuration in loaders, actions, and utilities. Pass `context` on the
- * server; omit it on the client (reads `window.__APP_CONFIG__`). Returns the
- * augmented `AppConfigShape` — pass an explicit generic only for narrower or
- * unrelated shapes (rare).
+ * server; omit it on the client (reads `window.__APP_CONFIG__`).
+ *
+ * - `getConfig(context)` (server) returns the full `AppConfigShape` —
+ *   `.serverExtension` is reachable.
+ * - `getConfig()` (client, no-arg) and `getConfig(ctx | undefined)` (the
+ *   wrapper form) return the narrowed `ClientFacingAppConfig` — reading
+ *   `.serverExtension` is a TypeScript error. The runtime value is `undefined`
+ *   on the client anyway (the extractor strips it before `window.__APP_CONFIG__`);
+ *   the narrow surfaces that at edit time.
+ *
+ * Server helpers needing the full shape from a maybe-context call should
+ * narrow first (`if (ctx) getConfig(ctx)`) or pass `getConfig<AppConfig>(ctx)`.
  */
+export function getConfig<T extends Record<string, unknown> = AppConfigShape>(
+    context: Readonly<RouterContextProvider>
+): T;
+export function getConfig<T extends Record<string, unknown> = ClientFacingAppConfig>(): T;
+export function getConfig<T extends Record<string, unknown> = ClientFacingAppConfig>(
+    context: Readonly<RouterContextProvider> | undefined
+): T;
 export function getConfig<T extends Record<string, unknown> = AppConfigShape>(
     context?: Readonly<RouterContextProvider>
 ): T {

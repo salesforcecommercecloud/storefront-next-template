@@ -41,13 +41,13 @@ export interface AppConfigShape {
 }
 
 /**
- * Augmentation hook for `useConfig()`'s narrowed return type. When templates
- * fill this with an explicit shape (typically `Omit<AppConfig, 'serverExtension'>`),
- * `useConfig()` returns that narrowed shape instead of the full `AppConfigShape`,
- * making server-only namespace reads from client modules a TypeScript error.
- * Empty by default — un-augmented customers see today's behavior on upgrade
- * (the SDK falls back to `AppConfigShape` for the `useConfig()` return when this
- * slot is empty). See README-CONFIG.md.
+ * Augmentation hook for the client-facing narrowed return type — used by
+ * `useConfig()` and `getConfig()`'s no-arg + maybe-context overloads. When
+ * templates fill this (typically with `Omit<AppConfig, 'serverExtension'>`),
+ * those reads return the narrowed shape and `.serverExtension` becomes a
+ * TypeScript error in client code. The server `getConfig(context)` overload is
+ * unaffected. Empty by default — un-augmented customers fall back to
+ * `AppConfigShape`, so the upgrade is zero-breakage. See README-CONFIG.md.
  *
  * Defined as a separate slot rather than `Omit<AppConfigShape, KeySet>` because
  * the latter doesn't compose with `AppConfigShape`'s `[key: string]: unknown`

@@ -42,7 +42,8 @@
  * call-expression site where augmentations have merged.
  */
 import { describe, expectTypeOf, it } from 'vitest';
-import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { RouterContextProvider } from 'react-router';
+import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 
 // Dummy component — never rendered; only exists so `useConfig()` types correctly
 // at a call site that respects React Hooks rules and module-augmentation timing.
@@ -73,5 +74,52 @@ describe('useConfig() type narrow', () => {
         // the augmented shape (not the bare-SDK fallback) when reaching client modules.
         const config = {} as Config;
         expectTypeOf(config.auth).toEqualTypeOf<{ otpLength: 6 | 8 }>();
+    });
+});
+
+// `getConfig()` is not a hook — a module-level call expression gives TypeScript
+// a real call site where module augmentations have merged. The `ProbeComponent`
+// trick used for `useConfig()` isn't needed here.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getConfigProbe = getConfig();
+type GetConfigResult = typeof getConfigProbe;
+
+// Wrapper-shape probe — resolves the maybe-context overload (narrow default).
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getConfigMaybeProbe = getConfig(undefined as Readonly<RouterContextProvider> | undefined);
+type GetConfigMaybeResult = typeof getConfigMaybeProbe;
+
+describe('getConfig() no-context type narrow', () => {
+    it('rejects getConfig().serverExtension at compile time', () => {
+        const config = {} as GetConfigResult;
+        // @ts-expect-error - serverExtension is server-only and stripped from getConfig's no-context return type
+        void config.serverExtension;
+    });
+
+    it('preserves client-safe namespaces', () => {
+        expectTypeOf<GetConfigResult>().toHaveProperty('features');
+        expectTypeOf<GetConfigResult>().toHaveProperty('commerce');
+        expectTypeOf<GetConfigResult>().toHaveProperty('auth');
+        expectTypeOf<GetConfigResult>().toHaveProperty('extension');
+    });
+
+    it('flows the augmented AppConfig members through the narrow', () => {
+        const config = {} as GetConfigResult;
+        expectTypeOf(config.auth).toEqualTypeOf<{ otpLength: 6 | 8 }>();
+    });
+});
+
+describe('getConfig() maybe-context (wrapper-friendly) type narrow', () => {
+    it('rejects getConfig(maybe).serverExtension at compile time', () => {
+        const config = {} as GetConfigMaybeResult;
+        // @ts-expect-error - serverExtension is server-only; narrow holds for the maybe-context overload too
+        void config.serverExtension;
+    });
+
+    it('preserves client-safe namespaces', () => {
+        expectTypeOf<GetConfigMaybeResult>().toHaveProperty('features');
+        expectTypeOf<GetConfigMaybeResult>().toHaveProperty('commerce');
+        expectTypeOf<GetConfigMaybeResult>().toHaveProperty('auth');
+        expectTypeOf<GetConfigMaybeResult>().toHaveProperty('extension');
     });
 });
