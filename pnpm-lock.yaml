@@ -476,7 +476,7 @@ importers:
         version: 3.2.87(@types/node@24.3.0)
       '@oclif/plugin-plugins':
         specifier: ^5
-        version: 5.4.73
+        version: 5.4.74
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -1221,8 +1221,8 @@ packages:
       '@csstools/css-parser-algorithms': ^4.0.0
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-color-parser@4.1.4':
-    resolution: {integrity: sha512-yI8kNhHiOrLb8Rlulsk07DeQz0PwyT69FX9dkz5rAp7p9RUwFKEXnZpBGzURiLHgi66YqIWxOHn1nij8Lrg27Q==}
+  '@csstools/css-color-parser@4.1.5':
+    resolution: {integrity: sha512-u8pwA3YOFaJphdZTJjYhjElnWN7ucO4osu5BiK3sKhOAD5op21VkSBiu5g5NuOB3/tGjSqq7yclSrB+cjLSSKg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@csstools/css-parser-algorithms': ^4.0.0
@@ -2478,8 +2478,8 @@ packages:
     resolution: {integrity: sha512-jezB3NEz8fQdb/jrZq8YPvEiF+aH0wHiexVCvnj7Rmy+mmTHicEuGJMPiYeJNcRvG687raIhc6TjyMMPKi0W4A==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-plugins@5.4.73':
-    resolution: {integrity: sha512-Lppok4cxe8pYxHqS7MWlaIGDLR8TH9fQ4n87MmwA1lo8k6HABe8mJeDNA8ZzeCY7UcGmMifJfy3mEHvZryDv5w==}
+  '@oclif/plugin-plugins@5.4.74':
+    resolution: {integrity: sha512-v4UFRyY6Olc551xGduzhsMYPfzKVc5Nezzc3LwSLoQxQ3AYEU+lcOtTbVW9YzpALX9IxfY2BRQzkBdw60QbkEA==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-version@2.2.36':
@@ -10944,7 +10944,7 @@ snapshots:
   '@asamuzakjp/css-color@4.1.2':
     dependencies:
       '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
-      '@csstools/css-color-parser': 4.1.4(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
+      '@csstools/css-color-parser': 4.1.5(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
       lru-cache: 11.5.1
@@ -11621,7 +11621,7 @@ snapshots:
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-color-parser@4.1.4(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
+  '@csstools/css-color-parser@4.1.5(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
     dependencies:
       '@csstools/color-helpers': 6.0.2
       '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
@@ -12956,7 +12956,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/plugin-plugins@5.4.73':
+  '@oclif/plugin-plugins@5.4.74':
     dependencies:
       '@oclif/core': 4.11.4
       ansis: 3.17.0

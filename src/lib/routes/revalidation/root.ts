@@ -85,6 +85,7 @@ const CHECKOUT_STEP_INTENTS: ReadonlySet<string> = new Set(Object.values(CHECKOU
  *   action whose result the root loader must pick up.
  * - **Unlisted mutations** fall through too, so a new auth-/currency-/locale-affecting action revalidates by default
  *   until it is explicitly proven safe to skip.
+ * @see https://reactrouter.com/start/framework/route-module#shouldrevalidate
  */
 export function shouldRevalidate({
     currentUrl,
@@ -93,15 +94,15 @@ export function shouldRevalidate({
     formData,
     defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean {
-    if (formMethod && formMethod !== 'GET') {
+    if (formMethod && formMethod !== 'GET' && formAction) {
         // React Router always builds formAction as a path (never an absolute URL); parse it to drop any trailing
         // query string (e.g. an index-route `?index`) so it doesn't defeat the path comparison.
-        const actionPath = formAction ? new URL(formAction, currentUrl.origin).pathname : undefined;
-        if (actionPath && ROOT_IRRELEVANT_MUTATIONS.includes(actionPath)) {
+        const actionPath = new URL(formAction, currentUrl.origin).pathname;
+        if (ROOT_IRRELEVANT_MUTATIONS.includes(actionPath)) {
             return false;
         }
         // Checkout step submissions: post back to `/checkout` itself; dispatch on the `intent` form field.
-        if (actionPath?.endsWith(routes.checkout)) {
+        if (actionPath.endsWith(routes.checkout)) {
             const intent = formData?.get('intent');
             if (typeof intent === 'string' && CHECKOUT_STEP_INTENTS.has(intent)) {
                 return false;

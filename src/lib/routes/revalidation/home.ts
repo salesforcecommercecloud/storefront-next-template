@@ -56,6 +56,7 @@ const HOME_RELEVANT_MUTATIONS: readonly string[] = [resourceRoutes.setSiteContex
  * re-runs and re-seeds the wishlist for the now-guest session. Unlike the `/action/*` routes, the logout form action
  * is site/locale-prefixed (`buildUrl` prefixes it; `/logout` is not in `url.excludeRoutes`), so it is matched on its
  * path segment rather than by exact string.
+ * @see https://reactrouter.com/start/framework/route-module#shouldrevalidate
  */
 export function shouldRevalidate({ currentUrl, formMethod, formAction }: ShouldRevalidateFunctionArgs): boolean {
     if (formMethod && formMethod !== 'GET' && formAction) {
