@@ -128,8 +128,8 @@ describe('useDeliveryOptions', () => {
             })
         );
 
-        // Pickup is disabled when store has no inventoryId
-        expect(result.current.isStoreOutOfStock).toBe(false);
+        // Store with no inventoryId has no inventory list — pickup is unavailable
+        expect(result.current.isStoreOutOfStock).toBe(true);
     });
 
     it('allows changing delivery option', () => {
@@ -661,10 +661,9 @@ describe('useDeliveryOptions', () => {
                 })
             );
 
-            // Should not trigger race condition logic when store has no inventoryId
-            // isStoreOutOfStock should still be called (with undefined inventoryId)
-            expect(isStoreOutOfStock).toHaveBeenCalledWith(productWithoutInventories, undefined, 1);
-            expect(result.current.isStoreOutOfStock).toBe(false);
+            // Store with no inventoryId early-exits before reaching isStoreOutOfStock
+            expect(isStoreOutOfStock).not.toHaveBeenCalled();
+            expect(result.current.isStoreOutOfStock).toBe(true);
         });
 
         it('always calls isSiteOutOfStock regardless of race condition', () => {
