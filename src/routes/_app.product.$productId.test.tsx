@@ -18,7 +18,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { use } from 'react';
 import type { ShopperProducts } from '@/scapi';
-import { shouldRevalidate, type ProductPageData } from './_app.product.$productId';
+import { type ProductPageData } from './_app.product.$productId';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 // ProductPage reads `nonce` from the root loader. Tests render the page outside
@@ -272,93 +272,14 @@ describe('Product Detail Route', () => {
         // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
     };
 
-    describe('shouldRevalidate function', () => {
-        test('should revalidate when pathname changes (different product)', () => {
-            const currentUrl = 'https://example.com/product/product-1';
-            const nextUrl = 'https://example.com/product/product-2';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(true);
-        });
-
-        test('should revalidate when pid parameter changes (different variant)', () => {
-            const currentUrl = 'https://example.com/product/product-1?pid=variant-1';
-            const nextUrl = 'https://example.com/product/product-1?pid=variant-2';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(true);
-        });
-
-        test('should not revalidate for other search parameter changes', () => {
-            const currentUrl = 'https://example.com/product/product-1?color=red&size=large';
-            const nextUrl = 'https://example.com/product/product-1?color=blue&size=medium';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(false);
-        });
-
-        test('should not revalidate when only other parameters change', () => {
-            const currentUrl = 'https://example.com/product/product-1?color=red';
-            const nextUrl = 'https://example.com/product/product-1?color=blue&size=large';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(false);
-        });
-
-        test('should handle URLs with no search parameters', () => {
-            const currentUrl = 'https://example.com/product/product-1';
-            const nextUrl = 'https://example.com/product/product-1';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(false);
-        });
-
-        test('should handle missing pid parameters', () => {
-            const currentUrl = 'https://example.com/product/product-1';
-            const nextUrl = 'https://example.com/product/product-1?color=red';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(false);
-        });
-
-        test('should revalidate when defaultShouldRevalidate is true, even if URL has not changed', () => {
-            const currentUrl = 'https://example.com/product/product-1?color=red';
-            const nextUrl = 'https://example.com/product/product-1?color=red';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: true });
-            expect(result).toBe(true);
-        });
-
-        test('should revalidate when defaultShouldRevalidate is true, even for other parameter changes', () => {
-            const currentUrl = 'https://example.com/product/product-1?color=red&size=large';
-            const nextUrl = 'https://example.com/product/product-1?color=blue&size=medium';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: true });
-            expect(result).toBe(true);
-        });
-
-        test('should prioritize defaultShouldRevalidate over URL comparison when true', () => {
-            const currentUrl = 'https://example.com/product/product-1';
-            const nextUrl = 'https://example.com/product/product-1';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: true });
-            expect(result).toBe(true);
-        });
-
-        test('should handle pid parameter change from null to value', () => {
-            const currentUrl = 'https://example.com/product/product-1';
-            const nextUrl = 'https://example.com/product/product-1?pid=variant-1';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(true);
-        });
-
-        test('should handle pid parameter change from value to null', () => {
-            const currentUrl = 'https://example.com/product/product-1?pid=variant-1';
-            const nextUrl = 'https://example.com/product/product-1';
-
-            const result = shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate: false });
-            expect(result).toBe(true);
+    describe('shouldRevalidate export', () => {
+        // The policy itself (navigation axis + action-axis denylist) is covered by
+        // src/lib/routes/revalidation/product.test.ts. Here we only assert the route wires up that
+        // exact function, so the behavior isn't re-tested at the route.
+        test('re-exports the shared product revalidation policy', async () => {
+            const { shouldRevalidate: shouldRevalidateRoute } = await import('./_app.product.$productId');
+            const { shouldRevalidate: shouldRevalidateProduct } = await import('@/lib/routes/revalidation/product');
+            expect(shouldRevalidateRoute).toBe(shouldRevalidateProduct);
         });
     });
 

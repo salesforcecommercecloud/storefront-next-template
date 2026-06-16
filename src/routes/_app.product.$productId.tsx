@@ -16,6 +16,7 @@
 import { useEffect, useRef, Suspense, Fragment } from 'react';
 import { Await, useRouteLoaderData } from 'react-router';
 import type { loader as rootLoader } from '@/root';
+import { shouldRevalidate as shouldRevalidateProduct } from '@/lib/routes/revalidation/product';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';
@@ -317,45 +318,10 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
     };
 }
 
-/**
- * Prevent loader from re-running on variant parameter changes to avoid skeleton
- * https://reactrouter.com/start/data/route-object#shouldrevalidate
- * we don't want the page to show skeleton when loading variant product after first initial load
- */
-export function shouldRevalidate({
-    currentUrl,
-    nextUrl,
-    defaultShouldRevalidate,
-}: {
-    currentUrl: string;
-    nextUrl: string;
-    defaultShouldRevalidate: boolean;
-}) {
-    const currentUrlObj = new URL(currentUrl);
-    const nextUrlObj = new URL(nextUrl);
-
-    // Revalidate if pathname changes (different product)
-    if (currentUrlObj.pathname !== nextUrlObj.pathname) {
-        return true;
-    }
-
-    // Revalidate if pid parameter changes (different variant product)
-    const currentPid = currentUrlObj.searchParams.get('pid');
-    const nextPid = nextUrlObj.searchParams.get('pid');
-    if (currentPid !== nextPid) {
-        return true;
-    }
-
-    // If defaultShouldRevalidate is true (e.g., from explicit revalidator.revalidate() call),
-    // allow it to proceed even if URL hasn't changed
-    // This allows store changes to trigger revalidation
-    if (defaultShouldRevalidate) {
-        return true;
-    }
-
-    // Don't revalidate for other search parameter changes (color, size, etc.)
-    return false;
-}
+// Gates both the navigation axis (skip client-only param changes like color/size) and the action axis (skip the
+// expensive loader re-run after cart/wishlist/account mutations that touch nothing the loader reads). The policy and
+// its denylist live in the shared module so the rationale is documented and unit-tested in one place.
+export const shouldRevalidate = shouldRevalidateProduct;
 
 function ProductContent({
     product,
