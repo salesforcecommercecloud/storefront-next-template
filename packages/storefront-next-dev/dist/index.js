@@ -1,9 +1,9 @@
-import path from "node:path";
+import path, { resolve } from "node:path";
 import fs from "fs-extra";
 import chalk from "chalk";
 import { createRequire } from "module";
-import path$1, { dirname, join, relative, resolve } from "path";
-import { fileURLToPath, pathToFileURL } from "url";
+import path$1, { dirname, join, relative, resolve as resolve$1 } from "path";
+import { fileURLToPath } from "url";
 import { parse } from "@babel/parser";
 import { booleanLiteral, identifier, importDeclaration, importSpecifier, isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isStringLiteral, isVariableDeclaration, jsxAttribute, jsxClosingElement, jsxClosingFragment, jsxElement, jsxExpressionContainer, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText, stringLiteral } from "@babel/types";
 import { generate } from "@babel/generator";
@@ -11,7 +11,7 @@ import traverseModule from "@babel/traverse";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
-import fs$1 from "node:fs";
+import fs$1, { existsSync as existsSync$1, readFileSync as readFileSync$1 } from "node:fs";
 import { deadCodeElimination, findReferencedIdentifiers } from "babel-dead-code-elimination";
 import httpProxy from "http-proxy";
 import { brotliDecompressSync, gunzipSync, inflateSync } from "zlib";
@@ -879,7 +879,7 @@ async function scanComponents(project, projectRoot, componentPath, registryPath)
 	});
 	logger.debug(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
 	const components = [];
-	const registryDir = dirname(resolve(projectRoot, registryPath));
+	const registryDir = dirname(resolve$1(projectRoot, registryPath));
 	for (const filePath of componentFiles) try {
 		const content = readFileSync(filePath, "utf-8");
 		const sourceFile = project.createSourceFile(filePath, content, { overwrite: true });
@@ -1067,7 +1067,7 @@ const staticRegistryPlugin = (config = {}) => {
 		} }), projectRoot, componentPath, registryPath);
 		logger.debug(`📦 Found ${components.length} components with @Component decorators`);
 		const generatedCode = generateRegistryCode(components, registryIdentifier);
-		const registryFilePath = resolve(projectRoot, registryPath);
+		const registryFilePath = resolve$1(projectRoot, registryPath);
 		const changed = await updateRegistryFile(registryFilePath, generatedCode);
 		logger.debug("✅ Static registry generation complete!");
 		return {
@@ -1111,14 +1111,67 @@ const staticRegistryPlugin = (config = {}) => {
 };
 
 //#endregion
+//#region src/server/ts-import.ts
+/**
+* Parse TypeScript paths from tsconfig.json and convert to jiti alias format.
+*
+* @param tsconfigPath - Path to tsconfig.json
+* @param projectDirectory - Project root directory for resolving relative paths
+* @returns Record of alias mappings for jiti
+*
+* @example
+* // tsconfig.json: { "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }
+* // Returns: { "@/": "/absolute/path/to/src/" }
+*/
+function parseTsconfigPaths(tsconfigPath, projectDirectory) {
+	const alias = {};
+	if (!existsSync$1(tsconfigPath)) return alias;
+	try {
+		const tsconfigContent = readFileSync$1(tsconfigPath, "utf-8");
+		const tsconfig = JSON.parse(tsconfigContent);
+		const paths = tsconfig.compilerOptions?.paths;
+		const baseUrl = tsconfig.compilerOptions?.baseUrl || ".";
+		if (paths) {
+			for (const [key, values] of Object.entries(paths)) if (values && values.length > 0) {
+				const aliasKey = key.replace(/\/\*$/, "/");
+				alias[aliasKey] = resolve(projectDirectory, baseUrl, values[0].replace(/\/\*$/, "/").replace(/^\.\//, ""));
+			}
+		}
+	} catch {}
+	const sortedAlias = {};
+	Object.keys(alias).sort((a, b) => b.length - a.length).forEach((key) => {
+		sortedAlias[key] = alias[key];
+	});
+	return sortedAlias;
+}
+/**
+* Import a TypeScript file using jiti with proper path alias resolution.
+* This is a cross-platform alternative to tsx that works on Windows.
+*
+* @param filePath - Absolute path to the TypeScript file to import
+* @param options - Import options including project directory
+* @returns The imported module
+*/
+async function importTypescript(filePath, options) {
+	const { projectDirectory, tsconfigPath = resolve(projectDirectory, "tsconfig.json") } = options;
+	const { createJiti } = await import("jiti");
+	const alias = parseTsconfigPaths(tsconfigPath, projectDirectory);
+	return createJiti(import.meta.url, {
+		fsCache: false,
+		interopDefault: true,
+		alias
+	}).import(filePath);
+}
+
+//#endregion
 //#region src/plugins/configLoader.ts
 /**
 * Load the engagement config from config.server.ts
 */
 async function loadEngagementConfig(projectRoot, configPath) {
-	const absoluteConfigPath = resolve(projectRoot, configPath);
+	const absoluteConfigPath = resolve$1(projectRoot, configPath);
 	try {
-		const config = (await import(pathToFileURL(absoluteConfigPath).href)).default;
+		const config = (await importTypescript(absoluteConfigPath, { projectDirectory: projectRoot })).default;
 		logger.debug(`📄 Loaded config from ${configPath}`);
 		const engagement = config?.app?.engagement;
 		if (!engagement) {
@@ -1143,7 +1196,7 @@ async function scanForInstrumentedEvents(projectRoot, scanPaths) {
 	const sendViewPagePattern = /sendViewPageEvent\s*\(/g;
 	const createEventPattern = /createEvent\s*\(\s*['"]([^'"]+)['"]/g;
 	for (const scanPath of scanPaths) {
-		const files = await glob(join(resolve(projectRoot, scanPath), "**/*.{ts,tsx}"), { ignore: [
+		const files = await glob(join(resolve$1(projectRoot, scanPath), "**/*.{ts,tsx}"), { ignore: [
 			"**/*.test.ts",
 			"**/*.test.tsx",
 			"**/*.spec.ts",
@@ -1295,17 +1348,17 @@ const buildMiddlewareRegistryPlugin = () => {
 		configResolved(config) {
 			resolvedConfig = config;
 			const rr = config.__reactRouterPluginContext?.reactRouterConfig ?? {};
-			buildDirectory = rr.buildDirectory ?? resolve(config.root, "build");
+			buildDirectory = rr.buildDirectory ?? resolve$1(config.root, "build");
 			appDirectory = rr.appDirectory ?? "src";
 		},
 		buildApp: {
 			order: "post",
 			handler: async () => {
 				const projectRoot = resolvedConfig.root;
-				const middlewareRegistryPath = resolve(projectRoot, appDirectory, SERVER_OUT_SUBDIR, MIDDLEWARE_REGISTRY_SOURCE_FILE);
+				const middlewareRegistryPath = resolve$1(projectRoot, appDirectory, SERVER_OUT_SUBDIR, MIDDLEWARE_REGISTRY_SOURCE_FILE);
 				if (!existsSync(middlewareRegistryPath)) return;
 				const { build } = await import("tsdown");
-				const serverOutDir = resolve(projectRoot, buildDirectory, SERVER_OUT_SUBDIR);
+				const serverOutDir = resolve$1(projectRoot, buildDirectory, SERVER_OUT_SUBDIR);
 				await build({
 					cwd: projectRoot,
 					entry: { [MIDDLEWARE_REGISTRY_SOURCE_FILE.replace(/\.ts$/, "")]: middlewareRegistryPath },

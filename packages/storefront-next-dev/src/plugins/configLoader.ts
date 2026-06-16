@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { resolve } from 'path';
-import { pathToFileURL } from 'url';
+import { importTypescript } from '../server/ts-import';
 import { logger } from '../logger';
 
 /**
@@ -40,15 +40,21 @@ export async function loadEngagementConfig(projectRoot: string, configPath: stri
     const absoluteConfigPath = resolve(projectRoot, configPath);
 
     try {
-        // Use dynamic import with file URL for ESM compatibility
-        const configUrl = pathToFileURL(absoluteConfigPath).href;
-        const configModule = await import(configUrl);
+        // Load through jiti (via importTypescript), the same TS-aware loader used by every
+        // other config loader in the SDK. This plugin runs in plain Node during a production
+        // build (Rollup `buildStart`), where a native `import()` cannot resolve TypeScript's
+        // extensionless relative imports (e.g. `./src/types/tracking-consent`) and throws
+        // ERR_MODULE_NOT_FOUND. jiti transpiles the TS and resolves tsconfig path aliases.
+        const configModule = await importTypescript<{ default?: { app?: { engagement?: EngagementConfig } } }>(
+            absoluteConfigPath,
+            { projectDirectory: projectRoot }
+        );
         const config = configModule.default;
 
         logger.debug(`📄 Loaded config from ${configPath}`);
 
         // Navigate to engagement config
-        const engagement = config?.app?.engagement as EngagementConfig | undefined;
+        const engagement = config?.app?.engagement;
 
         if (!engagement) {
             logger.debug(`⚠️  No engagement config found in ${configPath}`);
