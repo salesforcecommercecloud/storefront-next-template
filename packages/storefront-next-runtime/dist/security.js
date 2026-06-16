@@ -176,14 +176,15 @@ function serializeHsts(hsts) {
 * `localhost` would force HTTPS on every developer's `pnpm dev`.
 *
 * Operational invariant: this is the single signal that distinguishes a
-* deployed environment from local dev, and it now gates TWO security
-* behaviors — HSTS emission and the dev-only HMR websocket `connect-src`
-* relaxation below. Managed Runtime always injects a real, non-'local'
-* BUNDLE_ID, so a deployed response is always treated as remote. An unset
-* or empty BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets
-* allowed); a deployment that failed to set BUNDLE_ID would already be
-* broken in other ways (asset path resolution also keys off it), so we do
-* not add a redundant guard here.
+* deployed environment from local dev, and it now gates THREE security
+* behaviors — HSTS emission, the dev-only HMR websocket `connect-src`
+* relaxation, and suppression of `upgrade-insecure-requests` (all below).
+* Managed Runtime always injects a real, non-'local' BUNDLE_ID, so a
+* deployed response is always treated as remote. An unset or empty
+* BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets allowed,
+* upgrade-insecure-requests dropped); a deployment that failed to set
+* BUNDLE_ID would already be broken in other ways (asset path resolution
+* also keys off it), so we do not add a redundant guard here.
 */
 function isRemote() {
 	const id = process.env.BUNDLE_ID;
@@ -275,6 +276,7 @@ function createSecurityHeadersMiddleware(input = {}) {
 			const devSocketSources = ["ws://localhost:*", "ws://127.0.0.1:*"];
 			resolved.csp.directives["connect-src"] = [...connectSrc, ...devSocketSources.filter((s) => !connectSrc.includes(s))];
 		}
+		delete resolved.csp.directives["upgrade-insecure-requests"];
 	}
 	const staticHsts = remote && resolved.hsts !== false ? serializeHsts(resolved.hsts) : null;
 	const permissionsHeader = resolved.permissionsPolicy === false ? null : serializePermissionsPolicy(resolved.permissionsPolicy);

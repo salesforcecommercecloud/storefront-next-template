@@ -149,6 +149,34 @@ describe('createSecurityHeadersMiddleware', () => {
         expect(remoteCsp).not.toContain('ws://localhost');
     });
 
+    it('omits upgrade-insecure-requests when running locally (plain-HTTP dev)', async () => {
+        // pnpm dev serves plain HTTP over loopback. Emitting upgrade-insecure-requests
+        // makes Safari upgrade http://localhost subresources to https (no TLS listener
+        // on the dev port), failing every CSS/JS request. Suppressed locally — same
+        // isRemote() gate as HSTS.
+        process.env.BUNDLE_ID = 'local';
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        expect(res.headers.get('content-security-policy')).not.toContain('upgrade-insecure-requests');
+    });
+
+    it('omits upgrade-insecure-requests when BUNDLE_ID is unset (treated as local)', async () => {
+        delete process.env.BUNDLE_ID;
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        expect(res.headers.get('content-security-policy')).not.toContain('upgrade-insecure-requests');
+    });
+
+    it('emits upgrade-insecure-requests when running remotely (MRT)', async () => {
+        process.env.BUNDLE_ID = 'abc123';
+        const mw = createSecurityHeadersMiddleware({});
+        const { args } = makeArgs();
+        const res = await run(mw, args);
+        expect(res.headers.get('content-security-policy')).toContain('upgrade-insecure-requests');
+    });
+
     it('writes a per-request nonce on context that matches the CSP nonce', async () => {
         const mw = createSecurityHeadersMiddleware({});
         const { args, context } = makeArgs();

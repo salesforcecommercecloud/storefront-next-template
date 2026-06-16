@@ -28,7 +28,7 @@ Storefront Next ships default security response headers from the SDK. Every stor
 | `form-action` | `'self'` | Restricts form POST targets. CSP3 does NOT fall back to `default-src` for this directive — without it, forms can POST anywhere. |
 | `base-uri` | `'self'` | Prevents `<base href>` injection. |
 | `object-src` | `'none'` | Blocks Flash and other plugin content. |
-| `upgrade-insecure-requests` | enabled | Browser auto-upgrades HTTP subresources to HTTPS. |
+| `upgrade-insecure-requests` | enabled (only on Managed Runtime; suppressed locally) | Browser auto-upgrades HTTP subresources to HTTPS. Suppressed on local `pnpm dev` because Safari upgrades `http://localhost` subresources to `https://` (same port, no TLS listener) and breaks every CSS/JS request. |
 
 ## Where the config lives
 

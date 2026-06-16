@@ -27,14 +27,15 @@ import type { CspDirectives, HstsConfig, ResolvedSecurityConfig, SecurityConfig 
  * `localhost` would force HTTPS on every developer's `pnpm dev`.
  *
  * Operational invariant: this is the single signal that distinguishes a
- * deployed environment from local dev, and it now gates TWO security
- * behaviors — HSTS emission and the dev-only HMR websocket `connect-src`
- * relaxation below. Managed Runtime always injects a real, non-'local'
- * BUNDLE_ID, so a deployed response is always treated as remote. An unset
- * or empty BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets
- * allowed); a deployment that failed to set BUNDLE_ID would already be
- * broken in other ways (asset path resolution also keys off it), so we do
- * not add a redundant guard here.
+ * deployed environment from local dev, and it now gates THREE security
+ * behaviors — HSTS emission, the dev-only HMR websocket `connect-src`
+ * relaxation, and suppression of `upgrade-insecure-requests` (all below).
+ * Managed Runtime always injects a real, non-'local' BUNDLE_ID, so a
+ * deployed response is always treated as remote. An unset or empty
+ * BUNDLE_ID falls open to local-dev mode (HSTS off, dev sockets allowed,
+ * upgrade-insecure-requests dropped); a deployment that failed to set
+ * BUNDLE_ID would already be broken in other ways (asset path resolution
+ * also keys off it), so we do not add a redundant guard here.
  */
 function isRemote(): boolean {
     const id = process.env.BUNDLE_ID;
@@ -141,16 +142,17 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
 
     const remote = isRemote();
 
-    // Local dev only: Vite serves HMR over a WebSocket (e.g. ws://localhost:24678).
-    // The production connect-src has no ws: source, so on `pnpm dev` the browser
-    // blocks the HMR socket and live reload silently dies. Append the loopback
-    // websocket origins to connect-src when NOT running on MRT. This never affects
-    // deployed responses (remote === true there), so the production CSP stays
-    // byte-for-byte identical. Port is wildcarded because Vite's HMR port is
-    // configurable / auto-increments on collision. We only add `ws://` loopback:
-    // the local dev server is plain HTTP, and the workspace HMR path uses `wss://`
-    // to an EXTERNAL host (not localhost), which the deployed CSP already covers.
+    // Local-dev-only CSP adjustments, gated on !remote so the deployed (Managed
+    // Runtime) CSP stays byte-for-byte identical. These apply only on `pnpm dev`,
+    // which serves plain HTTP over loopback.
     if (!remote && resolved.csp !== false) {
+        // (1) Allow Vite's HMR websocket. Vite serves HMR over a WebSocket (e.g.
+        // ws://localhost:24678); the production connect-src has no ws: source, so
+        // without this the browser blocks the socket and live reload silently dies.
+        // Port is wildcarded because Vite's HMR port is configurable / auto-increments
+        // on collision. Only `ws://` loopback is added: the local dev server is plain
+        // HTTP, and the workspace HMR path uses `wss://` to an EXTERNAL host (not
+        // localhost), which the deployed CSP already covers.
         const connectSrc = resolved.csp.directives['connect-src'];
         if (Array.isArray(connectSrc)) {
             const devSocketSources = ['ws://localhost:*', 'ws://127.0.0.1:*'];
@@ -159,6 +161,18 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
                 ...devSocketSources.filter((s) => !connectSrc.includes(s)),
             ];
         }
+
+        // (2) Drop `upgrade-insecure-requests`. It tells the browser to rewrite every
+        // http subresource to https WITHOUT changing a non-default port, so
+        // http://localhost:5173/x.css becomes https://localhost:5173/x.css — which has
+        // no TLS listener locally. Chrome/Firefox skip the upgrade for loopback (a
+        // non-standard leniency); Safari/WebKit follows the spec literally, so every
+        // CSS/JS request fails with a TLS error. Loopback traffic is not network-
+        // observable, so there is nothing to upgrade-protect locally — suppressing it
+        // costs no security (same rationale as suppressing HSTS above). Production
+        // (remote) keeps the directive. `delete` only touches this per-instance
+        // directives object, never the shared module default.
+        delete resolved.csp.directives['upgrade-insecure-requests'];
     }
 
     // Pre-compute everything that doesn't depend on the per-request nonce.
