@@ -22,6 +22,7 @@
  *
  *   - validatePlaceOrderPreconditions
  *   - calculateBasketForOrder
+ *   - syncPaymentInstrumentAmount
  *   - saveProfilePaymentMethod / saveProfileAddressesAndPhone (or the
  *     combined wrapper saveCheckoutDataToProfile)
  *   - finalizeOrderSuccess
@@ -29,7 +30,7 @@
 
 import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsV2, ShopperOrders } from '@/scapi';
-import { calculateBasket, getBasketCurrency } from '@/lib/api/basket.server';
+import { calculateBasket, getBasketCurrency, updatePaymentInstrumentInBasket } from '@/lib/api/basket.server';
 import { destroyBasket, updateBasketResource } from '@/middlewares/basket.server';
 import {
     savePaymentMethodToCustomerViaOrder,
@@ -129,6 +130,35 @@ export async function calculateBasketForOrder(context: ActionContext, basket: Ba
     const calculated = await calculateBasket(context, basket.basketId, currency);
     updateBasketResource(context, calculated);
     return calculated;
+}
+
+/**
+ * Write the basket's `orderTotal` onto its payment instrument's `amount` field.
+ * Call between `calculateBasketForOrder` and `createOrder` so the instrument
+ * matches the final basket total even if the basket was recalculated (promo,
+ * shipping, items) after the instrument was attached.
+ */
+export async function syncPaymentInstrumentAmount(context: ActionContext, basket: Basket): Promise<Basket> {
+    if (!basket.basketId) {
+        throw new Error('syncPaymentInstrumentAmount: basket has no basketId');
+    }
+    const instrument = basket.paymentInstruments?.[0];
+    if (!instrument?.paymentInstrumentId) return basket;
+    if (basket.orderTotal == null) return basket;
+
+    const logger = getLogger(context);
+    logger.info('[Checkout] payment-instrument amount sync', {
+        basketId: basket.basketId,
+        paymentInstrumentId: instrument.paymentInstrumentId,
+        previousAmount: instrument.amount,
+        newAmount: basket.orderTotal,
+    });
+
+    const updated = await updatePaymentInstrumentInBasket(context, basket.basketId, instrument.paymentInstrumentId, {
+        amount: basket.orderTotal,
+    });
+    updateBasketResource(context, updated);
+    return updated;
 }
 
 // ─── Profile saves ──────────────────────────────────────────────────────────────

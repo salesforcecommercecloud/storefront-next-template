@@ -31,6 +31,7 @@ import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 import {
     validatePlaceOrderPreconditions,
     calculateBasketForOrder,
+    syncPaymentInstrumentAmount,
     saveCheckoutDataToProfile,
     finalizeOrderSuccess,
 } from '@/lib/checkout/place-order-orchestration.server';
@@ -200,10 +201,14 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         const calculatedBasket = await calculateBasketForOrder(context, updatedBasket);
 
+        // Bring the payment instrument's amount in lockstep with orderTotal before
+        // createOrder.
+        const syncedBasket = await syncPaymentInstrumentAmount(context, calculatedBasket);
+
         // Extension hook: fraud check before placing the order (blocking — unexpected errors fail the action)
         const fraudHookResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_FRAUD_BEFORE_PLACE,
-            context: { data: { basket: calculatedBasket }, actionContext: context },
+            context: { data: { basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
             blocking: true,
@@ -213,7 +218,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         // Extension hook: payment processing before order creation (blocking — e.g. authorization)
         const paymentHookResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER,
-            context: { data: { basket: calculatedBasket }, actionContext: context },
+            context: { data: { basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
             blocking: true,
@@ -252,7 +257,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         // details so post-order failures (e.g. failed capture) are surfaced in monitoring.
         const afterPlaceResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
-            context: { data: { order, basket: calculatedBasket }, actionContext: context },
+            context: { data: { order, basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
         });

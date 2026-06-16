@@ -25,6 +25,7 @@ const action = actionImpl as unknown as (args: {
 
 const validatePlaceOrderPreconditionsMock = vi.fn();
 const calculateBasketForOrderMock = vi.fn();
+const syncPaymentInstrumentAmountMock = vi.fn();
 const getBasketMock = vi.fn();
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 const resolveEmptyShipmentsMock = vi.fn();
@@ -32,6 +33,7 @@ const resolveEmptyShipmentsMock = vi.fn();
 vi.mock('@/lib/checkout/place-order-orchestration.server', () => ({
     validatePlaceOrderPreconditions: (...args: unknown[]) => validatePlaceOrderPreconditionsMock(...args),
     calculateBasketForOrder: (...args: unknown[]) => calculateBasketForOrderMock(...args),
+    syncPaymentInstrumentAmount: (...args: unknown[]) => syncPaymentInstrumentAmountMock(...args),
 }));
 
 vi.mock('@/middlewares/basket.server', () => ({
@@ -61,6 +63,7 @@ describe('action.place-order-prepare', () => {
     beforeEach(() => {
         validatePlaceOrderPreconditionsMock.mockReset();
         calculateBasketForOrderMock.mockReset();
+        syncPaymentInstrumentAmountMock.mockReset();
         getBasketMock.mockReset();
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
         resolveEmptyShipmentsMock.mockReset();
@@ -73,6 +76,7 @@ describe('action.place-order-prepare', () => {
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
         resolveEmptyShipmentsMock.mockResolvedValue(undefined);
         calculateBasketForOrderMock.mockResolvedValue({ basketId: 'b-1' });
+        syncPaymentInstrumentAmountMock.mockResolvedValue({ basketId: 'b-1' });
     });
 
     it('returns 405 for non-POST methods', async () => {
@@ -87,6 +91,13 @@ describe('action.place-order-prepare', () => {
         expect(await response.json()).toEqual({ success: true });
         expect(validatePlaceOrderPreconditionsMock).toHaveBeenCalledOnce();
         expect(calculateBasketForOrderMock).toHaveBeenCalledOnce();
+        expect(syncPaymentInstrumentAmountMock).toHaveBeenCalledOnce();
+    });
+
+    it('returns 500 when payment-amount sync fails (pre-extension createOrder safety)', async () => {
+        syncPaymentInstrumentAmountMock.mockRejectedValue(new Error('SCAPI update failed'));
+        const response = await action({ request: buildRequest(), context: ctx, params: {} });
+        expect(response.status).toBe(500);
     });
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP

@@ -32,6 +32,7 @@ import {
     getBasketCurrency,
     calculateBasket,
     addPaymentInstrumentToBasket,
+    updatePaymentInstrumentInBasket,
     updateBillingAddressForBasket,
 } from '@/lib/api/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
@@ -86,6 +87,11 @@ describe('action.place-order action', () => {
         });
         vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({} as any);
         vi.mocked(getAddressBookFromCustomer).mockReturnValue([]);
+        // syncPaymentInstrumentAmount calls this; default to passthrough so tests
+        // that don't care about the sync don't have to set up a return value.
+        vi.mocked(updatePaymentInstrumentInBasket).mockImplementation((_ctx, basketId, _piId, instrument) =>
+            Promise.resolve({ basketId, paymentInstruments: [instrument] } as any)
+        );
     });
 
     test('returns noActiveBasket when basket is missing', async () => {
@@ -271,6 +277,53 @@ describe('action.place-order action', () => {
                 }),
             })
         );
+    });
+
+    test('returns 500 and does NOT call createOrder when payment-amount sync fails', async () => {
+        const basketWithPayment = {
+            basketId: 'b1',
+            customerInfo: { email: 'test@example.com' },
+            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
+            shipments: [
+                {
+                    shipmentId: 's1',
+                    shippingAddress: {
+                        address1: '123 Main St',
+                        city: 'Austin',
+                        postalCode: '78701',
+                        countryCode: 'US',
+                    },
+                    shippingMethod: { id: 'ground', name: 'Ground' },
+                },
+            ],
+            paymentInstruments: [{ paymentInstrumentId: 'pi1' }],
+            billingAddress: { address1: '123 Main St', city: 'Austin', postalCode: '78701', countryCode: 'US' },
+            orderTotal: 99.99,
+        };
+
+        vi.mocked(getBasket).mockResolvedValue({ current: basketWithPayment } as any);
+        vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-1' } as any);
+        vi.mocked(getBasketCurrency).mockReturnValue('USD');
+        vi.mocked(calculateBasket).mockResolvedValue({ ...basketWithPayment, basketId: 'b1' } as any);
+        // Override the passthrough default: simulate SCAPI failure on amount sync.
+        vi.mocked(updatePaymentInstrumentInBasket).mockRejectedValue(new Error('SCAPI down'));
+        const createOrderMock = vi.fn();
+        vi.mocked(createApiClients).mockReturnValue({
+            shopperOrders: { createOrder: createOrderMock },
+        } as any);
+
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: resourceRoutes.placeOrder,
+        } as ActionFunctionArgs);
+
+        expect(response.status).toBe(500);
+        // The whole point: createOrder must not run when the basket and instrument
+        // are out of sync, otherwise OMS will reject the resulting order.
+        expect(createOrderMock).not.toHaveBeenCalled();
     });
 
     test('saves payment method and addresses for checkout-registration even without savePaymentToProfile', async () => {

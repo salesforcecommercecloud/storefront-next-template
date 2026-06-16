@@ -22,6 +22,7 @@ import { getLogger } from '@/lib/logger.server';
 import {
     validatePlaceOrderPreconditions,
     calculateBasketForOrder,
+    syncPaymentInstrumentAmount,
 } from '@/lib/checkout/place-order-orchestration.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -52,7 +53,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
         await resolveEmptyShipments(context, validation.basket);
 
-        await calculateBasketForOrder(context, validation.basket);
+        const calculatedBasket = await calculateBasketForOrder(context, validation.basket);
+
+        // Bring the payment instrument's amount in lockstep with orderTotal before
+        // the extension's onPlaceOrder runs createOrder.
+        await syncPaymentInstrumentAmount(context, calculatedBasket);
 
         logger.info('[Checkout] place-order-prepare: ready for payment', {
             basketId: validation.basket.basketId,

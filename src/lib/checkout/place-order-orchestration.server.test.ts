@@ -20,6 +20,7 @@ import type { CustomerProfile } from '@/components/checkout/utils/checkout-conte
 import {
     validatePlaceOrderPreconditions,
     calculateBasketForOrder,
+    syncPaymentInstrumentAmount,
     saveCheckoutDataToProfile,
     saveProfilePaymentMethod,
     saveProfileAddressesAndPhone,
@@ -38,6 +39,7 @@ const calculateBasketMock = vi.fn();
 const updateBasketResourceMock = vi.fn();
 const getBasketCurrencyMock = vi.fn();
 const destroyBasketMock = vi.fn();
+const updatePaymentInstrumentMock = vi.fn();
 
 const savePaymentMethodMock = vi.fn();
 const saveShippingAddressMock = vi.fn();
@@ -47,6 +49,7 @@ const updateContactInfoMock = vi.fn();
 vi.mock('@/lib/api/basket.server', () => ({
     calculateBasket: (...args: unknown[]) => calculateBasketMock(...args),
     getBasketCurrency: (...args: unknown[]) => getBasketCurrencyMock(...args),
+    updatePaymentInstrumentInBasket: (...args: unknown[]) => updatePaymentInstrumentMock(...args),
 }));
 
 vi.mock('@/middlewares/basket.server', () => ({
@@ -101,6 +104,7 @@ beforeEach(() => {
     updateBasketResourceMock.mockReset();
     getBasketCurrencyMock.mockReset();
     destroyBasketMock.mockReset();
+    updatePaymentInstrumentMock.mockReset();
     savePaymentMethodMock.mockReset();
     saveShippingAddressMock.mockReset();
     saveBillingAddressMock.mockReset();
@@ -235,6 +239,90 @@ describe('calculateBasketForOrder', () => {
         calculateBasketMock.mockRejectedValue(new Error('SCAPI is down'));
 
         await expect(calculateBasketForOrder(ctx, { basketId: 'basket-1' } as Basket)).rejects.toThrow('SCAPI is down');
+        expect(updateBasketResourceMock).not.toHaveBeenCalled();
+    });
+});
+
+// ─── syncPaymentInstrumentAmount ────────────────────────────────────────────────
+
+describe('syncPaymentInstrumentAmount', () => {
+    const basketWithInstrument = (orderTotal: number, amount: number | undefined): Basket =>
+        ({
+            basketId: 'basket-1',
+            orderTotal,
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pi-1',
+                    paymentMethodId: 'CREDIT_CARD',
+                    amount,
+                    paymentCard: { cardType: 'Visa' },
+                },
+            ],
+        }) as unknown as Basket;
+
+    it('sends only the amount field (PATCH semantics: SCAPI merges into the existing instrument)', async () => {
+        updatePaymentInstrumentMock.mockResolvedValue({ basketId: 'basket-1', orderTotal: 50 });
+
+        const result = await syncPaymentInstrumentAmount(ctx, basketWithInstrument(50, 100));
+
+        expect(updatePaymentInstrumentMock).toHaveBeenCalledWith(ctx, 'basket-1', 'pi-1', { amount: 50 });
+        expect(updateBasketResourceMock).toHaveBeenCalledWith(ctx, { basketId: 'basket-1', orderTotal: 50 });
+        expect(result).toEqual({ basketId: 'basket-1', orderTotal: 50 });
+    });
+
+    it('writes unconditionally even when amount and orderTotal already match (idempotent)', async () => {
+        updatePaymentInstrumentMock.mockResolvedValue({ basketId: 'basket-1', orderTotal: 50 });
+
+        await syncPaymentInstrumentAmount(ctx, basketWithInstrument(50, 50));
+
+        // We do not diff first - float precision makes equality fragile, and an extra
+        // SCAPI write is cheaper than an OMS-rejected order.
+        expect(updatePaymentInstrumentMock).toHaveBeenCalledOnce();
+    });
+
+    it('no-op when basket has no payment instrument', async () => {
+        const basket = { basketId: 'basket-1', orderTotal: 50 } as Basket;
+
+        const result = await syncPaymentInstrumentAmount(ctx, basket);
+
+        expect(updatePaymentInstrumentMock).not.toHaveBeenCalled();
+        expect(result).toBe(basket);
+    });
+
+    it('no-op when the payment instrument has no paymentInstrumentId', async () => {
+        const basket = {
+            basketId: 'basket-1',
+            orderTotal: 50,
+            paymentInstruments: [{ paymentMethodId: 'CREDIT_CARD' }],
+        } as unknown as Basket;
+
+        const result = await syncPaymentInstrumentAmount(ctx, basket);
+
+        expect(updatePaymentInstrumentMock).not.toHaveBeenCalled();
+        expect(result).toBe(basket);
+    });
+
+    it('no-op when basket has no orderTotal (precondition check should have caught this)', async () => {
+        const basket = {
+            basketId: 'basket-1',
+            paymentInstruments: [{ paymentInstrumentId: 'pi-1', amount: 0 }],
+        } as unknown as Basket;
+
+        const result = await syncPaymentInstrumentAmount(ctx, basket);
+
+        expect(updatePaymentInstrumentMock).not.toHaveBeenCalled();
+        expect(result).toBe(basket);
+    });
+
+    it('throws when basket has no basketId (defensive: caller should have validated)', async () => {
+        await expect(syncPaymentInstrumentAmount(ctx, {} as Basket)).rejects.toThrow('basket has no basketId');
+        expect(updatePaymentInstrumentMock).not.toHaveBeenCalled();
+    });
+
+    it('propagates SCAPI errors so the caller can fail place-order before createOrder', async () => {
+        updatePaymentInstrumentMock.mockRejectedValue(new Error('SCAPI is down'));
+
+        await expect(syncPaymentInstrumentAmount(ctx, basketWithInstrument(50, 100))).rejects.toThrow('SCAPI is down');
         expect(updateBasketResourceMock).not.toHaveBeenCalled();
     });
 });
