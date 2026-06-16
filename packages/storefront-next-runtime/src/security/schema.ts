@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import type { SecurityConfig } from './types.js';
 
-const VALID_CSP_DIRECTIVES = [
+export const VALID_CSP_DIRECTIVES = [
     'default-src',
     'script-src',
     'style-src',

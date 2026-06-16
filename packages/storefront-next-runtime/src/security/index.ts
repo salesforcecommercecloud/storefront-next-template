@@ -16,6 +16,11 @@
 export { createSecurityHeadersMiddleware } from './middleware.js';
 export { defaultSecurityHeaders, defaultCspDirectives } from './defaults.js';
 export { securityContext, getSecurityNonce } from './nonce.js';
+export { resolveCsp } from './contributors/resolve-csp.js';
+export { validateContributors } from './contributors/registry.js';
+export { BoundedCache } from './contributors/lru-cache.js';
+export type { ResolveCspInput, ResolvedCsp } from './contributors/resolve-csp.js';
+export type { CspContributor, CspContribution, CspResolutionContext, CspDirectiveName } from './contributors/types.js';
 // React-only exports (NonceContext, useSecurityNonceFromContext) live at
 // `@salesforce/storefront-next-runtime/security/react` — a separate, browser-
 // safe entry that doesn't drag in node:crypto / zod via the main module.

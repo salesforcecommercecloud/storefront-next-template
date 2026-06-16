@@ -329,5 +329,188 @@ function createSecurityHeadersMiddleware(input = {}) {
 }
 
 //#endregion
-export { createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, securityContext };
+//#region src/security/contributors/lru-cache.ts
+/**
+* Copyright 2026 Salesforce, Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Minimal bounded LRU cache. Map preserves insertion order, so the first key
+* in iteration order is the least-recently-used; `get` re-inserts to refresh
+* recency. No external dependency. Used by the CSP resolver to memoize
+* per-request bodies keyed on the fired-set.
+*/
+var BoundedCache = class {
+	store = /* @__PURE__ */ new Map();
+	constructor(capacity) {
+		this.capacity = capacity;
+		if (capacity < 1) throw new Error("BoundedCache capacity must be >= 1");
+	}
+	get(key) {
+		if (!this.store.has(key)) return void 0;
+		const value = this.store.get(key);
+		this.store.delete(key);
+		this.store.set(key, value);
+		return value;
+	}
+	set(key, value) {
+		this.store.delete(key);
+		this.store.set(key, value);
+		if (this.store.size > this.capacity) {
+			const oldest = this.store.keys().next().value;
+			if (oldest !== void 0) this.store.delete(oldest);
+		}
+	}
+	get size() {
+		return this.store.size;
+	}
+};
+
+//#endregion
+//#region src/security/contributors/registry.ts
+const DIRECTIVE_SET = new Set(VALID_CSP_DIRECTIVES.filter((d) => d !== "upgrade-insecure-requests"));
+/**
+* Validate a single contributor origin string. Returns an error message, or
+* null when valid. Rules: https only, no wildcard, no whitespace or CSP
+* separators that could split/inject directives.
+*/
+function originError(origin) {
+	if (origin.includes("*")) return `wildcard not allowed in contributor origin: "${origin}"`;
+	if (/[\s;,]/.test(origin)) return `invalid origin (whitespace or separator): "${origin}"`;
+	let url;
+	try {
+		url = new URL(origin);
+	} catch {
+		return `invalid origin (unparseable): "${origin}"`;
+	}
+	if (url.protocol !== "https:") return `contributor origin must be https: "${origin}"`;
+	if (url.username !== "" || url.password !== "") return `invalid origin (must not contain credentials): "${origin}"`;
+	if (origin !== url.origin) return `invalid origin (must be an exact scheme+host[:port] with no path/query/fragment): "${origin}"`;
+	return null;
+}
+function validateContribution(id, contribution) {
+	for (const [directive, origins] of Object.entries(contribution)) {
+		if (!DIRECTIVE_SET.has(directive)) throw new Error(`[security] contributor "${id}" targets unknown directive "${directive}".`);
+		for (const origin of origins ?? []) {
+			const err = originError(origin);
+			if (err) throw new Error(`[security] contributor "${id}": ${err}`);
+		}
+	}
+}
+/**
+* Boot-time guardrails for the CSP contributor set. Throws (fail-loud) on any
+* malformed contributor so the problem surfaces in CI / first deploy, not in
+* production. Also emits the resolved contributor set for observability.
+*
+* Each contributor's `contribute()` is validated against the SAME
+* `baseDirectives` the resolver will serve it with — so we validate exactly the
+* contribution that reaches the header, not a probe approximation. `contribute`
+* is expected to be pure (it returns origins to ADD regardless of base), but
+* validating the real output removes any reliance on that assumption.
+*
+* @param baseDirectives The resolved base directives the resolver folds
+* contributions into. Defaults to `{}` for standalone validation.
+*/
+function validateContributors(contributors, baseDirectives = {}) {
+	const seen = /* @__PURE__ */ new Set();
+	const ctx = { baseDirectives };
+	const summaries = [];
+	for (const c of contributors) {
+		if (typeof c.id !== "string" || c.id.trim() === "") throw new Error("[security] contributor has a missing or empty id.");
+		if (!/^[A-Za-z0-9._-]+$/.test(c.id)) throw new Error(`[security] contributor id "${c.id}" must match /^[A-Za-z0-9._-]+$/ (no separators or whitespace).`);
+		if (seen.has(c.id)) throw new Error(`[security] duplicate contributor id "${c.id}".`);
+		seen.add(c.id);
+		if (typeof c.isActive !== "function" || typeof c.contribute !== "function") throw new Error(`[security] contributor "${c.id}" must define isActive and contribute.`);
+		if (c.perRequest !== void 0 && typeof c.perRequest.shouldApply !== "function") throw new Error(`[security] contributor "${c.id}" perRequest.shouldApply must be a function.`);
+		const contribution = c.contribute(ctx);
+		validateContribution(c.id, contribution);
+		const dirs = Object.keys(contribution).join(",");
+		summaries.push(`${c.id}[${dirs}]${c.perRequest ? "(perRequest)" : ""}`);
+	}
+	console.info(`[security] CSP contributors registered: ${summaries.join(" ") || "(none)"}`);
+}
+
+//#endregion
+//#region src/security/contributors/resolve-csp.ts
+/** Default cap on memoized per-request bodies. Tunable; see the design doc. */
+const DEFAULT_CACHE_CEILING = 256;
+/** Union `addition` into `target` per directive, de-duplicating, returning a new map. */
+function mergeContribution(target, addition) {
+	const out = { ...target };
+	for (const [directive, origins] of Object.entries(addition)) {
+		const merged = [...out[directive] ?? []];
+		for (const origin of origins) if (!merged.includes(origin)) merged.push(origin);
+		out[directive] = merged;
+	}
+	return out;
+}
+/**
+* Resolve CSP from base directives + contributors.
+*
+* Boot: contributors are guardrail-validated (fail-loud), then active boot-static
+* contributors fold into `staticDirectives` once.
+* Per request: per-request contributors' cheap `shouldApply(rawUrl)` guards run;
+* if none fire, the shared `staticDirectives` is returned (no build). If some
+* fire, the body is built once and memoized keyed on the fired-set id list.
+*
+* Validation runs here so a consumer cannot resolve a CSP from unvalidated
+* contributors (which could leak a wildcard / non-https / malformed origin into
+* the header). It is boot-time and idempotent.
+*/
+function resolveCsp(input) {
+	const { baseDirectives, contributors } = input;
+	const ceiling = input.cacheCeiling ?? DEFAULT_CACHE_CEILING;
+	validateContributors(contributors, baseDirectives);
+	const active = contributors.filter((c) => c.isActive({ baseDirectives }));
+	const bootStatic = active.filter((c) => c.perRequest === void 0);
+	let staticDirectives = { ...baseDirectives };
+	for (const c of bootStatic) staticDirectives = mergeContribution(staticDirectives, c.contribute({ baseDirectives }));
+	const perRequest = [];
+	for (const c of active) {
+		if (c.perRequest === void 0) continue;
+		perRequest.push({
+			id: c.id,
+			perRequest: c.perRequest,
+			contribution: c.contribute({ baseDirectives })
+		});
+	}
+	const p = perRequest.length;
+	const combos = p >= 31 ? Number.POSITIVE_INFINITY : 2 ** p;
+	if (combos > ceiling) console.warn(`[security] CSP per-request contributors P=${p} → 2^${p} possible bodies exceeds cache ceiling ${ceiling}; LRU eviction may cause rebuilds. Review whether this many per-request contributors is intended.`);
+	const cache = new BoundedCache(Math.max(1, Math.min(combos, ceiling)));
+	function directivesForRequest(rawUrl) {
+		if (perRequest.length === 0) return staticDirectives;
+		let firedKey = "";
+		let fired;
+		for (const c of perRequest) if (c.perRequest.shouldApply(rawUrl)) {
+			(fired ??= []).push(c);
+			firedKey += firedKey ? `|${c.id}` : c.id;
+		}
+		if (fired === void 0) return staticDirectives;
+		const cached = cache.get(firedKey);
+		if (cached) return cached;
+		let built = staticDirectives;
+		for (const c of fired) built = mergeContribution(built, c.contribution);
+		cache.set(firedKey, built);
+		return built;
+	}
+	return {
+		staticDirectives,
+		directivesForRequest
+	};
+}
+
+//#endregion
+export { BoundedCache, createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, resolveCsp, securityContext, validateContributors };
 //# sourceMappingURL=security.js.map

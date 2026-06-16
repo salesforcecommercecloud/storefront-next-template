@@ -156,4 +156,21 @@ describe('security defaults', () => {
     it('referrer policy is strict-origin-when-cross-origin', () => {
         expect(defaultSecurityHeaders.referrerPolicy).toBe('strict-origin-when-cross-origin');
     });
+
+    it('documents *.cc.salesforce.com as a Tier-1 DIS image host (img-src)', () => {
+        // *.cc.salesforce.com serves B2C Commerce / DIS imagery for every storefront
+        // (see template dynamic-image.ts). It is universal (Tier 1), not feature-gated.
+        expect(defaultCspDirectives['img-src']).toContain('https://*.cc.salesforce.com');
+    });
+
+    it('keeps feature-specific (Tier-2) origins OUT of the universal defaults', () => {
+        // Tier-2 hosts belong to opt-in features and must arrive via a CSP contributor
+        // (template), never the SDK defaults. Guards against the PR #1956 regression
+        // (embedded-messaging wildcards) and similar leaks.
+        const tier2Hosts = ['my.site.com', 'salesforce-scrt.com', 'pc-rnd.site.com'];
+        const flat = JSON.stringify(defaultCspDirectives);
+        for (const host of tier2Hosts) {
+            expect(flat).not.toContain(host);
+        }
+    });
 });
