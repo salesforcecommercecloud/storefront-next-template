@@ -16,12 +16,6 @@
 
 Feature('Storefront Checkout Tests').tag('@core').tag('@checkout');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, addToCartFlow, apiCartSetupFlow, apiLoginFlow, registeredShopperSetupFlow, storefrontPage } =
     inject();
 import { expect } from 'chai';
@@ -46,7 +40,7 @@ After(async (test: unknown) => {
     }
 });
 
-scenarioFn('Guest shopper should complete checkout and place order', async () => {
+Scenario('Guest shopper should complete checkout and place order', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -65,7 +59,7 @@ scenarioFn('Guest shopper should complete checkout and place order', async () =>
     .tag('@place-order')
     .tag('@smoke');
 
-scenarioFn('Registered shopper should complete checkout', async () => {
+Scenario('Registered shopper should complete checkout', async () => {
     await apiLoginFlow.executeWithEnsuredCredentials();
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -89,7 +83,7 @@ scenarioFn('Registered shopper should complete checkout', async () => {
     .tag('@place-order')
     .tag('@smoke');
 
-scenarioFn('Registered shopper with full profile should place order with prefilled checkout', async () => {
+Scenario('Registered shopper with full profile should place order with prefilled checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -106,7 +100,7 @@ scenarioFn('Registered shopper with full profile should place order with prefill
     .tag('@place-order')
     .tag('@prefilled-checkout');
 
-scenarioFn('Basket context syncs when navigating to checkout', async () => {
+Scenario('Basket context syncs when navigating to checkout', async () => {
     const productInfo = await addToCartFlow.execute(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -136,7 +130,7 @@ scenarioFn('Basket context syncs when navigating to checkout', async () => {
  * This validates the acceptance criteria: when checking "Use a different billing address",
  * billing address fields should be pre-filled with the shipping address as a starting point.
  */
-scenarioFn(
+Scenario(
     'Guest shopper billing address fields are pre-filled with shipping address when checking "Use a different billing address"',
     async () => {
         const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -194,7 +188,7 @@ scenarioFn(
  * This validates that after checking "Use a different billing address", the user can
  * fill a custom billing address and complete checkout successfully.
  */
-scenarioFn('Guest shopper can fill custom billing address and place order', async () => {
+Scenario('Guest shopper can fill custom billing address and place order', async () => {
     const customBillingAddress = {
         firstName: 'Jane',
         lastName: 'Smith',
@@ -252,7 +246,7 @@ scenarioFn('Guest shopper can fill custom billing address and place order', asyn
  * This validates that clicking Place Order with empty payment fields does not
  * silently succeed — the shopper must see inline validation errors.
  */
-scenarioFn('Place order is blocked with validation errors when payment fields are empty', async () => {
+Scenario('Place order is blocked with validation errors when payment fields are empty', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
     checkoutPage.validatePageLoaded();

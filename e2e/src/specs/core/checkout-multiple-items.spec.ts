@@ -16,12 +16,6 @@
 
 Feature('Checkout Multiple Items Tests').tag('@core').tag('@checkout');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, addToCartFlow } = inject();
 import { expect } from 'chai';
 import {
@@ -34,7 +28,7 @@ import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
 
 installLoginPrefsStubHooks();
 
-scenarioFn('Guest checkout with multiple items in cart', async () => {
+Scenario('Guest checkout with multiple items in cart', async () => {
     const productInfo1 = await addToCartFlow.execute(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo1).to.not.be.undefined;
 

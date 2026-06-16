@@ -16,12 +16,6 @@
 
 Feature('Storefront Checkout Analytics Tests').tag('@core').tag('@checkout').tag('@analytics');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, apiCartSetupFlow, storefrontPage, beaconCaptureFlow } = inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
@@ -35,7 +29,7 @@ installLoginPrefsStubHooks();
  * Validates that checkout_start events include the checkoutType attribute
  * with value 'one-click' when sent to Einstein.
  */
-scenarioFn('Checkout start event should include checkoutType attribute', async () => {
+Scenario('Checkout start event should include checkoutType attribute', async () => {
     await beaconCaptureFlow.setupInterception('beginCheckout');
 
     storefrontPage.navigate();
@@ -61,7 +55,7 @@ scenarioFn('Checkout start event should include checkoutType attribute', async (
  * Validates that checkout_step events include the checkoutType attribute
  * with value 'one-click' when sent to Einstein.
  */
-scenarioFn('Checkout step event should include checkoutType attribute', async () => {
+Scenario('Checkout step event should include checkoutType attribute', async () => {
     await beaconCaptureFlow.setupInterception('checkoutStep');
 
     storefrontPage.navigate();

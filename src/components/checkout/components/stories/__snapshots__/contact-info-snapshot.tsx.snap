@@ -158,7 +158,6 @@ exports[`ContactInfo stories snapshot > EditView story renders and matches snaps
               data-size="default"
               data-slot="button"
               data-variant="default"
-              disabled=""
               type="submit"
             >
               Continue to Shipping Address
@@ -520,7 +519,6 @@ exports[`ContactInfo stories snapshot > SendingOtp story renders and matches sna
               data-size="default"
               data-slot="button"
               data-variant="default"
-              disabled=""
               type="submit"
             >
               Continue to Shipping Address
@@ -750,7 +748,6 @@ exports[`ContactInfo stories snapshot > WithValidationErrors story renders and m
               data-size="default"
               data-slot="button"
               data-variant="default"
-              disabled=""
               type="submit"
             >
               Continue to Shipping Address
