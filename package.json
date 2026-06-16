@@ -5,9 +5,9 @@
     "private": true,
     "type": "module",
     "storefrontNext": {
-        "templateRelease": "June 2026",
-        "templateVersion": "2026.6.0",
-        "minSdkVersion": "1.0.0"
+        "templateRelease": "July 2026 (dev)",
+        "templateVersion": "2026.7.0-dev",
+        "minSdkVersion": "1.1.0-dev"
     },
     "scripts": {
         "dev": "pnpm locales:aggregate-extensions && pnpm config:aggregate-extensions && cross-env NODE_OPTIONS=--conditions=dev-data-store sfnext dev",

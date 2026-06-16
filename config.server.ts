@@ -408,17 +408,31 @@ export default defineConfig<Config>(
                     clientPerformanceMetricsEnabled: false,
                 },
             },
-            // Analytics and engagement adapters
-            // See CONFIG-OPTIONS.md#engagement for detailed documentation
+            // Analytics and engagement adapters — DISABLED by default in generated projects.
+            //
+            // To send analytics to YOUR Commerce Cloud instance, set `enabled: true` on the
+            // adapter(s) below and fill in your own site values. Example shape (replace the
+            // placeholders with your own values):
+            //   einstein:   einsteinId: '<your-einstein-id>', realm: '<your-realm>',
+            //               siteId: '<your-site-id>'  (host already defaults to the cquotient prod endpoint)
+            //   activeData: host: 'https://<your-instance>.dx.commercecloud.salesforce.com',
+            //               siteUUID: '<your-site-uuid>'
+            //
+            // Heads up: product recommendation carousels are powered by Einstein. While the
+            // einstein adapter is disabled (or not yet configured with your own values),
+            // recommendations resolve to empty and those carousels stay hidden — configure
+            // einstein above to bring them online.
+            //
+            // See docs/README-CONFIG-OPTIONS.md#engagement for the full reference.
             engagement: {
                 adapters: {
                     einstein: {
-                        enabled: true,
+                        enabled: false,
                         host: 'https://api.cquotient.com',
-                        einsteinId: '1ea06c6e-c936-4324-bcf0-fada93f83bb1',
+                        einsteinId: '',
                         isProduction: false,
-                        realm: 'aaij',
-                        siteId: 'MobileFirst',
+                        realm: '',
+                        siteId: '',
                         eventToggles: {
                             view_page: true,
                             view_product: true,
@@ -442,8 +456,8 @@ export default defineConfig<Config>(
                     },
                     dataCloud: {
                         enabled: false,
-                        appSourceId: '7ae070a6-f4ec-4def-a383-d9cacc3f20a1',
-                        tenantId: 'g82wgnrvm-ywk9dggrrw8mtggy.pc-rnd',
+                        appSourceId: '',
+                        tenantId: '',
                         siteId: '',
                         eventToggles: {
                             view_page: true,
@@ -467,9 +481,9 @@ export default defineConfig<Config>(
                         },
                     },
                     activeData: {
-                        enabled: true,
-                        host: 'https://zzrf-001.dx.commercecloud.salesforce.com',
-                        siteUUID: '8bb1ea1b04ac3454d36b83a888',
+                        enabled: false,
+                        host: '',
+                        siteUUID: '',
                         eventToggles: {
                             view_page: true,
                             view_product: true,

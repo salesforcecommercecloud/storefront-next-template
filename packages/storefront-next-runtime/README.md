@@ -2,9 +2,6 @@
 
 Runtime-agnostic libraries for SFCC Storefront Next, providing core functionality for Page Designer integration, SCAPI client generation, and component management.
 
-> [!IMPORTANT]
-> Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
-
 ## Overview
 
 This package provides the foundational runtime libraries for building Salesforce Commerce Cloud (SFCC) Storefront Next applications. It includes:

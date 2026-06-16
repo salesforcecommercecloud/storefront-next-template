@@ -2,9 +2,6 @@
 
 Vite plugin and deployment tools for Storefront Next integration with React Router v7.
 
-> [!IMPORTANT]
-> Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
-
 ## Features
 
 ### Vite Plugin
