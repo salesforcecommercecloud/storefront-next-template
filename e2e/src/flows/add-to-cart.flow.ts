@@ -49,7 +49,7 @@ class AddToCartFlow {
                 } else {
                     await checkoutPage.navigateWithRetry();
                 }
-                await this.waitForCheckoutReady(30);
+                await this.waitForCheckoutReady();
             } catch {
                 continue;
             }
@@ -76,7 +76,7 @@ class AddToCartFlow {
             const productInfo = await this.execute(categoryUrl, { preferPromotedProduct: true });
             try {
                 await checkoutPage.navigateWithRetry();
-                await this.waitForCheckoutReady(30);
+                await this.waitForCheckoutReady();
             } catch {
                 continue;
             }
@@ -91,7 +91,7 @@ class AddToCartFlow {
         );
     }
 
-    private async waitForCheckoutReady(timeoutSeconds: number = 30): Promise<void> {
+    private async waitForCheckoutReady(timeoutSeconds: number = 45): Promise<void> {
         await (I.usePlaywrightTo('wait for checkout content', async ({ page }) => {
             const content = page.locator(
                 '[data-testid="sf-toggle-card-contact-info-content"], :text-matches("No items in cart")'

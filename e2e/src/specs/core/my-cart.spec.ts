@@ -16,14 +16,6 @@
 
 Feature('My Cart on Checkout').tag('@core').tag('@my-cart').tag('@checkout');
 
-// TODO: The spec-level Before hook (addToCartFlow.waitForCheckoutReady)
-// intermittently times out at 30s waiting for the contact-info toggle card
-// or the empty-cart text on stg-016. The hook gates every scenario in this
-// file. Tracked in W-22972089 (1C - Stretch Armstrong). Re-enable when the
-// underlying flake is fixed.
-const isMyCartCheckoutFlaky = true;
-const myCartScenario = isMyCartCheckoutFlaky ? Scenario.skip : Scenario;
-
 const { I, checkoutPage, addToCartFlow, storefrontPage, cartPage } = inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
@@ -64,7 +56,7 @@ After(async () => {
     }
 });
 
-myCartScenario('My Cart displays cart items with price, product image, and promotions when expanded', async () => {
+Scenario('My Cart displays cart items with price, product image, and promotions when expanded', async () => {
     checkoutPage.expandMyCart();
     await checkoutPage.validateMyCartDisplaysItemsWithPriceImageAndPromotions();
 }).tag('@my-cart-display');
