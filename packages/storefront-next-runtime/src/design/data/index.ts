@@ -35,4 +35,5 @@ export type {
     VisibilityRuleDef,
     VisitorContextType,
     InferNodeFromType,
+    ResolvedDataBinding,
 } from './types';

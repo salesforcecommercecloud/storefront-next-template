@@ -375,6 +375,12 @@ interface VisibilityRuleDef {
  */
 type QualifierContext = ShopperExperience.schemas['QualifierResolveResponse'];
 /**
+ * A resolved data binding object containing the fields returned by the data
+ * provider for a specific record. For example, a resolved `content_asset`
+ * might contain `{ title: "Winter Sale", body: "<div>…</div>" }`.
+ */
+type ResolvedDataBinding = Record<string, unknown>;
+/**
  * The type of identifier used to look up a page. Determines how the ID is
  * resolved to a page manifest:
  * - `'page'` — Direct page ID, used as-is
@@ -868,5 +874,5 @@ declare function resolvePage({
  */
 declare function validateRule(rule: VisibilityRuleDef, locale: string, context?: QualifierContext | null): boolean;
 //#endregion
-export { type AttributeResolutionContext, type AttributeResolutionWarning, type ContextResolver, type IdentifierType, type InferNodeFromType, type ManifestStorage, type PageManifest, type PageProcessorContext, type PageVisitor, type QualifierContext, RequiredError, type SiteManifest, type VisibilityRuleDef, type VisitorContext, type VisitorContextType, processPage, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
+export { type AttributeResolutionContext, type AttributeResolutionWarning, type ContextResolver, type IdentifierType, type InferNodeFromType, type ManifestStorage, type PageManifest, type PageProcessorContext, type PageVisitor, type QualifierContext, RequiredError, type ResolvedDataBinding, type SiteManifest, type VisibilityRuleDef, type VisitorContext, type VisitorContextType, processPage, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.d.ts.map

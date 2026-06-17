@@ -143,31 +143,6 @@ describe('resolvePage', () => {
         expect(result).toBeNull();
     });
 
-    test('returns null when the page manifest declares data bindings', async () => {
-        // Temporary patch (until 26.7): manifest-driven resolution can't
-        // handle data bindings yet, so resolvePage bails out and lets the
-        // caller fall back to SCAPI.
-        const pageManifest = makePageManifest({
-            context: {
-                campaignQualifiers: [],
-                customerGroups: [],
-                dataBindings: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
-            },
-        });
-        const storage = makeStorage(pageManifest);
-
-        const result = await resolvePage({
-            id: 'homepage',
-            attrCtx: testAttrCtx,
-            identifierType: 'page',
-            locale: 'en-US',
-            defaultLocale: 'en-US',
-            manifestStorage: storage,
-        });
-
-        expect(result).toBeNull();
-    });
-
     test('returns null when no variation matches', async () => {
         const pageManifest = makePageManifest({
             variationOrder: ['vip-only'],

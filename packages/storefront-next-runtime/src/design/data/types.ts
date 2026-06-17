@@ -274,7 +274,7 @@ export type QualifierContext = ShopperExperience.schemas['QualifierResolveRespon
  * provider for a specific record. For example, a resolved `content_asset`
  * might contain `{ title: "Winter Sale", body: "<div>…</div>" }`.
  */
-export type ResolvedDataBinding = ShopperExperience.schemas['ResolvedDataBinding'];
+export type ResolvedDataBinding = Record<string, unknown>;
 
 /**
  * The type of identifier used to look up a page. Determines how the ID is

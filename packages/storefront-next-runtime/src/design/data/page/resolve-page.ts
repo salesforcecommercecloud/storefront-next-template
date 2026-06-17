@@ -187,14 +187,6 @@ export async function resolvePage({
         return null;
     }
 
-    // Temporary patch fix (until 26.7): manifest-driven resolution does not
-    // yet handle data bindings. When the manifest declares any, bail out so
-    // the caller falls back to the regular SCAPI request flow which can
-    // resolve them. Tracked under W-22770039.
-    if (pageManifest.context?.dataBindings?.length > 0) {
-        return null;
-    }
-
     const pageResults = await getPageFromManifest(pageManifest, {
         contextResolver,
         locale,

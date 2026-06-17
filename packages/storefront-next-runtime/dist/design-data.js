@@ -1369,7 +1369,6 @@ async function resolvePage({ id, identifierType, aspectType, categoryId, locale,
 	if (!resolvedId) return null;
 	const pageManifest = await manifestStorage.getPageManifest(resolvedId);
 	if (!pageManifest) return null;
-	if (pageManifest.context?.dataBindings?.length > 0) return null;
 	const pageResults = await getPageFromManifest(pageManifest, {
 		contextResolver,
 		locale
