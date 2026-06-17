@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, afterEach } from 'vitest';
 import { action } from './action.set-site-context';
 import type { ActionFunctionArgs } from 'react-router';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 
@@ -69,15 +70,21 @@ function createArgs(type: string, payload: Record<string, string> = {}): ActionF
 }
 
 describe('action.set-site-context', () => {
+    afterEach(() => {
+        // Restore the default config (some tests override it to inject a cookie domain).
+        vi.mocked(getConfig).mockReturnValue(mockConfig);
+    });
+
     describe('type: site', () => {
         test('sets site, locale, and currency cookies and redirects to /', async () => {
             const result = (await action(createArgs('site', { siteId: mockAltSiteObject.id }))) as Response;
 
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
-            expect(mockSiteCookieSerialize).toHaveBeenCalledWith(mockAltSiteObject.id);
-            expect(mockLocaleCookieSerialize).toHaveBeenCalledWith('en-US');
-            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('USD');
+            // No cookie domain configured → cookies are serialized host-only (no domain option).
+            expect(mockSiteCookieSerialize).toHaveBeenCalledWith(mockAltSiteObject.id, undefined);
+            expect(mockLocaleCookieSerialize).toHaveBeenCalledWith('en-US', undefined);
+            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('USD', undefined);
         });
 
         test('rejects when siteId is missing', async () => {
@@ -163,7 +170,7 @@ describe('action.set-site-context', () => {
 
             expect(result.data).toEqual({ success: true });
             expect(result.init.headers['Set-Cookie']).toContain('currency=');
-            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('GBP');
+            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('GBP', undefined);
         });
 
         test('rejects when currency is missing', async () => {
@@ -209,6 +216,36 @@ describe('action.set-site-context', () => {
                 expect(error).toBeInstanceOf(Response);
                 expect((error as Response).status).toBe(400);
             }
+        });
+    });
+
+    describe('cookie domain', () => {
+        test('applies the global app.cookies.domain to the serialized cookie', async () => {
+            vi.mocked(getConfig).mockReturnValue({ ...mockConfig, cookies: { domain: '.global.com' } });
+
+            await action(createArgs('currency', { currency: 'GBP' }));
+
+            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('GBP', { domain: '.global.com' });
+        });
+
+        test('per-site commerce.sites[].cookies.domain overrides the global knob', async () => {
+            const siteWithDomain = { ...mockAltSiteObject, cookies: { domain: '.alt.example.com' } };
+            vi.mocked(getConfig).mockReturnValue({
+                ...mockConfig,
+                cookies: { domain: '.global.com' },
+                commerce: { ...mockConfig.commerce, sites: [mockSiteObject, siteWithDomain] },
+            });
+
+            await action(createArgs('site', { siteId: mockAltSiteObject.id }));
+
+            // Per-site domain wins over the global knob — and is applied to all three cookies.
+            expect(mockSiteCookieSerialize).toHaveBeenCalledWith(mockAltSiteObject.id, { domain: '.alt.example.com' });
+            expect(mockLocaleCookieSerialize).toHaveBeenCalledWith(siteWithDomain.defaultLocale, {
+                domain: '.alt.example.com',
+            });
+            expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith(siteWithDomain.defaultCurrency, {
+                domain: '.alt.example.com',
+            });
         });
     });
 });

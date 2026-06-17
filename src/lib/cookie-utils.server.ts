@@ -17,6 +17,7 @@ import type { RouterContextProvider } from 'react-router';
 import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 import { modeDetectionContext } from '@/middlewares/mode-detection';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { isRemote } from '@salesforce/storefront-next-runtime/env';
 
 /**
@@ -87,11 +88,15 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
  * Get cookie configuration with proper precedence order.
  *
  * Precedence (highest to lowest):
- * 1. Environment variables (from .env via storefront config) - highest priority
+ * 1. App config cookie domain — the per-site `commerce.sites[].cookies.domain` if set,
+ *    otherwise the global `app.cookies.domain` knob (highest priority)
  * 2. Provided cookie options (passed to this function)
  * 3. Default values (path, sameSite, secure)
  *
- * @param cookieOptions - Optional cookie options to merge with defaults and environment config
+ * The cookie domain is opt-in: when neither the per-site override nor the global knob is
+ * set, no `Domain` attribute is emitted and cookies use host-only scoping.
+ *
+ * @param cookieOptions - Optional cookie options to merge with defaults and app config
  * @param context - Router context provider (required, server-only)
  * @returns Final cookie attributes with proper precedence applied
  *
@@ -101,11 +106,11 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
  * // Result includes domain from config if set
  *
  * @example
- * // Provided options override defaults, but .env takes precedence over both.
+ * // Provided options override defaults, but the app config domain takes precedence over both.
  * // `secure` defaults to isRemote() — true on deployed (HTTPS) environments,
  * // false on local `pnpm dev` / `pnpm preview` (plain HTTP over loopback).
  * const cookieConfig = getCookieConfig({ path: '/custom', domain: '.code.com' }, context);
- * // If PUBLIC_COOKIE_DOMAIN=.env.com is set (deployed):
+ * // If app.cookies.domain=.env.com is set (e.g. via PUBLIC__app__cookies__domain, deployed):
  * // Result: { path: '/custom', sameSite: 'lax', secure: true, domain: '.env.com' }
  *
  * @example
@@ -120,6 +125,24 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
  * @param cookieHeader - Raw Cookie header string
  * @returns Record of cookie name to value (no decoding, raw values)
  */
+/**
+ * Resolve the cookie `Domain` for the current request, applied uniformly to every storefront
+ * cookie. A per-site `commerce.sites[].cookies.domain` takes precedence over the global
+ * `app.cookies.domain` knob; when neither is set the result is `undefined` (host-only scoping).
+ *
+ * @param context - Router context provider (server-only)
+ * @param site - Optional site to resolve against (e.g. the target site of a site switch);
+ *   defaults to the request's resolved site from the site context.
+ * @returns The resolved cookie domain, or `undefined` for host-only scoping.
+ */
+export const resolveCookieDomain = (
+    context: Readonly<RouterContextProvider>,
+    site?: { cookies?: { domain?: string } }
+): string | undefined => {
+    const resolvedSite = site ?? context.get(siteContext)?.site;
+    return resolvedSite?.cookies?.domain || getConfig(context).cookies?.domain || undefined;
+};
+
 export const parseAllCookies = (cookieHeader: string | null): Record<string, string> => {
     if (!cookieHeader) {
         return {};
@@ -181,8 +204,9 @@ export const getCookieConfig = <T extends object = CookieConfig>(
     // 1. Apply app config cookie overrides (highest priority)
     const cookieConfigOverrides: CookieConfig = {};
 
-    const currentSite = context.get(siteContext)?.site;
-    const cookieDomain = currentSite?.cookies?.domain;
+    // Cookie domain: per-site override wins over the global default knob.
+    // Both unset → no Domain attribute (host-only scoping).
+    const cookieDomain = resolveCookieDomain(context);
     if (cookieDomain) {
         cookieConfigOverrides.domain = cookieDomain;
     }

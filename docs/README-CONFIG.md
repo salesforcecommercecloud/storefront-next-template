@@ -87,7 +87,7 @@ Every variable the storefront recognizes is listed here. Set the **Required** ro
 | `PUBLIC__app__features__shopperContext__enabled` | `false` | Shopper context API |
 | `PUBLIC__app__defaultSiteId` | (single-site default) | Override default site |
 | `PUBLIC__app__commerce__sites` | (single-site default) | Multi-site JSON config |
-| `PUBLIC__app__site__cookies__domain` | browser default | Cookie domain (e.g. `.example.com`) |
+| `PUBLIC__app__cookies__domain` | host-only | Global default cookie domain for all cookies (e.g. `.example.com`); per-site `commerce.sites[].cookies.domain` overrides it |
 | `PUBLIC__app__commerce__api__guestRefreshTokenExpirySeconds` | from API response | Override guest refresh-token TTL |
 | `PUBLIC__app__commerce__api__registeredRefreshTokenExpirySeconds` | from API response | Override registered refresh-token TTL |
 | `PUBLIC__app__features__googleCloudAPI__apiKey` | — | Google Address Autocomplete |
@@ -636,8 +636,12 @@ See `src/components/shopper-agent/README.md` for environment-specific setup.
 
 ### Cookie domain
 
+Sets the default `Domain` on every cookie the storefront writes — auth/session and site-context
+(`site_id`, locale, currency). A per-site `commerce.sites[].cookies.domain` overrides it for that
+site. Unset = host-only scoping; setting a domain is opt-in.
+
 ```bash
-# PUBLIC__app__site__cookies__domain=.example.com
+# PUBLIC__app__cookies__domain=.example.com
 ```
 
 ### Refresh-token expiry overrides

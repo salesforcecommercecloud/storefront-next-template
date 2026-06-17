@@ -522,10 +522,18 @@ function createSiteContextMiddleware(config) {
 		const response = await next();
 		const { shouldSetSiteCookie, shouldSetLocaleCookie, shouldSetCurrencyCookie } = await shouldSetCookies(request, response, settings, site, locale, currency);
 		if (!shouldSetSiteCookie && !shouldSetLocaleCookie && !shouldSetCurrencyCookie) return response;
+		const cookieDomain = site.cookies?.domain || settings.cookieOptions?.domain;
+		const domainOpt = cookieDomain ? { domain: cookieDomain } : {};
 		const [siteSetCookie, localeSetCookie, currencySetCookie] = await Promise.all([
-			shouldSetSiteCookie ? settings.siteCookie.serialize(site.id, { path: "/" }) : Promise.resolve(null),
-			shouldSetLocaleCookie ? settings.localeCookie.serialize(locale.id, { path: "/" }) : Promise.resolve(null),
-			shouldSetCurrencyCookie ? settings.currencyCookie.serialize(currency) : Promise.resolve(null)
+			shouldSetSiteCookie ? settings.siteCookie.serialize(site.id, {
+				path: "/",
+				...domainOpt
+			}) : Promise.resolve(null),
+			shouldSetLocaleCookie ? settings.localeCookie.serialize(locale.id, {
+				path: "/",
+				...domainOpt
+			}) : Promise.resolve(null),
+			shouldSetCurrencyCookie ? settings.currencyCookie.serialize(currency, { ...domainOpt }) : Promise.resolve(null)
 		]);
 		if (siteSetCookie) response.headers.append("Set-Cookie", siteSetCookie);
 		if (localeSetCookie) response.headers.append("Set-Cookie", localeSetCookie);

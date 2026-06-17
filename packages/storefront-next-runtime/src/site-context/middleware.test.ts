@@ -333,4 +333,72 @@ describe('createSiteContextMiddleware', () => {
             expect(response.headers.getSetCookie?.() ?? []).toHaveLength(0);
         });
     });
+
+    describe('cookie domain', () => {
+        let mockCreateSiteContextCookie: ReturnType<typeof vi.fn>;
+        let mockCreateCurrencyCookie: ReturnType<typeof vi.fn>;
+        // Captures the options argument that the default cookieSerialize mock drops.
+        const serializeSpy = vi.fn((value: string, _name: string, _options?: unknown) =>
+            Promise.resolve(`set=${value}`)
+        );
+
+        beforeAll(async () => {
+            const cookies = await import('./cookies');
+            mockCreateSiteContextCookie = cookies.createSiteContextCookie as ReturnType<typeof vi.fn>;
+            mockCreateCurrencyCookie = cookies.createCurrencyCookie as ReturnType<typeof vi.fn>;
+        });
+
+        beforeEach(() => {
+            serializeSpy.mockClear();
+            const capturingMock = (name: string) => ({
+                name,
+                serialize: (value: string, options?: unknown) => serializeSpy(value, name, options),
+                parse: vi.fn(),
+            });
+            mockCreateSiteContextCookie.mockImplementation(capturingMock);
+            mockCreateCurrencyCookie.mockImplementation(capturingMock);
+        });
+
+        afterEach(() => {
+            const defaultMock = (name: string) => ({
+                name,
+                serialize: (value: string) => cookieSerialize(value, name),
+                parse: vi.fn(),
+            });
+            mockCreateSiteContextCookie.mockImplementation(defaultMock);
+            mockCreateCurrencyCookie.mockImplementation(defaultMock);
+        });
+
+        it('applies the global cookieOptions.domain to all site-context cookies', async () => {
+            const config: SiteConfig = { ...DEFAULT_CONFIG, cookieOptions: { domain: '.example.com' } };
+            await run(config, new Request('https://example.com/us/en-US/'));
+
+            expect(serializeSpy).toHaveBeenCalledWith('site-us', 'site_id', { path: '/', domain: '.example.com' });
+            expect(serializeSpy).toHaveBeenCalledWith('en-US', 'lng', { path: '/', domain: '.example.com' });
+            expect(serializeSpy).toHaveBeenCalledWith('USD', 'currency', { domain: '.example.com' });
+        });
+
+        it('per-site cookies.domain overrides the global cookieOptions.domain', async () => {
+            const config: SiteConfig = {
+                ...DEFAULT_CONFIG,
+                cookieOptions: { domain: '.global.com' },
+                sites: DEFAULT_CONFIG.sites.map((s) =>
+                    s.id === 'site-us' ? { ...s, cookies: { domain: '.us-specific.com' } } : s
+                ),
+            };
+            await run(config, new Request('https://example.com/us/en-US/'));
+
+            expect(serializeSpy).toHaveBeenCalledWith('site-us', 'site_id', { path: '/', domain: '.us-specific.com' });
+            expect(serializeSpy).toHaveBeenCalledWith('en-US', 'lng', { path: '/', domain: '.us-specific.com' });
+            expect(serializeSpy).toHaveBeenCalledWith('USD', 'currency', { domain: '.us-specific.com' });
+        });
+
+        it('emits no domain when neither per-site nor global domain is set (host-only)', async () => {
+            await run(DEFAULT_CONFIG, new Request('https://example.com/us/en-US/'));
+
+            expect(serializeSpy).toHaveBeenCalledWith('site-us', 'site_id', { path: '/' });
+            expect(serializeSpy).toHaveBeenCalledWith('en-US', 'lng', { path: '/' });
+            expect(serializeSpy).toHaveBeenCalledWith('USD', 'currency', {});
+        });
+    });
 });

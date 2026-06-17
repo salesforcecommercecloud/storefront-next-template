@@ -277,6 +277,62 @@ describe('cookie-utils', () => {
             });
         });
 
+        describe('global cookie domain (app.cookies.domain)', () => {
+            it('falls back to app.cookies.domain when the site has no per-site domain', () => {
+                const contextNoSiteDomain = {
+                    get: vi.fn(() => ({ site: { id: 'RefArch' } })),
+                } as any;
+                vi.mocked(getConfig).mockReturnValue({ cookies: { domain: '.global.com' } } as AppConfig);
+
+                const config = getCookieConfig({}, contextNoSiteDomain);
+
+                expect(config).toEqual({
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: true,
+                    domain: '.global.com',
+                });
+            });
+
+            it('prefers the per-site domain over the global app.cookies.domain', () => {
+                const contextWithSiteDomain = {
+                    get: vi.fn(() => ({ site: { cookies: { domain: '.site.com' } } })),
+                } as any;
+                vi.mocked(getConfig).mockReturnValue({ cookies: { domain: '.global.com' } } as AppConfig);
+
+                const config = getCookieConfig({}, contextWithSiteDomain);
+
+                expect(config.domain).toBe('.site.com');
+            });
+
+            it('emits no domain (host-only) when neither per-site nor global domain is set', () => {
+                const contextNoSite = { get: vi.fn(() => undefined) } as any;
+                vi.mocked(getConfig).mockReturnValue({ cookies: { domain: '' } } as AppConfig);
+
+                const config = getCookieConfig({}, contextNoSite);
+
+                expect(config).toEqual({
+                    path: '/',
+                    sameSite: 'lax',
+                    secure: true,
+                });
+                expect(config.domain).toBeUndefined();
+            });
+
+            it('falls back to the global domain when the per-site domain is an empty string', () => {
+                // Guards the `||` (not `??`) semantics: an empty per-site string is treated as
+                // "unset" and inherits the global default, rather than forcing host-only.
+                const contextEmptyPerSite = {
+                    get: vi.fn(() => ({ site: { cookies: { domain: '' } } })),
+                } as any;
+                vi.mocked(getConfig).mockReturnValue({ cookies: { domain: '.global.com' } } as AppConfig);
+
+                const config = getCookieConfig({}, contextEmptyPerSite);
+
+                expect(config.domain).toBe('.global.com');
+            });
+        });
+
         it('should preserve Date objects for expires', () => {
             const expiryDate = new Date('2025-12-31');
             const config = getCookieConfig(

@@ -217,10 +217,24 @@ export function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunct
             return response;
         }
 
+        // Per-site cookie domain (commerce.sites[].cookies.domain) takes precedence over the
+        // global default carried in cookieOptions.domain. Resolved at serialize time because the
+        // cookie instances are created before the request's site is known. serialize() merges
+        // these options over the cookie's baked-in options, so this overrides only the domain.
+        // Unset → no Domain attribute (host-only scoping).
+        const cookieDomain = site.cookies?.domain || settings.cookieOptions?.domain;
+        const domainOpt = cookieDomain ? { domain: cookieDomain } : {};
+
         const [siteSetCookie, localeSetCookie, currencySetCookie] = await Promise.all([
-            shouldSetSiteCookie ? settings.siteCookie.serialize(site.id, { path: '/' }) : Promise.resolve(null),
-            shouldSetLocaleCookie ? settings.localeCookie.serialize(locale.id, { path: '/' }) : Promise.resolve(null),
-            shouldSetCurrencyCookie ? settings.currencyCookie.serialize(currency) : Promise.resolve(null),
+            shouldSetSiteCookie
+                ? settings.siteCookie.serialize(site.id, { path: '/', ...domainOpt })
+                : Promise.resolve(null),
+            shouldSetLocaleCookie
+                ? settings.localeCookie.serialize(locale.id, { path: '/', ...domainOpt })
+                : Promise.resolve(null),
+            shouldSetCurrencyCookie
+                ? settings.currencyCookie.serialize(currency, { ...domainOpt })
+                : Promise.resolve(null),
         ]);
 
         if (siteSetCookie) response.headers.append('Set-Cookie', siteSetCookie);

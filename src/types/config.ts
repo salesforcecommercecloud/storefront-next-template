@@ -74,6 +74,16 @@ export type AppConfig = {
         };
         sites: Array<Site>;
     };
+    /**
+     * Global default cookie attributes applied to ALL storefront cookies (auth/session and
+     * site-context). The per-site `commerce.sites[].cookies.domain` overrides `domain`. When
+     * unset (empty/absent), cookies use host-only scoping — setting a domain is opt-in.
+     * Override via `PUBLIC__app__cookies__domain=.example.com`.
+     */
+    cookies?: {
+        /** Cookie domain, e.g. `.example.com` to share across subdomains. */
+        domain?: string;
+    };
     commerceAgent?: {
         enabled: string | boolean;
         embeddedServiceName: string;
@@ -334,7 +344,11 @@ export type AppConfig = {
     siteContext?: {
         /** Cookie name for persisting the selected currency. Defaults to 'currency'. */
         currencyCookieName?: string;
-        /** Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context cookies. */
+        /**
+         * Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context
+         * cookies. NOTE: any `domain` here is ignored — the cookie domain is governed solely by the
+         * global `app.cookies.domain` and the per-site `commerce.sites[].cookies.domain`.
+         */
         cookieOptions?: SiteConfig['cookieOptions'];
     };
     siteDetectionConfig?: DetectionConfig;

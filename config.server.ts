@@ -220,6 +220,12 @@ export default defineConfig<Config>(
                     },
                 ],
             },
+            // Global default cookie attributes applied to ALL storefront cookies
+            // (auth/session + site-context: site_id, locale, currency). A per-site
+            // commerce.sites[].cookies.domain overrides this. Empty string = host-only
+            // scoping — setting a cookie domain is an opt-in feature.
+            // Override via PUBLIC__app__cookies__domain=.example.com
+            cookies: { domain: '' },
             // Default site ID configuration
             // See CONFIG-OPTIONS.md#defaultSiteId for detailed documentation
             defaultSiteId: 'RefArchGlobal',
