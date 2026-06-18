@@ -97,7 +97,12 @@ const baseConfig = defineConfig([
       ]
     },
     {
-        files: ['**/*.js'],
+        // Plain Node scripts (.js / .mjs / .cjs) aren't part of the TS project,
+        // so typed typescript-eslint rules (e.g. `await-thenable`) can't load
+        // parser services for them. Without this disable block, generated/mirror
+        // projects (which lint `scripts/*.mjs` via the root config) crash with
+        // "You have used a rule which requires type information" — fatal exit 2.
+        files: ['**/*.{js,mjs,cjs}'],
         settings: {
             react: {
                 version: 'detect', // Auto-detect React version

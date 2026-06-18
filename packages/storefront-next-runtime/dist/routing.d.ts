@@ -3,13 +3,16 @@ import { RouteConfigEntry } from "@react-router/dev/routes";
 //#region src/routing/flat-routes.d.ts
 
 /**
- * Discovers all file-based routes, merges extension routes, and applies site context
- * URL configuration if defined in the project's `config.server.ts`.
+ * Discovers all file-based routes, merges extension routes, merges any per-vertical
+ * route overrides, and applies site context URL configuration if defined in the
+ * project's `config.server.ts`.
  *
  * 1. Discover routes from the filesystem using React Router's `flatRoutes`.
- * 2. Scans `src/extensions/` for extension routes and merges them into the route tree.
- * 3. Load `config.server.ts` from the project root and, if `app.url` is configured,
- *    wraps routes under the URL prefix (e.g. `/:siteId/:localeId`).
+ * 2. Scan `src/extensions/` for extension routes and merge them into the route tree.
+ * 3. If `process.env.VERTICAL` is set, scan `src/verticals/${VERTICAL}/routes/` and
+ *    merge any matching overrides on top (vertical wins on file-id collision).
+ * 4. Load `config.server.ts` from the project root and, if `app.url` is configured,
+ *    wrap routes under the URL prefix (e.g. `/:siteId/:localeId`).
  *
  * @param options.ignoredRouteFiles - Glob patterns for files to ignore. Defaults to test files.
  * @param options.rootDirectory - Root directory for route discovery, relative to appDirectory.

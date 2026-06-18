@@ -58,6 +58,8 @@ describe('flatRoutes', () => {
         vi.clearAllMocks();
         // Default: no URL config
         mockLoadConfig.mockResolvedValue({} as BaseConfig);
+        // Default: no VERTICAL env override (some tests below set it explicitly)
+        delete process.env.VERTICAL;
     });
 
     it('should return routes as-is when no options are provided', async () => {
@@ -179,5 +181,69 @@ describe('flatRoutes', () => {
         await flatRoutes();
 
         expect(mockLoadConfig).toHaveBeenCalledOnce();
+    });
+
+    it('should not scan verticals/ when VERTICAL env var is unset', async () => {
+        mockFlatRoutes.mockResolvedValue([]);
+
+        await flatRoutes();
+
+        // Only one call: the base scan. No vertical pass — the discovery
+        // function short-circuits before any fs probe when VERTICAL is unset.
+        expect(mockFlatRoutes).toHaveBeenCalledTimes(1);
+        const accessCalls = vi.mocked(fs.access).mock.calls.map(([p]) => String(p));
+        expect(accessCalls.some((p) => p.includes(`src${path.sep}verticals`))).toBe(false);
+    });
+
+    it('should merge vertical routes when VERTICAL is set and the directory exists', async () => {
+        process.env.VERTICAL = 'cosmetic';
+        try {
+            const baseRoutes: RouteConfigEntry[] = [
+                layoutRoute('routes/_app', 'routes/_app.tsx', [
+                    indexRoute('routes/_app._index', 'routes/_app._index.tsx'),
+                ]),
+            ];
+            const verticalRoutes: RouteConfigEntry[] = [
+                indexRoute('verticals/cosmetic/routes/_app._index', 'verticals/cosmetic/routes/_app._index.tsx'),
+            ];
+            mockFlatRoutes.mockResolvedValueOnce(baseRoutes).mockResolvedValueOnce(verticalRoutes);
+
+            vi.mocked(fs.access).mockImplementation((p) => {
+                if (String(p) === path.join('.', 'src', 'verticals', 'cosmetic', 'routes')) {
+                    return Promise.resolve();
+                }
+                return Promise.reject(new Error('ENOENT'));
+            });
+
+            const result = await flatRoutes();
+
+            expect(mockFlatRoutes).toHaveBeenCalledTimes(2);
+            expect(mockFlatRoutes).toHaveBeenCalledWith({
+                ignoredRouteFiles: ['**/*.test.{ts,tsx}'],
+                rootDirectory: 'verticals/cosmetic/routes',
+            });
+            // Vertical overrode the matching index route's file
+            const appLayout = result.find((r) => r.id === 'routes/_app');
+            const idx = appLayout?.children?.find((r) => r.id === 'routes/_app._index');
+            expect(idx?.file).toBe('verticals/cosmetic/routes/_app._index.tsx');
+        } finally {
+            delete process.env.VERTICAL;
+        }
+    });
+
+    it('should skip the vertical pass when the directory does not exist', async () => {
+        process.env.VERTICAL = 'cosmetic';
+        try {
+            mockFlatRoutes.mockResolvedValue([]);
+            // fs.access rejects for both extensions/ and verticals/cosmetic/routes
+            vi.mocked(fs.access).mockRejectedValue(new Error('ENOENT'));
+
+            await flatRoutes();
+
+            // Only the base scan ran; vertical lookup short-circuited on access failure
+            expect(mockFlatRoutes).toHaveBeenCalledTimes(1);
+        } finally {
+            delete process.env.VERTICAL;
+        }
     });
 });

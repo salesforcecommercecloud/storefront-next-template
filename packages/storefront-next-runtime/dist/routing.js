@@ -80,6 +80,7 @@ function mergeRoutes(routes, extensionRoutes, extensionIdPrefix) {
 //#region src/routing/flat-routes.ts
 const APP_SRC_DIR = "src";
 const EXTENSIONS_DIR = "extensions";
+const VERTICALS_DIR = "verticals";
 const APP_WRAPPER_FILE = "app-wrapper.tsx";
 /**
 * Scans `src/extensions/` for extension route directories and merges any discovered
@@ -101,13 +102,49 @@ async function discoverExtensionRoutes(ignoredRouteFiles, routes) {
 	}
 }
 /**
-* Discovers all file-based routes, merges extension routes, and applies site context
-* URL configuration if defined in the project's `config.server.ts`.
+* Scans `src/verticals/${VERTICAL}/routes/` for per-vertical route overrides and
+* merges them into the route tree. The `VERTICAL` env var selects which overlay
+* to apply; when unset or pointing at a directory that doesn't exist, the
+* function is a no-op. Routes whose stripped IDs match an existing route swap
+* the file pointer (vertical wins); novel IDs are added as new routes.
+*
+* Runs after `discoverExtensionRoutes` so a vertical can override extension
+* routes when needed (extensions ship as canonical, verticals are the highest
+* layer in the precedence chain).
+*
+* Files inside the verticals tree that aren't routes (components, hooks, etc.)
+* are picked up at dev time by Vite's vertical-first `@/X` alias chain (in the
+* template's `vite.config.ts`) and at mirror time by `overlayVerticalSrcTree()`
+* in `scripts/mirror.mjs`. Routes are special because React Router's
+* `flatRoutes` walks the filesystem directly and bypasses the Vite resolver,
+* so they need this explicit merge step.
+*/
+async function discoverVerticalRoutes(ignoredRouteFiles, routes) {
+	const vertical = process.env.VERTICAL;
+	if (!vertical) return;
+	const routesDir = `${VERTICALS_DIR}/${vertical}/routes`;
+	const routesDirFull = path.join(".", APP_SRC_DIR, VERTICALS_DIR, vertical, "routes");
+	try {
+		await fs.access(routesDirFull);
+	} catch {
+		return;
+	}
+	mergeRoutes(routes, await flatRoutes$1({
+		ignoredRouteFiles,
+		rootDirectory: routesDir
+	}), `${VERTICALS_DIR}/${vertical}/`);
+}
+/**
+* Discovers all file-based routes, merges extension routes, merges any per-vertical
+* route overrides, and applies site context URL configuration if defined in the
+* project's `config.server.ts`.
 *
 * 1. Discover routes from the filesystem using React Router's `flatRoutes`.
-* 2. Scans `src/extensions/` for extension routes and merges them into the route tree.
-* 3. Load `config.server.ts` from the project root and, if `app.url` is configured,
-*    wraps routes under the URL prefix (e.g. `/:siteId/:localeId`).
+* 2. Scan `src/extensions/` for extension routes and merge them into the route tree.
+* 3. If `process.env.VERTICAL` is set, scan `src/verticals/${VERTICAL}/routes/` and
+*    merge any matching overrides on top (vertical wins on file-id collision).
+* 4. Load `config.server.ts` from the project root and, if `app.url` is configured,
+*    wrap routes under the URL prefix (e.g. `/:siteId/:localeId`).
 *
 * @param options.ignoredRouteFiles - Glob patterns for files to ignore. Defaults to test files.
 * @param options.rootDirectory - Root directory for route discovery, relative to appDirectory.
@@ -120,6 +157,7 @@ async function flatRoutes(options) {
 		rootDirectory
 	});
 	await discoverExtensionRoutes(ignoredRouteFiles, routes);
+	await discoverVerticalRoutes(ignoredRouteFiles, routes);
 	const { app } = await loadConfig();
 	const urlConfig = app?.url;
 	if (urlConfig?.prefix) {
