@@ -555,24 +555,24 @@ function OrderConfirmationContent({
                     </CardContent>
                 </Card>
 
-                {/* Credit Card Details section */}
-                <Card className="border border-border/70 rounded-none shadow-none">
-                    <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
-                        <div className="flex items-center gap-4">
-                            <span className="text-xs font-semibold uppercase tracking-wide text-primary">
-                                {paymentInstrument?.paymentCard?.cardType ||
-                                    paymentInstrument?.paymentMethodId ||
-                                    t('payment.defaultCardLabel')}
-                            </span>
-                            <div>
-                                <p className="font-medium text-foreground">{paymentSummary}</p>
+                {/* Payment Details section — only shown when card details are available */}
+                {paymentInstrument?.paymentCard?.cardType && (
+                    <Card className="border border-border/70 rounded-none shadow-none">
+                        <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-center gap-4">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-primary">
+                                    {paymentInstrument.paymentCard.cardType}
+                                </span>
+                                <div>
+                                    <p className="font-medium text-foreground">{paymentSummary}</p>
+                                </div>
                             </div>
-                        </div>
-                        <p className="text-sm font-semibold text-foreground">
-                            {formatCurrency(totals.total, i18n.language, currency)}
-                        </p>
-                    </CardContent>
-                </Card>
+                            <p className="text-sm font-semibold text-foreground">
+                                {formatCurrency(totals.total, i18n.language, currency)}
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Newsletter subscription section */}
                 <Card className="border border-border/70 rounded-none shadow-none">
