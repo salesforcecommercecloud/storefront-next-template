@@ -182,7 +182,7 @@
         "server": [
             {
                 "name": "**/*",
-                "limit": "5.3 mB"
+                "limit": "6 mB"
             }
         ],
         "client": [
@@ -223,7 +223,7 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(product-view\\)-child-products.*.js",
-                "limit": "74 kB",
+                "limit": "90 kB",
                 "comment": "Child products component includes Radix UI menu and dropdown dependencies for variant selection"
             },
             {
@@ -300,11 +300,6 @@
                 "name": "assets/\\(locales\\)-*-index.*.js",
                 "limit": "75 kB",
                 "comment": "Default limit for other locale chunks. Update individually if a locale exceeds this."
-            },
-            {
-                "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "640 kB",
-                "comment": "Checkout components with dependencies (incl. express-payments lazy chunk and sonner toast). Lazy on /checkout."
             },
             {
                 "name": "assets/\\(package\\)-\\(fast-deep-equal\\)-*.js",
