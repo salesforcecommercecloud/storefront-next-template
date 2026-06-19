@@ -243,7 +243,22 @@ export type AppConfig = {
     };
     hybrid: {
         enabled: boolean;
-        legacyRoutes?: string[];
+        /**
+         * Routes owned by the legacy backend (SFRA / SiteGenesis). A `<Link>` click to one of
+         * these forces a full-page navigation so the CDN (eCDN in production, the Vite proxy
+         * locally) can hand the request to the legacy backend.
+         *
+         * Each entry is either a bare pattern string or an object that pairs a pattern with a
+         * `suffix` to append when rebuilding the redirect URL. The suffix exists because legacy
+         * SEO URLs are not uniform: SFCC appends `.html` to product/category SEO URLs (when
+         * `StorefrontURLsEnabled` is on) but serves routes like `/cart` and `/checkout` as clean
+         * paths. A per-route suffix lets `/product/:id` redirect to `/product/123.html` while
+         * `/cart` stays `/cart`.
+         *
+         * @example
+         * legacyRoutes: ['/cart', '/checkout', { pattern: '/product/:id', suffix: '.html' }]
+         */
+        legacyRoutes?: Array<string | { pattern: string; suffix?: string }>;
     };
     i18n: {
         fallbackLng: string;
