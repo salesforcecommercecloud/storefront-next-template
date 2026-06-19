@@ -184,7 +184,8 @@ export function useProductActions({
         storeInventoryId,
     ]);
 
-    // Used basket data in sync when this fetcher targets shopperBasketsV2 and succeeds.
+    // Imperative setter to write a mutation's returned basket into BasketProvider; the cart-mutation
+    // effects below call it with each action response's `basket` so useBasket() consumers stay in sync.
     const updateBasket = useBasketUpdater();
 
     const isInStock = useMemo(() => {

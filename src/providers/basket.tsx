@@ -317,9 +317,9 @@ const BasketProvider = (
         onSuccess: (data) => {
             inFlightIdRef.current = null;
             // Drop the payload if its basketId no longer matches the active fetcher. Keying off the data's own
-            // basketId (rather than inFlightIdRef) means React Router's auto-revalidation after a sibling action
-            // submission — e.g. cart-item-update from the mini cart — also writes to context, since those
-            // resolutions don't come through loadBasket() and so leave inFlightIdRef null.
+            // basketId (rather than inFlightIdRef) means any resolution that did not originate from loadBasket() — and
+            // so leaves inFlightIdRef null — still writes to context, e.g. a registry-driven reload of this fetcher
+            // after a global mutation (site/currency switch).
             if (!data || data.basketId !== basketIdForFetcherRef.current) {
                 return;
             }
@@ -337,9 +337,10 @@ const BasketProvider = (
         onError: (errors) => {
             const completedId = inFlightIdRef.current;
             inFlightIdRef.current = null;
-            // Only surface errors that originated from an explicit loadBasket() call. An auto-revalidation failure
-            // (inFlightIdRef === null) must not overwrite a previously-good basket with an error state — the
-            // sibling action that triggered the revalidation owns its own error reporting.
+            // Only surface errors that originated from an explicit loadBasket() call. A failure from any other
+            // resolution (inFlightIdRef === null) — e.g. a registry-driven reload after a global mutation — must not
+            // overwrite a previously-good basket with an error state; the caller that triggered it owns its own
+            // error reporting.
             if (!completedId || completedId !== basketIdForFetcherRef.current) {
                 return;
             }
