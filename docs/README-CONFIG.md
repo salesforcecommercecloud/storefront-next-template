@@ -644,6 +644,9 @@ site. Unset = host-only scoping; setting a domain is opt-in.
 # PUBLIC__app__cookies__domain=.example.com
 ```
 
+See [Cookie Domain Configuration](./README-COOKIE-DOMAIN.md) for the full guide, including the
+matching Business Manager setting and rollout guidance.
+
 ### Refresh-token expiry overrides
 
 If unset, the storefront uses the expiry returned by SCAPI.

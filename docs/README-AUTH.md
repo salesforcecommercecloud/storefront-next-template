@@ -99,49 +99,9 @@ PUBLIC_COMMERCE_API_REGISTERED_REFRESH_TOKEN_EXPIRY_SECONDS=7776000
 
 ### Cookie domain
 
-To share cookies across subdomains, set a cookie domain. A leading-dot value scopes the cookie to
-the apex domain and all subdomains. This applies to **every** cookie the storefront writes — both the
-auth/session cookies and the site-context cookies (`site_id`, locale, currency). Unset = host-only
-scoping; setting a domain is opt-in.
-
-Two knobs, highest precedence first:
-
-1. **Per-site** — `commerce.sites[].cookies.domain`, for sites served on different domains
-   (e.g. `.example.com` vs `.example.ca`).
-2. **Global default** — `app.cookies.domain`, applied to any site without a per-site override.
-   Set it via the `PUBLIC__app__cookies__domain` env var so a single value covers the whole
-   storefront without redeclaring the `commerce.sites` array.
-
-```typescript
-// config.server.ts
-app: {
-    cookies: { domain: '.example.com' }, // global default for all sites
-    commerce: {
-        sites: [
-            {
-                id: 'RefArchCanada',
-                cookies: { domain: '.example.ca' }, // per-site override wins for this site
-                defaultLocale: 'en-CA',
-                // …
-            },
-        ],
-    },
-},
-```
-
-```bash
-# Or set the global default via env (no need to touch commerce.sites)
-PUBLIC__app__cookies__domain=.example.com
-```
+To share cookies across subdomains — or to keep session continuity in a hybrid Storefront Next + SFRA deployment — set a cookie domain via the global `app.cookies.domain` or a per-site `commerce.sites[].cookies.domain` override. It applies to **every** cookie the storefront writes and is opt-in (host-only by default). See **[Cookie Domain Configuration](./README-COOKIE-DOMAIN.md)** for the full guide: the storefront config and its precedence, the matching Business Manager setting, and rollout guidance/limitations.
 
 Cookie attribute defaults (`path: '/'`, `sameSite: 'lax'`, `secure`) are applied automatically; the resolved cookie domain takes precedence over them. `secure` is gated on `isRemote()` (the `BUNDLE_ID` signal): `true` on deployed (HTTPS) environments, `false` on local `pnpm dev` / `pnpm preview`, which serve plain HTTP over `localhost`. Without this, Safari/WebKit silently refuses to persist `Secure` cookies on loopback and login never sticks (Chrome/Firefox mask it with a localhost exception). `SameSite=None` cookies — used in Page Designer design mode — always stay `Secure`, as the spec requires.
-
-**Notes & limitations:**
-
-- **Pick a domain that is a parent of the serving host.** The leading dot is optional — [RFC 6265bis](https://httpwg.org/specs/rfc6265bis.html#cookie-domain) treats `.example.com` and `example.com` identically, and both match subdomains. A domain that does **not** match the request host is rejected by the browser, so cookies silently fail to persist (login won't stick). This can't be validated at build time — the serving host isn't known until runtime.
-- **`app.siteContext.cookieOptions.domain` is ignored.** The cookie domain is governed solely by `app.cookies.domain` (global) and the per-site `commerce.sites[].cookies.domain`. `cookieOptions` supplies only the other site-context cookie attributes (`httpOnly`, `sameSite`, `maxAge`, …).
-- **A per-site empty string inherits the global default**, not host-only. With a global `app.cookies.domain` set, there is no way to force a single site back to host-only scoping — an empty per-site value falls through to the global. This is deliberate: it keeps the set and delete paths on the same domain (no RFC 6265 mismatch that would strand cookies).
-- **Rollout.** Changing `app.cookies.domain` on a live storefront (unset→set, or a value change) leaves the previously-scoped cookies in the browser alongside the newly-scoped ones until the old ones expire. A host-only cookie shadows a `Domain`-scoped cookie of the same name, and cookie ordering is UA-dependent, so shoppers may see transient session or site-selection glitches during the transition. Roll out in a low-traffic window and expect a short settling period.
 
 ## Usage
 

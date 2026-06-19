@@ -225,6 +225,9 @@ export default defineConfig<Config>(
             // commerce.sites[].cookies.domain overrides this. Empty string = host-only
             // scoping — setting a cookie domain is an opt-in feature.
             // Override via PUBLIC__app__cookies__domain=.example.com
+            //
+            // This (and the per-site commerce.sites[].cookies.domain) is the ONLY place to set the
+            // cookie domain. DO NOT set a domain on app.siteContext.cookieOptions — it is ignored.
             cookies: { domain: '' },
             // Default site ID configuration
             // See CONFIG-OPTIONS.md#defaultSiteId for detailed documentation
