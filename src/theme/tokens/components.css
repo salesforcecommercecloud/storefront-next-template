@@ -7,7 +7,7 @@
 :root {
     /* payment provider colors (not in Figma JSON; external brand guidelines) */
     --paypal-gold: #FFC439;
-    --venmo-blue: #3D95CE;
+    --venmo-blue: #008CFF;
 
     /* cart & mini-cart tokens */
     --cart-summary-px: 1rem;

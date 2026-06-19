@@ -163,7 +163,7 @@ export default function ExpressPayments({
                         disabled={disabled}
                         className="w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
                         aria-label={googlePayLabel}>
-                        <GooglePayLogo className="flex-shrink-0" inverted decorative />
+                        <GooglePayLogo className="flex-shrink-0" decorative />
                     </Button>
 
                     {/* Apple Pay Button */}

@@ -596,7 +596,7 @@
             "billingCountryRequired": "Country is required"
         },
         "expressPayments": {
-            "separator": "Or",
+            "separator": "or continue below",
             "venmoUnavailable": "Venmo is not available on this device.",
             "applePayLabel": "Apple Pay",
             "googlePayLabel": "Google Pay",
