@@ -16,7 +16,7 @@
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DecodedResource } from '@/lib/scapi/resource-encoding';
-import { resourceRoutes } from '@/route-paths';
+import { resourceRoutes, routes } from '@/route-paths';
 import { shouldRevalidate } from './api-client';
 
 // Spy on the registry walk so we can assert the trigger fires (and how often) without real fetchers.
@@ -84,7 +84,6 @@ describe('shipped revalidation policy (global mutations reload every fetcher)', 
         // Couplings deliberately left without a rule (see api-client.ts policy doc):
         // - cart writes → getBasket: provider is synced from the action's returned basket, so a reload is redundant.
         // - cart writes → product availability: a basket change reserves no inventory, so it cannot stale stock.
-        // - identity change → getBasket merge: /login,/signup,/logout redirect and re-hydrate the basket snapshot.
         // - consent / add-review: not inputs to any governed read.
         for (const formAction of [
             resourceRoutes.updateMarketingConsent,
@@ -94,6 +93,26 @@ describe('shipped revalidation policy (global mutations reload every fetcher)', 
             resourceRoutes.cartItemUpdate,
             resourceRoutes.promoCodeAdd,
             resourceRoutes.placeOrder,
+        ]) {
+            const matches = await policyPredicate({ formAction });
+            expect(matches(inv('shopperBasketsV2', 'getBasket'))).toBe(false);
+            expect(matches(inv('shopperProducts', 'getProduct'))).toBe(false);
+            expect(matches(withInventoryIds())).toBe(false);
+        }
+    });
+
+    it('does not reload after an identity transition (login / signup / logout)', async () => {
+        // Identity routes are an ambient dimension for the suppress-by-default PAGE loaders (home, PLP) but NOT for
+        // this resource route: the persistent basket provider re-seeds from the post-merge root-loader snapshot and
+        // Set-Cookie on the identity redirect, so reloading the fetcher would re-read a basket it already holds.
+        // Locks in that api-client admits isContextMutation only — identity routes must match no rule here. The routes
+        // are site/locale-prefixed in practice; assert both the bare and prefixed forms.
+        for (const formAction of [
+            routes.login,
+            routes.signup,
+            routes.logout,
+            '/RefArchGlobal/en-US/login',
+            '/RefArchGlobal/en-US/logout',
         ]) {
             const matches = await policyPredicate({ formAction });
             expect(matches(inv('shopperBasketsV2', 'getBasket'))).toBe(false);

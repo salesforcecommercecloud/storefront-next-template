@@ -177,12 +177,13 @@ describe('home shouldRevalidate', () => {
         });
     });
 
-    describe('logout is allowed through', () => {
-        // The home loader's fetchWishlistInitialState is auth-dependent. A logout submitted from the header while
-        // already on the home page posts to /logout and redirects back to '/', keeping the home route matched — so
-        // shouldRevalidate decides whether the wishlist seed is refreshed. Unlike the /action/* routes, the logout
-        // form action is site/locale-prefixed (buildUrl prefixes it; /logout is not in url.excludeRoutes), so the
-        // match is on the /logout path segment, not an exact-string compare.
+    describe('auth identity transitions are allowed through', () => {
+        // The home loader's fetchWishlistInitialState is auth-dependent. An identity transition (login / signup /
+        // logout) submitted while already on the home page can redirect back to '/', keeping the home route matched —
+        // so shouldRevalidate decides whether the wishlist seed is refreshed for the now-registered / now-guest
+        // session. Unlike the /action/* routes, the identity form actions are site/locale-prefixed (buildUrl prefixes
+        // them; they are not in url.excludeRoutes), so the match is on the trailing path segment, not an exact-string
+        // compare.
         test('revalidates on a POST to the unprefixed logout path', () => {
             expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: routes.logout }))).toBe(true);
         });
@@ -201,6 +202,26 @@ describe('home shouldRevalidate', () => {
             ).toBe(true);
         });
 
+        test('revalidates on a POST to the unprefixed login path', () => {
+            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: routes.login }))).toBe(true);
+        });
+
+        test('revalidates on a POST to the site/locale-prefixed login path', () => {
+            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/login' }))).toBe(
+                true
+            );
+        });
+
+        test('revalidates on a POST to the unprefixed signup path', () => {
+            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: routes.signup }))).toBe(true);
+        });
+
+        test('revalidates on a POST to the site/locale-prefixed signup path', () => {
+            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/signup' }))).toBe(
+                true
+            );
+        });
+
         test('does NOT revalidate on a path that merely ends in the logout segment as a substring', () => {
             // Guard against a loose substring match: a route like /account/auto-logout must not trigger.
             expect(
@@ -210,6 +231,10 @@ describe('home shouldRevalidate', () => {
 
         test('does NOT revalidate on a GET to logout (only mutations are allowed through)', () => {
             expect(shouldRevalidate(buildArgs({ formMethod: 'GET', formAction: routes.logout }))).toBe(false);
+        });
+
+        test('does NOT revalidate on a GET to login (only mutations are allowed through)', () => {
+            expect(shouldRevalidate(buildArgs({ formMethod: 'GET', formAction: routes.login }))).toBe(false);
         });
     });
 });

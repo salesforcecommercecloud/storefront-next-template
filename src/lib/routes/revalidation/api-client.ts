@@ -17,6 +17,7 @@ import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { resourceRoutes } from '@/route-paths';
 import { invokeMatchingFetchers } from '@/lib/scapi/fetcher-registry';
 import type { DecodedResource } from '@/lib/scapi/resource-encoding';
+import { getActionPath, isContextMutation } from './shared';
 
 /**
  * A single revalidation rule: when a mutation matching `when` completes, reload every registered fetcher whose
@@ -31,23 +32,11 @@ interface ScapiRevalidationRule {
     affects: (resource: DecodedResource) => boolean;
 }
 
-/** True when a non-GET mutation's normalized `formAction` is in `mutations`. */
+/** True when a non-GET mutation's normalized `formAction` path satisfies `matchesPath`. */
 const matchesMutation =
-    (mutations: ReadonlySet<string>) =>
+    (matchesPath: (actionPath: string) => boolean) =>
     (args: ShouldRevalidateFunctionArgs): boolean =>
-        args.formMethod !== 'GET' && typeof args.formAction === 'string' && mutations.has(args.formAction);
-
-/**
- * Cross-cutting mutations that change a request-wide pricing/localization dimension every governed read depends on.
- * `setSiteContext` changes site/locale/currency (price books, localized copy, facet labels); `updateShopperContext`
- * changes the customer-group / source-code qualifiers that drive applicable price books and promotions. Both fan out
- * to *all* priced and localized reads, so every `getBasket` / `getProduct` / `getProducts` / `getSearchSuggestions`
- * fetcher is potentially stale after one fires.
- */
-const GLOBAL_MUTATIONS: ReadonlySet<string> = new Set([
-    resourceRoutes.setSiteContext,
-    resourceRoutes.updateShopperContext,
-]);
+        args.formMethod !== 'GET' && typeof args.formAction === 'string' && matchesPath(args.formAction);
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 /**
@@ -98,21 +87,25 @@ function requestsInventoryIds(resource: DecodedResource): boolean {
  *   freshest copy already reaches consumers; a reload would re-fetch a basket the subtree already holds.
  * - Cart writes → product availability (`getProduct`/`getProducts`): adding to cart does not reserve inventory
  *   (SCAPI reserves only at order creation), so a basket change cannot stale a product's stock.
- * - Identity change (`/login`, `/signup`, `/logout`) → `getBasket` merge: those routes redirect, which unmounts
- *   overlays and re-hydrates the root loader's basket snapshot; the lazy basket fetcher self-heals on next use.
+ * - Identity change (`/login`, `/signup`, `/logout`) → `getBasket`: the basket provider is persistent (root-mounted),
+ *   so unlike the overlay fetchers it stays active across the identity redirect — but the login action merges the guest
+ *   basket server-side (`mergeBasket` → `updateBasketResource`) before returning the redirect, so the re-running root
+ *   loader returns the post-merge snapshot and the provider re-seeds from that prop plus the Set-Cookie snapshot on the
+ *   same navigation. A fetcher reload would re-read a basket the provider already holds. The context dimension is
+ *   matched via {@link isContextMutation}, which excludes the identity routes for exactly this reason.
  */
 const REVALIDATION_RULES: readonly ScapiRevalidationRule[] = [
-    // A global context switch (site/currency/locale or shopper context) re-scopes pricing and localization, and every
-    // read this route governs is priced/localized — so it invalidates every registered fetcher unconditionally.
+    // A context switch (site/currency/locale or shopper context) re-scopes pricing and localization, and every read
+    // this route governs is priced/localized — so it invalidates every registered fetcher unconditionally.
     {
-        when: matchesMutation(GLOBAL_MUTATIONS),
+        when: matchesMutation(isContextMutation),
         affects: () => true,
     },
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     // Switching the selected/pickup store changes which store's inventory a product call reads, so reload anything
     // scoped to a store's inventory.
     {
-        when: matchesMutation(STORE_SELECTION_MUTATIONS),
+        when: matchesMutation((actionPath) => STORE_SELECTION_MUTATIONS.has(actionPath)),
         affects: requestsInventoryIds,
     },
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -147,9 +140,9 @@ let resetScheduled = false;
 export function shouldRevalidate(args: ShouldRevalidateFunctionArgs): boolean {
     const { formAction, currentUrl } = args;
 
-    // Normalize `formAction` to a bare pathname so rules can match it against `resourceRoutes.*` constants. React
-    // Router may append a trailing `?index`, and a caller may submit an absolute URL.
-    const normalizedAction = formAction ? new URL(formAction, currentUrl.origin).pathname : '';
+    // Normalize `formAction` to a bare pathname so rules can match it against `resourceRoutes.*` constants (handles a
+    // trailing `?index` and absolute URLs). Falls back to the empty-string key when no action was submitted.
+    const normalizedAction = getActionPath(formAction, currentUrl.origin) ?? '';
 
     // Walk once per distinct mutation per tick. RR's identical-args repeats of a single pass share `normalizedAction`
     // and so collapse; two different mutations in the same tick each walk.
