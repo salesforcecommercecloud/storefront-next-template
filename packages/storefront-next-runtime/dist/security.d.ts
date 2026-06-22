@@ -2,62 +2,8 @@ import { a as HstsConfig, c as SecurityConfig, i as CspDirectives, n as defaultS
 import * as react_router16 from "react-router";
 import { MiddlewareFunction, RouterContextProvider } from "react-router";
 
-//#region src/security/middleware.d.ts
-
-/**
- * Create the React Router middleware that applies default security
- * response headers.
- *
- * - Validates customer config via zod at factory call (boot). Throws on
- *   invalid directive names with a clear message.
- * - Generates a fresh CSP nonce per request (16 bytes / 24 base64 chars).
- *   Sets it on `securityContext` for `getSecurityNonce()` consumers.
- * - Merges customer directives over SDK defaults (per-directive replace).
- * - HSTS is suppressed locally — emitted only when running on MRT
- *   (BUNDLE_ID set and not 'local').
- *
- * @param input - Customer security config from `config.server.ts`. Any
- * field omitted falls back to the SDK default.
- *
- * Reads (at boot, once):
- * - `process.env.BUNDLE_ID` — when set and not 'local', emit HSTS.
- *
- * @example
- * ```ts
- * const mw = createSecurityHeadersMiddleware(config.security);
- * // register in root.tsx middleware chain before appConfigMiddleware
- * ```
- */
-declare function createSecurityHeadersMiddleware(input?: SecurityConfig): MiddlewareFunction<Response>;
-//#endregion
-//#region src/security/nonce.d.ts
-/** React Router context carrying the current request's CSP nonce. */
-declare const securityContext: react_router16.RouterContext<{
-  nonce: string;
-} | null>;
-/**
- * Read the current request's CSP nonce. Returns `null` when the security
- * middleware is disabled. Server-only — call from a loader or action.
- *
- * Naming: `get*` (not `use*`) because this is not a React hook — it reads
- * the React Router context directly. Mirrors `getLocale` / `getTranslation`
- * in the i18n module.
- *
- * The nonce is meaningful only on the SSR-rendered inline script. On
- * client navigations, the loader runs again and returns a fresh nonce,
- * but no new CSP header is emitted, so the loader-returned value should
- * not be applied to scripts injected client-side.
- *
- * @example
- * ```ts
- * // In root.tsx loader:
- * const nonce = getSecurityNonce(args.context);
- * return { nonce, ...other };
- * ```
- */
-declare function getSecurityNonce(context: Readonly<RouterContextProvider>): string | null;
-//#endregion
 //#region src/security/contributors/types.d.ts
+
 /**
  * The CSP directive names a contributor may target. Mirrors the keys of
  * `CspDirectives` minus the valueless `upgrade-insecure-requests` (a
@@ -111,6 +57,63 @@ interface CspContributor {
   };
 }
 //#endregion
+//#region src/security/middleware.d.ts
+/**
+ * Create the React Router middleware that applies default security
+ * response headers.
+ *
+ * - Validates customer config via zod at factory call (boot). Throws on
+ *   invalid directive names with a clear message.
+ * - Generates a fresh CSP nonce per request (16 bytes / 24 base64 chars).
+ *   Sets it on `securityContext` for `getSecurityNonce()` consumers.
+ * - Merges customer directives over SDK defaults (per-directive replace).
+ * - HSTS is suppressed locally — emitted only when running on MRT
+ *   (BUNDLE_ID set and not 'local').
+ *
+ * @param input - Customer security config from `config.server.ts`. Any
+ * field omitted falls back to the SDK default.
+ * @param contributors - Boot-static CSP contributors to fold into the
+ * directives after env-adjust. Contributors' origins are validated and
+ * merged at boot, then folded after #2016 local-dev adjustments.
+ *
+ * Reads (at boot, once):
+ * - `process.env.BUNDLE_ID` — when set and not 'local', emit HSTS.
+ *
+ * @example
+ * ```ts
+ * const mw = createSecurityHeadersMiddleware(config.security, contributors);
+ * // register in root.tsx middleware chain before appConfigMiddleware
+ * ```
+ */
+declare function createSecurityHeadersMiddleware(input?: SecurityConfig, contributors?: readonly CspContributor[]): MiddlewareFunction<Response>;
+//#endregion
+//#region src/security/nonce.d.ts
+/** React Router context carrying the current request's CSP nonce. */
+declare const securityContext: react_router16.RouterContext<{
+  nonce: string;
+} | null>;
+/**
+ * Read the current request's CSP nonce. Returns `null` when the security
+ * middleware is disabled. Server-only — call from a loader or action.
+ *
+ * Naming: `get*` (not `use*`) because this is not a React hook — it reads
+ * the React Router context directly. Mirrors `getLocale` / `getTranslation`
+ * in the i18n module.
+ *
+ * The nonce is meaningful only on the SSR-rendered inline script. On
+ * client navigations, the loader runs again and returns a fresh nonce,
+ * but no new CSP header is emitted, so the loader-returned value should
+ * not be applied to scripts injected client-side.
+ *
+ * @example
+ * ```ts
+ * // In root.tsx loader:
+ * const nonce = getSecurityNonce(args.context);
+ * return { nonce, ...other };
+ * ```
+ */
+declare function getSecurityNonce(context: Readonly<RouterContextProvider>): string | null;
+//#endregion
 //#region src/security/contributors/resolve-csp.d.ts
 interface ResolveCspInput {
   /** Base directives = SDK defaults merged with customer overrides. */
@@ -158,6 +161,56 @@ declare function resolveCsp(input: ResolveCspInput): ResolvedCsp;
  */
 declare function validateContributors(contributors: readonly CspContributor[], baseDirectives?: Readonly<CspDirectives>): void;
 //#endregion
+//#region src/security/contributors/origin.d.ts
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The single rule core for CSP contributor origins. Both the boot-time
+ * validator (`originError` in `registry.ts`, which rejects non-canonical
+ * input and emits messages) and the template-side normalizer
+ * (`normalizeCspOrigin`, which strips path/query/fragment) derive from this —
+ * so the origin-safety rules live in exactly one place.
+ */
+/** A safety issue that makes a value unusable as a CSP source origin. */
+type CspOriginIssue = 'not-string' | 'wildcard' | 'separator' | 'unparseable' | 'not-https' | 'credentials';
+interface CspOriginInspection {
+  /** First safety issue, or null when the value is a safe https URL. */
+  issue: CspOriginIssue | null;
+  /** Canonical scheme+host[:port] origin; null when `issue` is non-null. */
+  origin: string | null;
+}
+/**
+ * Inspect a candidate CSP origin against the safety rules: must be a string,
+ * contain no `*` (wildcard), no whitespace or CSP separators (`;` `,` — which
+ * could split/inject directives), be a parseable `https:` URL, and carry no
+ * userinfo credentials. Returns the canonical origin when safe.
+ *
+ * Note: a safe-but-non-canonical value (e.g. one with a path) has `issue: null`
+ * and a normalized `origin` — callers decide whether to normalize (use `origin`)
+ * or reject (compare the raw input to `origin`).
+ */
+declare function inspectCspOrigin(value: string): CspOriginInspection;
+/**
+ * Normalize a config URL to an exact CSP source origin, or null if unsafe.
+ * Strips any path/query/fragment — returns `scheme://host[:port]` only.
+ * This is the canonical helper template-side contributors should use to turn
+ * a configured URL into a CSP directive value.
+ */
+declare function normalizeCspOrigin(value: string): string | null;
+//#endregion
 //#region src/security/contributors/lru-cache.d.ts
 /**
  * Copyright 2026 Salesforce, Inc.
@@ -189,5 +242,5 @@ declare class BoundedCache<V> {
   get size(): number;
 }
 //#endregion
-export { BoundedCache, type CspConfig, type CspContribution, type CspContributor, type CspDirectiveName, type CspDirectives, type CspResolutionContext, type HstsConfig, type ReferrerPolicyValue, type ResolveCspInput, type ResolvedCsp, type ResolvedSecurityConfig, type SecurityConfig, createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, resolveCsp, securityContext, validateContributors };
+export { BoundedCache, type CspConfig, type CspContribution, type CspContributor, type CspDirectiveName, type CspDirectives, type CspOriginInspection, type CspOriginIssue, type CspResolutionContext, type HstsConfig, type ReferrerPolicyValue, type ResolveCspInput, type ResolvedCsp, type ResolvedSecurityConfig, type SecurityConfig, createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, inspectCspOrigin, normalizeCspOrigin, resolveCsp, securityContext, validateContributors };
 //# sourceMappingURL=security.d.ts.map

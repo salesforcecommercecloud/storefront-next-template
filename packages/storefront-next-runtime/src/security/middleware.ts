@@ -21,6 +21,8 @@ import { generateNonce, securityContext } from './nonce.js';
 import { parseSecurityConfig } from './schema.js';
 import { serializeCsp, serializeHsts, serializePermissionsPolicy } from './serialize.js';
 import type { CspDirectives, HstsConfig, ResolvedSecurityConfig, SecurityConfig } from './types.js';
+import { resolveCsp } from './contributors/resolve-csp.js';
+import type { CspContributor } from './contributors/types.js';
 
 /**
  * Merge customer config with SDK defaults. Per-directive replace: any
@@ -105,17 +107,23 @@ function warnIfUnsafe(resolved: ResolvedSecurityConfig): void {
  *
  * @param input - Customer security config from `config.server.ts`. Any
  * field omitted falls back to the SDK default.
+ * @param contributors - Boot-static CSP contributors to fold into the
+ * directives after env-adjust. Contributors' origins are validated and
+ * merged at boot, then folded after #2016 local-dev adjustments.
  *
  * Reads (at boot, once):
  * - `process.env.BUNDLE_ID` — when set and not 'local', emit HSTS.
  *
  * @example
  * ```ts
- * const mw = createSecurityHeadersMiddleware(config.security);
+ * const mw = createSecurityHeadersMiddleware(config.security, contributors);
  * // register in root.tsx middleware chain before appConfigMiddleware
  * ```
  */
-export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): MiddlewareFunction<Response> {
+export function createSecurityHeadersMiddleware(
+    input: SecurityConfig = {},
+    contributors: readonly CspContributor[] = []
+): MiddlewareFunction<Response> {
     parseSecurityConfig(input); // throws on invalid input
     const resolved = resolve(input);
     warnIfUnsafe(resolved);
@@ -153,6 +161,18 @@ export function createSecurityHeadersMiddleware(input: SecurityConfig = {}): Mid
         // (remote) keeps the directive. `delete` only touches this per-instance
         // directives object, never the shared module default.
         delete resolved.csp.directives['upgrade-insecure-requests'];
+    }
+
+    // Fold boot-static CSP contributors AFTER the #2016 local-dev adjustments.
+    // Contributors are validated and merged by resolveCsp; only active boot-static
+    // origins are folded here. This happens after env-adjust so the adjustments
+    // (ws:// sources, upgrade-insecure-requests removal) are preserved and the
+    // contributors see the final env-adjusted directives.
+    if (contributors.length > 0 && resolved.csp !== false) {
+        resolved.csp.directives = resolveCsp({
+            baseDirectives: resolved.csp.directives,
+            contributors,
+        }).staticDirectives;
     }
 
     // Pre-compute everything that doesn't depend on the per-request nonce.

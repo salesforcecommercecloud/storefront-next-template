@@ -15,6 +15,7 @@
  */
 import type { CspDirectives } from '../types.js';
 import { VALID_CSP_DIRECTIVES } from '../schema.js';
+import { inspectCspOrigin } from './origin.js';
 import type { CspContributor, CspContribution } from './types.js';
 
 // Contributors add origin lists; they may NOT target the valueless
@@ -29,24 +30,30 @@ const DIRECTIVE_SET = new Set<string>(VALID_CSP_DIRECTIVES.filter((d) => d !== '
  * separators that could split/inject directives.
  */
 function originError(origin: string): string | null {
-    if (origin.includes('*')) return `wildcard not allowed in contributor origin: "${origin}"`;
-    if (/[\s;,]/.test(origin)) return `invalid origin (whitespace or separator): "${origin}"`;
-    let url: URL;
-    try {
-        url = new URL(origin);
-    } catch {
-        return `invalid origin (unparseable): "${origin}"`;
+    // Validation derives from the shared rule core (`inspectCspOrigin`); this
+    // function owns only the human-readable messages. The normalizer
+    // (`normalizeCspOrigin`) used by template-side contributors shares the same
+    // core, so the two cannot drift.
+    const { issue, origin: canonical } = inspectCspOrigin(origin);
+    switch (issue) {
+        case 'wildcard':
+            return `wildcard not allowed in contributor origin: "${origin}"`;
+        case 'separator':
+            return `invalid origin (whitespace or separator): "${origin}"`;
+        case 'not-string':
+        case 'unparseable':
+            return `invalid origin (unparseable): "${origin}"`;
+        case 'not-https':
+            return `contributor origin must be https: "${origin}"`;
+        case 'credentials':
+            return `invalid origin (must not contain credentials): "${origin}"`;
     }
-    if (url.protocol !== 'https:') return `contributor origin must be https: "${origin}"`;
-    if (url.username !== '' || url.password !== '') {
-        return `invalid origin (must not contain credentials): "${origin}"`;
-    }
-    // Require an exact, canonical scheme+host(+port) origin. Comparing the raw
-    // input against `url.origin` rejects anything with a path/query/fragment, an
-    // empty authority (`https:///x`, `https:foo`), or stray control characters
-    // (e.g. an embedded NUL that `\s` doesn't catch) — since the raw string, not
-    // the normalized URL, is what gets serialized into the CSP header.
-    if (origin !== url.origin) {
+    // Require an exact, canonical scheme+host(+port) origin. Rejecting anything
+    // where the raw input differs from its canonical origin catches a
+    // path/query/fragment, an empty authority (`https:///x`, `https:foo`), or
+    // stray control chars — since the raw string, not the normalized URL, is
+    // what gets serialized into the CSP header.
+    if (origin !== canonical) {
         return `invalid origin (must be an exact scheme+host[:port] with no path/query/fragment): "${origin}"`;
     }
     return null;

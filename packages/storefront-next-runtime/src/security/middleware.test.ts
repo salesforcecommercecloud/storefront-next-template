@@ -354,6 +354,80 @@ describe('createSecurityHeadersMiddleware', () => {
         expect(csp.indexOf('style-src')).toBeLessThan(csp.indexOf('img-src'));
     });
 
+    describe('CSP contributors', () => {
+        it('folds boot-static contributor origins into the served CSP', async () => {
+            const contributor = {
+                id: 'test-feature',
+                isActive: () => true,
+                contribute: () => ({ 'script-src': ['https://cdn.test.com'], 'connect-src': ['https://api.test.com'] }),
+            };
+            const mw = createSecurityHeadersMiddleware({}, [contributor]);
+            const { args } = makeArgs();
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).toContain('https://cdn.test.com');
+            expect(csp).toContain('https://api.test.com');
+        });
+
+        it('omits origins from inactive contributors', async () => {
+            const contributor = {
+                id: 'test-feature',
+                isActive: () => false,
+                contribute: () => ({ 'script-src': ['https://cdn.test.com'] }),
+            };
+            const mw = createSecurityHeadersMiddleware({}, [contributor]);
+            const { args } = makeArgs();
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).not.toContain('https://cdn.test.com');
+        });
+
+        it('preserves #2016 guardrails WITH contributors (no upgrade-insecure-requests on local, ws://localhost present)', async () => {
+            process.env.BUNDLE_ID = 'local';
+            const contributor = {
+                id: 'test-feature',
+                isActive: () => true,
+                contribute: () => ({ 'script-src': ['https://cdn.test.com'] }),
+            };
+            const mw = createSecurityHeadersMiddleware({}, [contributor]);
+            const { args } = makeArgs();
+            const res = await run(mw, args);
+            const csp = res.headers.get('content-security-policy') ?? '';
+            expect(csp).not.toContain('upgrade-insecure-requests');
+            expect(csp).toContain('ws://localhost:*');
+            expect(csp).toContain('https://cdn.test.com');
+        });
+
+        it('produces identical CSP when no contributors passed vs empty array (back-compat)', async () => {
+            const mw1 = createSecurityHeadersMiddleware({});
+            const mw2 = createSecurityHeadersMiddleware({}, []);
+            const { args: args1 } = makeArgs();
+            const { args: args2 } = makeArgs();
+            const res1 = await run(mw1, args1);
+            const res2 = await run(mw2, args2);
+            const csp1 = res1.headers.get('content-security-policy') ?? '';
+            const csp2 = res2.headers.get('content-security-policy') ?? '';
+            // Strip nonces to compare structure (nonces are random per request)
+            const normalize = (s: string) => s.replace(/'nonce-[A-Za-z0-9+/=]+'/g, "'nonce-XXX'");
+            expect(normalize(csp1)).toBe(normalize(csp2));
+        });
+
+        it('produces identical CSP when a single INACTIVE contributor is present (real disabled-feature wiring shape)', async () => {
+            // The template always passes a length-1 array (the shopper-agent contributor);
+            // when the feature is disabled the contributor is inactive. The served CSP must
+            // be byte-identical (nonce aside) to having no contributors at all.
+            const inactive = { id: 'shopper-agent', isActive: () => false, contribute: () => ({}) };
+            const mwBase = createSecurityHeadersMiddleware({});
+            const mwInactive = createSecurityHeadersMiddleware({}, [inactive]);
+            const resBase = await run(mwBase, makeArgs().args);
+            const resInactive = await run(mwInactive, makeArgs().args);
+            const normalize = (s: string) => s.replace(/'nonce-[A-Za-z0-9+/=]+'/g, "'nonce-XXX'");
+            const base = normalize(resBase.headers.get('content-security-policy') ?? '');
+            const withInactive = normalize(resInactive.headers.get('content-security-policy') ?? '');
+            expect(withInactive).toBe(base);
+        });
+    });
+
     describe('Page Designer / preview embedding', () => {
         it('ships strict frame-ancestors and X-Frame-Options for normal shopper traffic', async () => {
             const mw = createSecurityHeadersMiddleware({});

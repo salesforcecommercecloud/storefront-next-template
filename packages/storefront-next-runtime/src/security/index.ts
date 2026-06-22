@@ -18,7 +18,9 @@ export { defaultSecurityHeaders, defaultCspDirectives } from './defaults.js';
 export { securityContext, getSecurityNonce } from './nonce.js';
 export { resolveCsp } from './contributors/resolve-csp.js';
 export { validateContributors } from './contributors/registry.js';
+export { normalizeCspOrigin, inspectCspOrigin } from './contributors/origin.js';
 export { BoundedCache } from './contributors/lru-cache.js';
+export type { CspOriginIssue, CspOriginInspection } from './contributors/origin.js';
 export type { ResolveCspInput, ResolvedCsp } from './contributors/resolve-csp.js';
 export type { CspContributor, CspContribution, CspResolutionContext, CspDirectiveName } from './contributors/types.js';
 // React-only exports (NonceContext, useSecurityNonceFromContext) live at

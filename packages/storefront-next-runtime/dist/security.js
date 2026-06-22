@@ -170,146 +170,6 @@ function serializeHsts(hsts) {
 }
 
 //#endregion
-//#region src/security/middleware.ts
-/**
-* Merge customer config with SDK defaults. Per-directive replace: any
-* directive the customer sets fully replaces the SDK default for that key
-* (object spread semantics).
-*
-* Narrows defaults via a runtime check rather than `as Required<...>` casts,
-* so a future change that sets `defaults.csp = false` or `defaults.hsts = false`
-* is caught here instead of producing `max-age=undefined` at the wire.
-*/
-function resolve(input) {
-	const defaultsCsp = defaultSecurityHeaders.csp === false ? null : defaultSecurityHeaders.csp;
-	const defaultsHsts = defaultSecurityHeaders.hsts === false ? null : defaultSecurityHeaders.hsts;
-	return {
-		enabled: input.enabled ?? defaultSecurityHeaders.enabled,
-		csp: input.csp === false ? false : {
-			directives: {
-				...defaultsCsp?.directives ?? {},
-				...input.csp?.directives ?? {}
-			},
-			reportOnly: input.csp?.reportOnly ?? false
-		},
-		hsts: input.hsts === false ? false : input.hsts === void 0 ? defaultsHsts ?? false : {
-			...defaultsHsts ?? {
-				maxAge: 0,
-				includeSubDomains: false,
-				preload: false
-			},
-			...input.hsts
-		},
-		frameOptions: input.frameOptions ?? defaultSecurityHeaders.frameOptions,
-		contentTypeOptions: input.contentTypeOptions ?? defaultSecurityHeaders.contentTypeOptions,
-		referrerPolicy: input.referrerPolicy ?? defaultSecurityHeaders.referrerPolicy,
-		permissionsPolicy: input.permissionsPolicy ?? defaultSecurityHeaders.permissionsPolicy
-	};
-}
-/**
-* Boot-time warnings. Logged once per server start when potentially
-* unsafe configurations are active.
-*/
-function warnIfUnsafe(resolved) {
-	if (!resolved.enabled) {
-		console.warn("[security] All security headers disabled via config. This is not recommended for production.");
-		return;
-	}
-	if (resolved.csp === false) console.warn("[security] CSP disabled via config. Other headers still applied.");
-	else if (resolved.csp.reportOnly) console.warn("[security] CSP is in report-only mode. This is intended for migration only. Set csp.reportOnly to false before going to production.");
-	if (resolved.csp !== false) {
-		const scriptSrc = resolved.csp.directives["script-src"];
-		if (Array.isArray(scriptSrc) && !scriptSrc.includes("'self'")) console.warn("[security] CSP script-src does not include 'self'. The inline window.__APP_CONFIG__ script may fail to execute.");
-	}
-}
-/**
-* Create the React Router middleware that applies default security
-* response headers.
-*
-* - Validates customer config via zod at factory call (boot). Throws on
-*   invalid directive names with a clear message.
-* - Generates a fresh CSP nonce per request (16 bytes / 24 base64 chars).
-*   Sets it on `securityContext` for `getSecurityNonce()` consumers.
-* - Merges customer directives over SDK defaults (per-directive replace).
-* - HSTS is suppressed locally — emitted only when running on MRT
-*   (BUNDLE_ID set and not 'local').
-*
-* @param input - Customer security config from `config.server.ts`. Any
-* field omitted falls back to the SDK default.
-*
-* Reads (at boot, once):
-* - `process.env.BUNDLE_ID` — when set and not 'local', emit HSTS.
-*
-* @example
-* ```ts
-* const mw = createSecurityHeadersMiddleware(config.security);
-* // register in root.tsx middleware chain before appConfigMiddleware
-* ```
-*/
-function createSecurityHeadersMiddleware(input = {}) {
-	parseSecurityConfig(input);
-	const resolved = resolve(input);
-	warnIfUnsafe(resolved);
-	const remote = isRemote();
-	if (!remote && resolved.csp !== false) {
-		const connectSrc = resolved.csp.directives["connect-src"];
-		if (Array.isArray(connectSrc)) {
-			const devSocketSources = ["ws://localhost:*", "ws://127.0.0.1:*"];
-			resolved.csp.directives["connect-src"] = [...connectSrc, ...devSocketSources.filter((s) => !connectSrc.includes(s))];
-		}
-		delete resolved.csp.directives["upgrade-insecure-requests"];
-	}
-	const staticHsts = remote && resolved.hsts !== false ? serializeHsts(resolved.hsts) : null;
-	const permissionsHeader = resolved.permissionsPolicy === false ? null : serializePermissionsPolicy(resolved.permissionsPolicy);
-	const cspHeaderName = resolved.csp !== false && resolved.csp.reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
-	let staticCspBody = null;
-	let staticCspBodyForPageDesigner = null;
-	let baseScriptSrc = "";
-	if (resolved.csp !== false) {
-		const { "script-src": scriptSrc,...rest } = resolved.csp.directives;
-		staticCspBody = serializeCsp(rest);
-		baseScriptSrc = (scriptSrc ?? []).join(" ");
-		const customerFrameAncestors = rest["frame-ancestors"] ?? [];
-		if (!customerFrameAncestors.some((src) => src !== "'self'")) staticCspBodyForPageDesigner = serializeCsp({
-			...rest,
-			"frame-ancestors": [...customerFrameAncestors, ...pageDesignerFrameAncestors]
-		});
-	}
-	/**
-	* Apply the resolved security headers to a response. Pulled into a helper
-	* so we can run it on the success path AND on a thrown Response (RR
-	* loaders/actions throw `Response` for 404/redirect/etc.). Without this,
-	* a 404 error response would ship without security headers.
-	*/
-	const applyHeaders = (response, nonce, cspBody, isEmbeddable) => {
-		if (cspBody !== null && nonce !== null) {
-			const scriptSrcClause = baseScriptSrc.length > 0 ? `script-src ${baseScriptSrc} 'nonce-${nonce}'` : `script-src 'nonce-${nonce}'`;
-			const csp = cspBody.length > 0 ? `${cspBody}; ${scriptSrcClause}` : scriptSrcClause;
-			response.headers.set(cspHeaderName, csp);
-		}
-		if (staticHsts !== null) response.headers.set("Strict-Transport-Security", staticHsts);
-		if (resolved.frameOptions !== false && !isEmbeddable) response.headers.set("X-Frame-Options", resolved.frameOptions);
-		if (resolved.contentTypeOptions !== false) response.headers.set("X-Content-Type-Options", resolved.contentTypeOptions);
-		if (resolved.referrerPolicy !== false) response.headers.set("Referrer-Policy", resolved.referrerPolicy);
-		if (permissionsHeader !== null) response.headers.set("Permissions-Policy", permissionsHeader);
-		return response;
-	};
-	return async (args, next) => {
-		if (!resolved.enabled) return next();
-		const nonce = resolved.csp === false ? null : generateNonce();
-		if (nonce !== null) args.context.set(securityContext, { nonce });
-		const isEmbeddable = staticCspBodyForPageDesigner !== null && (isDesignModeActive(args.request) || isPreviewModeActive(args.request));
-		const cspBody = isEmbeddable ? staticCspBodyForPageDesigner : staticCspBody;
-		try {
-			return applyHeaders(await next(), nonce, cspBody, isEmbeddable);
-		} catch (err) {
-			if (err instanceof Response) throw applyHeaders(err, nonce, cspBody, isEmbeddable);
-			throw err;
-		}
-	};
-}
-
-//#endregion
 //#region src/security/contributors/lru-cache.ts
 /**
 * Copyright 2026 Salesforce, Inc.
@@ -359,6 +219,63 @@ var BoundedCache = class {
 };
 
 //#endregion
+//#region src/security/contributors/origin.ts
+/**
+* Inspect a candidate CSP origin against the safety rules: must be a string,
+* contain no `*` (wildcard), no whitespace or CSP separators (`;` `,` — which
+* could split/inject directives), be a parseable `https:` URL, and carry no
+* userinfo credentials. Returns the canonical origin when safe.
+*
+* Note: a safe-but-non-canonical value (e.g. one with a path) has `issue: null`
+* and a normalized `origin` — callers decide whether to normalize (use `origin`)
+* or reject (compare the raw input to `origin`).
+*/
+function inspectCspOrigin(value) {
+	if (typeof value !== "string") return {
+		issue: "not-string",
+		origin: null
+	};
+	if (value.includes("*")) return {
+		issue: "wildcard",
+		origin: null
+	};
+	if (/[\s;,]/.test(value)) return {
+		issue: "separator",
+		origin: null
+	};
+	let url;
+	try {
+		url = new URL(value);
+	} catch {
+		return {
+			issue: "unparseable",
+			origin: null
+		};
+	}
+	if (url.protocol !== "https:") return {
+		issue: "not-https",
+		origin: null
+	};
+	if (url.username !== "" || url.password !== "") return {
+		issue: "credentials",
+		origin: null
+	};
+	return {
+		issue: null,
+		origin: url.origin
+	};
+}
+/**
+* Normalize a config URL to an exact CSP source origin, or null if unsafe.
+* Strips any path/query/fragment — returns `scheme://host[:port]` only.
+* This is the canonical helper template-side contributors should use to turn
+* a configured URL into a CSP directive value.
+*/
+function normalizeCspOrigin(value) {
+	return inspectCspOrigin(value).origin;
+}
+
+//#endregion
 //#region src/security/contributors/registry.ts
 const DIRECTIVE_SET = new Set(VALID_CSP_DIRECTIVES.filter((d) => d !== "upgrade-insecure-requests"));
 /**
@@ -367,17 +284,16 @@ const DIRECTIVE_SET = new Set(VALID_CSP_DIRECTIVES.filter((d) => d !== "upgrade-
 * separators that could split/inject directives.
 */
 function originError(origin) {
-	if (origin.includes("*")) return `wildcard not allowed in contributor origin: "${origin}"`;
-	if (/[\s;,]/.test(origin)) return `invalid origin (whitespace or separator): "${origin}"`;
-	let url;
-	try {
-		url = new URL(origin);
-	} catch {
-		return `invalid origin (unparseable): "${origin}"`;
+	const { issue, origin: canonical } = inspectCspOrigin(origin);
+	switch (issue) {
+		case "wildcard": return `wildcard not allowed in contributor origin: "${origin}"`;
+		case "separator": return `invalid origin (whitespace or separator): "${origin}"`;
+		case "not-string":
+		case "unparseable": return `invalid origin (unparseable): "${origin}"`;
+		case "not-https": return `contributor origin must be https: "${origin}"`;
+		case "credentials": return `invalid origin (must not contain credentials): "${origin}"`;
 	}
-	if (url.protocol !== "https:") return `contributor origin must be https: "${origin}"`;
-	if (url.username !== "" || url.password !== "") return `invalid origin (must not contain credentials): "${origin}"`;
-	if (origin !== url.origin) return `invalid origin (must be an exact scheme+host[:port] with no path/query/fragment): "${origin}"`;
+	if (origin !== canonical) return `invalid origin (must be an exact scheme+host[:port] with no path/query/fragment): "${origin}"`;
 	return null;
 }
 function validateContribution(id, contribution) {
@@ -493,5 +409,152 @@ function resolveCsp(input) {
 }
 
 //#endregion
-export { BoundedCache, createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, resolveCsp, securityContext, validateContributors };
+//#region src/security/middleware.ts
+/**
+* Merge customer config with SDK defaults. Per-directive replace: any
+* directive the customer sets fully replaces the SDK default for that key
+* (object spread semantics).
+*
+* Narrows defaults via a runtime check rather than `as Required<...>` casts,
+* so a future change that sets `defaults.csp = false` or `defaults.hsts = false`
+* is caught here instead of producing `max-age=undefined` at the wire.
+*/
+function resolve(input) {
+	const defaultsCsp = defaultSecurityHeaders.csp === false ? null : defaultSecurityHeaders.csp;
+	const defaultsHsts = defaultSecurityHeaders.hsts === false ? null : defaultSecurityHeaders.hsts;
+	return {
+		enabled: input.enabled ?? defaultSecurityHeaders.enabled,
+		csp: input.csp === false ? false : {
+			directives: {
+				...defaultsCsp?.directives ?? {},
+				...input.csp?.directives ?? {}
+			},
+			reportOnly: input.csp?.reportOnly ?? false
+		},
+		hsts: input.hsts === false ? false : input.hsts === void 0 ? defaultsHsts ?? false : {
+			...defaultsHsts ?? {
+				maxAge: 0,
+				includeSubDomains: false,
+				preload: false
+			},
+			...input.hsts
+		},
+		frameOptions: input.frameOptions ?? defaultSecurityHeaders.frameOptions,
+		contentTypeOptions: input.contentTypeOptions ?? defaultSecurityHeaders.contentTypeOptions,
+		referrerPolicy: input.referrerPolicy ?? defaultSecurityHeaders.referrerPolicy,
+		permissionsPolicy: input.permissionsPolicy ?? defaultSecurityHeaders.permissionsPolicy
+	};
+}
+/**
+* Boot-time warnings. Logged once per server start when potentially
+* unsafe configurations are active.
+*/
+function warnIfUnsafe(resolved) {
+	if (!resolved.enabled) {
+		console.warn("[security] All security headers disabled via config. This is not recommended for production.");
+		return;
+	}
+	if (resolved.csp === false) console.warn("[security] CSP disabled via config. Other headers still applied.");
+	else if (resolved.csp.reportOnly) console.warn("[security] CSP is in report-only mode. This is intended for migration only. Set csp.reportOnly to false before going to production.");
+	if (resolved.csp !== false) {
+		const scriptSrc = resolved.csp.directives["script-src"];
+		if (Array.isArray(scriptSrc) && !scriptSrc.includes("'self'")) console.warn("[security] CSP script-src does not include 'self'. The inline window.__APP_CONFIG__ script may fail to execute.");
+	}
+}
+/**
+* Create the React Router middleware that applies default security
+* response headers.
+*
+* - Validates customer config via zod at factory call (boot). Throws on
+*   invalid directive names with a clear message.
+* - Generates a fresh CSP nonce per request (16 bytes / 24 base64 chars).
+*   Sets it on `securityContext` for `getSecurityNonce()` consumers.
+* - Merges customer directives over SDK defaults (per-directive replace).
+* - HSTS is suppressed locally — emitted only when running on MRT
+*   (BUNDLE_ID set and not 'local').
+*
+* @param input - Customer security config from `config.server.ts`. Any
+* field omitted falls back to the SDK default.
+* @param contributors - Boot-static CSP contributors to fold into the
+* directives after env-adjust. Contributors' origins are validated and
+* merged at boot, then folded after #2016 local-dev adjustments.
+*
+* Reads (at boot, once):
+* - `process.env.BUNDLE_ID` — when set and not 'local', emit HSTS.
+*
+* @example
+* ```ts
+* const mw = createSecurityHeadersMiddleware(config.security, contributors);
+* // register in root.tsx middleware chain before appConfigMiddleware
+* ```
+*/
+function createSecurityHeadersMiddleware(input = {}, contributors = []) {
+	parseSecurityConfig(input);
+	const resolved = resolve(input);
+	warnIfUnsafe(resolved);
+	const remote = isRemote();
+	if (!remote && resolved.csp !== false) {
+		const connectSrc = resolved.csp.directives["connect-src"];
+		if (Array.isArray(connectSrc)) {
+			const devSocketSources = ["ws://localhost:*", "ws://127.0.0.1:*"];
+			resolved.csp.directives["connect-src"] = [...connectSrc, ...devSocketSources.filter((s) => !connectSrc.includes(s))];
+		}
+		delete resolved.csp.directives["upgrade-insecure-requests"];
+	}
+	if (contributors.length > 0 && resolved.csp !== false) resolved.csp.directives = resolveCsp({
+		baseDirectives: resolved.csp.directives,
+		contributors
+	}).staticDirectives;
+	const staticHsts = remote && resolved.hsts !== false ? serializeHsts(resolved.hsts) : null;
+	const permissionsHeader = resolved.permissionsPolicy === false ? null : serializePermissionsPolicy(resolved.permissionsPolicy);
+	const cspHeaderName = resolved.csp !== false && resolved.csp.reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
+	let staticCspBody = null;
+	let staticCspBodyForPageDesigner = null;
+	let baseScriptSrc = "";
+	if (resolved.csp !== false) {
+		const { "script-src": scriptSrc,...rest } = resolved.csp.directives;
+		staticCspBody = serializeCsp(rest);
+		baseScriptSrc = (scriptSrc ?? []).join(" ");
+		const customerFrameAncestors = rest["frame-ancestors"] ?? [];
+		if (!customerFrameAncestors.some((src) => src !== "'self'")) staticCspBodyForPageDesigner = serializeCsp({
+			...rest,
+			"frame-ancestors": [...customerFrameAncestors, ...pageDesignerFrameAncestors]
+		});
+	}
+	/**
+	* Apply the resolved security headers to a response. Pulled into a helper
+	* so we can run it on the success path AND on a thrown Response (RR
+	* loaders/actions throw `Response` for 404/redirect/etc.). Without this,
+	* a 404 error response would ship without security headers.
+	*/
+	const applyHeaders = (response, nonce, cspBody, isEmbeddable) => {
+		if (cspBody !== null && nonce !== null) {
+			const scriptSrcClause = baseScriptSrc.length > 0 ? `script-src ${baseScriptSrc} 'nonce-${nonce}'` : `script-src 'nonce-${nonce}'`;
+			const csp = cspBody.length > 0 ? `${cspBody}; ${scriptSrcClause}` : scriptSrcClause;
+			response.headers.set(cspHeaderName, csp);
+		}
+		if (staticHsts !== null) response.headers.set("Strict-Transport-Security", staticHsts);
+		if (resolved.frameOptions !== false && !isEmbeddable) response.headers.set("X-Frame-Options", resolved.frameOptions);
+		if (resolved.contentTypeOptions !== false) response.headers.set("X-Content-Type-Options", resolved.contentTypeOptions);
+		if (resolved.referrerPolicy !== false) response.headers.set("Referrer-Policy", resolved.referrerPolicy);
+		if (permissionsHeader !== null) response.headers.set("Permissions-Policy", permissionsHeader);
+		return response;
+	};
+	return async (args, next) => {
+		if (!resolved.enabled) return next();
+		const nonce = resolved.csp === false ? null : generateNonce();
+		if (nonce !== null) args.context.set(securityContext, { nonce });
+		const isEmbeddable = staticCspBodyForPageDesigner !== null && (isDesignModeActive(args.request) || isPreviewModeActive(args.request));
+		const cspBody = isEmbeddable ? staticCspBodyForPageDesigner : staticCspBody;
+		try {
+			return applyHeaders(await next(), nonce, cspBody, isEmbeddable);
+		} catch (err) {
+			if (err instanceof Response) throw applyHeaders(err, nonce, cspBody, isEmbeddable);
+			throw err;
+		}
+	};
+}
+
+//#endregion
+export { BoundedCache, createSecurityHeadersMiddleware, defaultCspDirectives, defaultSecurityHeaders, getSecurityNonce, inspectCspOrigin, normalizeCspOrigin, resolveCsp, securityContext, validateContributors };
 //# sourceMappingURL=security.js.map
