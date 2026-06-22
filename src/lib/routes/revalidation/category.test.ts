@@ -38,14 +38,36 @@ function buildArgs(overrides: Partial<ShouldRevalidateFunctionArgs>): ShouldReva
     } as ShouldRevalidateFunctionArgs;
 }
 
-describe('category shouldRevalidate', () => {
+/**
+ * Both listing routes share this policy (`_app.search.tsx` re-exports `shouldRevalidate` from `./category`), so every
+ * case runs against both. `listing` is the route's stable URL (carrying its identifying param — category id or `q`),
+ * `otherListing` a different listing on the same route for cross-navigation cases.
+ */
+const LISTINGS = [
+    {
+        name: 'category',
+        listing: 'http://localhost/category/mens?refine=cgid=mens',
+        otherListing: 'http://localhost/category/womens?refine=cgid=womens',
+    },
+    {
+        name: 'search',
+        listing: 'http://localhost/search?q=shirt',
+        otherListing: 'http://localhost/search?q=shoes',
+    },
+] as const;
+
+describe.each(LISTINGS)('$name shouldRevalidate', ({ listing, otherListing }) => {
+    /** buildArgs with current/next defaulted to this route's listing URL (overridable per test). */
+    const args = (overrides: Partial<ShouldRevalidateFunctionArgs> = {}): ShouldRevalidateFunctionArgs =>
+        buildArgs({ currentUrl: new URL(listing), nextUrl: new URL(listing), ...overrides });
+
     describe('client-only param toggles', () => {
         test('skips when only the filters panel flag changes', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens?refine=cgid=mens&filters=closed'),
-                        nextUrl: new URL('http://localhost/category/mens?refine=cgid=mens&filters=open'),
+                    args({
+                        currentUrl: new URL(`${listing}&filters=closed`),
+                        nextUrl: new URL(`${listing}&filters=open`),
                     })
                 )
             ).toBe(false);
@@ -54,11 +76,9 @@ describe('category shouldRevalidate', () => {
         test('skips when only pending-action params change', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens?refine=cgid=mens'),
-                        nextUrl: new URL(
-                            'http://localhost/category/mens?refine=cgid=mens&action=addToWishlist&actionParams=%7B%7D'
-                        ),
+                    args({
+                        currentUrl: new URL(listing),
+                        nextUrl: new URL(`${listing}&action=addToWishlist&actionParams=%7B%7D`),
                     })
                 )
             ).toBe(false);
@@ -69,9 +89,9 @@ describe('category shouldRevalidate', () => {
         test('revalidates when a refinement changes', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens?refine=cgid=mens'),
-                        nextUrl: new URL('http://localhost/category/mens?refine=cgid=mens&refine=c_color=blue'),
+                    args({
+                        currentUrl: new URL(listing),
+                        nextUrl: new URL(`${listing}&refine=c_color=blue`),
                     })
                 )
             ).toBe(true);
@@ -80,9 +100,20 @@ describe('category shouldRevalidate', () => {
         test('revalidates when the sort order changes', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens?refine=cgid=mens&sort=best-matches'),
-                        nextUrl: new URL('http://localhost/category/mens?refine=cgid=mens&sort=price-low-to-high'),
+                    args({
+                        currentUrl: new URL(`${listing}&sort=best-matches`),
+                        nextUrl: new URL(`${listing}&sort=price-low-to-high`),
+                    })
+                )
+            ).toBe(true);
+        });
+
+        test('revalidates when paging (offset changes)', () => {
+            expect(
+                shouldRevalidate(
+                    args({
+                        currentUrl: new URL(listing),
+                        nextUrl: new URL(`${listing}&offset=24`),
                     })
                 )
             ).toBe(true);
@@ -91,9 +122,9 @@ describe('category shouldRevalidate', () => {
         test('defers to defaultShouldRevalidate=false (e.g. cross-route navigation)', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens'),
-                        nextUrl: new URL('http://localhost/category/womens'),
+                    args({
+                        currentUrl: new URL(listing),
+                        nextUrl: new URL(otherListing),
                         defaultShouldRevalidate: false,
                     })
                 )
@@ -105,7 +136,7 @@ describe('category shouldRevalidate', () => {
         test('skips revalidation after add-to-cart', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: resourceRoutes.cartItemAdd,
                     })
@@ -116,7 +147,7 @@ describe('category shouldRevalidate', () => {
         test('skips revalidation after a wishlist toggle', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: resourceRoutes.wishlistAdd,
                     })
@@ -127,7 +158,7 @@ describe('category shouldRevalidate', () => {
         test('revalidates after a currency (set-site-context) submission', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: resourceRoutes.setSiteContext,
                     })
@@ -138,7 +169,7 @@ describe('category shouldRevalidate', () => {
         test('revalidates after a shopper-context (update-shopper-context) submission', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: resourceRoutes.updateShopperContext,
                     })
@@ -149,7 +180,7 @@ describe('category shouldRevalidate', () => {
         test('defers an allowlisted mutation to defaultShouldRevalidate=false', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: resourceRoutes.setSiteContext,
                         defaultShouldRevalidate: false,
@@ -161,9 +192,9 @@ describe('category shouldRevalidate', () => {
         test('treats a GET submission as a navigation, not a mutation (falls through to default)', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
-                        currentUrl: new URL('http://localhost/category/mens?refine=cgid=mens'),
-                        nextUrl: new URL('http://localhost/category/womens?refine=cgid=womens'),
+                    args({
+                        currentUrl: new URL(listing),
+                        nextUrl: new URL(otherListing),
                         formMethod: 'GET',
                         formAction: resourceRoutes.cartItemAdd,
                     })
@@ -174,7 +205,7 @@ describe('category shouldRevalidate', () => {
         test('matches the allowlisted action even when formAction is absolute with a query string', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: `http://localhost${resourceRoutes.setSiteContext}?foo=bar`,
                     })
@@ -185,7 +216,7 @@ describe('category shouldRevalidate', () => {
         test('skips when a mutation has no formAction (defensive: cannot confirm it is allowlisted)', () => {
             expect(
                 shouldRevalidate(
-                    buildArgs({
+                    args({
                         formMethod: 'POST',
                         formAction: undefined,
                     })
@@ -200,25 +231,23 @@ describe('category shouldRevalidate', () => {
     // are site/locale-prefixed, so they are matched on the trailing segment, unlike the unprefixed /action/* routes.
     describe('auth identity transitions are allowed through', () => {
         test('revalidates after a logout submitted on the listing', () => {
-            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/logout' }))).toBe(
+            expect(shouldRevalidate(args({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/logout' }))).toBe(
                 true
             );
         });
 
         test('revalidates after a login submitted on the listing', () => {
-            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/login' }))).toBe(
-                true
-            );
+            expect(shouldRevalidate(args({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/login' }))).toBe(true);
         });
 
         test('revalidates after a signup submitted on the listing', () => {
-            expect(shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: routes.signup }))).toBe(true);
+            expect(shouldRevalidate(args({ formMethod: 'POST', formAction: routes.signup }))).toBe(true);
         });
 
         test('does NOT revalidate on a path that merely ends in an identity segment as a substring', () => {
-            expect(
-                shouldRevalidate(buildArgs({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/auto-logout' }))
-            ).toBe(false);
+            expect(shouldRevalidate(args({ formMethod: 'POST', formAction: '/RefArchGlobal/en-US/auto-logout' }))).toBe(
+                false
+            );
         });
     });
 });

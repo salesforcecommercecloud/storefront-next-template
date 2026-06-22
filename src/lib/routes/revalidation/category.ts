@@ -31,7 +31,8 @@ import { getActionPath, isAmbientMutation } from './shared';
  *    and the action's own fetcher result, wishlist via the client-side provider. Only the shared
  *    {@link isAmbientMutation} dimensions are allowed to revalidate: currency / shopper-context change the
  *    loader's SCAPI prices and promotions, and an auth identity transition (login / signup / logout) re-scopes the
- *    auth-dependent `wishlistInitialState` seed the loader feeds the `WishlistProvider`.
+ *    auth-dependent `wishlistInitialState` seed the loader feeds the `WishlistProvider`. A submission with no
+ *    resolvable `formAction` cannot be confirmed as an ambient dimension, so it is skipped too.
  *
  * `setSelectedStore` / `cartPickupStoreUpdate` are intentionally NOT admitted: the listing's `productSearch` read
  * passes no `query.inventoryIds`, so a store change cannot stale its results. If a tile ever surfaces store-scoped
@@ -57,7 +58,8 @@ export function shouldRevalidate({
     }
 
     // A mutation submitted from the listing (formMethod is set and non-GET). Skip the revalidation unless the action
-    // is one of the ambient dimensions that actually changes listing data.
+    // is one of the ambient dimensions that actually changes listing data. An unclassifiable submission (no
+    // `formAction`) cannot be confirmed as an ambient dimension, so it is skipped too.
     if (formMethod && formMethod !== 'GET') {
         const actionPath = getActionPath(formAction, currentUrl.origin);
         if (!actionPath || !isAmbientMutation(actionPath)) {

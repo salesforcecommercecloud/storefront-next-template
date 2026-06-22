@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type ShouldRevalidateFunctionArgs, useAsyncError, useLocation, useNavigation } from 'react-router';
+import { useAsyncError, useLocation, useNavigation } from 'react-router';
 import type { Route } from './+types/_app.search';
 import type { ShopperSearch } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
@@ -41,7 +41,6 @@ import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import {
     getInitialFiltersOpen,
-    getSearchWithoutClientOnlyParams,
     getSearchWithoutFiltersParam,
     useFiltersPanelState,
 } from '@/hooks/use-filters-panel-state';
@@ -154,18 +153,7 @@ export async function loader(args: Route.LoaderArgs): Promise<SearchPageData> {
     };
 }
 
-export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    const clientOnlyParamsChanged =
-        currentUrl.pathname === nextUrl.pathname &&
-        currentUrl.search !== nextUrl.search &&
-        getSearchWithoutClientOnlyParams(currentUrl.search) === getSearchWithoutClientOnlyParams(nextUrl.search);
-
-    if (clientOnlyParamsChanged) {
-        return false;
-    }
-
-    return defaultShouldRevalidate;
-}
+export { shouldRevalidate } from '@/lib/routes/revalidation/category';
 
 function ProductGridError() {
     const rawError = useAsyncError();

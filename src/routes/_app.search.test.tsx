@@ -21,6 +21,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
+import { shouldRevalidate as sharedShouldRevalidate } from '@/lib/routes/revalidation/category';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search.server';
@@ -1290,35 +1291,9 @@ describe('SearchPage', () => {
 });
 
 describe('SearchPage shouldRevalidate', () => {
-    test('returns false when only filters query param changes', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed&refine=color:red'),
-            nextUrl: new URL('http://localhost/search?q=shoes&filters=open&refine=color:red'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(false);
-    });
-
-    test('uses default behavior when non-filters query params change', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed'),
-            nextUrl: new URL('http://localhost/search?q=boots&filters=closed'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(true);
+    // The revalidation policy itself is covered by src/lib/routes/revalidation/category.test.ts. Here we
+    // only assert the route wires up that exact function, so the behavior isn't re-tested per route.
+    test('re-exports the shared listing revalidation policy', () => {
+        expect(shouldRevalidate).toBe(sharedShouldRevalidate);
     });
 });

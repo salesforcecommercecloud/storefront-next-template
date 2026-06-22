@@ -15,6 +15,7 @@
  */
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { resourceRoutes } from '@/route-paths';
+import { getActionPath } from './shared';
 
 /**
  * Mutations that change none of the data the PDP loader reads. The PDP loader is expensive — it `await`s
@@ -82,9 +83,7 @@ export function shouldRevalidate({
 }: ShouldRevalidateFunctionArgs): boolean {
     // Action axis: skip the expensive loader re-run for a denylisted mutation.
     if (formMethod && formMethod !== 'GET') {
-        // Normalize formAction to a pathname before comparing: resolve it against the current origin (handles both a
-        // bare path and an absolute URL) and drop any trailing query string (e.g. an index-route `?index`).
-        const actionPath = formAction ? new URL(formAction, currentUrl.origin).pathname : undefined;
+        const actionPath = getActionPath(formAction, currentUrl.origin);
         if (actionPath && PRODUCT_IRRELEVANT_MUTATIONS.includes(actionPath)) {
             return false;
         }

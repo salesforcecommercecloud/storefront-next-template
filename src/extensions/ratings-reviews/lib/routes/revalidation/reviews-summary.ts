@@ -16,6 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { resourceRoutes } from '@/route-paths';
+import { getActionPath } from '@/lib/routes/revalidation/shared';
 import type { AddReviewResponse } from '@/extensions/ratings-reviews/routes/action.add-review';
 
 /**
@@ -41,7 +42,7 @@ export function shouldRevalidate({
     defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean {
     if (formMethod && formMethod !== 'GET' && formAction) {
-        const actionPath = new URL(formAction, currentUrl.origin).pathname;
+        const actionPath = getActionPath(formAction, currentUrl.origin);
         if (actionPath === resourceRoutes.addReview) {
             const result = actionResult as AddReviewResponse | undefined;
             return Boolean(result?.success && result.review);

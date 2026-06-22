@@ -16,6 +16,7 @@
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { resourceRoutes, routes } from '@/route-paths';
 import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
+import { getActionPath } from './shared';
 
 /**
  * Mutations that change none of the fields the root loader returns. The root loader is synchronous (no SCAPI I/O), but
@@ -94,10 +95,11 @@ export function shouldRevalidate({
     formData,
     defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean {
-    if (formMethod && formMethod !== 'GET' && formAction) {
-        // React Router always builds formAction as a path (never an absolute URL); parse it to drop any trailing
-        // query string (e.g. an index-route `?index`) so it doesn't defeat the path comparison.
-        const actionPath = new URL(formAction, currentUrl.origin).pathname;
+    if (formMethod && formMethod !== 'GET') {
+        const actionPath = getActionPath(formAction, currentUrl.origin);
+        if (!actionPath) {
+            return defaultShouldRevalidate;
+        }
         if (ROOT_IRRELEVANT_MUTATIONS.includes(actionPath)) {
             return false;
         }
