@@ -166,6 +166,16 @@ export default class Push extends MrtCommand<typeof Push> {
         const result = await uploadBundle(client, projectSlug, bundle, target);
         this.log(`Bundle ${result.bundleId} uploaded`);
 
+        // Surface any non-blocking warnings the MRT backend returned for this deploy
+        // (e.g. the x86 environment deprecation notice). `this.warn` prints to stderr in
+        // yellow and does not throw, so the push still succeeds.
+        // The `warnings` field is being added to the SDK's `PushResult` in
+        // b2c-developer-tooling#509; cast until that SDK version is published and bumped here.
+        const warnings = (result as { warnings?: string[] }).warnings ?? [];
+        for (const w of warnings) {
+            this.warn(w);
+        }
+
         if (flags.wait && target) {
             this.log(`Waiting for deployment to ${target}...`);
             let lastState = '';

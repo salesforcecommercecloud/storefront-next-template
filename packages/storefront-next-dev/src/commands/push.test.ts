@@ -170,6 +170,68 @@ describe('push command', () => {
         expect(mockUploadBundle).toHaveBeenCalled();
     });
 
+    it('should print non-blocking warnings returned from the push', async () => {
+        const warning = 'x86 support ends January 31, 2027. Switch to ARM in environment settings to avoid disruptions';
+        mockUploadBundle.mockResolvedValueOnce({
+            bundleId: 123,
+            projectSlug: 'my-project',
+            target: 'staging',
+            deployed: true,
+            message: 'Test',
+            warnings: [warning],
+        } as any);
+
+        const cmd = new Push([], {} as never);
+        const cmdAny = cmd as unknown as { run: () => Promise<void> };
+
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                'project-directory': '/test/project',
+                'build-directory': '/test/build',
+                project: 'my-project',
+                environment: 'staging',
+                wait: false,
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+        vi.spyOn(cmd as any, 'log').mockImplementation(() => {});
+        const warnSpy = vi.spyOn(cmd as any, 'warn').mockImplementation(() => {});
+
+        await cmdAny.run();
+
+        expect(warnSpy).toHaveBeenCalledWith(warning);
+    });
+
+    it('should not print any warnings when the push returns none', async () => {
+        // Default mock returns no `warnings` field
+        const cmd = new Push([], {} as never);
+        const cmdAny = cmd as unknown as { run: () => Promise<void> };
+
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                'project-directory': '/test/project',
+                'build-directory': '/test/build',
+                project: 'my-project',
+                environment: 'staging',
+                wait: false,
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+        vi.spyOn(cmd as any, 'log').mockImplementation(() => {});
+        const warnSpy = vi.spyOn(cmd as any, 'warn').mockImplementation(() => {});
+
+        await cmdAny.run();
+
+        const warning = 'x86 support ends January 31, 2027. Switch to ARM in environment settings to avoid disruptions';
+        expect(warnSpy).not.toHaveBeenCalledWith(warning);
+    });
+
     it('should error if project directory does not exist', async () => {
         (fs.existsSync as ReturnType<typeof vi.fn>).mockReturnValue(false);
 

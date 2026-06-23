@@ -92,6 +92,8 @@ var Push = class Push extends MrtCommand {
 		this.log(`Uploading bundle to ${origin}`);
 		const result = await uploadBundle(client, projectSlug, bundle, target);
 		this.log(`Bundle ${result.bundleId} uploaded`);
+		const warnings = result.warnings ?? [];
+		for (const w of warnings) this.warn(w);
 		if (flags.wait && target) {
 			this.log(`Waiting for deployment to ${target}...`);
 			let lastState = "";
