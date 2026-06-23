@@ -39,10 +39,10 @@ function buildArgs(overrides: Partial<ShouldRevalidateFunctionArgs>): ShouldReva
 }
 
 describe('productShouldRevalidate', () => {
-    describe('action axis — product-irrelevant mutations skip the loader re-run', () => {
-        // Walk the full denylist: a forgotten entry only wastes a fan-out, but a wrongly-skipped entry
-        // would leave the PDP showing stale product data, so denylist accuracy is load-bearing. Removing
-        // any entry from PRODUCT_IRRELEVANT_MUTATIONS must fail a test here.
+    describe('action axis — mutations outside the product-relevant set are skipped by default', () => {
+        // Suppress-by-default: any mutation not proven to feed the loader is skipped. These cart / wishlist /
+        // account / pre-auth writes touch only basket, customer, or session data the PDP loader never reads
+        // (audit-scapi-coupling.md), so they must not trigger the expensive fan-out.
         test.each([
             resourceRoutes.cartItemAdd,
             resourceRoutes.cartItemRemove,
@@ -67,19 +67,31 @@ describe('productShouldRevalidate', () => {
             expect(productShouldRevalidate(buildArgs({ formMethod: 'POST', formAction }))).toBe(false);
         });
 
-        test('matches a denylisted action even when formAction is absolute with a query string', () => {
+        test('skips updateTrackingConsent (coupling unsettled; PDP loader reads no consent-gated field)', () => {
+            expect(
+                productShouldRevalidate(
+                    buildArgs({ formMethod: 'POST', formAction: resourceRoutes.updateTrackingConsent })
+                )
+            ).toBe(false);
+        });
+
+        test('skips a mutation with no formAction (a product-relevant write posts to a dedicated action route)', () => {
+            expect(productShouldRevalidate(buildArgs({ formMethod: 'POST', formAction: undefined }))).toBe(false);
+        });
+    });
+
+    describe('action axis — mutations that feed the loader revalidate', () => {
+        test('resolves a product-relevant action even when formAction is absolute with a query string', () => {
             expect(
                 productShouldRevalidate(
                     buildArgs({
                         formMethod: 'POST',
-                        formAction: `http://localhost${resourceRoutes.cartItemAdd}?foo=bar`,
+                        formAction: `http://localhost${resourceRoutes.addReview}?foo=bar`,
                     })
                 )
-            ).toBe(false);
+            ).toBe(true);
         });
-    });
 
-    describe('action axis — mutations that DO feed the loader still revalidate', () => {
         test('revalidates after add-review (changes the reviews the loader reads)', () => {
             expect(
                 productShouldRevalidate(buildArgs({ formMethod: 'POST', formAction: resourceRoutes.addReview }))
@@ -114,17 +126,27 @@ describe('productShouldRevalidate', () => {
             ).toBe(true);
         });
 
-        test('revalidates a mutation with no formAction (cannot confirm it is safe to skip)', () => {
-            expect(productShouldRevalidate(buildArgs({ formMethod: 'POST', formAction: undefined }))).toBe(true);
+        test('forces revalidation for a product-relevant mutation even when defaultShouldRevalidate is false', () => {
+            // Pins the action axis returning `true` unconditionally, not deferring to the default (see product.ts).
+            expect(
+                productShouldRevalidate(
+                    buildArgs({
+                        formMethod: 'POST',
+                        formAction: resourceRoutes.addReview,
+                        defaultShouldRevalidate: false,
+                    })
+                )
+            ).toBe(true);
         });
 
-        test('does not skip a GET that happens to target a denylisted path', () => {
-            // Only non-GET submissions are candidates for skipping; a GET must defer to the navigation axis.
+        test('defers a GET to the navigation axis instead of the action axis', () => {
+            // Only non-GET submissions are gated on the action axis; a GET targeting a product-relevant path
+            // must still fall through to the navigation axis (same path here → skip).
             expect(
                 productShouldRevalidate(
                     buildArgs({
                         formMethod: 'GET',
-                        formAction: resourceRoutes.cartItemAdd,
+                        formAction: resourceRoutes.addReview,
                         defaultShouldRevalidate: false,
                     })
                 )
