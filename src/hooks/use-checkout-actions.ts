@@ -57,6 +57,12 @@ type ActionLifecycle = {
     step: CheckoutStep | null;
     /** Current state in the action lifecycle */
     state: ActionState;
+    /**
+     * When true, the basket is updated on success but exitEditMode is not called.
+     * Used for shipping-method price recalculation submissions that should not advance
+     * the checkout step (the shopper still needs to explicitly confirm their choice).
+     */
+    recalculating?: boolean;
 };
 
 /** Options passed when placing order (e.g. from payment form at time of Place Order click) */
@@ -139,7 +145,7 @@ export function useCheckoutActions(options?: {
     /** When .current is true, do not advance from shipping address step (no valid methods available). */
     noShippingMethodsRef?: NoShippingMethodsRef;
 }) {
-    const { exitEditMode, editingStep } = useCheckoutContext();
+    const { exitEditMode, editingStep, goToStep } = useCheckoutContext();
     const updateBasket = useBasketUpdater();
     const basket = useBasket();
 
@@ -193,9 +199,12 @@ export function useCheckoutActions(options?: {
         }
     }, [basket]);
 
-    // Reset lifecycle when entering a new edit step
+    // Reset lifecycle when entering a different edit step.
+    // Skip reset when editingStep matches the step already tracked in actionRef: this happens
+    // during recalculation submissions where goToStep and actionRef are set in the same call —
+    // the deferred editingStep state update would otherwise wipe the in-flight actionRef state.
     useEffect(() => {
-        if (editingStep !== null) {
+        if (editingStep !== null && actionRef.current.step !== editingStep) {
             actionRef.current = { step: null, state: ActionState.NOT_STARTED };
         }
     }, [editingStep]);
@@ -225,8 +234,8 @@ export function useCheckoutActions(options?: {
             return;
         }
 
-        // Transition: SUBMITTED -> BASKET_UPDATED
-        actionRef.current = { step, state: ActionState.BASKET_UPDATED };
+        // Transition: SUBMITTED -> BASKET_UPDATED (spread preserves recalculating and any future fields)
+        actionRef.current = { ...actionRef.current, state: ActionState.BASKET_UPDATED };
         updateBasket(fetcher.data.basket);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactFetcher.data, shippingAddressFetcher.data, shippingOptionsFetcher.data, paymentFetcher.data]);
@@ -256,11 +265,31 @@ export function useCheckoutActions(options?: {
             return;
         }
 
+        // Recalculating submissions update basket state (so discounted prices render) but keep
+        // the shopper on the shipping options step so they can review and confirm their choice.
+        if (actionRef.current.recalculating) {
+            actionRef.current = { step, state: ActionState.COMPLETED };
+            return;
+        }
+
         // Transition: BASKET_UPDATED -> COMPLETED
         actionRef.current = { step, state: ActionState.COMPLETED };
         exitEditMode();
+
+        // Fetcher .data deps keep this in sync when the server's dedup sends a
+        // cached response (same basket, same fetcher.data — basket dep alone
+        // would not re-run the effect in that case). exitEditMode, fetcherMap,
+        // and options refs are intentionally omitted: they are stable refs or
+        // callbacks whose identity changes don't require re-running this effect.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editingStep, basket]);
+    }, [
+        editingStep,
+        basket,
+        contactFetcher.data,
+        shippingAddressFetcher.data,
+        shippingOptionsFetcher.data,
+        paymentFetcher.data,
+    ]);
 
     /**
      * Submits contact information to the contact info action.
@@ -334,6 +363,35 @@ export function useCheckoutActions(options?: {
         actionRef.current = { step: CHECKOUT_STEPS.SHIPPING_OPTIONS, state: ActionState.SUBMITTED };
 
         // Add intent field
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS);
+
+        void shippingOptionsFetcher.submit(formData, {
+            method: 'post',
+        });
+    };
+
+    /**
+     * Submits a shipping method for basket price recalculation without advancing the checkout step.
+     * Used when the shopper just entered a new address - prices update so they see the correct
+     * promotional amounts, but the step stays at shipping options so they can confirm their choice.
+     *
+     * @param formData - FormData containing the selected shippingMethodId
+     */
+    const submitShippingOptionsForRecalculation = (formData: FormData) => {
+        if (shippingOptionsFetcher.state === 'submitting') {
+            return;
+        }
+
+        // Pin editingStep to SHIPPING_OPTIONS so the checkout context's computedStep update
+        // (which fires when the basket gains a shipping method) cannot advance the step automatically.
+        goToStep(CHECKOUT_STEPS.SHIPPING_OPTIONS);
+
+        actionRef.current = {
+            step: CHECKOUT_STEPS.SHIPPING_OPTIONS,
+            state: ActionState.SUBMITTED,
+            recalculating: true,
+        };
+
         formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS);
 
         void shippingOptionsFetcher.submit(formData, {
@@ -483,6 +541,7 @@ export function useCheckoutActions(options?: {
         submitContactInfo,
         submitShippingAddress,
         submitShippingOptions,
+        submitShippingOptionsForRecalculation,
         submitPayment,
         submitPlaceOrder,
         buildPlaceOrderFinalizeFormData,

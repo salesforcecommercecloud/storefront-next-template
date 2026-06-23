@@ -216,7 +216,7 @@ describe('useShippingOptions', () => {
             });
         });
 
-        test('does not auto-submit for guest users', async () => {
+        test('does not auto-submit for guest users when no promotions exist', async () => {
             const onSubmit = vi.fn();
             useCustomerProfile.mockReturnValue(null);
             useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
@@ -225,7 +225,69 @@ describe('useShippingOptions', () => {
             await vi.waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
         });
 
-        test('does not auto-submit when a method is already selected', async () => {
+        test('auto-submits via onAutoSubmit for guest who just entered address with promotions present', async () => {
+            const onSubmit = vi.fn();
+            const onAutoSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue(null);
+            useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
+            renderShippingHook({
+                onSubmit,
+                onAutoSubmit,
+                isEditing: true,
+                justEnteredAddress: true,
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        {
+                            id: 'standard',
+                            name: 'Standard',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    ],
+                    defaultShippingMethodId: 'standard',
+                },
+            });
+
+            await waitFor(() => {
+                expect(onSubmit).not.toHaveBeenCalled();
+                expect(onAutoSubmit).toHaveBeenCalledTimes(1);
+                const formData = onAutoSubmit.mock.calls[0][0] as FormData;
+                expect(formData.get('shippingMethodId')).toBe('standard');
+            });
+        });
+
+        test('auto-submits via onSubmit for guest with promotions when justEnteredAddress is false', async () => {
+            const onSubmit = vi.fn();
+            const onAutoSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue(null);
+            useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
+            renderShippingHook({
+                onSubmit,
+                onAutoSubmit,
+                isEditing: true,
+                justEnteredAddress: false,
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        {
+                            id: 'standard',
+                            name: 'Standard',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    ],
+                    defaultShippingMethodId: 'standard',
+                },
+            });
+
+            await waitFor(() => {
+                expect(onAutoSubmit).not.toHaveBeenCalled();
+                expect(onSubmit).toHaveBeenCalledTimes(1);
+                const formData = onSubmit.mock.calls[0][0] as FormData;
+                expect(formData.get('shippingMethodId')).toBe('standard');
+            });
+        });
+
+        test('does not auto-submit when a method is already selected and no promotions exist', async () => {
             const onSubmit = vi.fn();
             useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
             useBasket.mockReturnValue(
@@ -234,6 +296,99 @@ describe('useShippingOptions', () => {
                 })
             );
             renderShippingHook({ onSubmit, isEditing: true });
+
+            await vi.waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+        });
+
+        test('auto-submits selected method to recalculate price when promotions exist but priceAdjustments are absent', async () => {
+            const onSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shipments: [{ shipmentId: 's1', shippingMethod: { id: 'standard', name: 'Standard' } }],
+                    shippingItems: [{}], // no priceAdjustments yet
+                })
+            );
+            renderShippingHook({
+                onSubmit,
+                isEditing: true,
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        {
+                            id: 'standard',
+                            name: 'Standard',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    ],
+                },
+            });
+
+            await waitFor(() => {
+                expect(onSubmit).toHaveBeenCalledTimes(1);
+                const formData = onSubmit.mock.calls[0][0] as FormData;
+                expect(formData.get('shippingMethodId')).toBe('standard');
+            });
+        });
+
+        test('uses onAutoSubmit for price recalculation when justEnteredAddress is true', async () => {
+            const onSubmit = vi.fn();
+            const onAutoSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shipments: [{ shipmentId: 's1', shippingMethod: { id: 'standard', name: 'Standard' } }],
+                    shippingItems: [{}], // no priceAdjustments yet
+                })
+            );
+            renderShippingHook({
+                onSubmit,
+                onAutoSubmit,
+                isEditing: true,
+                justEnteredAddress: true,
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        {
+                            id: 'standard',
+                            name: 'Standard',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    ],
+                },
+            });
+
+            await waitFor(() => {
+                expect(onSubmit).not.toHaveBeenCalled();
+                expect(onAutoSubmit).toHaveBeenCalledTimes(1);
+                const formData = onAutoSubmit.mock.calls[0][0] as FormData;
+                expect(formData.get('shippingMethodId')).toBe('standard');
+            });
+        });
+
+        test('does not auto-submit when method is selected and priceAdjustments are already present', async () => {
+            const onSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shipments: [{ shipmentId: 's1', shippingMethod: { id: 'standard', name: 'Standard' } }],
+                    shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'free' } }] }],
+                })
+            );
+            renderShippingHook({
+                onSubmit,
+                isEditing: true,
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        {
+                            id: 'standard',
+                            name: 'Standard',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    ],
+                },
+            });
 
             await vi.waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
         });
@@ -478,6 +633,46 @@ describe('ShippingOptions Component', () => {
         const strikethrough = screen.getByText('$5.99');
         expect(strikethrough.className).toContain('line-through');
         expect(screen.getByText(/Standard Shipping/)).toBeInTheDocument();
+    });
+
+    test('does not show strikethrough when promotion is on the method but basket has no priceAdjustments yet', () => {
+        // Basket loaded before a shipping method is submitted — priceAdjustments is absent.
+        // getDiscountedPrice returns base price unchanged, so both prices would be identical.
+        // The guard must suppress the strikethrough in this case.
+        useBasket.mockReturnValue(
+            createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 's1',
+                        shippingMethod: {
+                            id: 'standard',
+                            name: 'Standard Shipping',
+                            description: '5-7 days',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
+                        },
+                    },
+                ],
+                shippingItems: [{}], // no priceAdjustments
+            })
+        );
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [
+                {
+                    id: 'standard',
+                    name: 'Standard Shipping',
+                    description: '5-7 days',
+                    price: 5.99,
+                    shippingPromotions: [{ promotionId: 'promo1' }],
+                },
+            ],
+        };
+        render(<ShippingOptions {...createDefaultProps({ shippingMethods: methods })} />);
+
+        const prices = screen.queryAllByText('$5.99');
+        // Only one price element should exist — no strikethrough duplicate
+        expect(prices).toHaveLength(1);
+        expect(prices[0].className).not.toContain('line-through');
     });
 
     test('shows strikethrough price with discounted price for promotional shipping', () => {

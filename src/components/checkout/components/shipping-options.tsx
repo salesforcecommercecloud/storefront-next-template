@@ -25,6 +25,12 @@ import { useShippingOptions } from './use-shipping-options';
 
 interface ShippingOptionsProps {
     onSubmit: (formData: FormData) => void;
+    /**
+     * Called when the hook wants to auto-submit for price recalculation without advancing
+     * the checkout step. Used after a shopper enters a new address so they see the options
+     * with correct promotional prices before confirming.
+     */
+    onAutoSubmit?: (formData: FormData) => void;
     isLoading: boolean;
     actionData?: CheckoutActionData;
     shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
@@ -32,10 +38,17 @@ interface ShippingOptionsProps {
     isCompleted: boolean;
     isEditing: boolean;
     onEdit: () => void;
+    /**
+     * True when the shopper just submitted a shipping address in this session. When set, the
+     * auto-submit uses onAutoSubmit (recalculate-only, no step advance) so the shopper can
+     * review the shipping options and their promotional prices before confirming.
+     */
+    justEnteredAddress?: boolean;
 }
 
 export default function ShippingOptions({
     onSubmit,
+    onAutoSubmit,
     isLoading,
     actionData,
     shippingMethods,
@@ -43,6 +56,7 @@ export default function ShippingOptions({
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
+    justEnteredAddress,
 }: ShippingOptionsProps) {
     const { currency } = useSite();
     const { t, i18n } = useTranslation('checkout');
@@ -57,7 +71,15 @@ export default function ShippingOptions({
         isUpcomingStep,
         getDiscountedPrice,
         handleSubmit,
-    } = useShippingOptions({ onSubmit, isLoading, actionData, shippingMethods, isEditing });
+    } = useShippingOptions({
+        onSubmit,
+        onAutoSubmit,
+        isLoading,
+        actionData,
+        shippingMethods,
+        isEditing,
+        justEnteredAddress,
+    });
 
     const stepTitle = (
         <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
@@ -98,7 +120,9 @@ export default function ShippingOptions({
                                         {method.description || method.name}
                                     </span>
                                     <span className="flex shrink-0 items-center gap-1.5">
-                                        {method.shippingPromotions?.length && method.price > 0 ? (
+                                        {method.shippingPromotions?.length &&
+                                        method.price > 0 &&
+                                        getDiscountedPrice(method.price) !== method.price ? (
                                             <>
                                                 <span className="text-sm text-muted-foreground line-through">
                                                     {formatCurrency(method.price, i18n.language, currency)}
@@ -150,7 +174,9 @@ export default function ShippingOptions({
                                 </p>
                             )}
                             <p className="text-sm font-normal leading-5 text-foreground">
-                                {summaryMethod.shippingPromotions?.length && summaryMethod.price > 0 ? (
+                                {summaryMethod.shippingPromotions?.length &&
+                                summaryMethod.price > 0 &&
+                                getDiscountedPrice(summaryMethod.price) !== summaryMethod.price ? (
                                     <>
                                         <span className="text-foreground line-through">
                                             {formatCurrency(summaryMethod.price, i18n.language, currency)}

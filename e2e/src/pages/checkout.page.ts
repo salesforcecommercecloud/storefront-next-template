@@ -1323,6 +1323,44 @@ class CheckoutPage {
         I.click(this.locators.promoCodeApplyButton);
     }
 
+    /**
+     * Returns true when the shipping options form is visible (radio inputs rendered in edit mode).
+     */
+    async isShippingOptionsFormVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.shippingMethodOption);
+        return count > 0;
+    }
+
+    /**
+     * Returns true when the payment form submit button is visible (payment step is in edit mode).
+     */
+    async isPaymentFormOpen(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(
+            '[data-testid="sf-toggle-card-payment"] button[type="submit"]'
+        );
+        return count > 0;
+    }
+
+    /**
+     * Wait for the shipping options "Continue to Payment" button to become enabled (price
+     * recalculation complete), then click it using Playwright force-click so viewport clipping
+     * from the fixed mobile bar does not block the action.
+     *
+     * @param timeoutSeconds - How long to wait for the button to become enabled
+     */
+    async waitForShippingRecalcAndContinue(timeoutSeconds: number = 30): Promise<void> {
+        I.waitForElement(
+            '[data-testid="sf-toggle-card-shipping-options"] button[type="submit"]:not([disabled])',
+            timeoutSeconds
+        );
+        await (I.usePlaywrightTo('click Continue to Payment', async ({ page }) => {
+            const btn = page.locator('[data-testid="sf-toggle-card-shipping-options"] button[type="submit"]').first();
+            await btn.scrollIntoViewIfNeeded();
+            await btn.click({ force: true });
+        }) as unknown as Promise<void>);
+        I.waitForElement('form[data-checkout-mobile-bar]', 30);
+    }
+
     async getPromoCodeError(): Promise<string> {
         const count = await I.grabNumberOfVisibleElements(this.locators.promoCodeError);
         if (count === 0) return '';

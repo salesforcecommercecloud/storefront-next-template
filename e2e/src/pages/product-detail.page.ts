@@ -277,13 +277,18 @@ class ProductDetailPage {
         try {
             const ok = (await I.usePlaywrightTo('add to cart and await response', async ({ page }: { page: Page }) => {
                 const responsePromise = page.waitForResponse(
-                    (res) => res.url().includes('/action/cart-item-add') && res.request().method() === 'POST',
+                    (res) =>
+                        (res.url().includes('/action/cart-item-add') ||
+                            res.url().includes('/action/cart-bundle-add')) &&
+                        res.request().method() === 'POST',
                     { timeout: timeoutSeconds * 1000 }
                 );
                 // .first() assumes a single add-to-cart button on this PDP (variation masters);
                 // set/bundle PDPs emit the testid per child + once for the set, so .first() could
                 // hit a child button — harden before pointing this flow at a set-bearing category.
-                await page.locator('[data-testid="add-to-cart"]').first().click();
+                const addToCartBtn = page.locator('[data-testid="add-to-cart"]').first();
+                await addToCartBtn.scrollIntoViewIfNeeded();
+                await addToCartBtn.click();
                 const response = await responsePromise;
                 return response.ok();
             })) as unknown as boolean;

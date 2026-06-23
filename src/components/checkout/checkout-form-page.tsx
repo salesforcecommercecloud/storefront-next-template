@@ -237,6 +237,7 @@ export default function CheckoutFormPage({
         submitContactInfo,
         submitShippingAddress,
         submitShippingOptions,
+        submitShippingOptionsForRecalculation,
         submitPayment,
         submitPlaceOrder,
         buildPlaceOrderFinalizeFormData,
@@ -780,13 +781,16 @@ export default function CheckoutFormPage({
         />
     );
     const defaultShipmentId = cart?.shipments?.[0]?.shipmentId ?? 'me';
+    const shippingAddressSubmittedThisSession = shippingAddressFetcher.data?.success === true;
     let shippingOptionsComponent = (
         <ShippingOptions
             onSubmit={handleShippingOptionsSubmit}
+            onAutoSubmit={submitShippingOptionsForRecalculation}
             isLoading={isSubmitting('shipping-options')}
             actionData={shippingOptionsFetcher.data}
             shippingMethods={shippingMethodsMap[defaultShipmentId]}
             validationError={shippingMethodValidationError}
+            justEnteredAddress={shippingAddressSubmittedThisSession}
             {...shippingOptionsState}
         />
     );
