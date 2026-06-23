@@ -12,10 +12,10 @@ import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
 import { minimatch } from "minimatch";
-import { SpanStatusCode, context, trace } from "@opentelemetry/api";
+import { ROOT_CONTEXT, SpanStatusCode, context, propagation, trace } from "@opentelemetry/api";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
-import { ConsoleSpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { ExportResultCode, hrTimeToTimeStamp } from "@opentelemetry/core";
+import { AlwaysOnSampler, ConsoleSpanExporter, ParentBasedSampler, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ExportResultCode, W3CTraceContextPropagator, hrTimeToTimeStamp } from "@opentelemetry/core";
 import { Resource } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
@@ -425,9 +425,13 @@ const UNDICI_REGISTERED_KEY = Symbol.for("sfnext.otel.undici_registered");
 function initTelemetry() {
 	if (cachedTracer) return cachedTracer;
 	try {
-		const provider = new NodeTracerProvider({ resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }) });
+		const provider = new NodeTracerProvider({
+			resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }),
+			sampler: new ParentBasedSampler({ root: new AlwaysOnSampler() })
+		});
 		provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
 		provider.register();
+		propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 		if (!globalThis[UNDICI_REGISTERED_KEY]) {
 			globalThis[UNDICI_REGISTERED_KEY] = true;
 			registerInstrumentations({
@@ -459,10 +463,11 @@ function createOtelExpressMiddleware() {
 		try {
 			const url = new URL(req.originalUrl || req.url, "http://localhost").pathname;
 			const method = req.method;
+			const parentContext = propagation.extract(ROOT_CONTEXT, req.headers);
 			tracer.startActiveSpan(`[sfnext] server ${method} ${url}`, { attributes: {
 				"http.request.method": method,
 				"url.path": url
-			} }, (serverSpan) => {
+			} }, parentContext, (serverSpan) => {
 				try {
 					const spanContext = trace.getSpan(context.active())?.spanContext();
 					if (spanContext) {

@@ -48,12 +48,28 @@
  * context, that deferred microtask never executes. A synchronous Resource
  * ensures the immediate export path is always taken.
  *
+ * ## Distributed tracing: W3C Trace Context propagation
+ *
+ * The storefront runs below Managed Runtime (MRT) in the call tree. MRT is
+ * trace-aware: it makes the sampling decision and stamps an inbound W3C
+ * `traceparent` header on the request the storefront receives. To appear on the
+ * same end-to-end trace as the surrounding services, the storefront behaves as a
+ * standard downstream participant:
+ *   - It continues the inbound trace (see the Express middleware, which extracts
+ *     `traceparent` into the parent context).
+ *   - It forwards `traceparent` on outbound fetches (UndiciInstrumentation injects
+ *     it automatically via the globally-registered propagator below).
+ *   - It honors MRT's sampling decision via a ParentBasedSampler — it never forces
+ *     a sampled trace and implements no sampling policy of its own. MRT owns the
+ *     rate via MRT_DISTRIBUTED_TRACING_ENABLED / MRT_DISTRIBUTED_TRACING_SAMPLING_RATE.
+ *
  * @env SFNEXT_OTEL_ENABLED — set to `"true"` to enable (e.g. `SFNEXT_OTEL_ENABLED=true pnpm dev`)
  */
 
-import type { Tracer } from '@opentelemetry/api';
+import { propagation, type Tracer } from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
-import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { AlwaysOnSampler, ParentBasedSampler, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { MrtConsoleSpanExporter } from './mrt-console-span-exporter';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
@@ -93,10 +109,28 @@ export function initTelemetry(): Tracer | null {
     try {
         const provider = new NodeTracerProvider({
             resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }),
+            // Honor the upstream (MRT) sampling decision rather than implementing our
+            // own. ParentBasedSampler: when an inbound traceparent is present, defer
+            // to its sampled flag (continue + export iff sampled); when there is no
+            // inbound parent, sample the fresh root ourselves (AlwaysOnSampler). This
+            // is exactly the standard "downstream participant" behavior — MRT owns the
+            // rate via MRT_DISTRIBUTED_TRACING_* env vars.
+            sampler: new ParentBasedSampler({ root: new AlwaysOnSampler() }),
         });
 
         provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
         provider.register();
+
+        // Register the standard W3C Trace Context propagator. This single
+        // registration drives propagation in both directions:
+        //   - inbound: the Express middleware calls propagation.extract() to continue
+        //     the trace described by the incoming `traceparent`.
+        //   - outbound: UndiciInstrumentation calls propagation.inject() to add
+        //     `traceparent` to every outgoing fetch (SCAPI, etc.).
+        // Registration lives here, inside the SFNEXT_OTEL_ENABLED-gated init path, so
+        // that when tracing is disabled no propagator is installed and no trace
+        // headers are ever added.
+        propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 
         // Guard against double-registration across Vite module boundaries.
         // See comment above UNDICI_REGISTERED_KEY.

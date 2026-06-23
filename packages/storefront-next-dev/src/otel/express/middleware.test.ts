@@ -28,9 +28,13 @@ const { mockServerSpan, mockStreamingSpan, mockTracer } = vi.hoisted(() => {
         end: vi.fn(),
     };
     const tracer = {
-        startActiveSpan: vi.fn((_name: string, _opts: unknown, callback: (s: typeof serverSpan) => unknown) =>
-            callback(serverSpan)
-        ),
+        // The middleware calls the (name, options, context, callback) overload to
+        // continue the inbound trace. Invoke the trailing argument as the callback so
+        // this mock works regardless of arity.
+        startActiveSpan: vi.fn((...args: unknown[]) => {
+            const callback = args[args.length - 1] as (s: typeof serverSpan) => unknown;
+            return callback(serverSpan);
+        }),
         startSpan: vi.fn(() => streamingSpan),
     };
     return { mockServerSpan: serverSpan, mockStreamingSpan: streamingSpan, mockTracer: tracer };
@@ -44,6 +48,8 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
     const original = await importOriginal<typeof import('@opentelemetry/api')>();
     return {
         ...original,
+        ROOT_CONTEXT: 'mock-root-context',
+        propagation: { extract: vi.fn(() => 'mock-parent-context') },
         context: { active: vi.fn(() => 'mock-context') },
         SpanStatusCode: { UNSET: 0, OK: 1, ERROR: 2 },
         trace: {
@@ -60,10 +66,11 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 
 import { createOtelExpressMiddleware } from './middleware';
 import { initTelemetry } from '../setup';
+import { propagation, ROOT_CONTEXT } from '@opentelemetry/api';
 
 /** Create a minimal mock Express request. */
-function mockRequest(method = 'GET', url = '/products') {
-    return { method, url, originalUrl: url } as unknown as Parameters<
+function mockRequest(method = 'GET', url = '/products', headers: Record<string, string> = {}) {
+    return { method, url, originalUrl: url, headers } as unknown as Parameters<
         ReturnType<typeof createOtelExpressMiddleware>
     >[0];
 }
@@ -96,6 +103,46 @@ describe('createOtelExpressMiddleware', () => {
             expect(next).toHaveBeenCalledOnce();
             expect(mockTracer.startActiveSpan).not.toHaveBeenCalled();
         });
+
+        it('adds no trace headers — neither reads inbound nor writes the response traceparent', () => {
+            vi.mocked(initTelemetry).mockReturnValueOnce(null);
+            const middleware = createOtelExpressMiddleware();
+            const res = mockResponse();
+
+            middleware(mockRequest(), res as never, vi.fn());
+
+            // No inbound extraction and no outbound/response header when disabled.
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
+            expect(propagation.extract).not.toHaveBeenCalled();
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
+            expect(res.setHeader).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('inbound trace continuation', () => {
+        it('extracts the parent context from the request headers via the propagator', () => {
+            const middleware = createOtelExpressMiddleware();
+            const headers = { traceparent: '00-11111111111111111111111111111111-2222222222222222-01' };
+            const req = mockRequest('GET', '/products', headers);
+
+            middleware(req, mockResponse() as never, vi.fn());
+
+            // Standard W3C extraction — no hand-rolled header parsing.
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
+            expect(propagation.extract).toHaveBeenCalledWith(ROOT_CONTEXT, headers);
+        });
+
+        it('starts the server span in the extracted parent context (4-arg overload)', () => {
+            const middleware = createOtelExpressMiddleware();
+            middleware(mockRequest(), mockResponse() as never, vi.fn());
+
+            expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
+                '[sfnext] server GET /products',
+                { attributes: { 'http.request.method': 'GET', 'url.path': '/products' } },
+                'mock-parent-context',
+                expect.any(Function)
+            );
+        });
     });
 
     describe('traceparent response header', () => {
@@ -120,6 +167,7 @@ describe('createOtelExpressMiddleware', () => {
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
                 '[sfnext] server GET /',
                 { attributes: { 'http.request.method': 'GET', 'url.path': '/' } },
+                'mock-parent-context',
                 expect.any(Function)
             );
         });
@@ -131,6 +179,7 @@ describe('createOtelExpressMiddleware', () => {
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
                 '[sfnext] server POST /cart',
                 { attributes: { 'http.request.method': 'POST', 'url.path': '/cart' } },
+                'mock-parent-context',
                 expect.any(Function)
             );
         });

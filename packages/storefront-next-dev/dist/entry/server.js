@@ -1,8 +1,8 @@
-import { SpanStatusCode } from "@opentelemetry/api";
+import { SpanStatusCode, propagation } from "@opentelemetry/api";
 import { ATTR_HTTP_REQUEST_METHOD, ATTR_SERVICE_NAME, ATTR_URL_PATH } from "@opentelemetry/semantic-conventions";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
-import { ConsoleSpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { ExportResultCode, hrTimeToTimeStamp } from "@opentelemetry/core";
+import { AlwaysOnSampler, ConsoleSpanExporter, ParentBasedSampler, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ExportResultCode, W3CTraceContextPropagator, hrTimeToTimeStamp } from "@opentelemetry/core";
 import { Resource } from "@opentelemetry/resources";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
@@ -124,9 +124,13 @@ const UNDICI_REGISTERED_KEY = Symbol.for("sfnext.otel.undici_registered");
 function initTelemetry() {
 	if (cachedTracer) return cachedTracer;
 	try {
-		const provider = new NodeTracerProvider({ resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }) });
+		const provider = new NodeTracerProvider({
+			resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }),
+			sampler: new ParentBasedSampler({ root: new AlwaysOnSampler() })
+		});
 		provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
 		provider.register();
+		propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 		if (!globalThis[UNDICI_REGISTERED_KEY]) {
 			globalThis[UNDICI_REGISTERED_KEY] = true;
 			registerInstrumentations({

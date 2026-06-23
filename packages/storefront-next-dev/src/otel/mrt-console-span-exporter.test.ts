@@ -164,4 +164,20 @@ describe('MrtConsoleSpanExporter', () => {
         expect(parsed.start_time).toEqual([100, 999999999]);
         expect(parsed.end_time).toEqual([101, 500000]);
     });
+
+    it('uses snake_case time keys only — never the camelCase MRT-runtime variants', () => {
+        // Contract guard: MRT's log forwarder ingests `start_time`/`end_time`. A POC
+        // once renamed these to camelCase `startTime`/`endTime` while chasing an
+        // unrelated issue; that silently breaks ingestion. Fail loudly if it recurs.
+        const exporter = new MrtConsoleSpanExporter();
+        const callback = vi.fn();
+
+        exporter.export([createMockSpan()], callback);
+
+        const parsed = JSON.parse(consoleSpy.mock.calls[0][0] as string);
+        expect(parsed).toHaveProperty('start_time');
+        expect(parsed).toHaveProperty('end_time');
+        expect(parsed.startTime).toBeUndefined();
+        expect(parsed.endTime).toBeUndefined();
+    });
 });

@@ -16,6 +16,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { propagation, ROOT_CONTEXT, trace, TraceFlags } from '@opentelemetry/api';
+import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
 type SDKTracer = ReturnType<typeof NodeTracerProvider.prototype.getTracer>;
 
@@ -74,6 +76,39 @@ describe('initTelemetry', () => {
         initTelemetry();
 
         expect(registerSpy).toHaveBeenCalledOnce();
+    });
+
+    it('registers the standard W3C trace context propagator globally', async () => {
+        spyOnProvider();
+        // setGlobalPropagator drives both inbound extraction and outbound injection.
+        // It must be the standard W3CTraceContextPropagator — no custom propagator.
+        const setPropagatorSpy = vi.spyOn(propagation, 'setGlobalPropagator').mockReturnValue(true);
+
+        const { initTelemetry } = await import('./setup');
+        initTelemetry();
+
+        expect(setPropagatorSpy).toHaveBeenCalledOnce();
+        expect(setPropagatorSpy).toHaveBeenCalledWith(expect.any(W3CTraceContextPropagator));
+    });
+
+    it('injects no outbound traceparent when telemetry is disabled (no propagator registered)', () => {
+        // When SFNEXT_OTEL_ENABLED is unset, initTelemetry() never runs, so
+        // setGlobalPropagator() is never called and OTel's default no-op propagator
+        // stays in effect. Reset to that baseline and confirm that — even for a
+        // context carrying a valid, sampled span — inject() adds nothing. (Contrast
+        // with the enabled outbound test in propagation.integration.test.ts, where
+        // the registered W3C propagator does inject a traceparent.)
+        propagation.disable();
+        const contextWithSpan = trace.setSpanContext(ROOT_CONTEXT, {
+            traceId: '11111111111111111111111111111111',
+            spanId: '2222222222222222',
+            traceFlags: TraceFlags.SAMPLED,
+        });
+
+        const carrier: Record<string, string> = {};
+        propagation.inject(contextWithSpan, carrier);
+
+        expect(carrier.traceparent).toBeUndefined();
     });
 
     it('returns the tracer obtained directly from provider.getTracer(SERVICE_NAME)', async () => {

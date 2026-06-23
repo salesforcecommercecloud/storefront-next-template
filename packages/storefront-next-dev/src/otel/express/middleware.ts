@@ -24,12 +24,20 @@
  * Uses `startActiveSpan` for the server span so all downstream spans (React Router's
  * `request`, loaders, middleware) automatically become children via OTel context propagation.
  *
+ * **Inbound trace continuation:** the server span is started in the context extracted
+ * from the request's W3C `traceparent` header (stamped by MRT upstream), via the
+ * globally-registered W3CTraceContextPropagator (see `../setup`). When the inbound
+ * trace is sampled, the server span — and every child span and outbound fetch — joins
+ * MRT's trace. When the header is absent or malformed, extraction yields ROOT_CONTEXT
+ * and a fresh root trace is started instead. The sampler honors the inbound sampled
+ * flag (see `../setup`); this middleware adds no sampling logic of its own.
+ *
  * Listens to both `close` and `finish` events with a once-guard — dev server emits
  * `close`, MRT Lambda adapter emits `finish`.
  */
 
 import type { RequestHandler } from 'express';
-import { context, type Span, SpanStatusCode, trace } from '@opentelemetry/api';
+import { context, propagation, ROOT_CONTEXT, type Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import { initTelemetry } from '../setup';
 
 export function createOtelExpressMiddleware(): RequestHandler {
@@ -42,9 +50,18 @@ export function createOtelExpressMiddleware(): RequestHandler {
             const url = new URL(req.originalUrl || req.url, 'http://localhost').pathname;
             const method = req.method;
 
+            // Continue the trace described by the inbound `traceparent` header. The
+            // standard propagator deserializes it into a parent context; a missing or
+            // malformed header leaves ROOT_CONTEXT unchanged (→ fresh root trace).
+            const parentContext = propagation.extract(ROOT_CONTEXT, req.headers);
+
+            // Pass parentContext explicitly so the server span continues MRT's trace
+            // (shared trace ID, parented to MRT's span) and becomes the active span
+            // for all downstream children and outbound fetches.
             tracer.startActiveSpan(
                 `[sfnext] server ${method} ${url}`,
                 { attributes: { 'http.request.method': method, 'url.path': url } },
+                parentContext,
                 (serverSpan) => {
                     try {
                         // Inject W3C traceparent header so trace ID is accessible from the browser
