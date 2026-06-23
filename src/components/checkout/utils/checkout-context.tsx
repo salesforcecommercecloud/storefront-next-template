@@ -30,9 +30,21 @@ interface CheckoutProviderProps {
     children: ReactNode;
     customerProfile?: CustomerProfile;
     shippingDefaultSet: Promise<undefined>;
+    /**
+     * True when at least one delivery shipment in the basket has no valid, selectable shipping
+     * method. Threaded into the initial step computation so refreshing on an "invalid" shipping
+     * address keeps the shopper on the Shipping Address step instead of advancing them to an
+     * empty Shipping Methods list. See `hasValidShippingMethodForEveryShipment` in `checkout-utils`.
+     */
+    hasNoValidShippingMethods?: boolean;
 }
 
-export default function CheckoutProvider({ children, customerProfile, shippingDefaultSet }: CheckoutProviderProps) {
+export default function CheckoutProvider({
+    children,
+    customerProfile,
+    shippingDefaultSet,
+    hasNoValidShippingMethods = false,
+}: CheckoutProviderProps) {
     const basket = useBasket();
     const shipmentDistribution = getShipmentDistribution(basket);
     const [editingStep, setEditingStep] = useState<CheckoutStep | null>(null);
@@ -61,9 +73,13 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
 
     // Compute the initial step from basket or customer profile
     const computedStep = customerProfile
-        ? computeFinalStepForReturningCustomer(basket, customerProfile, shipmentDistribution) ||
-          computeStepFromBasket(basket, shipmentDistribution)
-        : computeStepFromBasket(basket, shipmentDistribution);
+        ? computeFinalStepForReturningCustomer(
+              basket,
+              customerProfile,
+              shipmentDistribution,
+              hasNoValidShippingMethods
+          ) || computeStepFromBasket(basket, shipmentDistribution, hasNoValidShippingMethods)
+        : computeStepFromBasket(basket, shipmentDistribution, hasNoValidShippingMethods);
 
     // Keep currentStepRef in sync with currentStep state so effects that read the ref
     // (without adding currentStep to their dep arrays) always see the latest value.

@@ -21,12 +21,15 @@ import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
+import { hasValidShippingMethodForEveryShipment } from '@/components/checkout/utils/checkout-utils';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { CheckoutSkeleton } from '@/components/checkout/components/checkout-skeletons';
 import { useBasketUpdater } from '@/providers/basket';
 import { useToast } from '@/components/toast';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { filterDeliveryShippingMethods } from '@/extensions/bopis/lib/basket-utils';
 import GoogleCloudApiProvider from '@/providers/google-cloud-api';
 import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
 import { action as submitContactInfo } from '@/lib/checkout/actions/submit-contact-info.server';
@@ -100,12 +103,25 @@ function CheckoutView({
     const customerProfileData = customerProfile ? use(customerProfile) : null;
     const shippingMethodsMapData = shippingMethodsMap ? use(shippingMethodsMap) : {};
 
+    // Determine whether the basket's address has deliverable shipping options for every shipment.
+    // Threading this into the initial step computation keeps the user on Shipping Address after a
+    // refresh when the address yields no methods — without it, registered-customer step derivation
+    // would overshoot to Shipping Options or Place Order. The loader is authoritative here: on
+    // refresh it re-fetches the methods map for the current basket address; in-session
+    // advancement is independently gated by `noShippingMethodsRef` in use-checkout-actions.
+    let methodsForValidityCheck = shippingMethodsMapData;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    methodsForValidityCheck = filterDeliveryShippingMethods(shippingMethodsMapData);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    const hasNoValidShippingMethods = !hasValidShippingMethodForEveryShipment(methodsForValidityCheck);
+
     const content = (
         <>
             <SeoMeta title={t('meta.title', { defaultValue: 'Checkout' })} noIndex />
             <CheckoutProvider
                 customerProfile={customerProfileData ?? undefined}
-                shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
+                shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}
+                hasNoValidShippingMethods={hasNoValidShippingMethods}>
                 <CheckoutFormPage
                     shippingMethodsMap={shippingMethodsMapData}
                     productMapPromise={productMap}
