@@ -42,7 +42,7 @@ describe('productShouldRevalidate', () => {
     describe('action axis — mutations outside the product-relevant set are skipped by default', () => {
         // Suppress-by-default: any mutation not proven to feed the loader is skipped. These cart / wishlist /
         // account / pre-auth writes touch only basket, customer, or session data the PDP loader never reads
-        // (audit-scapi-coupling.md), so they must not trigger the expensive fan-out.
+        // so they must not trigger the expensive fan-out.
         test.each([
             resourceRoutes.cartItemAdd,
             resourceRoutes.cartItemRemove,

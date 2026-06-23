@@ -220,4 +220,14 @@ describe('Cart route component', () => {
             expect(screen.queryByTestId('product-recommendation-skeleton')).not.toBeInTheDocument();
         });
     });
+
+    describe('shouldRevalidate export', () => {
+        // The policy itself is covered by src/lib/routes/revalidation/cart.test.ts. Here we only
+        // assert the cart route wires up that exact function, so the behavior isn't re-tested at the route.
+        test('re-exports the cart revalidation policy', async () => {
+            const { shouldRevalidate } = await import('./_app.cart');
+            const { shouldRevalidate: shouldRevalidateCart } = await import('@/lib/routes/revalidation/cart');
+            expect(shouldRevalidate).toBe(shouldRevalidateCart);
+        });
+    });
 });

@@ -26,8 +26,7 @@ import { getActionPath, isAmbientMutation } from './shared';
  * post-action revalidation and re-admits only the writes proven to feed the loader.
  *
  * This is an allowlist matched on the same suppress-by-default model as the home and product-listing pages: the safe
- * action is to skip, and each admitted mutation is justified against a loader read (write→read edges from
- * `audit-scapi-coupling.md`):
+ * action is to skip, and each admitted mutation is justified against a loader read:
  *
  * - **{@link isAmbientMutation}** — the shared request-wide dimensions. `set-site-context` (currency → per-currency
  *   prices) and `update-shopper-context` (a cross-cutting input to all SCAPI pricing/promotions) change the product
