@@ -18,6 +18,7 @@ import { loader, shouldRevalidate } from './resource.basket-products';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { resourceRoutes } from '@/route-paths';
 import config from '@/config/server';
+import { markMiniCartPanelMounted, markMiniCartPanelUnmounted } from '@/hooks/mini-cart-store';
 
 // Mock getBasket
 vi.mock('@/middlewares/basket.server', () => ({
@@ -105,49 +106,80 @@ describe('resource.basket-products', () => {
             defaultShouldRevalidate: true,
         };
 
-        it('revalidates when an action returns a basket payload', () => {
-            // Basket-mutating actions (cart-item-add/update/remove, cart-bundle-update,
-            // bonus-product-add, place-order) follow the BasketActionResponse shape
-            // `{ success, basket, ... }`. The mini-cart resource fetcher must reload to pick up
-            // the latest products for the new basket items.
-            expect(
-                shouldRevalidate({
-                    ...baseArgs,
-                    formAction: resourceRoutes.cartItemAdd,
-                    actionResult: { success: true, basket: { basketId: 'basket-123' } },
-                })
-            ).toBe(true);
+        afterEach(() => {
+            // The panel-open flag is module-scoped shared state; reset it so cases can't leak.
+            markMiniCartPanelUnmounted();
         });
 
-        it('skips when an action returns a response without a basket field', () => {
-            // Non-basket actions (wishlist, locale, OTP, set-site-context, ...) return responses
-            // without `basket`, so we avoid a SCAPI round-trip per unrelated submission.
-            expect(
-                shouldRevalidate({
-                    ...baseArgs,
-                    formAction: resourceRoutes.wishlistAdd,
-                    actionResult: { success: true },
-                })
-            ).toBe(false);
+        describe('with the mini-cart panel open', () => {
+            beforeEach(() => {
+                markMiniCartPanelMounted();
+            });
+
+            it('revalidates when an action returns a basket payload', () => {
+                // Basket-mutating actions (cart-item-add/update/remove, cart-bundle-update,
+                // bonus-product-add, place-order) follow the BasketActionResponse shape
+                // `{ success, basket, ... }`. While the panel is open, the resource fetcher must
+                // reload to refresh the enriched line items and footer totals.
+                expect(
+                    shouldRevalidate({
+                        ...baseArgs,
+                        formAction: resourceRoutes.cartItemAdd,
+                        actionResult: { success: true, basket: { basketId: 'basket-123' } },
+                    })
+                ).toBe(true);
+            });
+
+            it('skips when an action returns a response without a basket field', () => {
+                // Non-basket actions (wishlist, locale, OTP, set-site-context, ...) return responses
+                // without `basket`, so we avoid a SCAPI round-trip per unrelated submission.
+                expect(
+                    shouldRevalidate({
+                        ...baseArgs,
+                        formAction: resourceRoutes.wishlistAdd,
+                        actionResult: { success: true },
+                    })
+                ).toBe(false);
+            });
+
+            it('skips when actionResult.basket has no basketId', () => {
+                // Defensive: an action that returns a malformed/empty basket object should not
+                // trigger a reload — there's nothing actionable for the mini-cart to refresh against.
+                expect(
+                    shouldRevalidate({
+                        ...baseArgs,
+                        formAction: resourceRoutes.cartItemAdd,
+                        actionResult: { success: false, basket: {} },
+                    })
+                ).toBe(false);
+            });
         });
 
-        it('skips when actionResult.basket has no basketId', () => {
-            // Defensive: an action that returns a malformed/empty basket object should not
-            // trigger a reload — there's nothing actionable for the mini-cart to refresh against.
-            expect(
-                shouldRevalidate({
-                    ...baseArgs,
-                    formAction: resourceRoutes.cartItemAdd,
-                    actionResult: { success: false, basket: {} },
-                })
-            ).toBe(false);
+        describe('with the mini-cart panel closed', () => {
+            it('skips a basket-mutating action so a hidden flyout never enriches products', () => {
+                // The closed panel has no consumer for the enriched products: the badge count and
+                // every useBasket() consumer read the cookie snapshot / BasketProvider, which the
+                // action handlers refresh directly. Reloading this resource here would round-trip to
+                // SCAPI (getBasket read + getProducts) for a flyout no one is looking at. useMiniCartData
+                // reloads on the next open only if the snapshot moved.
+                expect(
+                    shouldRevalidate({
+                        ...baseArgs,
+                        formAction: resourceRoutes.cartItemAdd,
+                        actionResult: { success: true, basket: { basketId: 'basket-123' } },
+                    })
+                ).toBe(false);
+            });
         });
 
-        it('defers to defaultShouldRevalidate for navigation triggers', () => {
+        it('defers to defaultShouldRevalidate for navigation triggers regardless of panel state', () => {
             // Imperative useRevalidator().revalidate() (root.tsx, contact-info post-login) and
             // navigation triggers don't carry a formAction. Returning false unconditionally here
             // would pin the mini-cart to a stale guest basket after a guest→registered handoff,
-            // since post-login revalidation is how that flow refreshes per-customer data.
+            // since post-login revalidation is how that flow refreshes per-customer data. The
+            // panel-open gate applies only to the formAction branch, so navigation defers to the
+            // default whether the panel is open or closed.
+            markMiniCartPanelUnmounted();
             expect(
                 shouldRevalidate({
                     ...baseArgs,

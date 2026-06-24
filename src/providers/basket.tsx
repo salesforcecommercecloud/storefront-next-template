@@ -77,15 +77,10 @@ type BasketUpdater = {
 
 const BasketUpdaterContext = createContext<BasketUpdater | undefined>(undefined);
 
-// Mini cart state lives in a separate context so toggling the sheet does not invalidate BasketUpdaterContext.
-// Otherwise, every consumer of useBasket / useBasketUpdater / useBasketLoader / useBasketReset would re-render on
-// every open/close (notably product cards across PLP/PDP that wire add-to-cart through useBasketUpdater).
-type MiniCartProviderValue = {
-    miniCartOpen: boolean;
-    setMiniCartOpen: (open: boolean) => void;
-};
-
-const MiniCartContext = createContext<MiniCartProviderValue | undefined>(undefined);
+// Mini-cart open/panel-mounted state lives in the standalone mini-cart store (`@/hooks/mini-cart-store`), not in a
+// context here. Two reasons: `resource.basket-products`' `shouldRevalidate` needs a synchronous read from outside the
+// React tree, which context cannot serve; and slice-scoped subscriptions keep toggling the sheet from re-rendering
+// unrelated basket consumers (the isolation a separate context used to provide, now at slice granularity).
 
 /**
  * Provider for basket data that's typically retrieved by the basket middleware.
@@ -271,9 +266,6 @@ const BasketProvider = (
         }));
     }, [basket, snapshot]);
 
-    const [miniCartOpen, setMiniCartOpen] = useState(false);
-    const miniCartValue = useMemo(() => ({ miniCartOpen, setMiniCartOpen }), [miniCartOpen]);
-
     // Provider-owned basket fetcher. Hosting it here (rather than in a hook called from arbitrary
     // descendants) means a single fetcher instance services every consumer — useBasket auto-loads,
     // usePrefetchCart imperatively loads — and the success/error → context wiring runs exactly
@@ -357,9 +349,7 @@ const BasketProvider = (
 
     return (
         <BasketUpdaterContext.Provider value={updaterValue}>
-            <MiniCartContext.Provider value={miniCartValue}>
-                <BasketContext.Provider value={ctxValue}>{children}</BasketContext.Provider>
-            </MiniCartContext.Provider>
+            <BasketContext.Provider value={ctxValue}>{children}</BasketContext.Provider>
         </BasketUpdaterContext.Provider>
     );
 };
@@ -465,18 +455,6 @@ export const useBasketReset = (): (() => void) => {
             error: null,
         });
     }, [updater]);
-};
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noopSetMiniCartOpen: (open: boolean) => void = () => {};
-const fallbackMiniCartValue: MiniCartProviderValue = {
-    miniCartOpen: false,
-    setMiniCartOpen: noopSetMiniCartOpen,
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useMiniCart = (): MiniCartProviderValue => {
-    return useContext(MiniCartContext) ?? fallbackMiniCartValue;
 };
 
 export default BasketProvider;

@@ -467,7 +467,7 @@ importers:
         version: 4.4.0(@types/aws-lambda@8.10.159)(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@5.0.6)(body-parser@2.3.0)(express@5.1.0)(http-errors@2.0.1)(reflect-metadata@0.2.2)
       '@oclif/core':
         specifier: ^4.2.10
-        version: 4.11.9
+        version: 4.11.10
       '@oclif/plugin-help':
         specifier: ^6.2.36
         version: 6.2.52
@@ -506,7 +506,7 @@ importers:
         version: 7.12.0(express@5.1.0)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.2)
       '@salesforce/b2c-tooling-sdk':
         specifier: ^1.15.0
-        version: 1.15.1(@oclif/core@4.11.9)(typescript@5.9.2)
+        version: 1.15.1(@oclif/core@4.11.10)(typescript@5.9.2)
       '@salesforce/storefront-next-runtime':
         specifier: workspace:^
         version: link:../storefront-next-runtime
@@ -585,7 +585,7 @@ importers:
     devDependencies:
       '@oclif/test':
         specifier: ^4.1.15
-        version: 4.1.20(@oclif/core@4.11.9)
+        version: 4.1.20(@oclif/core@4.11.10)
       '@react-router/dev':
         specifier: 7.12.0
         version: 7.12.0(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(terser@5.48.0)(tsx@4.22.4)(typescript@5.9.2)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
@@ -2407,8 +2407,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@oclif/core@4.11.9':
-    resolution: {integrity: sha512-w8uupjkdEQQcTFp1BUzWZCRNRW4BwXaSnFldHuziqx79F8q4NRCFwgGoMHV48HpJ6Xn9zeN0l3BiuppnPh6bWA==}
+  '@oclif/core@4.11.10':
+    resolution: {integrity: sha512-kbzi5ZfWKYXZzUldAiJMoxVyXaBnMZqoIVDdHJs4DD7T9wg6ADWU5Ale+9XYfysScAt4Og9psyCEPCzIe10sEQ==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/core@4.8.0':
@@ -6260,8 +6260,8 @@ packages:
     resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
     engines: {node: '>= 18'}
 
-  exsolve@1.0.8:
-    resolution: {integrity: sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==}
+  exsolve@1.1.0:
+    resolution: {integrity: sha512-D+42+T12DdIlJM3uepa55qGiL3sYdLBOxIl2ifQCzCHz4c7eiolaHsi3BIqEr7JxBzxv2pYZQX9kw16ziMcEmw==}
 
   external-editor@3.1.0:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
@@ -12693,7 +12693,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@oclif/core@4.11.9':
+  '@oclif/core@4.11.10':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.17.0
@@ -12750,7 +12750,7 @@ snapshots:
 
   '@oclif/plugin-help@6.2.52':
     dependencies:
-      '@oclif/core': 4.11.9
+      '@oclif/core': 4.11.10
 
   '@oclif/plugin-not-found@3.2.72(@types/node@24.3.0)':
     dependencies:
@@ -12764,7 +12764,7 @@ snapshots:
   '@oclif/plugin-not-found@3.2.88(@types/node@24.3.0)':
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@24.3.0)
-      '@oclif/core': 4.11.9
+      '@oclif/core': 4.11.10
       ansis: 3.17.0
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
@@ -12788,7 +12788,7 @@ snapshots:
 
   '@oclif/plugin-plugins@5.4.78':
     dependencies:
-      '@oclif/core': 4.11.9
+      '@oclif/core': 4.11.10
       ansis: 3.17.0
       debug: 4.4.3(supports-color@10.2.2)
       npm: 11.17.0
@@ -12818,9 +12818,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/test@4.1.20(@oclif/core@4.11.9)':
+  '@oclif/test@4.1.20(@oclif/core@4.11.10)':
     dependencies:
-      '@oclif/core': 4.11.9
+      '@oclif/core': 4.11.10
       ansis: 3.17.0
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
@@ -13828,7 +13828,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@salesforce/b2c-tooling-sdk@1.15.1(@oclif/core@4.11.9)(typescript@5.9.2)':
+  '@salesforce/b2c-tooling-sdk@1.15.1(@oclif/core@4.11.10)(typescript@5.9.2)':
     dependencies:
       '@vscode/debugadapter': 1.68.0
       chokidar: 5.0.0
@@ -13850,7 +13850,7 @@ snapshots:
       undici: 7.28.0
       xml2js: 0.6.2
     optionalDependencies:
-      '@oclif/core': 4.11.9
+      '@oclif/core': 4.11.10
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -17156,7 +17156,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  exsolve@1.0.8: {}
+  exsolve@1.1.0: {}
 
   external-editor@3.1.0:
     dependencies:
@@ -20372,7 +20372,7 @@ snapshots:
   pkg-types@2.3.1:
     dependencies:
       confbox: 0.2.4
-      exsolve: 1.0.8
+      exsolve: 1.1.0
       pathe: 2.0.3
 
   playwright-core@1.58.0: {}

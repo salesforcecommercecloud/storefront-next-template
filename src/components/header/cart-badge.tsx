@@ -15,8 +15,9 @@
  */
 import { lazy, type ReactElement, Suspense, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useBasketSnapshot, useMiniCart } from '@/providers/basket';
+import { useBasketSnapshot } from '@/providers/basket';
 import { useMiniCartDataLoader } from '@/hooks/use-mini-cart-data';
+import { setMiniCartOpen, useMiniCartStore } from '@/hooks/mini-cart-store';
 import CartBadgeIcon from './cart-badge-icon';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +33,7 @@ export default function CartBadge(): ReactElement {
     const { t } = useTranslation('cart');
     const numberOfItems = snapshot?.uniqueProductCount ?? 0;
     const [clicked, setClicked] = useState<boolean>(false);
-    const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+    const miniCartOpen = useMiniCartStore((s) => s.open);
 
     // Warm the mini-cart data path on hover/focus/touch so the basket and product details (images, variations,
     // promotions) are ideally available by the time the user clicks. The loader handles dedup; the cart sheet's open

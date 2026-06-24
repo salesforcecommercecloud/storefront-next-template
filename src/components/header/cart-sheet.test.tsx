@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { PropsWithChildren } from 'react';
 import CartSheet from './cart-sheet';
 import type { BasketActionResponse } from '@/routes/types/action-responses';
+import { setMiniCartOpen } from '@/hooks/mini-cart-store';
 
 const mockUpdateBasket = vi.fn();
 const mockSubmit = vi.fn();
@@ -38,17 +39,18 @@ let currentFetcher: MockFetcherState = {
     submit: mockSubmit,
 };
 
+let currentPathname = '/';
+
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
     return {
         ...actual,
         useFetcher: () => currentFetcher,
-        useLocation: () => ({ pathname: '/' }),
+        useLocation: () => ({ pathname: currentPathname }),
     };
 });
 
 vi.mock('@/providers/basket', () => ({
-    useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => mockUpdateBasket,
 }));
 
@@ -174,6 +176,14 @@ describe('CartSheet remove flow', () => {
             data: undefined,
             submit: mockSubmit,
         };
+        currentPathname = '/';
+        // The panel renders only while the mini-cart store reports open; open it for the remove-flow cases.
+        setMiniCartOpen(true);
+    });
+
+    afterEach(() => {
+        // Module-scoped store — reset so an open state can't leak into other suites.
+        setMiniCartOpen(false);
     });
 
     it('updates basket context from remove action response', async () => {
@@ -347,5 +357,82 @@ describe('CartSheet remove flow', () => {
 
         expect(screen.getByText('Test Product')).toBeVisible();
         expect(mockAddToast).toHaveBeenCalledWith('failed', 'error');
+    });
+});
+
+describe('CartSheet navigation behavior', () => {
+    const renderCartSheet = () =>
+        render(
+            <CartSheet>
+                <button>open-mini-cart</button>
+            </CartSheet>
+        );
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        currentFetcher = { state: 'idle', data: undefined, submit: mockSubmit };
+        currentPathname = '/';
+    });
+
+    afterEach(() => {
+        // Module-scoped store; wrap the reset in act() because a subscriber from the just-finished test is still
+        // mounted until RTL's auto-cleanup, so the notify would otherwise fire outside act.
+        act(() => {
+            setMiniCartOpen(false);
+        });
+    });
+
+    it('closes the open flyout when the pathname changes', () => {
+        // The layout effect compares the previous pathname against the current one and closes the flyout on a real
+        // navigation so the mini cart never lingers across page transitions. With the store open, the data panel
+        // renders (its content is visible); a rerender at a new pathname must flip the store closed so the panel
+        // unmounts. (useMiniCartData is mocked here, so the panel's presence — not the store's panelMounted flag — is
+        // the observable signal.)
+        act(() => {
+            setMiniCartOpen(true);
+        });
+        const { rerender } = renderCartSheet();
+
+        expect(screen.getByText('Test Product')).toBeInTheDocument();
+
+        currentPathname = '/checkout';
+        act(() => {
+            rerender(
+                <CartSheet>
+                    <button>open-mini-cart</button>
+                </CartSheet>
+            );
+        });
+
+        expect(screen.queryByText('Test Product')).not.toBeInTheDocument();
+    });
+
+    it('keeps the flyout open when a rerender does not change the pathname', () => {
+        // Guard the ref comparison: a rerender at the same pathname must not close an open flyout, otherwise unrelated
+        // state changes would dismiss the mini cart.
+        act(() => {
+            setMiniCartOpen(true);
+        });
+        const { rerender } = renderCartSheet();
+
+        expect(screen.getByText('Test Product')).toBeInTheDocument();
+
+        act(() => {
+            rerender(
+                <CartSheet>
+                    <button>open-mini-cart</button>
+                </CartSheet>
+            );
+        });
+
+        expect(screen.getByText('Test Product')).toBeInTheDocument();
+    });
+
+    it('does not render the panel while the store reports closed', () => {
+        // The panel is gated on the store's open slice; a closed store renders only the trigger, never the data panel.
+        renderCartSheet();
+
+        expect(screen.getByText('open-mini-cart')).toBeInTheDocument();
+        expect(screen.queryByText('Test Product')).not.toBeInTheDocument();
     });
 });

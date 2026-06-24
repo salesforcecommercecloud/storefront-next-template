@@ -27,7 +27,8 @@ import {
 import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasketUpdater, useMiniCart } from '@/providers/basket';
+import { useBasketUpdater } from '@/providers/basket';
+import { setMiniCartOpen, useMiniCartStore } from '@/hooks/mini-cart-store';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import {
     Sheet,
@@ -395,7 +396,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
  * ```
  */
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
-    const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+    const miniCartOpen = useMiniCartStore((s) => s.open);
     const { pathname } = useLocation();
     const prevPathnameRef = useRef(pathname);
 
@@ -407,7 +408,7 @@ export default function CartSheet({ children }: PropsWithChildren): ReactElement
             prevPathnameRef.current = pathname;
             setMiniCartOpen(false);
         }
-    }, [pathname, setMiniCartOpen]);
+    }, [pathname]);
 
     return (
         <Sheet open={miniCartOpen} onOpenChange={setMiniCartOpen}>

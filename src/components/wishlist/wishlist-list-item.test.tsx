@@ -100,10 +100,12 @@ vi.mock('@/components/inventory-message', () => ({
 const mockSetMiniCartOpen = vi.fn();
 const mockUpdateBasket = vi.fn();
 vi.mock('@/providers/basket', () => ({
-    useMiniCart: () => ({
-        setMiniCartOpen: mockSetMiniCartOpen,
-    }),
     useBasketUpdater: () => mockUpdateBasket,
+}));
+
+// use-product-actions opens the flyout via the mini-cart store; stub it so the test never mutates the shared module.
+vi.mock('@/hooks/mini-cart-store', () => ({
+    setMiniCartOpen: mockSetMiniCartOpen,
 }));
 
 // Default useFetcher mock

@@ -26,7 +26,8 @@ import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { isSelectedDeliveryOptionValid } from '@/extensions/bopis/lib/product-actions';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
+import { useBasket, useBasketUpdater } from '@/providers/basket';
+import { setMiniCartOpen } from '@/hooks/mini-cart-store';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { hasPurchasablePrice } from '@/lib/product/price-utils';
@@ -123,7 +124,6 @@ export function useProductActions({
     // its pickup store, and the current bundle child items. In add mode, the server action is the authoritative source
     // for delivery-option/BOPIS validation, so we don't need to trigger a basket fetch on PDP mount.
     const basket = useBasket({ autoLoad: itemId !== undefined });
-    const { setMiniCartOpen } = useMiniCart();
     const basketProductItems = basket?.productItems || [];
 
     // Toast notifications

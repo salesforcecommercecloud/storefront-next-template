@@ -17,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { resourceRoutes } from '@/route-paths';
 import { useMiniCartData, useMiniCartDataLoader } from './use-mini-cart-data';
+import { isMiniCartPanelMounted } from './mini-cart-store';
 import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
@@ -51,12 +52,21 @@ const mockUpdateBasket = vi.fn();
 const mockSnapshot = {
     basketId: 'basket-123' as string | undefined,
     totalItemCount: 1 as number,
+    uniqueProductCount: 1 as number,
 };
+// The full basket BasketProvider holds (with its SCAPI lastModified). Null models the cookie-only state where no
+// complete basket has been loaded yet; a value models the post-mutation/post-open state the staleness check compares.
+let mockCurrentBasket: ShopperBasketsV2.schemas['Basket'] | null = null;
 vi.mock('@/providers/basket', () => ({
     useBasketUpdater: () => mockUpdateBasket,
+    useBasket: () => mockCurrentBasket,
     useBasketSnapshot: () =>
         mockSnapshot.basketId
-            ? { basketId: mockSnapshot.basketId, totalItemCount: mockSnapshot.totalItemCount, uniqueProductCount: 1 }
+            ? {
+                  basketId: mockSnapshot.basketId,
+                  totalItemCount: mockSnapshot.totalItemCount,
+                  uniqueProductCount: mockSnapshot.uniqueProductCount,
+              }
             : null,
 }));
 
@@ -118,10 +128,26 @@ describe('useMiniCartData', () => {
         mockFetcher.load.mockReturnValue(Promise.resolve());
         mockSnapshot.basketId = 'basket-123';
         mockSnapshot.totalItemCount = 1;
+        mockSnapshot.uniqueProductCount = 1;
+        mockCurrentBasket = null;
     });
 
     afterEach(() => {
         vi.clearAllMocks();
+    });
+
+    describe('panel-visibility flag', () => {
+        it('marks the panel mounted while the hook is rendered and unmounted on cleanup', () => {
+            // The flag is the open cart sheet's visibility — only the open panel mounts this hook. The
+            // basket-products shouldRevalidate reads it to suppress post-action revalidation while closed.
+            const { unmount } = renderHook(() => useMiniCartData());
+
+            expect(isMiniCartPanelMounted()).toBe(true);
+
+            unmount();
+
+            expect(isMiniCartPanelMounted()).toBe(false);
+        });
     });
 
     it('returns loading state on cold open before the fetcher resolves', () => {
@@ -186,6 +212,31 @@ describe('useMiniCartData', () => {
             expect(result.current.isLoading).toBe(false);
             expect(result.current.basket).toBeNull();
             expect(result.current.productItems).toEqual([]);
+        });
+
+        it('reloads to clear stale items when the cookie empties but the fetcher still holds a non-empty basket', () => {
+            // Closed-panel empty-out (cart-page remove, post-checkout return, cross-tab clear): the action fired while
+            // the panel was closed, so shouldRevalidate suppressed it and the shared fetcher cache still holds the
+            // pre-empty line items. The cookie is now empty. On reopen the panel reads `basket` straight from this
+            // fetcher, so without a reload it renders ghost line items + an active Checkout footer while the badge
+            // (cookie-driven) correctly shows 0. The empty-cookie path must still reload to flush the stale cache.
+            mockFetcher.data = { basket: mockBasket, productsById: mockProductsData };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
+        });
+
+        it('does not loop once the fetcher holds the emptied (item-less) basket for the now-empty cookie', () => {
+            // Loop guard for the empty-cookie reload above: after the reload resolves, the fetcher holds the emptied
+            // basket — basketId still present (SCAPI does not delete an emptied basket), productItems []. The decision
+            // must key on whether the cache holds ITEMS, not on basketId presence, or the effect re-dispatches every
+            // idle cycle and hammers the resource route.
+            mockFetcher.data = { basket: { basketId: 'basket-123', productItems: [] }, productsById: {} };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
         });
 
         it('dispatches a fetch when totalItemCount transitions 0 → N (add-to-cart from empty)', () => {
@@ -274,12 +325,143 @@ describe('useMiniCartData', () => {
         expect(result.current.productItems[1].productName).toBe('Test Product 2');
     });
 
-    it('does not trigger a fetch when the fetcher already has data', () => {
+    it('does not trigger a fetch when the fetcher already has data for the current basket', () => {
+        // mockBasket has 3 total items across 2 lines; align the snapshot so its key matches the fetched
+        // basket's key. Matching keys mean the persisted data is current — reopening must reuse it, not reload.
+        mockSnapshot.totalItemCount = 3;
+        mockSnapshot.uniqueProductCount = 2;
         mockFetcher.data = { basket: mockBasket, productsById: mockProductsData };
 
         renderHook(() => useMiniCartData());
 
         expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('reloads when persisted data is for a different basket than the snapshot now describes', () => {
+        // A mutation landed while the panel was closed (revalidation suppressed), so the cookie snapshot moved
+        // but the persisted fetcher data is stale. On reopen the keys diverge and the hook reloads once.
+        mockSnapshot.totalItemCount = 5;
+        mockSnapshot.uniqueProductCount = 3;
+        mockFetcher.data = { basket: mockBasket, productsById: mockProductsData };
+
+        renderHook(() => useMiniCartData());
+
+        expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
+    });
+
+    describe('staleness via lastModified when a full basket is the reference', () => {
+        it('reloads after a count-neutral mutation (variant swap) when lastModified moved', () => {
+            // The bug the lastModified comparison fixes: a variant swap keeps both total item count and unique
+            // line count identical, so the cookie-derived count key is unchanged and cannot signal the change.
+            // BasketProvider's full basket carries the SCAPI lastModified, which DID move. With a full basket as
+            // the reference, the hook compares lastModified and reloads even though the counts collide.
+            mockSnapshot.totalItemCount = 3;
+            mockSnapshot.uniqueProductCount = 2;
+            mockCurrentBasket = { ...mockBasket, lastModified: '2026-06-23T10:00:01.000Z' };
+            mockFetcher.data = {
+                basket: { ...mockBasket, lastModified: '2026-06-23T10:00:00.000Z' },
+                productsById: mockProductsData,
+            };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
+        });
+
+        it('does not reload when the fetched basket is newer than a lagging reference (open-panel revalidation just landed)', () => {
+            // The double-request regression. On an open-panel mutation, resource.basket-products' shouldRevalidate
+            // already refreshed the fetcher to the new revision (Request 1). The BasketProvider reference trails that
+            // fetcher by a render — the publish-back is a parent setState that cannot converge within the same commit.
+            // So at the commit the revalidated data lands, fetched is NEWER than the reference. A symmetric `!==`
+            // comparison read that benign lag as "stale" and fired a redundant second basket-products load. The gate
+            // must treat the just-arrived fetcher data as authoritative: a reference older than the cache is never a
+            // reason to reload.
+            mockSnapshot.totalItemCount = 3;
+            mockSnapshot.uniqueProductCount = 2;
+            mockCurrentBasket = { ...mockBasket, lastModified: '2026-06-23T10:00:00.000Z' };
+            mockFetcher.data = {
+                basket: { ...mockBasket, lastModified: '2026-06-23T10:00:01.000Z' },
+                productsById: mockProductsData,
+            };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('reuses persisted data when the full basket lastModified matches the fetched basket', () => {
+            // Steady state: the fetched basket has already been published into BasketProvider, so the reference
+            // lastModified equals the cached one. No round-trip on reopen.
+            mockSnapshot.totalItemCount = 3;
+            mockSnapshot.uniqueProductCount = 2;
+            const lastModified = '2026-06-23T10:00:00.000Z';
+            mockCurrentBasket = { ...mockBasket, lastModified };
+            mockFetcher.data = { basket: { ...mockBasket, lastModified }, productsById: mockProductsData };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('does not re-dispatch once the full-basket reference and cached data share a lastModified', () => {
+            // Loop guard: the load effect keys on the reference and cached lastModified. Re-renders at the
+            // matched steady state must not re-fire — a regression here would hammer the resource route.
+            mockSnapshot.totalItemCount = 3;
+            mockSnapshot.uniqueProductCount = 2;
+            const lastModified = '2026-06-23T10:00:00.000Z';
+            mockCurrentBasket = { ...mockBasket, lastModified };
+            mockFetcher.data = { basket: { ...mockBasket, lastModified }, productsById: mockProductsData };
+
+            const { rerender } = renderHook(() => useMiniCartData());
+            rerender();
+            rerender();
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('staleness when only a cookie snapshot is the reference', () => {
+        it('reuses cached data when the count key matches and no full basket reference exists', () => {
+            // No complete basket has been loaded into BasketProvider yet (returning visitor, nothing added this
+            // session, panel never opened) — only the cookie snapshot, which has no lastModified. With no full-basket
+            // reference to compare revisions, the count-derived key is the fallback signal: matching counts mean the
+            // cached data is current, so the panel reuses it rather than round-tripping on every open. (A count-neutral
+            // change in another tab is invisible here — the documented narrow gap; it self-heals on the next loader
+            // run, and any mutation in THIS tab publishes a full basket that flips the comparison to lastModified.)
+            mockSnapshot.totalItemCount = 3;
+            mockSnapshot.uniqueProductCount = 2;
+            mockCurrentBasket = null;
+            mockFetcher.data = { basket: mockBasket, productsById: mockProductsData };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('fetches when the count key diverges and no full basket reference exists', () => {
+            // Cookie-only fallback still catches a count change: a mutation moved the cookie counts while the panel was
+            // closed, but no full basket was published into context. The diverging count key signals stale cache.
+            mockSnapshot.totalItemCount = 5;
+            mockSnapshot.uniqueProductCount = 3;
+            mockCurrentBasket = null;
+            mockFetcher.data = { basket: mockBasket, productsById: mockProductsData };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
+        });
+
+        it('does not fetch when the snapshot reports an empty basket even with no full basket reference', () => {
+            // The empty/no-basketId skip gate still wins over "fetch to be safe": an empty cookie has nothing to
+            // enrich, so neither the cold path nor the missing-lastModified path may round-trip.
+            mockSnapshot.totalItemCount = 0;
+            mockCurrentBasket = null;
+            mockFetcher.data = { basket: { basketId: 'basket-123', productItems: [] }, productsById: {} };
+
+            renderHook(() => useMiniCartData());
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
     });
 
     it('derives variation values from single-value variation attributes when basket variation values are missing', async () => {
@@ -414,6 +596,8 @@ describe('useMiniCartDataLoader', () => {
         mockFetcher.load.mockReset();
         mockSnapshot.basketId = 'basket-123';
         mockSnapshot.totalItemCount = 1;
+        mockSnapshot.uniqueProductCount = 1;
+        mockCurrentBasket = null;
     });
 
     it('loads the basket-products resource when called', () => {
@@ -438,8 +622,18 @@ describe('useMiniCartDataLoader', () => {
         expect(mockFetcher.load).not.toHaveBeenCalled();
     });
 
-    it('skips dispatch when fetcher already has data', () => {
-        mockFetcher.data = { basket: null, productsById: {} };
+    // A cached basket of 2 items across 1 line — keyed as `basket-123:2:1`.
+    const cachedBasket: ShopperBasketsV2.schemas['Basket'] = {
+        basketId: 'basket-123',
+        productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 2 }],
+    };
+
+    it('skips dispatch when fetcher already has data for the current basket', () => {
+        // Align the snapshot to the cached basket's counts so the keys match. Matching keys mean the warm
+        // cache is current — a hover must not round-trip.
+        mockSnapshot.totalItemCount = 2;
+        mockSnapshot.uniqueProductCount = 1;
+        mockFetcher.data = { basket: cachedBasket, productsById: {} };
 
         const { result } = renderHook(() => useMiniCartDataLoader());
 
@@ -448,6 +642,23 @@ describe('useMiniCartDataLoader', () => {
         });
 
         expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('dispatches when cached data is stale for the basket the snapshot now describes', () => {
+        // A mutation landed while the panel was closed (revalidation suppressed), so the cookie snapshot
+        // moved but the persisted fetcher data is for the old basket. A subsequent hover must re-warm the
+        // cache — the prefetch path picks up the outstanding fetch, not just the very first cold warm.
+        mockSnapshot.totalItemCount = 5;
+        mockSnapshot.uniqueProductCount = 3;
+        mockFetcher.data = { basket: cachedBasket, productsById: {} };
+
+        const { result } = renderHook(() => useMiniCartDataLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
     });
 
     it('skips dispatch when no basketId is in the snapshot', () => {
@@ -466,6 +677,66 @@ describe('useMiniCartDataLoader', () => {
         // A hover-prefetch on an empty cart should not round-trip — the cookie already tells us there
         // are no items to enrich. Mirrors the call-site gate in useMiniCartData.
         mockSnapshot.totalItemCount = 0;
+
+        const { result } = renderHook(() => useMiniCartDataLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('dispatches on a count-neutral change when the full basket reference lastModified moved', () => {
+        // Hover-prefetch parity with the panel: after a variant swap the counts are unchanged, so the count key
+        // alone would treat the warm cache as current. The full basket reference (published by the add handler)
+        // carries a moved lastModified, so the hover re-warms the cache for the swapped basket.
+        mockSnapshot.totalItemCount = 2;
+        mockSnapshot.uniqueProductCount = 1;
+        mockCurrentBasket = { ...cachedBasket, lastModified: '2026-06-23T10:00:01.000Z' };
+        mockFetcher.data = {
+            basket: { ...cachedBasket, lastModified: '2026-06-23T10:00:00.000Z' },
+            productsById: {},
+        };
+
+        const { result } = renderHook(() => useMiniCartDataLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
+    });
+
+    it('skips dispatch when the cached data is newer than a lagging reference', () => {
+        // Prefetch-path parity with the panel's double-request guard: a hover firing right after an open-panel
+        // revalidation must not re-warm a cache that is already newer than the trailing BasketProvider reference.
+        // Directional comparison — an older reference is render-lag, not staleness.
+        mockSnapshot.totalItemCount = 2;
+        mockSnapshot.uniqueProductCount = 1;
+        mockCurrentBasket = { ...cachedBasket, lastModified: '2026-06-23T10:00:00.000Z' };
+        mockFetcher.data = {
+            basket: { ...cachedBasket, lastModified: '2026-06-23T10:00:01.000Z' },
+            productsById: {},
+        };
+
+        const { result } = renderHook(() => useMiniCartDataLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('skips dispatch when the full basket reference lastModified matches the cached data', () => {
+        // Steady state on the prefetch path: the reference revision equals the cached one, so a hover must not
+        // round-trip even though this is the cookie-only fallback's "matching counts" case too.
+        mockSnapshot.totalItemCount = 2;
+        mockSnapshot.uniqueProductCount = 1;
+        const lastModified = '2026-06-23T10:00:00.000Z';
+        mockCurrentBasket = { ...cachedBasket, lastModified };
+        mockFetcher.data = { basket: { ...cachedBasket, lastModified }, productsById: {} };
 
         const { result } = renderHook(() => useMiniCartDataLoader());
 

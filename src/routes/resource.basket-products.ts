@@ -30,6 +30,7 @@ import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/baske
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { getLogger } from '@/lib/logger.server';
 import type { ProductWithPromotions, ProductsWithPromotionsMap } from '@/lib/cart/bonus-product-utils';
+import { isMiniCartPanelMounted } from '@/hooks/mini-cart-store';
 
 export type BasketProductsLoaderData = {
     basket: ShopperBasketsV2.schemas['Basket'] | null;
@@ -37,11 +38,19 @@ export type BasketProductsLoaderData = {
 };
 
 export const shouldRevalidate: ShouldRevalidateFunction = ({ formAction, actionResult, defaultShouldRevalidate }) => {
-    // Action submissions: opt in only when the action returned a basket payload. Basket-mutating actions follow the
-    // BasketActionResponse shape ({ success, basket, ... }); non-basket actions (wishlist, locale, OTP, ...) return
-    // responses without `basket`, so we skip the SCAPI round-trip per unrelated submission.
+    // Action submissions: opt in only when the action returned a basket payload AND the mini-cart panel is open.
+    // Basket-mutating actions follow the BasketActionResponse shape ({ success, basket, ... }); non-basket actions
+    // (wishlist, locale, OTP, ...) return responses without `basket`, so they are skipped regardless.
+    //
+    // The panel-open gate avoids enriching products for a hidden flyout: this fetcher's data is consumed only by the
+    // open cart sheet (`useMiniCartData`). The cart badge count and every `useBasket()` consumer read from the
+    // `__sfdc_basket` cookie snapshot and the BasketProvider, both refreshed directly by the action handlers — none of
+    // them depend on this fetcher revalidating. When the panel is closed the resource stays stale, and
+    // `useMiniCartData` reloads on the next open only if the snapshot moved (see its mount-load gate). Keeping the
+    // resource live while the panel is open is still required so in-panel removals refresh the footer totals.
     if (formAction) {
-        return Boolean((actionResult as { basket?: { basketId?: string } } | undefined)?.basket?.basketId);
+        const basketId = (actionResult as { basket?: { basketId?: string } } | undefined)?.basket?.basketId;
+        return Boolean(basketId) && isMiniCartPanelMounted();
     }
     // Navigation or imperative useRevalidator().revalidate() (e.g. post-login basket merge): defer to React Router's
     // default, which only revalidates when params/URL actually changed.
