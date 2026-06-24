@@ -37,4 +37,3 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - 'chokidar@4.0.3'          # Lost SLSA provenance in 4.0.2+; dep of @react-router/dev
   - 'semver@6.3.1 || 5.7.2'   # Lost provenance; dep of eslint-plugin-import, lighthouse
-  - 'nanoid@3.3.14'           # Lost trust evidence on 2026-06-20; 3.3.15 restores it (quarantined by minimumReleaseAge until ~2026-06-23). Transitive via vite→postcss.
