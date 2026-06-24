@@ -43,7 +43,6 @@ export interface BonusProductModalProps {
     promotionId: string;
     bonusDiscountLineItemId: string;
     bonusDiscountSlots: BonusDiscountSlot[];
-    maxQuantity: number;
 }
 
 const BONUS_MODAL_CONTENT_MAX_HEIGHT = 600;
@@ -67,7 +66,6 @@ export function BonusProductModal({
     promotionId,
     bonusDiscountLineItemId,
     bonusDiscountSlots,
-    maxQuantity: _maxQuantity,
 }: BonusProductModalProps): ReactElement {
     const { t } = useTranslation();
     const addToCartFetcher = useFetcher();
@@ -275,7 +273,10 @@ export function BonusProductModal({
                         mode="add"
                         initialQuantity={1}
                         maxQuantity={remainingCapacity}
-                        currentVariant={matchingVariant}>
+                        currentVariant={matchingVariant}
+                        // Bonus products are promotional and intentionally free — their price comes
+                        // from the promotion, not a price book, so don't block them on a missing price.
+                        allowMissingPrice>
                         {/* Scrollable content area */}
                         <div className="flex-1 overflow-y-auto min-h-0 lg:overflow-visible lg:flex-none">
                             <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">

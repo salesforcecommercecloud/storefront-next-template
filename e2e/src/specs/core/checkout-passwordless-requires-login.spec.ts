@@ -30,6 +30,7 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { stubLoginPrefs } from '../../utils/login-prefs-stub';
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -48,7 +49,7 @@ Scenario(
 
         checkoutPage.validatePageLoaded();
 
-        await checkoutPage.mockPasswordlessAuthorizationRequiresLogin(email);
+        await stubLoginPrefs({ branch: 'loginModal', email });
         await checkoutPage.fillContactInfoEmail(email);
         await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
         await checkoutPage.blurEmailField();
@@ -92,7 +93,7 @@ Scenario('Continue as Guest from login modal completes full checkout with order 
 
     checkoutPage.validatePageLoaded();
 
-    await checkoutPage.mockPasswordlessAuthorizationRequiresLogin(email);
+    await stubLoginPrefs({ branch: 'loginModal', email });
     await checkoutPage.fillContactInfoEmail(email);
     await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
     await checkoutPage.blurEmailField();

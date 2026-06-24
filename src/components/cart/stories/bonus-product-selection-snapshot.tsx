@@ -39,26 +39,10 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
-// Mock useConfig
+// Mock useConfig — still needed because `toImageUrl` reads it for DIS URL transforms.
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
     ...(await importOriginal<Record<string, unknown>>()),
-    useConfig: () => ({
-        pages: {
-            cart: {
-                ruleBasedProductLimit: 50,
-            },
-        },
-    }),
-}));
-
-// Mock useRuleBasedBonusProducts
-vi.mock('@/hooks/use-rule-based-bonus-products', () => ({
-    useRuleBasedBonusProducts: () => ({
-        products: [],
-        isLoading: false,
-        error: undefined,
-        total: 0,
-    }),
+    useConfig: () => ({}),
 }));
 
 // Mock product-utils

@@ -25,7 +25,21 @@ import type { BaseConfig, Url } from '@salesforce/storefront-next-runtime/config
 import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { SecurityConfig } from '@salesforce/storefront-next-runtime/security';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
+// `import type` only — app-config-client.ts also imports `AppConfig` from this file,
+// so a value import here would create a runtime cycle. Erased at emit by
+// verbatimModuleSyntax; do not promote to `import { ClientAppConfig }`.
+import type { ClientAppConfig } from '@/lib/app-config-client';
 import type { TrackingConsent } from '@/types/tracking-consent';
+// Auto-generated barrel of installed extensions' config defaults. Its type is the source
+// for `AppConfig['extension']`, so the type and the runtime value (config.server.ts) can't drift.
+// Explicit `/config/index`: a bare `@/extensions/config` resolves to the sibling config.json
+// extension registry instead of this barrel.
+import type GeneratedExtensionConfig from '@/extensions/config/index';
+// Auto-generated barrel of installed extensions' server-only config defaults. Its type is the
+// source for `AppConfig['serverExtension']`. Values are reachable via getConfig(context) on the
+// server only — the client extractor strips this namespace before window.__APP_CONFIG__, and a
+// Vite plugin fails the build if any client chunk imports the runtime barrel.
+import type GeneratedServerExtensionConfig from '@/extensions/config/server';
 
 import type { DetectionConfig, Site, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
@@ -35,6 +49,13 @@ export type BadgeDetail = {
     color: 'green' | 'yellow' | 'orange' | 'purple' | 'red' | 'blue' | 'pink';
     priority?: number;
 };
+
+/**
+ * Recursively strip `readonly` so an extension config authored with `as const` still merges
+ * into the mutable `AppConfig`. The generated barrel is the source of both the value (in
+ * config.server.ts) and this type, so the two can never drift.
+ */
+type DeepWritable<T> = T extends object ? { -readonly [K in keyof T]: DeepWritable<T[K]> } : T;
 
 export type AppConfig = {
     auth: {
@@ -52,6 +73,16 @@ export type AppConfig = {
             guestRefreshTokenExpirySeconds?: number;
         };
         sites: Array<Site>;
+    };
+    /**
+     * Global default cookie attributes applied to ALL storefront cookies (auth/session and
+     * site-context). The per-site `commerce.sites[].cookies.domain` overrides `domain`. When
+     * unset (empty/absent), cookies use host-only scoping — setting a domain is opt-in.
+     * Override via `PUBLIC__app__cookies__domain=.example.com`.
+     */
+    cookies?: {
+        /** Cookie domain, e.g. `.example.com` to share across subdomains. */
+        domain?: string;
     };
     commerceAgent?: {
         enabled: string | boolean;
@@ -104,6 +135,23 @@ export type AppConfig = {
             pageViewsResetDuration: number;
         };
     };
+    /**
+     * Config defaults contributed by installed extensions, keyed by the camelCase of each
+     * extension folder name. Auto-discovered from each extension's `config.ts` — the shape
+     * is derived from the generated barrel, never hand-edited. See docs/README-CONFIG.md.
+     */
+    extension?: DeepWritable<typeof GeneratedExtensionConfig>;
+    /**
+     * Server-only config defaults contributed by installed extensions, keyed by the camelCase
+     * of each extension folder name. Auto-discovered from each extension's `server-config.ts`.
+     * Reachable via `getConfig(context).serverExtension.<key>` in server loaders, actions, and
+     * middleware. The client config extractor strips this namespace before serializing into
+     * `window.__APP_CONFIG__`, and a Vite plugin fails the build if any client chunk imports
+     * the generated barrel. Use this for vendor-side defaults that aren't merchant-overridable
+     * (SCAPI service overrides, retry budgets, internal endpoints) — for true secrets, read
+     * `process.env` from a server route handler instead.
+     */
+    serverExtension?: DeepWritable<typeof GeneratedServerExtensionConfig>;
     features: {
         passwordlessLogin: {
             enabled?: boolean;
@@ -195,7 +243,22 @@ export type AppConfig = {
     };
     hybrid: {
         enabled: boolean;
-        legacyRoutes?: string[];
+        /**
+         * Routes owned by the legacy backend (SFRA / SiteGenesis). A `<Link>` click to one of
+         * these forces a full-page navigation so the CDN (eCDN in production, the Vite proxy
+         * locally) can hand the request to the legacy backend.
+         *
+         * Each entry is either a bare pattern string or an object that pairs a pattern with a
+         * `suffix` to append when rebuilding the redirect URL. The suffix exists because legacy
+         * SEO URLs are not uniform: SFCC appends `.html` to product/category SEO URLs (when
+         * `StorefrontURLsEnabled` is on) but serves routes like `/cart` and `/checkout` as clean
+         * paths. A per-route suffix lets `/product/:id` redirect to `/product/123.html` while
+         * `/cart` stays `/cart`.
+         *
+         * @example
+         * legacyRoutes: ['/cart', '/checkout', { pattern: '/product/:id', suffix: '.html' }]
+         */
+        legacyRoutes?: Array<string | { pattern: string; suffix?: string }>;
     };
     i18n: {
         fallbackLng: string;
@@ -296,7 +359,11 @@ export type AppConfig = {
     siteContext?: {
         /** Cookie name for persisting the selected currency. Defaults to 'currency'. */
         currencyCookieName?: string;
-        /** Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context cookies. */
+        /**
+         * Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context
+         * cookies. NOTE: any `domain` here is ignored — the cookie domain is governed solely by the
+         * global `app.cookies.domain` and the per-site `commerce.sites[].cookies.domain`.
+         */
         cookieOptions?: SiteConfig['cookieOptions'];
     };
     siteDetectionConfig?: DetectionConfig;
@@ -307,7 +374,10 @@ export type AppConfig = {
             enabled?: boolean;
             mode?: 'managed' | 'non-interactive' | 'invisible';
             verification?: {
+                /** @deprecated Use `mode` instead. */
                 enabled: boolean;
+                /** Controls server-side verification behaviour. Takes precedence over `enabled`. */
+                mode?: 'enforce' | 'log-only' | 'disabled';
             };
         };
         /**
@@ -322,11 +392,20 @@ export type AppConfig = {
 export type Config = BaseConfig<AppConfig>;
 
 /**
- * Augment the SDK so `getConfig()` and `useConfig()` return `AppConfig` without
- * a generic argument at every call site. Customers writing additional templates
- * augment this interface in their own template's types file.
+ * Augment the SDK so `getConfig()` and `useConfig()` return the right shapes
+ * without a generic argument at every call site. `getConfig(context)` (server)
+ * returns the full `AppConfig` so server callers correctly read `serverExtension`;
+ * `getConfig()` (no context, client) and `useConfig()` return the narrowed
+ * `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`), so client modules
+ * see a TypeScript error on `.serverExtension`. Both slots are filled from
+ * types defined in `src/lib/app-config-client.ts`, which keeps
+ * `SERVER_ONLY_NAMESPACES` the single source: the runtime extractor and the
+ * type narrow can't drift. Customers writing additional templates augment both
+ * interfaces in their own template's types file.
  */
 declare module '@salesforce/storefront-next-runtime/config' {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface AppConfigShape extends AppConfig {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface ClientFacingAppConfigShape extends ClientAppConfig {}
 }

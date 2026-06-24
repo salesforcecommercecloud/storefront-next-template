@@ -75,6 +75,7 @@ const createMockComponent = (id: string, typeId: string, additionalProps = {}) =
 });
 
 const createMockRegion = (components: any[]) => ({ components });
+
 describe('pageLoader', () => {
     beforeEach(() => {
         vi.clearAllMocks();

@@ -31,7 +31,7 @@
     "search": {
         "results": "Suchergebnisse für",
         "shopperAgent": {
-            "title": "Einkaufen mit Ihrem persönlichem Shopping Agent",
+            "title": "Einkaufen mit Ihrem persönlichem Shopper Agent",
             "description": "Ich kann Ihnen helfen, das perfekte Stück für Ihren Raum zu finden. Lassen Sie mich beim Einkaufen helfen."
         },
         "suggestions": {
@@ -1542,6 +1542,7 @@
         "failedToAddProductToCartError": "Produkt konnte nicht zum Warenkorb hinzugefügt werden:",
         "failedToAddProductToWishlistError": "Produkt konnte nicht zur Wunschliste hinzugefügt werden:",
         "price": {
+            "unavailable": "Preis nicht verfügbar",
             "currentPriceFrom": "Aktueller Preis ab {{price}}",
             "currentPrice": "Aktueller Preis: {{price}}",
             "from": "Von {{price}}",

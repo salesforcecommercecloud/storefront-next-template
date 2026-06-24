@@ -15,7 +15,8 @@
  */
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import { type DataStrategyResult, RouterContextProvider } from 'react-router';
-import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
+import legacyRoutesMiddleware from '@/middlewares/legacy-routes.client';
+import { matchesRoutePattern, findLegacyRoute } from '@/middlewares/legacy-routes';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getSiteRef, mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
@@ -149,8 +150,7 @@ describe('legacyRoutesMiddleware', () => {
 
             // window.location.href is set synchronously before the promise
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toContain('checkout');
-            expect(window.location.href).toContain('redirected=1');
+            expect(window.location.href).toBe('https://example.com/checkout');
         });
 
         test('should not redirect when path does not exactly match', async () => {
@@ -168,9 +168,8 @@ describe('legacyRoutesMiddleware', () => {
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toContain('step=2');
-            expect(window.location.href).toContain('item=abc');
-            expect(window.location.href).toContain('redirected=1');
+            // Query string is preserved verbatim — no extra params are injected.
+            expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc');
         });
 
         test('should trigger redirect path and preserve hash fragment', () => {
@@ -179,8 +178,7 @@ describe('legacyRoutesMiddleware', () => {
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toContain('checkout');
-            expect(window.location.href).toContain('redirected=1');
+            expect(window.location.href).toBe('https://example.com/checkout#payment');
         });
 
         test('should continue normal navigation when path does not match', async () => {
@@ -202,28 +200,110 @@ describe('legacyRoutesMiddleware', () => {
         });
     });
 
-    describe('infinite loop prevention', () => {
+    describe('no internal params leak to the legacy backend', () => {
         beforeEach(() => {
             // Mock window for client-side
             vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
         });
 
-        test('should not redirect when redirected=1 query param is present', async () => {
-            const request = new Request('https://example.com/checkout?redirected=1');
+        test('does not append a redirected=1 (or any) loop-guard param to the redirect URL', () => {
+            // The redirect target is handed to the legacy backend (SFRA/SiteGenesis), whose SEO
+            // URL rules 404 on unexpected query params. The middleware must not inject any param of
+            // its own — no loop guard is needed because RR does not run client middleware on the
+            // resulting full-document load (see the middleware's header comment).
+            const request = new Request('https://example.com/checkout');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(window.location.href).toBe('https://example.com/checkout');
+            expect(window.location.href).not.toContain('redirected');
+        });
+
+        test('passes an incoming redirected=1 through untouched (no special-casing)', () => {
+            // If some upstream actually sends , we neither strip nor act on it — it is
+            // just an ordinary query param now. (Guards against re-introducing loop-guard behavior.)
+            const request = new Request('https://example.com/checkout');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/checkout');
+        });
+    });
+
+    describe('data/resource endpoints are never routed to legacy', () => {
+        beforeEach(() => {
+            vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
+
+            // Config that reproduces the original bug: '/' is a legacy route AND a two-segment
+            // url.prefix whose segments are both wildcards. Without the guard, stripPathPrefix
+            // reduces '/resource/basket-products' → '/' and the fetcher load bounces to legacy.
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        hybrid: { enabled: true, legacyRoutes: ['/', '/checkout'] },
+                        url: { prefix: '/:siteId/:localeId' },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+        });
+
+        test.each([
+            '/resource/basket-products',
+            '/resource/recommendations',
+            '/action/cart-item-update',
+            '/global/en-GB/cart.data',
+            '/mobify/proxy/api/foo',
+            '/assets/index-abc123.js',
+            '/favicon.ico',
+            '/assets/logo.svg',
+        ])('does not redirect infrastructure path %s to legacy', async (path) => {
+            const request = new Request(`https://example.com${path}`);
 
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
+            // Must fall through to React Router, NOT trigger a full-page legacy navigation.
             expect(mockNext).toHaveBeenCalledOnce();
+            expect(window.location.href).toBe('');
         });
 
-        test('should let React Router handle 404 after one redirect attempt', async () => {
-            const request = new Request('https://example.com/checkout?redirected=1&other=param');
+        test('still redirects a real legacy page navigation that strips to "/"', () => {
+            // Sanity: the guard is scoped to data/resource endpoints only — a genuine prefixed
+            // home navigation (/global/en-GB) still strips to '/' and routes to legacy.
+            const request = new Request('https://example.com/global/en-GB');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
-            // Should not redirect again, let it fall through to React Router
-            expect(mockNext).toHaveBeenCalledOnce();
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/');
         });
+
+        test.each(['/action-figures', '/assets-guide', '/resourceful'])(
+            'does NOT skip legacy route %s that merely starts with an infra word',
+            (path) => {
+                // The skip-list boundary is `^/(resource|action|mobify|assets)(/|$)` — a route whose
+                // name only starts with an infra word (no '/' boundary) must still route to legacy.
+                // Locks the boundary against a careless regex edit (e.g. dropping the `(/|$)`).
+                vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                    if (contextKey === appConfigContext) {
+                        return {
+                            hybrid: { enabled: true, legacyRoutes: [path] },
+                        } as unknown as AppConfig;
+                    }
+                    return undefined;
+                });
+                const request = new Request(`https://example.com${path}`);
+
+                void legacyRoutesMiddleware(
+                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    mockNext
+                );
+
+                expect(mockNext).not.toHaveBeenCalled();
+                expect(window.location.href).toBe(`https://example.com${path}`);
+            }
+        );
     });
 
     describe('edge cases', () => {
@@ -339,6 +419,147 @@ describe('legacyRoutesMiddleware', () => {
         });
     });
 
+    describe('findLegacyRoute', () => {
+        test('returns the matched entry for a bare-string route (no suffix)', () => {
+            const match = findLegacyRoute('/checkout', ['/cart', '/checkout']);
+            expect(match).toEqual({ pattern: '/checkout' });
+            expect(match?.suffix).toBeUndefined();
+        });
+
+        test('returns the matched entry with its suffix for an object route', () => {
+            const routes = ['/cart', { pattern: '/product/:id', suffix: '.html' }];
+            expect(findLegacyRoute('/product/123', routes)).toEqual({ pattern: '/product/:id', suffix: '.html' });
+        });
+
+        test('returns undefined when nothing matches', () => {
+            expect(
+                findLegacyRoute('/category/shoes', ['/cart', { pattern: '/product/:id', suffix: '.html' }])
+            ).toBeUndefined();
+        });
+
+        test('returns the first matching entry when multiple patterns match', () => {
+            const routes = [{ pattern: '/product/:id', suffix: '.html' }, '/product/*'];
+            expect(findLegacyRoute('/product/123', routes)).toEqual({ pattern: '/product/:id', suffix: '.html' });
+        });
+
+        test('does not apply a bare string route as a suffixed one', () => {
+            // A plain string keeps clean-path behavior — no suffix leaks in.
+            expect(findLegacyRoute('/cart', ['/cart'])?.suffix).toBeUndefined();
+        });
+
+        describe('trailing-slash tolerance', () => {
+            test('matches an exact pattern when the pathname has a trailing slash', () => {
+                // SFRA/SG and CDN rewrites are inconsistent about trailing slashes; '/login/' must
+                // still match a '/login' legacy route so both forms route to the same backend.
+                expect(findLegacyRoute('/login/', ['/login'])).toEqual({ pattern: '/login' });
+                expect(findLegacyRoute('/login', ['/login'])).toEqual({ pattern: '/login' });
+            });
+
+            test('matches a :param pattern with a trailing slash', () => {
+                expect(findLegacyRoute('/product/123/', [{ pattern: '/product/:id', suffix: '.html' }])).toEqual({
+                    pattern: '/product/:id',
+                    suffix: '.html',
+                });
+            });
+
+            test('does not treat bare root differently (no empty-string candidate)', () => {
+                expect(findLegacyRoute('/', ['/'])).toEqual({ pattern: '/' });
+            });
+
+            test('preserves splat semantics: bare parent still does not match /parent/*', () => {
+                // The documented behavior — '/categoryLv1/*' does NOT match bare '/categoryLv1' —
+                // must be unaffected by trailing-slash tolerance.
+                expect(findLegacyRoute('/categoryLv1', ['/categoryLv1/*'])).toBeUndefined();
+                expect(findLegacyRoute('/categoryLv1/', ['/categoryLv1/*'])).toEqual({ pattern: '/categoryLv1/*' });
+            });
+
+            test('does not match an unrelated route just because of slash trimming', () => {
+                expect(findLegacyRoute('/accounts/', ['/account'])).toBeUndefined();
+            });
+        });
+    });
+
+    describe('client-side redirect with per-route suffix', () => {
+        beforeEach(() => {
+            vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
+
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: [
+                                '/cart',
+                                { pattern: '/product/:id', suffix: '.html' },
+                                { pattern: '/categoryLv1/*', suffix: '.html' },
+                            ],
+                        },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+        });
+
+        test('appends the suffix to the redirect path for a suffixed route', () => {
+            const request = new Request('https://example.com/product/552437');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/product/552437.html');
+        });
+
+        test('appends the suffix before the query string and preserves all params', () => {
+            const request = new Request(
+                'https://example.com/product/552437?Quantity=1&uuid=83f650ea79f62ea4950d45ad08&source=cart'
+            );
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            // .html lands on the path, not after the query string; original params survive.
+            expect(window.location.href).toBe(
+                'https://example.com/product/552437.html?Quantity=1&uuid=83f650ea79f62ea4950d45ad08&source=cart'
+            );
+        });
+
+        test('appends the suffix before the hash fragment', () => {
+            const request = new Request('https://example.com/product/552437#reviews');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(window.location.href).toBe('https://example.com/product/552437.html#reviews');
+        });
+
+        test('does not double-append when the path already ends with the suffix', () => {
+            const request = new Request('https://example.com/product/552437.html');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(window.location.href).toBe('https://example.com/product/552437.html');
+        });
+
+        test('does not append a suffix to a clean-path legacy route', () => {
+            const request = new Request('https://example.com/cart');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            // /cart has no suffix — must stay clean, not become /cart.html
+            expect(window.location.href).toBe('https://example.com/cart');
+        });
+
+        test('appends the suffix to the full splat tail for a wildcard route', () => {
+            // A '/categoryLv1/*' entry with a suffix appends to the entire matched tail, so the
+            // legacy backend receives e.g. /categoryLv1/shoes/running.html
+            const request = new Request('https://example.com/categoryLv1/shoes/running');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/categoryLv1/shoes/running.html');
+        });
+    });
+
     describe('multisite prefix stripping', () => {
         beforeEach(() => {
             vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
@@ -367,10 +588,9 @@ describe('legacyRoutesMiddleware', () => {
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toContain('redirected=1');
             // Navigation target must be the stripped pathname so the legacy backend (or local
             // hybrid proxy) can apply its own prefix without doubling up on storefront-next's.
-            expect(window.location.href).toBe('https://example.com/checkout?redirected=1');
+            expect(window.location.href).toBe('https://example.com/checkout');
         });
 
         test('should redirect for parameterized legacy routes with multisite prefix', () => {
@@ -381,8 +601,7 @@ describe('legacyRoutesMiddleware', () => {
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toContain('redirected=1');
-            expect(window.location.href).toBe('https://example.com/product/123?redirected=1');
+            expect(window.location.href).toBe('https://example.com/product/123');
         });
 
         test('should preserve query params and hash when stripping prefix', () => {
@@ -393,7 +612,7 @@ describe('legacyRoutesMiddleware', () => {
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
-            expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc&redirected=1#payment');
+            expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc#payment');
         });
 
         test('should not redirect for non-legacy multisite routes', async () => {
@@ -404,6 +623,33 @@ describe('legacyRoutesMiddleware', () => {
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
+        });
+
+        test('strips the site/locale prefix and then appends the suffix on the stripped path', () => {
+            // The production hybrid scenario: a multisite-prefixed PDP URL hitting a suffixed
+            // legacy route. The prefix is stripped first, then '.html' is appended to the bare
+            // path — so the legacy backend receives /product/123.html with no doubled prefix.
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: [{ pattern: '/product/:id', suffix: '.html' }],
+                        },
+                        url: { prefix: '/:siteId/:localeId' },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/product/123?source=cart`);
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/product/123.html?source=cart');
         });
     });
 
@@ -449,7 +695,9 @@ describe('legacyRoutesMiddleware', () => {
                     mockNext
                 );
                 expect(mockNext).not.toHaveBeenCalled();
-                expect(window.location.href).toContain('redirected=1');
+                // A full-page redirect was triggered (href set), with no injected loop-guard param.
+                expect(window.location.href).not.toBe('');
+                expect(window.location.href).not.toContain('redirected');
                 mockNext.mockClear();
             }
         });

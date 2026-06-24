@@ -1,166 +1,113 @@
 # Authentication & Session Management
 
-This project uses a split-cookie architecture for managing SLAS authentication tokens. The implementation separates auth concerns between server and client, with automatic token refresh and session management.
+This project uses a **server-only** auth architecture. All SLAS token management—guest login, refresh, registered login, social/passwordless flows, and cookie writing—happens in a single server middleware (`auth.server.ts`) that runs on every request. Tokens never reach the browser. Client components receive only a small, non-sensitive slice of session data.
 
 ## Architecture Overview
 
-We maintain **separate authentication contexts** for server and client, plus a React context for components:
+Two layers, one source of truth:
 
-1. **Server-side middleware** (`auth.server.ts`): Manages auth tokens, writes cookies via `Set-Cookie` headers
-2. **Client-side middleware** (`auth.client.ts`): Reads auth cookies, maintains in-memory cache, initializes router context
-3. **React Context + root provider** (`AuthContext` + `AuthProvider`): Components consume auth via a React context that is always provided by the root `App` component. During hydration, the root uses a `bootstrapAuth` value derived from cookies; after hydration, it uses loader-based session data.
+1. **Server middleware** (`middlewares/auth.server.ts`): Runs on every request (full page loads _and_ React Router client navigations, which re-invoke the server loaders). It reads auth cookies from the `Cookie` header, validates and refreshes tokens, performs guest login when needed, and writes updated cookies via `Set-Cookie`. It is the only place tokens exist.
+2. **React Context** (`providers/auth.tsx`): `AuthProvider` exposes a `PublicSessionData` object (no tokens) to components via the `useAuth()` hook. The root loader extracts this slice with `getPublicSessionData(session)` and passes it straight to the provider.
 
-### Server and Client Flow
+Per project rules, route modules use only server `loader`/`action` — never `clientLoader`/`clientAction`.
 
-1. **Server middleware** detects or creates user session with SLAS tokens
-2. Server writes auth data to **separate cookies** via `Set-Cookie` headers
-3. **Browser receives and stores** cookies automatically
-4. **Cookies are written** with the latest tokens and user metadata
-5. On the client, a **bootstrap auth snapshot** (`bootstrapAuth`) is derived from cookies once at module load time and used by the root `App` as a fallback during hydration
-6. **Client middleware** initializes router context during execution and maintains in-memory cache for further use of authData
-7. On subsequent client-side navigations, **client middleware** reads cookies and validates tokens; server is only involved on full page refreshes
+### Request Flow
+
+```
+Browser request (full load or client navigation)
+        │
+        ▼
+auth.server.ts middleware
+  • parse cookies from Cookie header
+  • decode access-token JWT (userType, customerId, usid, expiry, tracking consent)
+  • if access token valid → use it
+    elif refresh token present → refresh
+    else → guest login
+  • write updated tokens/metadata via Set-Cookie
+        │
+        ▼
+root loader: getAuth(context) → full SessionData
+             getPublicSessionData(session) → clientAuth (no tokens)
+        │
+        ▼
+<AuthProvider value={clientAuth}> → useAuth() in components
+```
 
 ## Cookie Architecture
 
-### Split Cookie Design
+All auth state is stored across separate cookies, each with its own purpose, expiry, and value source. **Every cookie is `HttpOnly`** — the browser sends them on each request (so server middleware and hybrid ECOM both read them), but client JavaScript cannot. The client gets its auth state from the serialized loader data, not from reading cookies.
 
-Authentication data is stored in **separate cookies**, each with specific purpose and expiry:
+| Cookie             | Purpose                                              | User type  | Expiry                                   | Value source            |
+| ------------------ | ---------------------------------------------------- | ---------- | ---------------------------------------- | ----------------------- |
+| `cc-nx-g`          | Guest refresh token                                  | Guest      | Guest refresh expiry (max 30 days)       | SLAS body               |
+| `cc-nx`            | Registered refresh token                             | Registered | Registered refresh expiry (max 90 days)  | SLAS body               |
+| `cc-at`            | Access token                                         | Both       | Access-token JWT `exp`                   | SLAS body               |
+| `usid`             | User session ID (mirrors JWT `sub` → `usid`)         | Both       | Refresh expiry, else access expiry       | JWT `sub` claim         |
+| `enc_user_id`      | Encoded user ID                                      | Registered | Refresh expiry                           | SLAS body               |
+| `idp_access_token` | IDP access token (social login)                      | Both       | Access expiry (proxy)                    | SLAS body               |
+| `id_token`         | OIDC ID token                                        | Both       | Access expiry                            | SLAS body               |
+| `idp_refresh_token`| IDP refresh token (social login)                     | Both       | Refresh expiry                           | SLAS body               |
+| `dw_dnt`           | Tracking consent preference (value = `TrackingConsent` enum) | Both | Session                              | Cookie (source of truth) / JWT `dnt` |
+| `dwsid`            | Hybrid storefront session ID (ECOM session bridge)   | Both       | Session                                  | SLAS `Set-Cookie` header |
+| `cc-cv`            | OAuth2 PKCE code verifier                            | Both       | 5 minutes                                | Generated (social flow) |
+| `cc-auth-recover`  | 401-recovery loop guard                              | Both       | 30 seconds                               | Middleware              |
 
-| Cookie Name  | Purpose                                                                                        | User Type       | Expiry                | HttpOnly |
-| ------------ | ---------------------------------------------------------------------------------------------- | --------------- | --------------------- | -------- |
-| `cc-nx-g`    | Guest refresh token                                                                            | Guest only      | 30 days (max)         | No       |
-| `cc-nx`      | Registered refresh token                                                                       | Registered only | 90 days (max)         | No       |
-| `cc-at`      | Access token                                                                                   | Both            | 30 minutes            | No       |
-| `usid`       | User session ID (mirrors the JWT `sub` claim's `usid` segment)                                 | Both            | Matches refresh token | No       |
-| `idp_access_token` | IDP access token (social login)                                                          | Both            | Matches access token  | No       |
-| `cc-cv`      | OAuth2 PKCE code verifier (Temporary cookie deleted after successful token call via PKCE flow) | Both            | 5 minutes             | **Yes**  |
-| `cc-auth-recover` | Auth recovery guard (prevents redirect loops after 401)                                    | Both            | 30 seconds            | No       |
+> **Value source.** Token strings come verbatim from the SLAS `TokenResponse` body. The session _facts_ — `userType`, `customerId`, `usid`, `accessTokenExpiry`, tracking consent—are decoded from the access-token JWT, not read from the body, so they can never drift from the token. `dwsid` is the exception: it comes from the SLAS response's `Set-Cookie` header.
 
-> **Note on `usid`:** sf-next reads `usid` from the access token JWT `sub` claim, **not** from
-> this cookie. The cookie is kept so hybrid storefronts can forward `usid` to ECOM, which does
-> not parse the access token. The cookie value also serves as a cold-start fallback for the
-> guest-login path (passed to SLAS for session continuity when no access token is present).
->
-> **Note on `customer_id`:** `customer_id` is **not** persisted as a cookie. It is derived
-> per-request from the SLAS access token JWT `isb` claim (via `gcid`/`rcid`) and exposed to
-> loaders/actions via `getAuth(context)` and to client components via `useAuth()`. The destroy
-> path clears any `customer_id_<siteId>` cookie on logout/error so the value never lingers for
-> a logged-out browser. Browsers upgraded from older versions may also retain a legacy
-> `customerId_<siteId>` cookie; it is ignored and will expire on its own.
+> **`customerId` is not a cookie.** It is derived per-request from the access-token JWT and exposed through `getAuth()` (server) and `useAuth()` (client). The logout and error path also clears any legacy `customer_id` cookie left by older versions.
 
-**Key Design Decisions:**
+**Key design decisions:**
 
-- **Mutually Exclusive Refresh Tokens**: Only ONE refresh token cookie exists at a time (`cc-nx-g` OR `cc-nx`, never both)
-- **User Type Derivation**: `userType` is **NEVER stored in cookies**. It's derived at runtime from which refresh token cookie exists
-- **Cookie Namespacing**: All cookies are automatically namespaced with `siteId` (e.g., `cc-nx_RefArch`)
-- **HttpOnly Exception**: Only `cc-cv` (code verifier) uses `httpOnly: true` for security; others use `httpOnly: false` to allow client-side JavaScript to read auth data from cookies (required for AuthContext default value and client middleware).
-- **Browser Auto-Cleanup**: Cookies include expiry dates, so browser automatically deletes expired cookies. Cookies are also deleted on shopper logout.
+- Mutually exclusive refresh tokens: Only one of `cc-nx-g` / `cc-nx` exists at a time. On a user-type transition the other is explicitly deleted (`Set-Cookie` with an expired date).
+- `userType` is never stored in a cookie: It is derived from the JWT (see below). The refresh-cookie name is only a _write-time_ decision for where to put the refresh token.
+- Namespacing: Cookies are suffixed with `siteId` (e.g. `cc-nx_RefArch`), **except** `dwsid` and `dw_dnt`, which are excluded (`COOKIE_NAMESPACE_EXCLUSIONS`) so external or B2C Commerce systems can read them directly.
+- `HttpOnly` everywhere: Protects every token from XSS. The client never needs cookie access because public session data arrives via the loader.
 
 ### User Type Detection
 
-User type is determined by which refresh token cookie exists:
-
-```typescript
-// Server-side (auth.server.ts)
-if (refreshTokenRegistered) {
-    userType = 'registered';
-    refreshToken = refreshTokenRegistered;
-} else if (refreshTokenGuest) {
-    userType = 'guest';
-    refreshToken = refreshTokenGuest;
-} else {
-    userType = 'guest'; // Fallback - will trigger guest login
-    refreshToken = null;
-}
-```
-
-On user type transition (e.g., guest → registered), the old refresh token cookie is explicitly deleted by the server.(`Set-Cookie: cc-nx-g=""`)
+`userType` comes from the access-token JWT (registered tokens carry an `rcid` identity claim that guest tokens lack), not from which refresh cookie exists. The refresh-cookie name is consulted only as a cold-start fallback, before any access token has been issued, and to decide which refresh cookie to write or delete on the response.
 
 ### Token Expiry Management
 
-**Access Token Expiry:**
+**Access token:** the expiry is read from the JWT `exp` claim, stored as a timestamp, and compared at runtime with a fast numeric check — no repeated JWT decoding in the hot path.
 
-- Extracted directly from JWT `exp` claim (source of truth)
-- Decoded **once** during middleware initialization
-- Fast numeric comparison at runtime: `accessTokenExpiry > Date.now()`
-- No repeated JWT decoding needed
+**Refresh token:** configurable via environment variables, capped at Commerce Cloud maximums (guest 30 days, registered 90 days).
 
-**Refresh Token Expiry:**
+### 401 recovery redirect
 
-- Configurable via environment variables (with B2C Commerce maximum limits enforced)
-- Guest tokens: 30 days maximum
-- Registered tokens: 90 days maximum
+When a SCAPI call returns **401** for a non-SLAS endpoint, the SCAPI client throws `AuthTokenInvalidError`. The middleware catches it in `handleAuthTokenInvalidation`, clears stale token state, re-runs the refresh/guest flow, and — if recovery succeeds — issues a **307 redirect** back to the same URL so the request restarts with fresh cookies. The redirect carries `x-sfnext-auth-recovery: 1` (observability only).
 
-### 401 Recovery Redirect (Server)
+To prevent loops, a short-lived guard cookie `cc-auth-recover` (`Max-Age=30`) is set during recovery. If a 401 recurs while the guard is present, recovery is **not** retried — the error surfaces and the response carries `x-sfnext-auth-recovery-guard: 1`. The guard is cleared on the follow-up request.
 
-If a SCAPI call returns **401** for non-SLAS endpoints, the SCAPI client throws an `AuthTokenInvalidError`. The server auth middleware catches this error, clears the in-memory access token, re-runs the refresh/guest flow, and issues a **307 redirect** back to the same URL to restart the request lifecycle with fresh tokens.
+### JWT Integrity Validation
 
-To prevent infinite loops, the middleware sets a short-lived guard cookie:
+SLAS guarantees `gcid`/`rcid` in `isb` and `usid` in `sub`. The middleware validates this on the **incoming cookie token** — but only when that token survived validation unchanged (`authAction === 'tokenValid'`). After a refresh or guest login, re-validation is skipped because the freshly issued token was already validated inside `updateAuthStorageDataByTokenResponse`.
 
-- `cc-auth-recover`: boolean guard set during recovery redirect
-- If another 401 occurs while this cookie is present, the error is allowed to surface and no additional redirect happens
-- The guard cookie is cleared on the subsequent request
-
-The recovery redirect response also includes `x-sfnext-auth-recovery: 1`. When the guard cookie is present on a follow-up request, responses include `x-sfnext-auth-recovery-guard: 1` for log visibility.
-
-Before running the recovery flow, any stale `error` state from earlier middleware auth attempts is cleared to avoid false negatives.
-
-### JWT integrity validation
-
-The auth middleware also validates the SLAS access token's structure on every request. SLAS
-guarantees the following claims:
-
-- `isb`: contains `gcid:<id>` (guest) and/or `rcid:<id>` (registered) for the customer ID
-- `sub`: contains `usid:<id>` for the SLAS session ID
-
-If the JWT decodes successfully but is missing either claim, the middleware throws
-`AuthTokenInvalidError`, which routes through the same recovery flow as a 401: cookies are
-cleared, a fresh refresh / guest login runs, and a 307 redirect is emitted. The same recovery
-applies if SLAS itself returns a structurally invalid token during a refresh or guest login —
-the middleware detects the `AuthTokenInvalidError` thrown by `updateAuthStorageDataByTokenResponse`
-and writes the recovery sentinel into auth storage so the post-handler check picks it up.
-
-Reaching this path indicates a critical token-integrity failure (e.g. a bug in token issuance)
-rather than a normal auth lifecycle event. The defensive log fires at error level so the case
-is observable in production.
+If a structurally invalid token is detected (decodable but missing required claims, or undecodable), `AuthTokenInvalidError` is thrown and routed through the same recovery flow as a 401 (clear cookies → fresh login → 307 redirect). This indicates a critical token-issuance failure, so it logs at **error** level for production visibility.
 
 ## Configuration
 
-### Environment Variables (Optional)
-
-Configure refresh token expiry and cookie settings in your `.env` file:
+### Environment variables (optional)
 
 ```bash
-# Optional: Override guest refresh token expiry (max 30 days)
+# Override guest refresh token expiry (capped at 30 days)
 PUBLIC_COMMERCE_API_GUEST_REFRESH_TOKEN_EXPIRY_SECONDS=2592000
 
-# Optional: Override registered refresh token expiry (max 90 days)
+# Override registered refresh token expiry (capped at 90 days)
 PUBLIC_COMMERCE_API_REGISTERED_REFRESH_TOKEN_EXPIRY_SECONDS=7776000
-
-# Optional: Set cookie domain for cross-subdomain sharing
-PUBLIC_COOKIE_DOMAIN=.yourstore.com
 ```
 
-### Cookie Configuration
+### Cookie domain
 
-Cookie settings are managed via `getCookieConfig()` with precedence:
+To share cookies across subdomains — or to keep session continuity in a hybrid Storefront Next + SFRA deployment — set a cookie domain via the global `app.cookies.domain` or a per-site `commerce.sites[].cookies.domain` override. It applies to **every** cookie the storefront writes and is opt-in (host-only by default). See **[Cookie Domain Configuration](./README-COOKIE-DOMAIN.md)** for the full guide: the storefront config and its precedence, the matching Business Manager setting, and rollout guidance/limitations.
 
-1. **Environment variables** (highest priority)
-2. **Provided options** (function arguments)
-3. **Default values** (path, sameSite, secure)
+Cookie attribute defaults (`path: '/'`, `sameSite: 'lax'`, `secure`) are applied automatically; the resolved cookie domain takes precedence over them. `secure` is gated on `isRemote()` (the `BUNDLE_ID` signal): `true` on deployed (HTTPS) environments, `false` on local `pnpm dev` / `pnpm preview`, which serve plain HTTP over `localhost`. Without this, Safari/WebKit silently refuses to persist `Secure` cookies on loopback and login never sticks (Chrome/Firefox mask it with a localhost exception). `SameSite=None` cookies — used in Page Designer design mode — always stay `Secure`, as the spec requires.
 
-```typescript
-import { getCookieConfig } from '@/lib/cookie-utils';
+## Usage
 
-// Uses environment config + defaults
-const config = getCookieConfig({ httpOnly: false }, context);
-```
+### Accessing Auth on the Server
 
-## Usage Examples
-
-### Accessing Auth Data on Server
-
-Use the `getAuth()` helper in loaders and actions:
+Use `getAuth(context)` in loaders and actions:
 
 ```typescript
 import { getAuth } from '@/middlewares/auth.server';
@@ -169,46 +116,39 @@ import type { LoaderFunctionArgs } from 'react-router';
 export async function loader({ context }: LoaderFunctionArgs) {
     const auth = getAuth(context);
 
-    // Access auth properties
-    const accessToken = auth.access_token;
-    const customerId = auth.customer_id;
+    const accessToken = auth.accessToken; // server only
+    const customerId = auth.customerId;
     const userType = auth.userType; // 'guest' | 'registered'
     const usid = auth.usid;
 
-    // Check if user is authenticated
-    const isGuest = auth.userType === 'guest';
-    const isRegistered = auth.userType === 'registered';
-
-    return { customerId, isRegistered };
+    return { customerId, isRegistered: userType === 'registered' };
 }
 ```
 
-### Accessing Auth Data on Client
+### Accessing auth in client components
 
-Use the same `getAuth()` helper in client loaders:
+There is no client-side `getAuth` Client components read the non-sensitive slice via the `useAuth()` hook (tokens are never available on the client):
 
 ```typescript
-import { getAuth } from '@/middlewares/auth.client';
-import type { ClientLoaderFunctionArgs } from 'react-router';
+import { useAuth } from '@/providers/auth';
 
-export async function clientLoader({ context }: ClientLoaderFunctionArgs) {
-    const auth = getAuth(context);
-
-    // Same API as server-side
-    const accessToken = auth.access_token;
-    const isRegistered = auth.userType === 'registered';
-
-    return { isRegistered };
+function AccountBadge() {
+    const auth = useAuth(); // PublicSessionData | undefined
+    if (auth?.userType === 'registered') {
+        return <span>Welcome back</span>;
+    }
+    return <SignInLink />;
 }
 ```
 
-### Updating Auth (Login)
+For route-level auth checks, branch inside the server `loader`—not a client guard.
 
-Use `updateAuth()` to update auth state after login:
+### Updating auth (login)
+
+`updateAuth(context, updater)` accepts **either** a SLAS token response **or** a function updater:
 
 ```typescript
-import { updateAuth } from '@/middlewares/auth.server';
-import { loginRegisteredUser } from '@/middlewares/auth.server';
+import { updateAuth, loginRegisteredUser } from '@/middlewares/auth.server';
 import type { ActionFunctionArgs } from 'react-router';
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -217,84 +157,54 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const password = formData.get('password') as string;
 
     try {
-        // Call SLAS login endpoint
         const tokenResponse = await loginRegisteredUser(context, email, password);
-
-        // Update auth storage and cookies
-        updateAuth(context, tokenResponse);
-
+        updateAuth(context, tokenResponse); // token-response form
         return redirect('/account');
-    } catch (error) {
+    } catch {
         return { error: 'Login failed' };
     }
 }
 ```
 
-### Destroying Auth (Logout)
+The token-response form re-derives `userType`, `customerId`, `usid`, and expiry from the new JWT, preserves the tracking-consent cookie, and writes the appropriate cookies. The function form (`updateAuth(context, (data) => ({ ...data, codeVerifier }))`) is used to merge in fields like the PKCE code verifier without a full token swap.
 
-Use `destroyAuth()` to clear all auth cookies:
+### Destroying auth (logout)
 
 ```typescript
 import { destroyAuth } from '@/middlewares/auth.server';
-import type { ActionFunctionArgs } from 'react-router';
 
 export async function action({ context }: ActionFunctionArgs) {
-    // Clear all auth cookies and storage
-    destroyAuth(context);
-
+    destroyAuth(context); // clears storage; middleware deletes all auth cookies on the response
     return redirect('/');
 }
 ```
 
-### Social Login (OAuth2 PKCE Flow)
-
-The auth system supports OAuth2 PKCE flow for social login providers (Google, Facebook, etc.):
+### Social login (OAuth2 PKCE)
 
 ```typescript
-import { generateCodeVerifier, generateCodeChallenge } from '@/utils/pkce';
-import { updateAuth } from '@/middlewares/auth.server';
+import { getAuth, updateAuth } from '@/middlewares/auth.server';
 
-// Step 1: Generate PKCE challenge and redirect to IDP
+// Step 1 — generate PKCE challenge, store verifier, redirect to IDP
 export async function loader({ context }: LoaderFunctionArgs) {
-    const codeVerifier = generateCodeVerifier();
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-    // Store code verifier in httpOnly cookie (server-only, 5 min expiry)
-    const auth = getAuth(context);
-    updateAuth(context, (data) => ({
-        ...data,
-        codeVerifier, // Automatically stored in cc-cv cookie
-    }));
-
-    // Redirect to IDP with code challenge
-    const authUrl = `${idpUrl}?code_challenge=${codeChallenge}`;
-    return redirect(authUrl);
+    const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl(/* ... */);
+    updateAuth(context, (current) => ({ ...current, codeVerifier })); // stored in httpOnly cc-cv
+    return redirect(url);
 }
 
-// Step 2: Handle OAuth callback
-export async function callbackAction({ request, context }: ActionFunctionArgs) {
-    const url = new URL(request.url);
-    const code = url.searchParams.get('code');
-
-    // Retrieve code verifier from cookie
-    const auth = getAuth(context);
-    const codeVerifier = auth.codeVerifier;
-
-    // Exchange code for tokens (using codeVerifier for PKCE verification)
-    const tokenResponse = await exchangeCodeForTokens(code, codeVerifier);
-
-    // Update auth with new tokens (code verifier cookie is auto-deleted)
+// Step 2 — exchange code for tokens (verifier read from cc-cv); cc-cv auto-deleted on the next write
+export async function action({ request, context }: ActionFunctionArgs) {
+    const session = getAuth(context);
+    const tokenResponse = await exchangeCodeForTokens(code, session.codeVerifier); // illustrative
     updateAuth(context, tokenResponse);
-
     return redirect('/account');
 }
 ```
 
-> **CSP note:** When you add a social-login provider beyond the defaults, extend `connect-src` (and any redirect/popup origins) in your `app.security.headers.csp.directives` config. See [README-SECURITY-HEADERS.md](./README-SECURITY-HEADERS.md).
+> **CSP note:** When adding a social-login provider beyond the defaults, extend `connect-src` (and any redirect/popup origins) in your `app.security.headers.csp.directives` config. See [README-SECURITY-HEADERS.md](./README-SECURITY-HEADERS.md).
 
-### Custom Auth Operations
+### Custom auth operations
 
-For custom auth workflows, use the provided server-side helpers:
+Server-side SLAS helpers exported from `auth.server.ts`:
 
 ```typescript
 import {
@@ -305,187 +215,147 @@ import {
     getPasswordLessAccessToken,
     getPasswordResetToken,
     resetPasswordWithToken,
+    requestOtp,
+    verifyOtp,
+    flashAuth,
+    clearInvalidSessionAndRestoreGuest,
 } from '@/middlewares/auth.server';
 
-// Guest login
 const guestTokens = await loginGuestUser(context, { usid: 'optional-usid' });
-
-// Refresh access token
 const newTokens = await refreshAccessToken(context, refreshToken);
 
-// Passwordless login (magic link)
-await authorizePasswordless(context, {
-    userid: 'user@example.com',
-    redirectPath: '/account',
-});
-
-// Get token from magic link
+// Passwordless (magic link)
+await authorizePasswordless(context, { userid: 'user@example.com', redirectPath: '/account' });
 const tokens = await getPasswordLessAccessToken(context, magicLinkToken);
 
-// Password reset flow
+// OTP email verification (validates a code without creating a new session)
+await requestOtp(context, { email: 'user@example.com' });
+await verifyOtp(context, { pwdActionToken, email: 'user@example.com' });
+
+// Password reset
 await getPasswordResetToken(context, { email: 'user@example.com' });
-await resetPasswordWithToken(context, {
-    email: 'user@example.com',
-    token: 'reset-token',
-    newPassword: 'newPassword123',
-});
+await resetPasswordWithToken(context, { email, token, newPassword });
+
+// Recovery helpers
+flashAuth(context, 'Your session expired'); // clear session + set an error message
+await clearInvalidSessionAndRestoreGuest(context); // e.g. deleted customer / corrupted session
 ```
+
+See [README-EMAIL-VERIFICATION.md](./README-EMAIL-VERIFICATION.md) for the OTP and passwordless flows in depth.
 
 ## Authentication Flows
 
-### New Guest User
+### New guest user
 
-1. User visits site without cookies
-2. Server middleware detects no auth cookies
-3. Server calls SLAS guest login endpoint
-4. Server writes `cc-nx-g`, `cc-at`, `usid` cookies via `Set-Cookie`
-5. Browser stores cookies and renders page
-6. On client hydration, `AuthContext` default value reads cookies at module load time
-7. Client middleware reads cookies into in-memory cache and initializes router context
+1. User visits with no auth cookies.
+2. Server middleware finds no usable token → calls SLAS guest login.
+3. Server writes `cc-nx-g`, `cc-at`, `usid` (and any `dwsid` from the response).
+4. Root loader serializes `clientAuth`; `AuthProvider` makes it available via `useAuth()`.
 
-### Returning User (Token Valid)
+### Returning user (token valid)
 
-1. User visits site with valid cookies
-2. Server middleware reads cookies from `Cookie` header
-3. Server validates access token expiry (fast JWT check)
-4. If valid, server proceeds with existing tokens
-5. If access token expired but refresh token valid, server refreshes
-6. Updated tokens written back via `Set-Cookie` headers
+1. Server reads cookies from the `Cookie` header.
+2. Access-token `exp` is in the future → tokens are used as-is.
+3. If the access token is expired but a refresh token exists → server refreshes and rewrites `cc-at` (+ `usid` if changed).
 
-### Guest → Registered User (Login)
+### Guest → registered (login)
 
-1. Guest user submits login form
-2. Server action calls `loginRegisteredUser()`
-3. SLAS returns registered user tokens with `customer_id`
-4. Server calls `updateAuth()` with token response
-5. Server middleware writes `cc-nx`, `cc-at`, `usid` cookies
-6. Server middleware **deletes** old `cc-nx-g` cookie (mutual exclusivity)
-7. On next request, server detects `cc-nx` cookie → `userType = 'registered'`
+1. Action calls `loginRegisteredUser()`; SLAS returns a registered token whose JWT carries `rcid`.
+2. `updateAuth(context, tokenResponse)` derives `userType = 'registered'` from the JWT.
+3. Middleware writes `cc-nx` and **deletes** `cc-nx-g` (mutual exclusivity).
+4. Guest resources are merged into the registered account (see below).
 
-### User Logout
+### Logout
 
-1. User clicks logout button
-2. Server action calls `destroyAuth(context)`
-3. Server middleware deletes all auth cookies via `Set-Cookie` with `expires=Thu, 01 Jan 1970`
-4. Browser receives response and deletes cookies
-5. On next request, server detects no cookies → new guest login
+1. Action calls `destroyAuth(context)`.
+2. Middleware deletes all auth cookies via expired `Set-Cookie` headers (including the legacy `customer_id`).
+3. Next request finds no cookies → fresh guest login.
 
-### External Token Updates (Hybrid Storefronts)
+### Guest → registered resource merge
 
-1. External system (e.g., ECOM cartridge) updates auth cookies
-2. User navigates to new page in React app
-3. **Full page load**: Server middleware reads updated cookies from `Cookie` header and validates tokens
-4. **Client-side navigation**: Client middleware reads updated cookies from `document.cookie` and syncs in-memory cache
-5. AuthProvider in `root.tsx` updates React Context with latest auth state
-6. App reflects new auth state automatically
+On any guest→registered transition (social, passwordless, standard login), guest-owned resources must be **captured before the token swap**, because `customerId` changes from the guest `gcid` to the registered `rcid` and SCAPI rejects the guest customer ID under a registered token. The social-login path demonstrates the pattern:
 
-## Token Validation Flow
-
-The server and client use the same validation logic:
-
-```
-1. Check if access token exists and not expired (JWT exp claim)
-   ✅ If valid → use it
-   ❌ If expired → proceed to step 2
-
-2. Check if refresh token exists
-   ✅ If exists → call refresh endpoint for new access token
-   ❌ If missing → proceed to step 3
-
-3. Fallback to guest login
-   → Get new guest tokens
-   → Write cookies
+```typescript
+// lib/api/auth/social-login.server.ts (shape)
+const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context); // BEFORE swap
+const result = await loginIDPUser(context, /* ... */);                     // token swap (updateAuth)
+await mergeBasket(context);                                                // AFTER swap
+await mergeWishlist(context, guestWishlistSnapshot);                       // AFTER swap
 ```
 
-## Hydration Strategy
+Tracking consent is preserved across the swap: `updateAuthStorageData` restores the `dw_dnt` cookie value (the source of truth) after clearing storage, and login/refresh calls forward it to SLAS as the `dnt` parameter.
 
-To prevent React hydration mismatches while keeping auth tokens out of serialized loader data, auth is made available **immediately** during hydration via a combination of:
+### Hybrid storefronts (ECOM session bridge)
 
-- A **bootstrap snapshot** of auth data derived from cookies on the client (`bootstrapAuth`)
-- A **root-level `AuthProvider`** that always wraps the app and chooses between loader-based session data and `bootstrapAuth`
+There is no client-side cookie sync. The bridge is the `dwsid` cookie:
+
+1. The SDK extracts `dwsid` from the SLAS response `Set-Cookie` header and the middleware persists it.
+2. `dwsid` (and `dw_dnt`) are **not namespaced**, so the ECOM cartridge can read/write them directly.
+3. The browser sends these cookies on every request; on the next full request the React storefront's server middleware reads them from the `Cookie` header. There is no real-time iframe/SPA sync in middleware scope.
+
+See [README-HYBRID-PROXY.md](./README-HYBRID-PROXY.md) for the hybrid local-development setup.
+
+## Hydration
+
+Auth is available immediately during SSR and hydration without serializing any tokens:
+
+- **Server:** the root loader builds full `SessionData` via `getAuth(context)`, then returns only `clientAuth = getPublicSessionData(session)` — a `Pick` of `userType`, `customerId`, `usid`, `encUserId`, `trackingConsent`.
+- **Client:** the root renders `<AuthProvider value={clientAuth}>` directly. Components reading `useAuth()` see exactly the same data that produced the SSR markup, so there is no hydration gap and no bootstrap snapshot.
+- **Subsequent navigations:** React Router re-invokes the root loader, which re-derives `clientAuth`. `AuthProvider` stays mounted; the root memoizes the provider tree on `clientAuth`, so only its `value` changes and `useAuth()` consumers re-render.
 
 ```typescript
 // providers/auth.tsx
-export const bootstrapAuth: SessionData | undefined =
-    typeof window === 'undefined'
-        ? undefined
-        : (getAuthDataFromCookies() as SessionData | undefined);
+export const AuthContext = createContext<PublicSessionData | undefined>(undefined);
+export const useAuth = (): PublicSessionData | undefined => useContext(AuthContext);
 
-export const AuthContext = createContext<SessionData | undefined>(undefined);
+// root.tsx (shape)
+const session = getAuth(context);                  // full SessionData (server only)
+const clientAuth = getPublicSessionData(session);  // non-sensitive slice → loader data
+// ...
+<AuthProvider value={clientAuth}>{/* app */}</AuthProvider>
 ```
 
-```typescript
-// root.tsx (simplified)
-import AuthProvider, { bootstrapAuth } from '@/providers/auth';
-
-export default function App({ loaderData: { auth, /* ... */ } }: { loaderData: LoaderData }) {
-    const loaderSession = auth?.();
-    const sessionData = loaderSession ?? bootstrapAuth;
-
-    const providers = useMemo(
-        () =>
-            [
-                [AuthProvider, { value: sessionData }],
-                // other providers...
-            ] as const,
-        [sessionData]
-    );
-
-    return <ComposeProviders providers={providers}>{/* app */}</ComposeProviders>;
-}
-```
-
-### How It Works
-
-- On the **server**:
-  - Middleware builds a `SessionData` object.
-  - The root loader returns `auth: () => session` to avoid serializing `SessionData` into the HTML/data payload.
-  - `bootstrapAuth` is always `undefined` on the server.
-- On the **client during initial hydration**:
-  - `bootstrapAuth` is computed once from cookies at module load time.
-  - Before `clientLoader` runs, `auth?.()` returns `undefined`, so `sessionData = bootstrapAuth`.
-  - The root always renders `<AuthProvider value={sessionData}>`, so components using `useAuth()` see cookie-derived auth that matches the SSR markup.
-- **After `clientLoader` and on subsequent navigations**:
-  - The client loader recomputes auth from the middleware/client context.
-  - `auth?.()` now returns live `SessionData`, so `sessionData = loaderSession`.
-  - `AuthProvider` stays mounted; only its `value` changes, and `useAuth()` consumers re-render with the updated auth.
-
-This keeps:
-
-- A **single source of truth** for live auth state in the middleware/client loader pipeline
-- **Cookie-based bootstrap** only for the hydration gap
-- A **stable provider tree** (no conditional `AuthProvider` mounting/unmounting)
-- **No token serialization** into loader JSON or HTML
+This keeps a single server source of truth, exposes no tokens to the client, and maintains a stable provider tree.
 
 ## Best Practices
 
-1. **Server vs Client**: Use `getAuth()` in loaders/actions; same API works in both environments
-2. **Cookie Management**: Never write cookies directly; use `updateAuth()` or `destroyAuth()`
-3. **User Type Checks**: Always use `auth.userType` to determine guest vs registered
-4. **Token Refresh**: Middleware handles automatic refresh; no manual intervention needed
-5. **Security**: Never log or expose `access_token` or `refresh_token` values
-6. **PKCE Flow**: Always use `httpOnly: true` for `code_verifier` in OAuth2 flows
-7. **Error Handling**: Check for `auth.error` property to detect auth failures
+1. **Server vs. client:** `getAuth(context)` in loaders/actions; `useAuth()` in components. Tokens are server-only.
+2. **No direct cookie writes:** always go through `updateAuth()` / `destroyAuth()` — the middleware owns cookie serialization.
+3. **User-type checks:** use `auth.userType`, which is JWT-derived.
+4. **Token refresh:** handled automatically by the middleware; no manual refresh in routes.
+5. **Capture-before-swap:** on guest→registered login, snapshot guest resources before the token swap, merge after.
+6. **Security:** never log or expose `accessToken` / `refreshToken`.
+7. **No `clientLoader`/`clientAction`:** route modules use server `loader`/`action` only.
 
 ## Type Safety
 
-The project includes TypeScript types for all auth operations:
-
 ```typescript
-import type { AuthData, AuthStorageData } from '@/middlewares/auth.utils';
+import type { SessionData, PublicSessionData } from '@/lib/api/types';
 
-// AuthData includes:
-interface AuthData {
+// Full server-side session (tokens included — never serialized to the client)
+type SessionData = {
     accessToken?: string;
     accessTokenExpiry?: number;
-    usid?: string;
     refreshToken?: string;
     refreshTokenExpiry?: number;
-    idpAccessToken?: string;
     customerId?: string;
     userType?: 'guest' | 'registered';
-    codeVerifier?: string;
-}
+    usid?: string;
+    encUserId?: string;
+    codeVerifier?: string;          // OAuth2 PKCE (server-only, ephemeral)
+    idpAccessToken?: string;
+    idpAccessTokenExpiry?: number;
+    idToken?: string;               // OIDC id_token (server-only)
+    idpRefreshToken?: string;       // social login (server-only)
+    dwsid?: string;                 // hybrid storefront session bridge
+    trackingConsent?: TrackingConsent;
+};
+
+// The only data exposed to the client (Pick — stays in sync with SessionData)
+type PublicSessionData = Pick<
+    SessionData,
+    'customerId' | 'userType' | 'usid' | 'encUserId' | 'trackingConsent'
+>;
 ```
 
 ## File Structure
@@ -493,13 +363,12 @@ interface AuthData {
 ```
 src/
 ├── middlewares/
-│   ├── auth.server.ts       # Server auth middleware & SLAS operations
-│   ├── auth.client.ts       # Client auth middleware, token sync & router context init
-│   └── auth.utils.ts        # Shared auth utilities & cookie names
+│   ├── auth.server.ts        # Server auth middleware, SLAS operations, cookie I/O, getAuth/updateAuth/destroyAuth
+│   └── auth.utils.ts         # Cookie-name constants, JWT decoding/claims, userType derivation, getPublicSessionData
 ├── providers/
-│   └── auth.tsx             # AuthContext + AuthProvider with bootstrapAuth used at the root for hydration
+│   └── auth.tsx              # AuthContext + AuthProvider + useAuth() (PublicSessionData only)
 └── lib/
-    ├── cookies.server.ts    # Server cookie utilities (Node.js)
-    ├── cookies.client.ts    # Client cookie utilities (browser)
-    └── cookie-utils.ts      # Shared cookie config & namespacing
+    ├── cookie-utils.server.ts  # getCookieConfig, createCookie, namespacing, parseAllCookies
+    ├── auth/                   # passwordless-login.server.ts, error-handler.ts
+    └── api/auth/               # register, standard-login, social-login, reset-password (.server.ts)
 ```

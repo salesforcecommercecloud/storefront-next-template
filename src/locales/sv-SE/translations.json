@@ -1544,6 +1544,7 @@
         "failedToAddProductToCartError": "Det gick inte att lägga till produkten i kundvagnen:",
         "failedToAddProductToWishlistError": "Det gick inte att lägga till produkten i önskelistan:",
         "price": {
+            "unavailable": "Pris ej tillgängligt",
             "currentPriceFrom": "Nuvarande pris från {{price}}",
             "currentPrice": "Nuvarande pris: {{price}}",
             "from": "Från {{price}}",

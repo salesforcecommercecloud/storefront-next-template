@@ -90,4 +90,49 @@ describe('ProductPrice', () => {
         expect(screen.getByText('$29.99 – $39.99')).toBeInTheDocument();
         expect(screen.queryByText('$59.98 – $79.98')).not.toBeInTheDocument();
     });
+
+    test('renders "Price unavailable" when the product has no price for the currency', () => {
+        const noPriceProduct = {
+            id: 'test-product',
+            name: 'Test Product',
+            hitType: 'product' as const,
+            type: { item: true },
+        };
+
+        render(<ProductPrice product={noPriceProduct} currency="DKK" labelForA11y="Test Product" />);
+
+        expect(screen.getAllByText('Price unavailable').length).toBeGreaterThan(0);
+        // Must not present the missing price as free / 0.
+        expect(screen.queryByText(/0[.,]00/)).not.toBeInTheDocument();
+    });
+
+    test('renders a no-price product normally (not "Price unavailable") when allowMissingPrice is set', () => {
+        const noPriceProduct = {
+            id: 'bonus-product',
+            name: 'Bonus Product',
+            hitType: 'product' as const,
+            type: { item: true },
+        };
+
+        render(<ProductPrice product={noPriceProduct} currency="USD" labelForA11y="Bonus Product" allowMissingPrice />);
+
+        // Bonus/promo products opt out of the "unavailable" treatment and render the coalesced 0.
+        expect(screen.queryByText('Price unavailable')).not.toBeInTheDocument();
+        expect(screen.getByText('$0.00')).toBeInTheDocument();
+    });
+
+    test('renders an explicit 0 price as a real price, not "Price unavailable"', () => {
+        const freeProduct = {
+            id: 'free-product',
+            name: 'Free Product',
+            price: 0,
+            hitType: 'product' as const,
+            type: { item: true },
+        };
+
+        render(<ProductPrice product={freeProduct} currency="USD" labelForA11y="Free Product" />);
+
+        expect(screen.getByText('$0.00')).toBeInTheDocument();
+        expect(screen.queryByText('Price unavailable')).not.toBeInTheDocument();
+    });
 });

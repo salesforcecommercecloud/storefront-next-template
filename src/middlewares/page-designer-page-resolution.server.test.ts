@@ -27,6 +27,8 @@ import {
     DataStoreServiceError,
 } from '@salesforce/storefront-next-runtime/data-store';
 import { mockSiteObject } from '@/test-utils/config';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import type { Cookie } from 'react-router';
 
 const mockGetEntry = vi.fn();
 const mockResolveQualifiers = vi.fn();
@@ -159,6 +161,18 @@ async function invokeMiddlewareAndGetHandler(context: ReturnType<typeof createTe
 async function setupHandler() {
     const context = createTestContext({
         appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
+    });
+    // Pin the site context to the mock site so manifest storage keys are
+    // deterministic regardless of the developer's local config.app.defaultSiteId.
+    const localeObj =
+        mockSiteObject.supportedLocales.find((l) => l.id === 'en-GB') ?? mockSiteObject.supportedLocales[0];
+    context.set(siteContext, {
+        site: { ...mockSiteObject, alias: 'global', name: mockSiteObject.id },
+        locale: { ...localeObj },
+        currency: localeObj.preferredCurrency,
+        siteCookie: { name: 'site_id' } as unknown as Cookie,
+        localeCookie: { name: 'locale_id' } as unknown as Cookie,
+        currencyCookie: { name: 'currency' } as unknown as Cookie,
     });
     // The lazy middleware stores a loader function rather than a value;
     // mirror that shape here so `getSiteUrlConfig` resolves correctly.
@@ -1117,6 +1131,77 @@ describe('pageDesignerResolutionMiddleware', () => {
             );
 
             expect(mockLogger.debug).not.toHaveBeenCalled();
+        });
+
+        describe('resolvedContext sanitization', () => {
+            /**
+             * Drives a full resolution where `resolvePage` invokes the supplied
+             * `contextResolver` with a populated context, so `resolveQualifiers`
+             * runs and `metrics.resolvedContext` is set from `resolvedData`.
+             * Returns the `resolvedContext` field as emitted in the debug log.
+             */
+            async function captureLoggedResolvedContext(resolvedData: Record<string, unknown>) {
+                mockResolveQualifiers.mockResolvedValue({ data: resolvedData });
+                mockedResolvePage.mockImplementation(async (params: any) => {
+                    // Non-empty context so the resolver doesn't short-circuit.
+                    await params.contextResolver({ dataBindings: [{ type: 't', id: 'i' }] });
+                    return null;
+                });
+
+                const handler = await setupHandler();
+                await handler(middlewareParams(new Request(getPageUrl('homepage'))));
+
+                const logCall = mockLogger.debug.mock.calls.find(
+                    (c) => c[0] === '[PageResolutionMiddleware] page resolution'
+                );
+                return logCall?.[1].resolvedContext;
+            }
+
+            it('preserves data-binding structure and short string values verbatim', async () => {
+                const resolvedContext = await captureLoggedResolvedContext({
+                    customerGroups: { VIP: true },
+                    campaignQualifiers: { 'my-campaign': { 'my-promo': false } },
+                    dataBindings: {
+                        content_asset: {
+                            'homepage-banner': { title: 'Winter Sale', showCountdown: true, priority: 3 },
+                        },
+                    },
+                });
+
+                expect(resolvedContext).toEqual({
+                    customerGroups: { VIP: true },
+                    campaignQualifiers: { 'my-campaign': { 'my-promo': false } },
+                    dataBindings: {
+                        content_asset: {
+                            'homepage-banner': { title: 'Winter Sale', showCountdown: true, priority: 3 },
+                        },
+                    },
+                });
+            });
+
+            it('truncates long string values while keeping non-string values intact', async () => {
+                const longBody = 'x'.repeat(250);
+                const resolvedContext = await captureLoggedResolvedContext({
+                    dataBindings: {
+                        content_asset: {
+                            'homepage-banner': { body: longBody, enabled: true },
+                        },
+                    },
+                });
+
+                const sanitizedBinding = resolvedContext.dataBindings.content_asset['homepage-banner'];
+                expect(sanitizedBinding.body).toBe(`${'x'.repeat(100)}… (+150 chars)`);
+                expect(sanitizedBinding.enabled).toBe(true);
+            });
+
+            it('omits the dataBindings key when the resolved context has none', async () => {
+                const resolvedContext = await captureLoggedResolvedContext({
+                    customerGroups: { VIP: true },
+                });
+
+                expect(resolvedContext).toEqual({ customerGroups: { VIP: true } });
+                expect(resolvedContext).not.toHaveProperty('dataBindings');
+            });
         });
     });
 });

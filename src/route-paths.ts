@@ -137,6 +137,8 @@ export const resourceRoutes = {
     promoCodeAdd: '/action/promo-code-add',
     promoCodeRemove: '/action/promo-code-remove',
     placeOrder: '/action/place-order',
+    placeOrderPrepare: '/action/place-order-prepare',
+    placeOrderFinalize: '/action/place-order-finalize',
     wishlistAdd: '/action/wishlist-add',
     wishlistRemove: '/action/wishlist-remove',
     paymentMethodAdd: '/action/payment-method-add',

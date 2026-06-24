@@ -243,3 +243,7 @@ Prior SDK versions did not have a barrel — template code imported SCAPI types 
 - To start using overrides for a given file, change its import specifier from `@salesforce/storefront-next-runtime/scapi` to `@/scapi`. No other change is needed — the imported names stay the same.
 
 The two files exempted from the lint rule are `src/scapi/**` (the barrel itself) and `src/lib/api-clients.server.ts` (which legitimately wires the runtime SDK to the template).
+
+## See Also
+
+- [SCAPI Client](../../storefront-next-runtime/src/scapi-client/README.md) - SCAPI client implementation details and client architecture

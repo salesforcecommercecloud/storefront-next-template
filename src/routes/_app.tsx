@@ -24,10 +24,16 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
 import { WishlistMergeToast } from '@/components/wishlist/wishlist-merge-toast';
+import { EmbeddedComponentRegion } from '@/components/region/embedded-component-region';
+import {
+    fetchComponentWithComponentData,
+    type ComponentWithComponentData,
+} from '@/lib/page-designer/component-loader.server';
 
 type LoaderData = {
     root: Promise<ShopperProducts.schemas['Category']>;
     subs: Promise<ShopperProducts.schemas['Category'][]>;
+    headerComponent: Promise<ComponentWithComponentData | null>;
 };
 
 /**
@@ -46,7 +52,7 @@ export function shouldRevalidate() {
     return false;
 }
 
-export function loader({ context }: Route.LoaderArgs): LoaderData {
+export function loader({ context, request }: Route.LoaderArgs): LoaderData {
     const logger = getLogger(context);
     const config = getConfig(context);
     const { rootCategoryId, maxDepth } = config.pages.navigation;
@@ -83,9 +89,16 @@ export function loader({ context }: Route.LoaderArgs): LoaderData {
               )
             : Promise.resolve([]);
 
+    // Fetch header embedded component data (non-blocking, streamed to client, should be blocking once data is available from KVS to avoid layout shift)
+    const headerComponentPromise = fetchComponentWithComponentData(
+        { context, request, params: {} } as Route.LoaderArgs,
+        { componentId: 'header' }
+    );
+
     return {
         root: rootCategoryPromise,
         subs: subCategoriesPromise,
+        headerComponent: headerComponentPromise,
     };
 }
 
@@ -100,12 +113,14 @@ export function loader({ context }: Route.LoaderArgs): LoaderData {
  * Routes that need this layout should be prefixed with `_app.` in their filename.
  * For routes without default header/footer (e.g., login), use the `_empty.` prefix instead.
  */
-export default function DefaultLayout({ loaderData: { root, subs } }: { loaderData: LoaderData }) {
+export default function DefaultLayout({ loaderData: { root, subs, headerComponent } }: { loaderData: LoaderData }) {
     const refRoot = useRef<Promise<ShopperProducts.schemas['Category']> | undefined>(undefined);
     const refSubs = useRef<Promise<ShopperProducts.schemas['Category'][]> | undefined>(undefined);
-    if (!refRoot.current && !refSubs.current) {
+    const refHeaderComponent = useRef<Promise<ComponentWithComponentData | null> | undefined>(undefined);
+    if (!refRoot.current && !refSubs.current && !refHeaderComponent.current) {
         refRoot.current = root;
         refSubs.current = subs;
+        refHeaderComponent.current = headerComponent;
     }
 
     // <WishlistMergeToast> stays at the app shell — it reads URL params and a one-time
@@ -115,7 +130,10 @@ export default function DefaultLayout({ loaderData: { root, subs } }: { loaderDa
     return (
         <>
             <WishlistMergeToast />
-            <Header>
+            <Header
+                announcementSlot={
+                    <EmbeddedComponentRegion component={refHeaderComponent.current} regionId="announcement" />
+                }>
                 <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
             <main className="grow pt-8">

@@ -15,90 +15,58 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import ShopperAgentUI from '../shopper-agent-ui';
-import { mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
-const validConfig: ShopperAgentConfig = {
-    enabled: 'true',
-    embeddedServiceName: 'EmbeddedService',
-    embeddedServiceEndpoint: 'https://example.salesforce.com/embedded',
-    scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
-    scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
-    salesforceOrgId: '00D000000000000EAA',
-    siteId: mockSiteObject.id,
-};
-
+/**
+ * Docs-only: ShopperAgentUI validates config, computes the domain URL, and mounts
+ * ShopperAgentWindow inside a wrapper div. The visible chat is the Salesforce Embedded
+ * Messaging iframe, which does not load in Storybook, so the canvas shows only an empty
+ * wrapper. There are no rendering stories because every prop combination paints the same
+ * blank wrapper; the argTypes document the props.
+ */
 const meta: Meta<typeof ShopperAgentUI> = {
     title: 'Components/Shopper Agent/Shopper Agent UI',
     component: ShopperAgentUI,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-Shopper Agent UI chunk – loads Embedded Messaging script and mounts the chat window.
-When configuration is invalid, renders null. In Storybook the embedded script is not loaded, so only the wrapper div is visible.
+Shopper Agent UI chunk – loads the Embedded Messaging script and mounts the chat window.
+When configuration is invalid, it renders null. In Storybook the embedded script is not loaded, so
+only an empty wrapper is present — this page documents the props only.
                 `,
             },
         },
     },
     argTypes: {
-        commerceAgentConfiguration: { control: false },
-        locale: { control: 'text' },
-        currency: { control: 'text' },
-        userId: { control: 'text' },
-        usid: { control: 'text' },
+        commerceAgentConfiguration: {
+            description: 'Commerce agent configuration. If invalid, the component returns null.',
+            control: false,
+        },
+        locale: { description: 'BCP-47 locale forwarded to Embedded Messaging.', control: 'text' },
+        currency: { description: 'ISO currency forwarded as a prechat field.', control: 'text' },
+        userId: { description: 'Shopper id forwarded as a prechat field.', control: 'text' },
+        usid: { description: 'Anonymous shopper id (usid) forwarded as a prechat field.', control: 'text' },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof ShopperAgentUI>;
 
-export const WithValidConfig: Story = {
-    args: {
-        commerceAgentConfiguration: validConfig,
-        locale: mockAltSiteObject.defaultLocale,
-        currency: mockAltSiteObject.defaultCurrency,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shopper Agent UI with valid config. Renders wrapper; embedded chat loads in real app only.',
-            },
-        },
-    },
-};
-
-export const InvalidConfig: Story = {
-    args: {
-        commerceAgentConfiguration: undefined,
-        locale: mockAltSiteObject.defaultLocale,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'When configuration is missing or invalid, the component renders nothing (null).',
-            },
-        },
-    },
-};
-
-export const WithUserId: Story = {
-    args: {
-        commerceAgentConfiguration: validConfig,
-        locale: mockAltSiteObject.defaultLocale,
-        currency: mockAltSiteObject.defaultCurrency,
-        userId: 'user-123',
-    },
-};
-
-export const WithUsid: Story = {
-    args: {
-        commerceAgentConfiguration: validConfig,
-        locale: mockAltSiteObject.defaultLocale,
-        currency: mockAltSiteObject.defaultCurrency,
-        usid: 'usid-abc-123',
-    },
+/**
+ * Anchors the autodocs page only — Storybook requires at least one story export to generate a
+ * Docs page. Hidden from the sidebar (`!dev`), so no blank story row appears. Renders a static
+ * placeholder instead of mounting the component (which would either load the Storybook-absent
+ * Embedded Messaging script or log a config-validation error). The props table comes from
+ * `component` + `argTypes`.
+ */
+export const Docs: Story = {
+    tags: ['!dev'],
+    render: () => (
+        <div className="rounded-none border border-border bg-muted p-4 text-sm text-muted-foreground">
+            This component renders the Salesforce chat widget, which isn&rsquo;t visible in Storybook.
+        </div>
+    ),
 };

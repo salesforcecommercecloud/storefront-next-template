@@ -20,8 +20,8 @@ minimumReleaseAge: 2880
 # These Salesforce-published packages are exempt from the quarantine window.
 # (https://pnpm.io/settings#minimumreleaseageexclude)
 minimumReleaseAgeExclude:
-  - '@salesforce/storefront-next-dev@1.0.1'
-  - '@salesforce/storefront-next-runtime@1.0.1'
+  - '@salesforce/storefront-next-dev@1.1.0-alpha.0'
+  - '@salesforce/storefront-next-runtime@1.1.0-alpha.0'
   - '@salesforce/mrt-utilities@0.2.1'
 
 # Prevent lockfile version downgrades.
@@ -36,4 +36,3 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - 'chokidar@4.0.3'          # Lost SLSA provenance in 4.0.2+; dep of @react-router/dev
   - 'semver@6.3.1 || 5.7.2'   # Lost provenance; dep of eslint-plugin-import, lighthouse
-  - 'tinyexec@1.2.2'          # Lost trusted publisher in 1.2.0+; dep of vitest

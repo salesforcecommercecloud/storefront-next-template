@@ -28,7 +28,7 @@ Storefront Next ships default security response headers from the SDK. Every stor
 | `form-action` | `'self'` | Restricts form POST targets. CSP3 does NOT fall back to `default-src` for this directive — without it, forms can POST anywhere. |
 | `base-uri` | `'self'` | Prevents `<base href>` injection. |
 | `object-src` | `'none'` | Blocks Flash and other plugin content. |
-| `upgrade-insecure-requests` | enabled | Browser auto-upgrades HTTP subresources to HTTPS. |
+| `upgrade-insecure-requests` | enabled (only on Managed Runtime; suppressed locally) | Browser auto-upgrades HTTP subresources to HTTPS. Suppressed on local `pnpm dev` because Safari upgrades `http://localhost` subresources to `https://` (same port, no TLS listener) and breaks every CSS/JS request. |
 
 ## Where the config lives
 
@@ -66,6 +66,20 @@ export default defineConfig<Config>({
     },
 });
 ```
+
+## CSP Contributors
+
+Opt-in features (e.g., shopper agent) contribute their exact configured origins to the CSP at boot instead of requiring manual directive edits or shipping broad wildcards. The SDK validates contributors at boot (https-only, no wildcards/credentials/whitespace) and folds active ones into the served CSP.
+
+| Feature | Contributor ID | Directives | Activation |
+|---|---|---|---|
+| Shopper Agent (Salesforce Embedded Messaging) | `shopper-agent` | `script-src`, `frame-src`, `connect-src`, `style-src`, `font-src`, `img-src` | `commerceAgent.enabled` is `true` or `'true'` |
+
+Origins are derived from existing feature config (`commerceAgent.scriptSourceUrl`, `scrt2Url`, `embeddedServiceEndpoint`) — no new config to set.
+
+To author a new contributor for a feature, use the `add-csp-contributor` skill.
+
+**Note:** The Page Designer `frame-ancestors` relaxation is currently inline in the SDK middleware (a documented legacy exception) and will migrate to a contributor in a follow-up (W-23050622).
 
 ## Disabling a header
 

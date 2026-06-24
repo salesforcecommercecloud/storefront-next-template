@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { type LoaderFunctionArgs, type ClientLoaderFunctionArgs, MemoryRouter } from 'react-router';
 import { createLoaderArgs } from '@/lib/test-utils';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import type React from 'react';
 import { resourceRoutes } from '@/route-paths';
 
@@ -44,8 +44,20 @@ vi.mock('@/components/checkout/checkout-form-page', () => ({
     default: () => <div data-testid="checkout-form-page">Checkout Form</div>,
 }));
 
+// Capture the props the route passes to CheckoutProvider so we can assert on `hasNoValidShippingMethods`
+// without mounting the full provider. Each render appends an entry; tests inspect the last call.
+const checkoutProviderProps: Array<Record<string, unknown>> = [];
 vi.mock('@/components/checkout/utils/checkout-context', () => ({
-    default: ({ children }: { children: React.ReactNode }) => <div data-testid="checkout-provider">{children}</div>,
+    default: ({ children, ...rest }: { children: React.ReactNode } & Record<string, unknown>) => {
+        checkoutProviderProps.push(rest);
+        return (
+            <div
+                data-testid="checkout-provider"
+                data-has-no-valid-shipping-methods={String(!!rest.hasNoValidShippingMethods)}>
+                {children}
+            </div>
+        );
+    },
 }));
 
 vi.mock('@/providers/basket', () => ({
@@ -272,6 +284,7 @@ describe('Checkout Route SSR', () => {
 describe('Checkout Route Components', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        checkoutProviderProps.length = 0;
     });
 
     describe('Route Functions', () => {
@@ -507,6 +520,89 @@ describe('Checkout Route Components', () => {
         });
     });
 
+    // When the basket's loader-provided shipping-methods map yields no valid options for any
+    // shipment, the route must mark `hasNoValidShippingMethods` so the provider keeps the shopper
+    // on Shipping Address. The loader is authoritative — on refresh it re-fetches methods for the
+    // current basket address; in-session advancement is gated by `noShippingMethodsRef`.
+    describe('hasNoValidShippingMethods wiring', () => {
+        const renderRoute = async (loaderDataOverrides: Record<string, unknown> = {}) => {
+            const checkoutRoute = await import('./_checkout.checkout');
+            const CheckoutPage = checkoutRoute.default;
+            const loaderData = {
+                basket: { basketId: 'test-basket', productItems: [{ itemId: 'i1', productId: 'p1' }] },
+                customerProfile: Promise.resolve(null),
+                shippingMethodsMap: Promise.resolve({}),
+                productMap: Promise.resolve({}),
+                ...loaderDataOverrides,
+            };
+            // The route's `use(promise)` calls suspend on first render; flush microtasks in act
+            // so the Suspense boundary resolves and CheckoutProvider mounts before assertions.
+            await act(async () => {
+                render(
+                    <MemoryRouter>
+                        <CheckoutPage loaderData={loaderData} />
+                    </MemoryRouter>
+                );
+                await Promise.resolve();
+            });
+            await screen.findByTestId('checkout-provider');
+        };
+
+        it('passes hasNoValidShippingMethods=true when loader map has no valid methods (refresh path)', async () => {
+            await renderRoute({
+                shippingMethodsMap: Promise.resolve({
+                    me: { applicableShippingMethods: [], defaultShippingMethodId: undefined },
+                }),
+            });
+            const lastProps = checkoutProviderProps.at(-1);
+            expect(lastProps?.hasNoValidShippingMethods).toBe(true);
+        });
+
+        it('passes hasNoValidShippingMethods=false when loader map is empty (no address submitted yet)', async () => {
+            // Critical: after a shipping-address step action, the checkout loader skips
+            // revalidation (`shouldRevalidate` returns false for step intents), so
+            // `loaderData.shippingMethodsMap` stays `{}` from before submission. Treating that
+            // empty map as evidence of "no methods" would pin the shopper to Shipping Address
+            // even though they just successfully submitted a valid address — the E2E checkout
+            // regression. Empty map = "no shipment failure observed", NOT "every shipment failed".
+            await renderRoute({ shippingMethodsMap: Promise.resolve({}) });
+            const lastProps = checkoutProviderProps.at(-1);
+            expect(lastProps?.hasNoValidShippingMethods).toBe(false);
+        });
+
+        it('passes hasNoValidShippingMethods=false when loader map has a valid method', async () => {
+            await renderRoute({
+                shippingMethodsMap: Promise.resolve({
+                    me: {
+                        applicableShippingMethods: [{ id: 'standard', name: 'Standard Shipping', price: 5.99 }],
+                        defaultShippingMethodId: 'standard',
+                    },
+                }),
+            });
+            const lastProps = checkoutProviderProps.at(-1);
+            expect(lastProps?.hasNoValidShippingMethods).toBe(false);
+        });
+
+        it('passes hasNoValidShippingMethods=true when one shipment in a multi-shipment basket has no methods', async () => {
+            // Partial-coverage multi-ship: shipment A has methods, shipment B does not. The order
+            // cannot be completed in this state, so the user must stay on Shipping Address.
+            await renderRoute({
+                shippingMethodsMap: Promise.resolve({
+                    me: {
+                        applicableShippingMethods: [{ id: 'standard', name: 'Standard Shipping', price: 5.99 }],
+                        defaultShippingMethodId: 'standard',
+                    },
+                    shipment_b: {
+                        applicableShippingMethods: [],
+                        defaultShippingMethodId: undefined,
+                    },
+                }),
+            });
+            const lastProps = checkoutProviderProps.at(-1);
+            expect(lastProps?.hasNoValidShippingMethods).toBe(true);
+        });
+    });
+
     describe('shouldRevalidate', () => {
         // Place-order entry points (`action.place-order`, `action.payment-redirect-finalize`,
         // `action.payment-express-complete`) destroy the basket and 302 to order
@@ -605,6 +701,65 @@ describe('Checkout Route Components', () => {
                     defaultShouldRevalidate: false,
                 })
             ).toBe(false);
+        });
+
+        // Payment-extension server actions that own createOrder return
+        // 200 + JSON whose body consumes the basket but does not redirect. Without
+        // this flag the checkout loader would revalidate against the post-consumption
+        // basket and unmount the extension's in-flight UI mid-flow.
+        it('skips revalidation when actionResult.framework_skipRevalidation is true', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: 200,
+                actionResult: { success: true, framework_skipRevalidation: true },
+                defaultShouldRevalidate: true,
+            });
+            expect(result).toBe(false);
+        });
+
+        it('does not skip revalidation when framework_skipRevalidation is false', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: 200,
+                actionResult: { success: true, framework_skipRevalidation: false },
+                defaultShouldRevalidate: true,
+            });
+            expect(result).toBe(true);
+        });
+
+        it('does not skip revalidation when framework_skipRevalidation is absent (opt-in only)', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: 200,
+                actionResult: { success: true },
+                defaultShouldRevalidate: true,
+            });
+            expect(result).toBe(true);
+        });
+
+        it('ignores framework_skipRevalidation when actionResult is null, non-object, or array', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            for (const actionResult of [
+                null,
+                undefined,
+                'string',
+                42,
+                true,
+                [],
+                [{ framework_skipRevalidation: true }],
+            ]) {
+                expect(
+                    shouldRevalidate({
+                        ...baseArgs,
+                        actionStatus: 200,
+                        actionResult,
+                        defaultShouldRevalidate: true,
+                    })
+                ).toBe(true);
+            }
         });
     });
 });

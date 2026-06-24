@@ -337,6 +337,9 @@ export default function ProductInfo({
                     product={productForPrice}
                     quantity={quantity}
                     currency={currency}
+                    // Match the purchasability gate: bonus/promo products (allowMissingPrice) render
+                    // their price instead of "Price unavailable".
+                    allowMissingPrice={productView?.allowMissingPrice}
                     labelForA11y={product?.name}
                     currentPriceProps={{
                         className: 'text-2xl font-bold text-card-foreground leading-[120%] tracking-[-0.6px]',

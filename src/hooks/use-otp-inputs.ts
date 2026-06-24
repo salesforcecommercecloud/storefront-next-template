@@ -27,15 +27,15 @@ interface UseOtpInputsReturn {
 /**
  * Hook for managing OTP input fields
  */
-export function useOtpInputs(length: number, onComplete?: (code: string) => void): UseOtpInputsReturn {
+export function useOtpInputs(length: number, onPasteComplete?: (code: string) => void): UseOtpInputsReturn {
     const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(length).fill(null));
     const [values, setValues] = useState<string[]>(Array(length).fill(''));
     const valuesRef = useRef<string[]>(Array(length).fill(''));
-    const onCompleteRef = useRef(onComplete);
+    const onPasteCompleteRef = useRef(onPasteComplete);
 
     useEffect(() => {
-        onCompleteRef.current = onComplete;
-    }, [onComplete]);
+        onPasteCompleteRef.current = onPasteComplete;
+    }, [onPasteComplete]);
 
     const clear = useCallback(() => {
         const emptyArray = Array(length).fill('');
@@ -64,12 +64,6 @@ export function useOtpInputs(length: number, onComplete?: (code: string) => void
 
             if (numericValue && index < length - 1) {
                 inputRefs.current[index + 1]?.focus();
-            }
-
-            if (code.length === length && onCompleteRef.current) {
-                setTimeout(() => {
-                    onCompleteRef.current?.(code);
-                }, 0);
             }
 
             return code;
@@ -116,10 +110,13 @@ export function useOtpInputs(length: number, onComplete?: (code: string) => void
                     inputRefs.current[focusIndex]?.focus();
                 }, 0);
 
+                // A paste delivers the whole code at once, so (unlike typing) it
+                // can't be a prefix of something longer — safe to offer for
+                // auto-submit. The consumer decides whether `code` is submittable.
                 const code = newValues.join('');
-                if (code.length === length && onCompleteRef.current) {
+                if (onPasteCompleteRef.current) {
                     setTimeout(() => {
-                        onCompleteRef.current?.(code);
+                        onPasteCompleteRef.current?.(code);
                     }, 0);
                 }
             }

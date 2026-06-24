@@ -1602,6 +1602,7 @@
         "failedToAddProductToCartError": "카트에 제품을 추가하지 못함:",
         "failedToAddProductToWishlistError": "위시리스트에 제품을 추가하지 못함:",
         "price": {
+            "unavailable": "가격 정보 없음",
             "currentPriceFrom": "현재 가격(시작가: {{price}})",
             "currentPrice": "현재 가격: {{price}}",
             "from": "{{price}}부터 시작",

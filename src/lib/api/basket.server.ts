@@ -69,6 +69,25 @@ export async function addPaymentInstrumentToBasket(
 }
 
 /**
+ * Update an existing payment instrument on the basket using the Commerce API.
+ */
+export async function updatePaymentInstrumentInBasket(
+    context: Readonly<RouterContextProvider>,
+    basketId: string,
+    paymentInstrumentId: string,
+    paymentInstrument: ShopperBasketsV2.schemas['OrderPaymentInstrument']
+): Promise<ShopperBasketsV2.schemas['Basket']> {
+    const clients = createApiClients(context);
+    const { data: basket } = await clients.shopperBasketsV2.updatePaymentInstrumentInBasket({
+        params: {
+            path: { basketId, paymentInstrumentId },
+        },
+        body: paymentInstrument,
+    });
+    return basket;
+}
+
+/**
  * Update the billing address for the basket using the Commerce API
  */
 export async function updateBillingAddressForBasket(

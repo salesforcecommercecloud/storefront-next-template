@@ -26,7 +26,6 @@ import BasketProvider, {
     useBasketReset,
     useBasketSnapshot,
     useBasketUpdater,
-    useMiniCart,
 } from './basket';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { BASKET_COOKIE_NAME } from '@/lib/basket/cookie';
@@ -1154,30 +1153,6 @@ describe('BasketProvider hooks', () => {
 
             expect(typeof result.current).toBe('function');
             expect(() => result.current()).not.toThrow();
-        });
-    });
-
-    describe('useMiniCart', () => {
-        it('defaults miniCartOpen to false and toggles via setter', () => {
-            const { result } = renderHook(() => useMiniCart(), {
-                wrapper: wrapperWithProps({}),
-            });
-
-            expect(result.current.miniCartOpen).toBe(false);
-
-            act(() => {
-                result.current.setMiniCartOpen(true);
-            });
-
-            expect(result.current.miniCartOpen).toBe(true);
-        });
-
-        it('falls back to a noop setter and closed state without a provider', () => {
-            const { result } = renderHook(() => useMiniCart());
-
-            expect(result.current.miniCartOpen).toBe(false);
-            expect(() => result.current.setMiniCartOpen(true)).not.toThrow();
-            expect(result.current.miniCartOpen).toBe(false);
         });
     });
 

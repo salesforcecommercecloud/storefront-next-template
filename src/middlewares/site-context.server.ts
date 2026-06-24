@@ -47,6 +47,15 @@ export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, 
         throw new Error(`Site "${config.defaultSiteId}" must have a defaultLocale configured. `);
     }
 
+    // The cookie Domain is governed solely by app.cookies.domain (global default) plus the
+    // per-site commerce.sites[].cookies.domain (applied in the SDK at serialize time), so every
+    // storefront cookie shares one resolved domain. cookieOptions supplies only the OTHER
+    // site-context cookie attributes (httpOnly, sameSite, maxAge, ...) — any domain placed there
+    // is dropped to prevent it diverging from the auth cookies. Unset → host-only scoping.
+    const cookieAttrs = { ...config.siteContext?.cookieOptions };
+    delete cookieAttrs.domain;
+    const cookieOptions = config.cookies?.domain ? { ...cookieAttrs, domain: config.cookies.domain } : cookieAttrs;
+
     // Transform app config into site context config format
     const siteContextConfig: SiteConfig = {
         sites: sites.map((site) => ({
@@ -63,7 +72,7 @@ export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, 
         siteDetectionConfig: config.siteDetectionConfig,
         localeDetectionConfig: config.localeDetectionConfig,
         currencyCookieName: config.siteContext?.currencyCookieName,
-        cookieOptions: config.siteContext?.cookieOptions,
+        cookieOptions,
     };
 
     // Create and invoke the site context middleware.

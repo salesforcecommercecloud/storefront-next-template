@@ -77,6 +77,34 @@ class AccountDetailsPage {
             .find('button')
             .withText('Change email')
             .as('Change Email Button'),
+        verifyEmailButton: locate('[data-testid="sf-toggle-card-email"]')
+            .find('button')
+            .withText('Verify Email')
+            .as('Verify Email Button'),
+        emailVerifiedBadge: locate('[data-testid="email-verified-badge"]').as('Email Verified Badge'),
+        emailUnverifiedBadge: locate('[data-testid="email-unverified-badge"]').as('Email Unverified Badge'),
+
+        // Email update form (shown when editing email)
+        emailUpdateForm: locate('[data-testid="email-update-form"]').as('Email Update Form'),
+        newEmailField: locate('[data-testid="email-update-form"]').find('input[name="email"]').as('New Email Field'),
+        emailCurrentPasswordField: locate('[data-testid="email-update-form"]')
+            .find('input[name="currentPassword"]')
+            .as('Email Form Current Password Field'),
+        emailSaveButton: locate('[data-testid="email-update-form"]')
+            .find('button[type="submit"]')
+            .as('Email Save Button'),
+        emailCancelButton: locate('[data-testid="email-update-form"]')
+            .find('button[type="button"]')
+            .withText('Cancel')
+            .as('Email Cancel Button'),
+
+        // OTP modal
+        otpModal: locate('[data-testid="otp-modal"]').as('OTP Modal'),
+        otpInput: (index: number) => locate(`input[aria-label*="digit ${index + 1}"]`).as(`OTP Input ${index + 1}`),
+        otpResendButton: locate('[data-testid="otp-modal"]')
+            .find('button')
+            .withText('Resend Code')
+            .as('OTP Resend Code Button'),
 
         // Password toggle card
         passwordCard: locate('[data-testid="sf-toggle-card-password"]').as('Password Card'),
@@ -178,6 +206,7 @@ class AccountDetailsPage {
         I.seeElement(this.locators.pageTitle);
         I.see('Account Details');
         I.seeElement(this.locators.profileCard);
+        I.seeElement(this.locators.emailCard);
         I.seeElement(this.locators.passwordCard);
     }
 
@@ -271,13 +300,10 @@ class AccountDetailsPage {
     /**
      * Get displayed profile data (view mode only).
      * Waits for view mode (Edit button visible) then reads values via data-testid.
-     * Note: Email is read from separate email card.
-     * @returns Promise with profile data including email
      */
     async getDisplayedProfileData(): Promise<{
         firstName: string;
         lastName: string;
-        email: string;
         phone: string;
         gender: string;
         birthday: string;
@@ -291,13 +317,9 @@ class AccountDetailsPage {
         const gender = await I.grabTextFrom(this.locators.displayedGender);
         const birthday = await I.grabTextFrom(this.locators.displayedBirthday);
 
-        // Email is in separate card
-        const email = await I.grabTextFrom(this.locators.displayedEmail);
-
         return {
             firstName: firstName?.trim() ?? '',
             lastName: lastName?.trim() ?? '',
-            email: email?.trim() ?? '',
             phone: phone?.trim() ?? '',
             gender: gender?.trim() ?? '',
             birthday: birthday?.trim() ?? '',
@@ -409,6 +431,101 @@ class AccountDetailsPage {
         I.refreshPage();
         I.waitForElement(this.locators.pageTitle, 30);
         I.waitForElement(this.locators.profileCard);
+    }
+
+    // =========================================================================
+    // Email methods
+    // =========================================================================
+
+    /**
+     * Assert the email card is visible on the page.
+     */
+    validateEmailCardVisible(): void {
+        I.seeElement(this.locators.emailCard);
+    }
+
+    /**
+     * Assert the email unverified badge is visible.
+     * Use this when the test expects an unverified state (e.g., freshly registered spec accounts).
+     */
+    validateEmailUnverifiedBadgeVisible(): void {
+        I.seeElement(this.locators.emailUnverifiedBadge);
+    }
+
+    /**
+     * Get the email address displayed on the email card (view mode only).
+     */
+    async getDisplayedEmail(): Promise<string> {
+        const email = await I.grabTextFrom(this.locators.displayedEmail);
+        return email?.trim() ?? '';
+    }
+
+    /**
+     * Check if the email update form is visible.
+     */
+    async isEmailUpdateFormVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.emailUpdateForm);
+        return count > 0;
+    }
+
+    /**
+     * Click the "Verify Email" button on the email card.
+     * Only visible when email verification is enabled and email is unverified.
+     */
+    clickVerifyEmail(): void {
+        I.click(this.locators.verifyEmailButton);
+        I.waitForElement(this.locators.otpModal, 10);
+    }
+
+    /**
+     * Click the "Change email" button on the email card.
+     * Only visible when email verification is enabled.
+     */
+    clickChangeEmail(): void {
+        I.click(this.locators.changeEmailButton);
+    }
+
+    /**
+     * Validate that the OTP modal is open with the correct structure.
+     * Checks for the modal container and that OTP input fields are present.
+     * @param expectedOtpLength - Number of OTP input digits to expect (default: 6)
+     */
+    validateOtpModalOpen(expectedOtpLength = 6): void {
+        I.seeElement(this.locators.otpModal);
+        I.seeElement(locate(`[data-testid="otp-modal"] input[type="text"][maxlength="1"]`).as('OTP digit input'));
+        I.seeNumberOfElements(
+            locate(`[data-testid="otp-modal"] input[type="text"][maxlength="1"]`).as('OTP inputs'),
+            expectedOtpLength
+        );
+    }
+
+    /**
+     * Assert the OTP Resend Code button is visible inside the OTP modal.
+     */
+    validateOtpResendButtonVisible(): void {
+        I.seeElement(this.locators.otpResendButton);
+    }
+
+    /**
+     * Close the OTP modal using the close button (X).
+     */
+    closeOtpModal(): void {
+        I.click(locate('[data-testid="otp-modal"]').find('button[aria-label*="Close"]').as('OTP Modal Close'));
+        I.waitForInvisible(this.locators.otpModal, 5);
+    }
+
+    /**
+     * Fill and submit the email update form.
+     * @param data - New email and current password. Password is only required for shoppers
+     *   who registered with a password — passwordless shoppers omit it and require an OTP verification instead.
+     */
+    fillAndSubmitEmailUpdateForm(data: { email: string; currentPassword?: string }): void {
+        I.waitForElement(this.locators.emailUpdateForm, 10);
+        I.fillField(this.locators.newEmailField, data.email);
+        if (data.currentPassword !== undefined) {
+            I.fillField(this.locators.emailCurrentPasswordField, data.currentPassword);
+        }
+        I.click(this.locators.emailSaveButton);
     }
 
     // =========================================================================
@@ -537,7 +654,6 @@ class AccountDetailsPage {
     }): Promise<{
         firstName: string;
         lastName: string;
-        email: string;
         phone: string;
         gender: string;
         birthday: string;

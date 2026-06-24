@@ -119,7 +119,7 @@ describe('Region', () => {
     });
 
     it('component region can have metadata', () => {
-        const mockComponent: ShopperExperience.schemas['Component'] & { designMetadata: any } = {
+        const mockComponent = {
             id: 'grid-component',
             typeId: 'grid',
             regions: [mockRegion],
@@ -134,7 +134,7 @@ describe('Region', () => {
                     },
                 ],
             },
-        };
+        } as unknown as ComponentType;
 
         render(<Region component={mockComponent} regionId="test-region" />);
 
@@ -459,7 +459,7 @@ describe('Region', () => {
                             designMetadata: {
                                 regionDefinitions: [metadata],
                             },
-                        } as ShopperExperience.schemas['Page']
+                        } as unknown as ShopperExperience.schemas['Page']
                     }
                     regionId="test-region"
                 />

@@ -31,8 +31,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -63,14 +62,14 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -79,10 +78,9 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button
@@ -154,8 +152,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -186,14 +183,14 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -202,10 +199,9 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button
@@ -278,8 +274,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -312,14 +307,14 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -329,10 +324,9 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button
@@ -421,8 +415,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -453,14 +446,14 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -469,10 +462,9 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button
@@ -528,8 +520,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -560,14 +551,14 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -576,10 +567,9 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button
@@ -667,8 +657,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
             class="flex-shrink-0 h-4 w-auto object-contain"
             height="16"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="41"
           />
         </button>
         <button
@@ -699,14 +688,14 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-4 w-auto object-contain"
-            height="16"
+            height="18"
             src="__ASSET_MOCK__"
-            width="48"
+            width="74"
           />
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -715,10 +704,9 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
             alt=""
             aria-hidden="true"
             class="flex-shrink-0 h-3 w-auto object-contain"
-            height="12"
+            height="11"
             src="__ASSET_MOCK__"
-            style="filter: brightness(0) invert(1);"
-            width="48"
+            width="54"
           />
         </button>
         <button

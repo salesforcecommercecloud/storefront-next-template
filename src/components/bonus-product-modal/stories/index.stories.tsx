@@ -174,7 +174,6 @@ function BonusProductModalWrapper(): ReactElement {
                 promotionId="BonusPromotionTies"
                 bonusDiscountLineItemId="7a5795b50cb1b228c805334cde"
                 bonusDiscountSlots={mockBonusDiscountSlots}
-                maxQuantity={3}
             />
         </>
     );

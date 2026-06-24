@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Page } from '@playwright/test';
 import { buildSitePath } from '../utils/url-utils';
 
 const { I } = inject();
@@ -66,16 +67,11 @@ class ProductDetailPage {
             'button[data-testid*="add-to-cart"], button:has-text("Add to Cart"), button:has-text("Add to Bag")'
         ).as('Add to Cart Button'),
 
-        // Mini cart drawer (opens when item is successfully added to cart)
-        miniCartDrawer: locate('[data-slot="sheet-content"][data-state="open"]').as('Mini Cart Drawer'),
-
         // Out of stock message
         outOfStockMessage: locate(
             '[data-testid*="out-of-stock"], :has-text("Out of stock"), :has-text("Unavailable")'
         ).as('Out of Stock Message'),
 
-        // Error toast shown when add-to-cart fails (e.g. out of stock) - use for OOS detection after clicking Add to Cart
-        addToCartErrorToast: locate('[data-sonner-toast][data-type="error"]').as('Add to Cart Error Toast'),
         // Wishlist toast: success (item added) or info/no-type (item already in wishlist)
         wishlistToast: locate('[data-sonner-toast][data-type="success"], [data-sonner-toast]:not([data-type])').as(
             'Wishlist Toast'
@@ -259,40 +255,47 @@ class ProductDetailPage {
     }
 
     /**
-     * Click "Add to Cart" button
+     * Click "Add to Cart" and report the outcome from the cart-item-add response.
+     *
+     * The add's authoritative signal is the POST response, not the mini-cart sheet: the
+     * sheet is lazy-loaded, so under a slow target a successful add can render its feedback
+     * well after the server confirmed it — waiting on the sheet reads a real success as a
+     * timeout. The response arrives a bounded round-trip after the click regardless of
+     * client render speed.
+     *
+     * The response listener is registered *before* the click and both are awaited together:
+     * the POST can resolve in ~100ms, well inside the post-click settle delay, so attaching
+     * the listener after clicking would miss an already-delivered response and hang.
+     *
+     * Classified by HTTP status: a 2xx add is success; a non-2xx (e.g. out of stock) is an
+     * error the caller can skip past. A missing response within the window also reads as error.
+     *
+     * @param timeoutSeconds - How long to wait for the add-to-cart response
+     * @returns 'success' if the server confirmed the add, 'error' otherwise
      */
-    addToCart(): void {
-        I.click(this.locators.addToCartButton);
-    }
-
-    /**
-     * Wait for add-to-cart outcome after clicking Add to Cart.
-     * Detects success (mini cart drawer opens) or error toast (e.g. out of stock / failed to add).
-     * @param timeoutSeconds - How long to wait for outcome
-     * @returns 'success' if added to cart (mini cart opened), 'error' if error toast appeared (e.g. OOS) or timeout
-     */
-    async waitForAddToCartOutcome(timeoutSeconds: number = 5): Promise<'success' | 'error'> {
+    async addToCartAndWaitForOutcome(timeoutSeconds: number = 15): Promise<'success' | 'error'> {
         try {
-            await (I.usePlaywrightTo('wait for add-to-cart outcome', async ({ page }) => {
-                // Wait for either mini cart drawer to open (success) or error toast (failure)
-                // The sheet content has data-state="open" when visible
-                const successOrError = page.locator(
-                    '[data-slot="sheet-content"][data-state="open"], [data-sonner-toast][data-type="error"]'
+            const ok = (await I.usePlaywrightTo('add to cart and await response', async ({ page }: { page: Page }) => {
+                const responsePromise = page.waitForResponse(
+                    (res) =>
+                        (res.url().includes('/action/cart-item-add') ||
+                            res.url().includes('/action/cart-bundle-add')) &&
+                        res.request().method() === 'POST',
+                    { timeout: timeoutSeconds * 1000 }
                 );
-                await successOrError.first().waitFor({ state: 'visible', timeout: timeoutSeconds * 1000 });
-            }) as unknown as Promise<void>);
-            const errorCount = await I.grabNumberOfVisibleElements(this.locators.addToCartErrorToast);
-            return errorCount > 0 ? 'error' : 'success';
+                // .first() assumes a single add-to-cart button on this PDP (variation masters);
+                // set/bundle PDPs emit the testid per child + once for the set, so .first() could
+                // hit a child button — harden before pointing this flow at a set-bearing category.
+                const addToCartBtn = page.locator('[data-testid="add-to-cart"]').first();
+                await addToCartBtn.scrollIntoViewIfNeeded();
+                await addToCartBtn.click();
+                const response = await responsePromise;
+                return response.ok();
+            })) as unknown as boolean;
+            return ok ? 'success' : 'error';
         } catch {
             return 'error';
         }
-    }
-
-    /**
-     * Validate product was successfully added to cart (mini cart drawer opened)
-     */
-    validateAddedToCart(): void {
-        I.seeElement(this.locators.miniCartDrawer);
     }
 
     /**
@@ -305,15 +308,27 @@ class ProductDetailPage {
     }
 
     /**
-     * Check if Add to Cart button is enabled (product can be added).
-     * Returns false if the button is disabled, missing, or not yet rendered.
+     * Wait until the Add to Cart button is enabled, then return true; return false on timeout.
+     *
+     * Variant options render as `<a role="radio" href>` links, so selecting one is a client-side
+     * navigation that re-resolves the variant before the button enables. Clicking Add to Cart in
+     * that window is a no-op — the handler bails and fires no request, so no feedback ever appears.
+     * Waiting for the enabled state here makes the subsequent add fire a real request.
+     *
+     * @param timeoutSeconds - How long to wait for the button to enable
      */
-    async isAddToCartEnabled(): Promise<boolean> {
-        const result = (await I.executeScript(() => {
-            const btn = document.querySelector<HTMLButtonElement>('[data-testid="add-to-cart"]');
-            return btn !== null && !btn.disabled;
-        })) as boolean;
-        return result;
+    async waitForAddToCartReady(timeoutSeconds: number = 10): Promise<boolean> {
+        try {
+            await (I.usePlaywrightTo('wait for add-to-cart button to enable', async ({ page }) => {
+                await page
+                    .locator('[data-testid="add-to-cart"]:not([disabled])')
+                    .first()
+                    .waitFor({ state: 'visible', timeout: timeoutSeconds * 1000 });
+            }) as unknown as Promise<void>);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**

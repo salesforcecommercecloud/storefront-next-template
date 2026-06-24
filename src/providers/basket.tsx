@@ -77,15 +77,10 @@ type BasketUpdater = {
 
 const BasketUpdaterContext = createContext<BasketUpdater | undefined>(undefined);
 
-// Mini cart state lives in a separate context so toggling the sheet does not invalidate BasketUpdaterContext.
-// Otherwise, every consumer of useBasket / useBasketUpdater / useBasketLoader / useBasketReset would re-render on
-// every open/close (notably product cards across PLP/PDP that wire add-to-cart through useBasketUpdater).
-type MiniCartProviderValue = {
-    miniCartOpen: boolean;
-    setMiniCartOpen: (open: boolean) => void;
-};
-
-const MiniCartContext = createContext<MiniCartProviderValue | undefined>(undefined);
+// Mini-cart open/panel-mounted state lives in the standalone mini-cart store (`@/hooks/mini-cart-store`), not in a
+// context here. Two reasons: `resource.basket-products`' `shouldRevalidate` needs a synchronous read from outside the
+// React tree, which context cannot serve; and slice-scoped subscriptions keep toggling the sheet from re-rendering
+// unrelated basket consumers (the isolation a separate context used to provide, now at slice granularity).
 
 /**
  * Provider for basket data that's typically retrieved by the basket middleware.
@@ -271,9 +266,6 @@ const BasketProvider = (
         }));
     }, [basket, snapshot]);
 
-    const [miniCartOpen, setMiniCartOpen] = useState(false);
-    const miniCartValue = useMemo(() => ({ miniCartOpen, setMiniCartOpen }), [miniCartOpen]);
-
     // Provider-owned basket fetcher. Hosting it here (rather than in a hook called from arbitrary
     // descendants) means a single fetcher instance services every consumer — useBasket auto-loads,
     // usePrefetchCart imperatively loads — and the success/error → context wiring runs exactly
@@ -317,9 +309,9 @@ const BasketProvider = (
         onSuccess: (data) => {
             inFlightIdRef.current = null;
             // Drop the payload if its basketId no longer matches the active fetcher. Keying off the data's own
-            // basketId (rather than inFlightIdRef) means React Router's auto-revalidation after a sibling action
-            // submission — e.g. cart-item-update from the mini cart — also writes to context, since those
-            // resolutions don't come through loadBasket() and so leave inFlightIdRef null.
+            // basketId (rather than inFlightIdRef) means any resolution that did not originate from loadBasket() — and
+            // so leaves inFlightIdRef null — still writes to context, e.g. a registry-driven reload of this fetcher
+            // after a global mutation (site/currency switch).
             if (!data || data.basketId !== basketIdForFetcherRef.current) {
                 return;
             }
@@ -337,9 +329,10 @@ const BasketProvider = (
         onError: (errors) => {
             const completedId = inFlightIdRef.current;
             inFlightIdRef.current = null;
-            // Only surface errors that originated from an explicit loadBasket() call. An auto-revalidation failure
-            // (inFlightIdRef === null) must not overwrite a previously-good basket with an error state — the
-            // sibling action that triggered the revalidation owns its own error reporting.
+            // Only surface errors that originated from an explicit loadBasket() call. A failure from any other
+            // resolution (inFlightIdRef === null) — e.g. a registry-driven reload after a global mutation — must not
+            // overwrite a previously-good basket with an error state; the caller that triggered it owns its own
+            // error reporting.
             if (!completedId || completedId !== basketIdForFetcherRef.current) {
                 return;
             }
@@ -356,9 +349,7 @@ const BasketProvider = (
 
     return (
         <BasketUpdaterContext.Provider value={updaterValue}>
-            <MiniCartContext.Provider value={miniCartValue}>
-                <BasketContext.Provider value={ctxValue}>{children}</BasketContext.Provider>
-            </MiniCartContext.Provider>
+            <BasketContext.Provider value={ctxValue}>{children}</BasketContext.Provider>
         </BasketUpdaterContext.Provider>
     );
 };
@@ -464,18 +455,6 @@ export const useBasketReset = (): (() => void) => {
             error: null,
         });
     }, [updater]);
-};
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noopSetMiniCartOpen: (open: boolean) => void = () => {};
-const fallbackMiniCartValue: MiniCartProviderValue = {
-    miniCartOpen: false,
-    setMiniCartOpen: noopSetMiniCartOpen,
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useMiniCart = (): MiniCartProviderValue => {
-    return useContext(MiniCartContext) ?? fallbackMiniCartValue;
 };
 
 export default BasketProvider;

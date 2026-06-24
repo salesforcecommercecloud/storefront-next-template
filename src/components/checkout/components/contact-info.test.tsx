@@ -387,6 +387,46 @@ describe('ContactInfo Integration Tests', () => {
                 expect(submitButton).toHaveTextContent(/saving/i);
             });
         });
+
+        // Why: on slow networks (e.g. MRT pool target) the email-blur authorize
+        // fetcher can still be in flight when the shopper clicks Continue. The
+        // button must stay actionable; otpFlowActiveRef gates the next-step
+        // transition until the fetcher settles.
+        test('Continue button stays enabled while email-blur authorize fetcher is in flight', async () => {
+            const user = userEvent.setup();
+            let resolveAction: (value: { success: false }) => void = () => undefined;
+            const pendingAction = new Promise<{ success: false }>((resolve) => {
+                resolveAction = resolve;
+            });
+            const router = createMemoryRouter(
+                [
+                    { path: '/', element: <ContactInfo {...createDefaultProps()} /> },
+                    {
+                        path: resourceRoutes.authorizePasswordlessEmail,
+                        action: () => pendingAction,
+                    },
+                ],
+                { initialEntries: ['/'], initialIndex: 0 }
+            );
+            render(<RouterProvider router={router} />);
+
+            const emailInput = await screen.findByPlaceholderText(/email address/i);
+            await user.clear(emailInput);
+            await user.type(emailInput, 'pending@example.com');
+            const phoneInput = screen.getByPlaceholderText('(000) 000-0000');
+            await user.type(phoneInput, '5551234567');
+            await user.tab();
+
+            // Confirm the fetcher is actually in flight — without this guard, the
+            // button-enabled assertion below could pass for the wrong reason if a
+            // future refactor short-circuits handleEmailBlur.
+            await waitFor(() => expect(emailInput).toBeDisabled());
+
+            const submitButton = screen.getByRole('button', { name: /continue to shipping/i });
+            expect(submitButton).not.toBeDisabled();
+
+            resolveAction({ success: false });
+        });
     });
 
     describe('Form Submission', () => {

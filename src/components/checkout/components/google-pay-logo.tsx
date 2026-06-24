@@ -27,13 +27,10 @@ import { useTranslation } from 'react-i18next';
 export default function GooglePayLogo({
     className,
     decorative = false,
-    inverted = false,
 }: {
     className?: string;
     /** When true, image is hidden from the accessibility tree (use inside a button that has aria-label). */
     decorative?: boolean;
-    /** When true, applies brightness/invert filter for use on dark backgrounds. */
-    inverted?: boolean;
 }) {
     const { t } = useTranslation('checkout');
     const label = t('expressPayments.googlePayLabel') || 'Google Pay';
@@ -41,11 +38,10 @@ export default function GooglePayLogo({
         <img
             src={googlePayLogo}
             alt={decorative ? '' : label}
-            width="48"
+            width="41"
             height="16"
             {...(decorative ? { 'aria-hidden': true } : {})}
             className={`${className || ''} h-4 w-auto object-contain`}
-            {...(inverted ? { style: { filter: 'brightness(0) invert(1)' } } : {})}
         />
     );
 }

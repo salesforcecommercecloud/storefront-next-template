@@ -18,6 +18,7 @@ import type { Route } from './+types/action.set-site-context';
 import { siteContext, getSiteContextCookies, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { getLogger } from '@/lib/logger.server';
+import { resolveCookieDomain } from '@/lib/cookie-utils.server';
 import { routes } from '@/route-paths';
 
 /**
@@ -61,10 +62,15 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
                 throw new Response(`Site "${siteId}" not found`, { status: 400 });
             }
 
+            // Match the cookie Domain the site-context middleware would write for the target site
+            // (per-site commerce.sites[].cookies.domain, else the global app.cookies.domain), so the
+            // action and middleware don't write the same cookie under two different domain scopes.
+            const domain = resolveCookieDomain(context, site);
+            const domainOpt = domain ? { domain } : undefined;
             const [siteCookieHeader, localeCookieHeader, currencyCookieHeader] = await Promise.all([
-                cookies.siteCookie.serialize(siteId),
-                cookies.localeCookie.serialize(site.defaultLocale),
-                cookies.currencyCookie.serialize(site.defaultCurrency),
+                cookies.siteCookie.serialize(siteId, domainOpt),
+                cookies.localeCookie.serialize(site.defaultLocale, domainOpt),
+                cookies.currencyCookie.serialize(site.defaultCurrency, domainOpt),
             ]);
 
             logger.info('SetSiteContext: site changed', {
@@ -100,7 +106,8 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
             // Restrict redirect to same-origin relative paths to prevent open redirects
             const redirectTo = pathname && pathname.startsWith('/') ? pathname : routes.home;
 
-            const cookieHeader = await cookies.localeCookie.serialize(locale);
+            const domain = resolveCookieDomain(context);
+            const cookieHeader = await cookies.localeCookie.serialize(locale, domain ? { domain } : undefined);
 
             logger.info('SetSiteContext: locale changed', { locale, redirectTo });
             return redirect(redirectTo, {
@@ -126,7 +133,8 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
                 throw new Response(`Currency "${currency}" is not supported`, { status: 400 });
             }
 
-            const cookieHeader = await cookies.currencyCookie.serialize(currency);
+            const domain = resolveCookieDomain(context);
+            const cookieHeader = await cookies.currencyCookie.serialize(currency, domain ? { domain } : undefined);
 
             logger.info('SetSiteContext: currency changed', { currency });
             return data(

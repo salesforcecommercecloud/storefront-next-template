@@ -27,15 +27,12 @@
 
 Feature('Checkout Order Summary & Shipping Method Tests').tag('@core').tag('@checkout');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, apiCartSetupFlow } = inject();
 import { expect } from 'chai';
 import { TEST_SHIPPING_ADDRESS, TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 /**
  * Order summary displays subtotal, shipping, tax, and total
@@ -48,7 +45,7 @@ import { TEST_SHIPPING_ADDRESS, TEST_PRODUCT_CATEGORIES, generateTestEmail } fro
  * 5. Fill through checkout to payment step
  * 6. Verify order summary is still visible with a non-zero total
  */
-scenarioFn('Order summary displays subtotal, shipping, tax, and total', async () => {
+Scenario('Order summary displays subtotal, shipping, tax, and total', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
@@ -74,7 +71,8 @@ scenarioFn('Order summary displays subtotal, shipping, tax, and total', async ()
     expect(updatedSummaryText, 'Updated summary should include a currency value').to.match(/[$£€¥][\d,.]+/);
 })
     .tag('@order-summary')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
 /**
  * Guest shopper can view and select different shipping methods
@@ -88,7 +86,7 @@ scenarioFn('Order summary displays subtotal, shipping, tax, and total', async ()
  * 6. Select a shipping method (second option if available, otherwise first)
  * 7. Verify payment step is reached
  */
-scenarioFn('Guest shopper can view and select different shipping methods', async () => {
+Scenario('Guest shopper can view and select different shipping methods', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
@@ -115,4 +113,5 @@ scenarioFn('Guest shopper can view and select different shipping methods', async
     expect(paymentVisible, 'Payment step should be reached after selecting shipping method').to.be.true;
 })
     .tag('@shipping-method')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

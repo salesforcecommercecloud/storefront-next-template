@@ -930,11 +930,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="items-center gap-2"
                           >
                             <span
-                              aria-label="Current price: £0.00"
+                              aria-label="Current price: £10.00"
                               aria-live="polite"
                               class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
                             >
-                              £0.00
+                              £10.00
                             </span>
                             <span
                               aria-atomic="true"
@@ -943,7 +943,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             >
                               Product for Alice
                                
-                              Current price: £0.00
+                              Current price: £10.00
                             </span>
                              
                           </div>
@@ -1075,11 +1075,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="items-center gap-2"
                           >
                             <span
-                              aria-label="Current price: £0.00"
+                              aria-label="Current price: £20.00"
                               aria-live="polite"
                               class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
                             >
-                              £0.00
+                              £20.00
                             </span>
                             <span
                               aria-atomic="true"
@@ -1088,7 +1088,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             >
                               Product for Bob
                                
-                              Current price: £0.00
+                              Current price: £20.00
                             </span>
                              
                           </div>

@@ -15,11 +15,10 @@
  */
 import { spawn, type ChildProcess } from 'child_process';
 import { existsSync } from 'fs';
-import { get as httpGet } from 'http';
-import { get as httpsGet } from 'https';
 import waitOn from 'wait-on';
 import { log } from '../../../../utils/logger';
 import { getEnvironmentConfig } from './env-manager';
+import { checkUrl, POLL_INTERVAL_MS } from '../helpers/url-reachability';
 
 export interface ServerConfig {
     command: string;
@@ -27,9 +26,6 @@ export interface ServerConfig {
     url: string;
     timeout: number;
 }
-
-/** Milliseconds between each health-check attempt. */
-const POLL_INTERVAL_MS = 1000;
 
 /** Maximum time to wait for server to become ready (in milliseconds). */
 const HEALTH_CHECK_TIMEOUT_MS = 20_000; // 20 seconds (20 retries × 1s)
@@ -91,34 +87,10 @@ export class ServerManager {
     }
 
     /**
-     * Check whether a URL is reachable.
-     * Any HTTP response (including redirects and error codes) means a server is
-     * listening — only a connection error or timeout means it is not running.
-     *
-     * @param url - URL to probe.
-     * @param timeoutMs - How long to wait for a response. Defaults to POLL_INTERVAL_MS.
-     */
-    static checkUrl(url: string, timeoutMs = POLL_INTERVAL_MS): Promise<boolean> {
-        return new Promise((resolve) => {
-            const get = url.startsWith('https:') ? httpsGet : httpGet;
-            const request = get(url, (res) => {
-                res.resume(); // drain body so the socket is released
-                resolve(true);
-            });
-
-            request.on('error', () => resolve(false));
-            request.setTimeout(timeoutMs, () => {
-                request.destroy();
-                resolve(false);
-            });
-        });
-    }
-
-    /**
      * Single health-check for this server's configured URL.
      */
     private checkServerHealth(): Promise<boolean> {
-        return ServerManager.checkUrl(this.config.url);
+        return checkUrl(this.config.url);
     }
 
     /**

@@ -1551,6 +1551,7 @@
         "failedToAddProductToCartError": "Tuotteen lisäys ostoskoriin epäonnistui:",
         "failedToAddProductToWishlistError": "Tuotteen lisääminen toivelistalle epäonnistui:",
         "price": {
+            "unavailable": "Hinta ei saatavilla",
             "currentPriceFrom": "Nykyinen hinta alkaen {{price}}",
             "currentPrice": "Nykyinen hinta: {{price}}",
             "from": "Alkaen {{price}}",

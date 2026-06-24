@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { Await } from 'react-router';
 import type { Route } from './+types/_app.account.wishlist';
 import { loadWishlistPageData, type WishlistPageData } from '@/lib/api/wishlist.server';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
@@ -23,7 +23,8 @@ import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
-import { resourceRoutes } from '@/route-paths';
+
+export { shouldRevalidate } from '@/lib/routes/revalidation/wishlist';
 
 /**
  * Server-side loader. Delegates to `loadWishlistPageData` (shared with the
@@ -36,17 +37,6 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
     logger.debug('Wishlist: loader starting');
 
     return loadWishlistPageData(context);
-}
-
-/**
- * Prevent automatic revalidation after wishlist remove actions.
- * Disabled-item state is managed client-side to avoid unnecessary refetches.
- */
-export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    if (formAction === resourceRoutes.wishlistRemove) {
-        return false;
-    }
-    return defaultShouldRevalidate;
 }
 
 /**

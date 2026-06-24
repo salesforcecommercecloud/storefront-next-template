@@ -15,6 +15,7 @@
  */
 import type { ShopperBasketsV2, ShopperOrders, ShopperProducts, ShopperSearch } from '@/scapi';
 import { createLogger } from '@/lib/logger';
+import { hasPurchasablePrice, isAvailablePrice } from '@/lib/product/price-utils';
 
 const logger = createLogger();
 
@@ -89,7 +90,16 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
             'Expecting `product.variants` to exist. For more accuracy, please tweak your API request to ask for the variants details.'
         );
     }
-    const array = isMaster && product.variants ? product.variants : [product];
+    // Skip variants/products whose price is missing for the active currency. SCAPI omits `price`
+    // when there is no price-book entry (vs. `0` for a deliberately-free product), so without this
+    // filter the master reduce would coalesce `undefined` to 0 and produce a misleading
+    // "From $0.00 – $X" range when only some variants are priced.
+    const candidates = isMaster && product.variants ? product.variants : [product];
+    const array = candidates.filter((data) => {
+        if (isAvailablePrice((data as { price?: number }).price)) return true;
+        const promotions = (data as { productPromotions?: ProductPromotion[] }).productPromotions || [];
+        return promotions.some((p) => isAvailablePrice(p.promotionalPrice));
+    });
 
     const res = array.reduce(
         (prev, data) => {
@@ -124,13 +134,18 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 function findHighestPrice(product: Product): number | undefined {
     const isMaster = product?.hitType === 'master' || !!(product?.type as ProductType | undefined)?.master;
     if (!isMaster || !product?.variants?.length) return undefined;
-    const array = product.variants;
     let max = -Infinity;
-    for (const data of array) {
+    for (const data of product.variants) {
         const promotions = (data as { productPromotions?: ProductPromotion[] }).productPromotions || [];
         const [smallestPromo] = getSmallestValByProperty(promotions, 'promotionalPrice');
-        const dataPrice = (data as { price?: number }).price ?? 0;
-        const effectivePrice = smallestPromo !== Infinity && smallestPromo < dataPrice ? smallestPromo : dataPrice;
+        const variantPrice = (data as { price?: number }).price;
+        // Skip variants without a price for the active currency so the range max isn't dragged
+        // down by `?? 0`. Use the promotional price as a fallback if the base price is missing.
+        const hasBasePrice = isAvailablePrice(variantPrice);
+        const hasPromoPrice = smallestPromo !== Infinity;
+        if (!hasBasePrice && !hasPromoPrice) continue;
+        const dataPrice = hasBasePrice ? (variantPrice as number) : Infinity;
+        const effectivePrice = hasPromoPrice && smallestPromo < dataPrice ? smallestPromo : dataPrice;
         if (effectivePrice > max) max = effectivePrice;
     }
     return max === -Infinity ? undefined : max;
@@ -148,8 +163,12 @@ function findHighestPrice(product: Product): number | undefined {
 export const getPriceData = (product: Product, opts: { quantity?: number } = {}) => {
     const { quantity = 1 } = opts;
 
-    // Check if this is a basket item (has basePrice and itemId - basket item specific fields)
-    const isBasketItem = 'itemId' in product && 'basePrice' in product;
+    // Check if this is a basket/order line item. We detect on `itemId` rather than the previously
+    // co-required `basePrice` (which is optional in the SCAPI ProductItem schema) — but use a
+    // `typeof === 'string'` check so an object that merely *declares* `itemId: undefined` (a spread
+    // from a basket-shaped fixture, a future BFF correlation decoration on a catalog product, etc.)
+    // doesn't take the basket branch and silently flag itself as `hasPrice: true`.
+    const isBasketItem = typeof (product as { itemId?: unknown }).itemId === 'string';
 
     if (isBasketItem) {
         // For basket items, use basket-specific price fields
@@ -181,12 +200,23 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
             isRange: false,
             tieredPrice: undefined,
             maxPrice: undefined,
+            // Basket/order line items always represent a real purchased item — never flag them as
+            // having no price, regardless of currency.
+            hasPrice: true,
         };
     }
 
     const productType = product?.type as ProductType | undefined;
     const isASet = product?.hitType === 'set' || !!productType?.set;
     const isMaster = product?.hitType === 'master' || !!productType?.master;
+
+    // Whether a real price exists for the active currency. Delegated to the shared
+    // `hasPurchasablePrice` so the "Price unavailable" display and the add-to-cart gate apply one
+    // rule and can never disagree. SCAPI omits `price` when there is no price-book entry for the
+    // currency (vs. `0` for a deliberately-free product), so a missing price means "no price",
+    // not "free".
+    const hasPrice = hasPurchasablePrice(product as ShopperProducts.schemas['Product']);
+
     let currentPrice: number;
     let variantWithLowestPrice: LowestPriceResult | null = null;
 
@@ -239,5 +269,6 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         isRange: (isMaster && variantCount > 1) || isASet || hasPriceRange || false,
         tieredPrice: closestTieredPrice && 'price' in closestTieredPrice ? closestTieredPrice.price : undefined,
         maxPrice,
+        hasPrice,
     };
 };

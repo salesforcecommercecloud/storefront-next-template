@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useLayoutEffect, lazy, Suspense, type ReactElement, type ReactNode } from 'react';
+import { useState, useLayoutEffect, useMemo, lazy, Suspense, type ReactElement, type ReactNode } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions, ShopperSearch } from '@/scapi';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';
@@ -27,6 +27,7 @@ import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
+import { getOrCreateCheckoutCorrelationId } from '@/lib/checkout/correlation';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -49,6 +50,7 @@ import {
     type EnrichedProductItem,
 } from '@/lib/product/product-utils';
 import { useCartInventoryValidation } from '@/lib/cart/inventory-validation';
+import { getBonusDiscountSlotsForPromotion } from '@/lib/cart/bonus-product-utils';
 import { CartInventoryErrorBanner } from './cart-inventory-error-banner';
 import { routes } from '@/route-paths';
 
@@ -79,6 +81,7 @@ interface CartContentProps {
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     wishlistProductIds?: readonly string[];
     recommendationsSlot?: ReactNode;
+    ruleBasedBonusProductsPromise: Promise<Record<string, ShopperSearch.schemas['ProductSearchHit'][]>>;
 }
 
 /**
@@ -102,6 +105,7 @@ export default function CartContent({
     promotions,
     wishlistProductIds = [],
     recommendationsSlot,
+    ruleBasedBonusProductsPromise,
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
 
@@ -127,6 +131,13 @@ export default function CartContent({
 
     // Validate cart-wide inventory for checkout button state
     const inventoryValidation = useCartInventoryValidation(basket, productsByItemId);
+
+    // Per-BLI slot rows for the currently-selected promotion. Gated on `selectedBonusProduct` so the basket walk
+    // only runs after the user opens the modal — the modal is null for the overwhelming majority of cart sessions.
+    const bonusDiscountSlots = useMemo(
+        () => (selectedBonusProduct ? getBonusDiscountSlotsForPromotion(basket, selectedBonusProduct.promotionId) : []),
+        [basket, selectedBonusProduct]
+    );
 
     // Sync cart page loader basket into basket context pre-paint, so descendants like CartDeliveryOption observe the
     // hydrated basket on the first painted frame
@@ -277,7 +288,9 @@ export default function CartContent({
                                 {inventoryValidation.hasInventoryIssues ? (
                                     <span>{t('checkout.continueToCheckout')}</span>
                                 ) : (
-                                    <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
+                                    <Link to={routes.checkout} onClick={() => getOrCreateCheckoutCorrelationId()}>
+                                        {t('checkout.continueToCheckout')}
+                                    </Link>
                                 )}
                             </Button>
                             <UITarget targetId="sfcc.cart.payments.expressCheckout" />
@@ -342,90 +355,57 @@ export default function CartContent({
                     </div>
                 </div>
 
-                {/* Bonus Product Carousels - one per bonusDiscountLineItem (lazy chunks reduce cart script size for Lighthouse) */}
-                {bonusDiscountItems.length > 0 && (
-                    <Suspense fallback={null}>
-                        {bonusDiscountItems.map((bonusItem, index) => {
-                            const isRuleBased = isRuleBasedPromotion(bonusItem);
-                            if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
-                                return null;
-                            }
-                            const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
-                            const promotionName = promotion?.calloutMsg || promotion?.name;
-                            return (
-                                <div key={bonusItem.id || index} className="mt-6">
-                                    <LazyBonusProductSelection
-                                        bonusDiscountLineItem={bonusItem}
-                                        bonusProductsById={bonusProductsById}
-                                        basket={basket}
-                                        promotionName={promotionName}
-                                        onProductSelect={(productId, productName, requiresModal) => {
-                                            if (requiresModal) {
-                                                handleBonusProductSelect(
-                                                    productId,
-                                                    productName,
-                                                    bonusItem.promotionId || '',
-                                                    bonusItem.id || '',
-                                                    bonusItem.maxBonusItems || 0
-                                                );
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            );
-                        })}
-                    </Suspense>
-                )}
+                {/* Bonus Product Carousels - one per bonusDiscountLineItem (lazy chunks reduce cart script size) */}
+                {bonusDiscountItems.map((bonusItem, index) => {
+                    const isRuleBased = isRuleBasedPromotion(bonusItem);
+                    if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
+                        return null;
+                    }
+                    const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
+                    const promotionName = promotion?.calloutMsg || promotion?.name;
+                    return (
+                        <div key={bonusItem.id || index} className="mt-6">
+                            <Suspense fallback={null}>
+                                <LazyBonusProductSelection
+                                    bonusDiscountLineItem={bonusItem}
+                                    bonusProductsById={bonusProductsById}
+                                    basket={basket}
+                                    promotionName={promotionName}
+                                    ruleBasedBonusProductsPromise={
+                                        isRuleBased ? ruleBasedBonusProductsPromise : undefined
+                                    }
+                                    onProductSelect={(productId, productName, requiresModal) => {
+                                        if (requiresModal) {
+                                            handleBonusProductSelect(
+                                                productId,
+                                                productName,
+                                                bonusItem.promotionId || '',
+                                                bonusItem.id || '',
+                                                bonusItem.maxBonusItems || 0
+                                            );
+                                        }
+                                    }}
+                                />
+                            </Suspense>
+                        </div>
+                    );
+                })}
 
                 {recommendationsSlot}
 
-                {selectedBonusProduct &&
-                    (() => {
-                        // Group all bonusDiscountLineItems for this promotion
-                        const bonusDiscountSlots = (basket?.bonusDiscountLineItems || [])
-                            .filter((item) => item.promotionId === selectedBonusProduct.promotionId)
-                            .map((item) => {
-                                // Count how many bonus products are already in this specific slot
-                                // by filtering productItems that link to this bonusDiscountLineItemId
-                                const matchingProductItems = (basket?.productItems || []).filter(
-                                    (productItem) =>
-                                        productItem.bonusProductLineItem &&
-                                        productItem.bonusDiscountLineItemId === item.id
-                                );
-
-                                const bonusProductsInSlot = matchingProductItems.reduce(
-                                    (sum, productItem) => sum + (productItem.quantity || 0),
-                                    0
-                                );
-
-                                return {
-                                    id: item.id || '',
-                                    maxBonusItems: item.maxBonusItems || 0,
-                                    bonusProductsSelected: bonusProductsInSlot,
-                                };
-                            });
-
-                        // Calculate total max quantity across all slots (remaining capacity)
-                        const totalMaxQuantity = bonusDiscountSlots.reduce(
-                            (total, slot) => total + (slot.maxBonusItems - slot.bonusProductsSelected),
-                            0
-                        );
-
-                        return (
-                            <Suspense fallback={null}>
-                                <LazyBonusProductModal
-                                    open={bonusModalOpen}
-                                    onOpenChange={setBonusModalOpen}
-                                    productId={selectedBonusProduct.productId}
-                                    productName={selectedBonusProduct.productName}
-                                    promotionId={selectedBonusProduct.promotionId}
-                                    bonusDiscountLineItemId={selectedBonusProduct.bonusDiscountLineItemId}
-                                    bonusDiscountSlots={bonusDiscountSlots}
-                                    maxQuantity={totalMaxQuantity}
-                                />
-                            </Suspense>
-                        );
-                    })()}
+                {selectedBonusProduct && (
+                    <Suspense fallback={null}>
+                        <LazyBonusProductModal
+                            open={bonusModalOpen}
+                            onOpenChange={setBonusModalOpen}
+                            productId={selectedBonusProduct.productId}
+                            productName={selectedBonusProduct.productName}
+                            promotionId={selectedBonusProduct.promotionId}
+                            bonusDiscountLineItemId={selectedBonusProduct.bonusDiscountLineItemId}
+                            bonusDiscountSlots={bonusDiscountSlots}
+                        />
+                    </Suspense>
+                )}
             </div>
         </div>
     );

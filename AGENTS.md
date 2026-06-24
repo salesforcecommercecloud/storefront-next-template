@@ -234,6 +234,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 
 **Architecture & patterns:**
 - [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
+- [docs/README-REVALIDATION.md](./docs/README-REVALIDATION.md) — Revalidation control: when loaders re-run after actions, the scale cost of the default, and gating with `shouldRevalidate`
 - [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) — Loading states and Suspense patterns
 - [docs/README-STATE.md](./docs/README-STATE.md) — State management: server state, URL state, optimistic UI
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter pattern for data fetching (Einstein, Active Data, custom)
@@ -241,6 +242,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system (including `PUBLIC__` prefix behavior)
 - [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
+- [docs/README-COOKIE-DOMAIN.md](./docs/README-COOKIE-DOMAIN.md) — Configurable cookie domains: storefront config (`app.cookies.domain` + per-site), the matching Business Manager setting, verification, rollout
 - [docs/README-EMAIL-VERIFICATION.md](./docs/README-EMAIL-VERIFICATION.md) — Email verification: OTP flows, passwordless registration/login, account details badge, Change Email
 - [docs/README-TURNSTILE.md](./docs/README-TURNSTILE.md) — Cloudflare Turnstile bot protection (BFF verification, three-tier health, fail-open)
 - [docs/README-SECURITY-HEADERS.md](./docs/README-SECURITY-HEADERS.md) — Default security response headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
@@ -259,7 +261,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns
 - [docs/README-ESLINT.md](./docs/README-ESLINT.md) — ESLint configuration
 - [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) — Story coverage enforcement
-- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) — Storybook setup
+- [docs/README-STORYBOOK.md](./docs/README-STORYBOOK.md) — Storybook setup
 
 **Development:**
 - [docs/README-HYBRID-PROXY.md](./docs/README-HYBRID-PROXY.md) — Hybrid proxy for local development

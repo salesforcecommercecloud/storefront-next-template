@@ -268,6 +268,81 @@ export function getAttachedBonusPromotions(
 }
 
 /**
+ * Per-BLI selection row for one promotion.
+ *
+ * Mirrors the `bonusDiscountSlots` prop of `BonusProductModal`: one entry per `BonusDiscountLineItem`,
+ * carrying the slot's max allowance and how many bonus picks the shopper has already claimed in it.
+ */
+type BonusDiscountSlot = {
+    id: string;
+    maxBonusItems: number;
+    bonusProductsSelected: number;
+};
+
+/**
+ * Compute the per-BLI slot list for one promotion in two linear walks.
+ *
+ * Pass 1 collects only the BLIs targeting `promotionId` (most baskets have ≤2) and indexes them by id for the second
+ * pass. Pass 2 walks `productItems` once; bonus product items hit the slot map in O(1) and accumulate into the slot's
+ * `bonusProductsSelected`. When the promotion has no matching BLIs, pass 2 is skipped entirely.
+ *
+ * Doing this inline in JSX runs an N×M nested filter over `productItems` × `bonusDiscountLineItems` every render the
+ * modal is open. Memoizing this helper on `[basket, promotionId]` keeps the work out of the hot render path.
+ *
+ * @param basket - Shopping basket
+ * @param promotionId - Promotion to query (typically `selectedBonusProduct.promotionId`)
+ * @returns Per-BLI slot rows for the promotion. Empty when the basket has no matching BLIs.
+ */
+export function getBonusDiscountSlotsForPromotion(
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined,
+    promotionId: string | null | undefined
+): BonusDiscountSlot[] {
+    if (!basket?.bonusDiscountLineItems?.length || !promotionId) {
+        return [];
+    }
+
+    // Pass 1: collect slots for the target promotion only and index by BLI id for O(1) lookup in pass 2. BLIs without
+    // an `id` are skipped — the modal looks up the active slot by id (and the add-to-cart action requires one), so an
+    // id-less BLI cannot drive the modal regardless.
+    const slots: BonusDiscountSlot[] = [];
+    const slotById = new Map<string, BonusDiscountSlot>();
+    for (const bli of basket.bonusDiscountLineItems) {
+        if (bli.promotionId !== promotionId || !bli.id) {
+            continue;
+        }
+        const slot: BonusDiscountSlot = { id: bli.id, maxBonusItems: bli.maxBonusItems || 0, bonusProductsSelected: 0 };
+        slots.push(slot);
+        slotById.set(bli.id, slot);
+    }
+
+    // Promotion has no BLIs in this basket — skip the productItems walk entirely.
+    if (slots.length === 0) {
+        return slots;
+    }
+
+    // Pass 2: walk productItems once; bonus items hit the slot map directly. Mutate the slot row in place. Items not
+    // targeting our slots are rejected in O(1).
+    if (basket.productItems) {
+        for (const productItem of basket.productItems) {
+            if (!productItem.bonusProductLineItem) {
+                continue;
+            }
+            const bliId = productItem.bonusDiscountLineItemId;
+            if (!bliId) {
+                continue;
+            }
+            const slot = slotById.get(bliId);
+            if (!slot) {
+                continue;
+            }
+            slot.bonusProductsSelected += productItem.quantity || 0;
+        }
+    }
+
+    return slots;
+}
+
+/**
  * Calculate bonus product counts for a specific promotion from basket data.
  *
  * This function counts how many bonus products have been selected for a promotion

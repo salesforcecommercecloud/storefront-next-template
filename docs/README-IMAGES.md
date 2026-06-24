@@ -100,7 +100,7 @@ Implementation: [src/lib/api/search.server.ts](../src/lib/api/search.server.ts).
 If you customize the product tile to read a different viewType (e.g. switch the hero from `medium` to `large`), you must update the matching role here — otherwise the tile will receive empty image arrays for the unrequested viewType. The OOTB consumers that should eventually read from these declarations are:
 
 - `tile` → [src/components/product-image/index.tsx](../src/components/product-image/index.tsx) (currently hardcodes `'medium'`)
-- `swatch` → [src/lib/product/product-utils.ts](../src/lib/product/product-utils.ts) (`buildImageSwatchData`, currently hardcodes `'swatch'`)
+- `swatch` → [src/lib/product/product-utils.ts](../src/lib/product/product-utils.ts) (`getDecoratedVariationAttributes`, defaults `swatchViewType` to `'swatch'`)
 
 The hardcoded strings in those consumers are tracked for a follow-up cleanup that will derive them from these same role-named declarations, eliminating drift.
 

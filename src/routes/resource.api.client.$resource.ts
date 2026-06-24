@@ -32,6 +32,10 @@ import {
 import type { Route } from './+types/resource.api.client.$resource';
 import { getLogger } from '@/lib/logger.server';
 
+// Selectively reloads registered `useScapiFetcher()` fetchers after a mutation, per the SCAPI revalidation policy,
+// and opts the route's own fetchers out of React Router's blanket auto-revalidation.
+export { shouldRevalidate } from '@/lib/routes/revalidation/api-client';
+
 // Re-export the foundational SCAPI types for backward compatibility with any
 // callers that still import from this route module. New code should import
 // directly from `@/lib/scapi/types`.

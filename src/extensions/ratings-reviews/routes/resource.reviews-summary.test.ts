@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/extensions/ratings-reviews/lib/api/reviews.server');
@@ -33,7 +34,8 @@ vi.mock('@/lib/utils', () => ({
     ),
 }));
 
-import { loader as loaderImpl } from './resource.reviews-summary';
+import { loader as loaderImpl, shouldRevalidate } from './resource.reviews-summary';
+import { shouldRevalidate as shouldRevalidateImpl } from '@/extensions/ratings-reviews/lib/routes/revalidation/reviews-summary';
 import { getReviewsSummary } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { expectStatus } from '@/lib/test-utils';
 import { resourceRoutes } from '@/route-paths';
@@ -88,5 +90,12 @@ describe('resource.reviews-summary loader', () => {
         expectStatus(response, 503);
         expect(response.data.success).toBe(false);
         expect(response.data.error).toBe('Lookup failed');
+    });
+
+    test('re-exports the canonical shouldRevalidate gate', () => {
+        // The route opts the fetcher out of default revalidation by re-exporting the gate;
+        // assert identity so the re-export can't silently drift to a wrong or missing symbol.
+        // The gate's own behavior is covered in the revalidation helper's test.
+        expect(shouldRevalidate).toBe(shouldRevalidateImpl);
     });
 });

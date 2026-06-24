@@ -39,7 +39,7 @@
  *
  * Test Strategy:
  * --------------
- * - Create new test user for isolation (signupFlow)
+ * - Create new test user for isolation (apiSignupFlow)
  * - Desktop-only tests (mobile coverage can be added later)
  * - Each test run uses a fresh user account (no cleanup needed)
  * - Focus on priority scenarios: Page Load, Add, Edit, Delete, Default Address Logic
@@ -47,7 +47,7 @@
  * Prerequisites:
  * --------------
  * - Requires Commerce Cloud backend with SCAPI access
- * - Test user created via signupFlow (no pre-existing account needed)
+ * - Test user created via apiSignupFlow (no pre-existing account needed)
  * - Storefront running at BASE_URL (default: http://localhost:5173)
  */
 
@@ -60,7 +60,7 @@ Feature('Account Addresses Tests').tag('@core').tag('@account').tag('@addresses'
 const isDeleteDefaultAddressBroken = true;
 const deleteDefaultAddressScenario = isDeleteDefaultAddressBroken ? Scenario.skip : Scenario;
 
-const { accountAddressesPage, apiLoginFlow, signupFlow, storefrontPage } = inject();
+const { accountAddressesPage, apiLoginFlow, apiSignupFlow, storefrontPage } = inject();
 import { expect } from 'chai';
 
 /**
@@ -79,9 +79,10 @@ let specPassword = '';
 Before(async () => {
     if (!specEmail) {
         // First scenario in this worker: create a fresh dedicated account.
-        // signupFlow leaves the user logged in, so no explicit login needed here.
+        // apiSignupFlow registers via SCAPI and injects the registered session,
+        // so the user is logged in — no explicit login needed here.
         await storefrontPage.clearCookies();
-        const { signupData } = await signupFlow.execute({ createBasket: false });
+        const { signupData } = await apiSignupFlow.execute();
         specEmail = signupData.email;
         specPassword = signupData.password;
     } else {

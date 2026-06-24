@@ -24,6 +24,7 @@ import {
     type ContextResolver,
     type SiteManifest,
     type QualifierContext,
+    type ResolvedDataBinding,
 } from '@salesforce/storefront-next-runtime/design/data';
 import {
     DataStore,
@@ -363,17 +364,55 @@ function getDuration(...values: (number | undefined)[]): number | undefined {
 }
 
 /**
+ * Maximum number of characters retained from a string value when sanitizing
+ * the resolved qualifier context for logging. Long values are truncated to
+ * this length so the log conveys what the content is without emitting the
+ * full (potentially very large) page-content payload.
+ */
+const MAX_LOGGED_STRING_LENGTH = 100;
+
+/**
+ * Truncates a string to {@link MAX_LOGGED_STRING_LENGTH}, appending an ellipsis
+ * marker that records how many characters were dropped. Strings at or under the
+ * limit are returned unchanged.
+ */
+function truncateString(value: string): string {
+    if (value.length <= MAX_LOGGED_STRING_LENGTH) return value;
+
+    return `${value.slice(0, MAX_LOGGED_STRING_LENGTH)}… (+${value.length - MAX_LOGGED_STRING_LENGTH} chars)`;
+}
+
+/**
+ * Returns a log-safe copy of a single {@link ResolvedDataBinding}.
+ *
+ * Preserves the original `field → value` shape so the log conveys the actual
+ * content of each binding, but truncates string values via
+ * {@link truncateString} — data-binding payloads can contain large HTML/markup
+ * blobs that would otherwise flood the debug stream. Non-string values (numbers,
+ * booleans, etc.) are small and kept as-is.
+ */
+function sanitizeDataBinding(binding: ResolvedDataBinding): Record<string, unknown> {
+    return Object.fromEntries(
+        Object.entries(binding).map(([field, value]) => [
+            field,
+            typeof value === 'string' ? truncateString(value) : value,
+        ])
+    );
+}
+
+/**
  * Returns a log-safe copy of the resolved qualifier context.
  *
  * `campaignQualifiers` and `customerGroups` are small scalar maps and are
  * included as-is. `dataBindings` can contain arbitrary page-content payloads
- * that may be very large, so each {@link ResolvedDataBinding} is replaced with
- * just its field names — preserving the `type → id` structure for
- * observability without emitting content values.
+ * that may be very large, so each {@link ResolvedDataBinding} is mapped through
+ * {@link sanitizeDataBinding} — preserving the `type → id → field → value`
+ * structure for observability while truncating long string values to a
+ * reasonable length.
  */
 function sanitizeResolvedContext(
     context: QualifierContext
-): Omit<QualifierContext, 'dataBindings'> & { dataBindings?: Record<string, Record<string, string[]>> } {
+): Omit<QualifierContext, 'dataBindings'> & { dataBindings?: Record<string, Record<string, Record<string, unknown>>> } {
     const { dataBindings, ...rest } = context;
 
     if (!dataBindings) return rest;
@@ -383,7 +422,9 @@ function sanitizeResolvedContext(
         dataBindings: Object.fromEntries(
             Object.entries(dataBindings).map(([type, bindingsById]) => [
                 type,
-                Object.fromEntries(Object.entries(bindingsById).map(([id, binding]) => [id, Object.keys(binding)])),
+                Object.fromEntries(
+                    Object.entries(bindingsById).map(([id, binding]) => [id, sanitizeDataBinding(binding)])
+                ),
             ])
         ),
     };

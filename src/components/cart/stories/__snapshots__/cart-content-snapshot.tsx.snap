@@ -2982,11 +2982,11 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                                   >
                                     <span
-                                      aria-label="Current price: $45.00"
+                                      aria-label="Current price: $40.00"
                                       aria-live="polite"
                                       class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                     >
-                                      $45.00
+                                      $40.00
                                     </span>
                                     <span
                                       aria-atomic="true"
@@ -2995,7 +2995,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     >
                                       Men's Classic Deer Gloves
                                        
-                                      Current price: $45.00
+                                      Current price: $40.00
                                     </span>
                                      
                                     <span
@@ -3023,7 +3023,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                   data-slot="badge"
                                 >
-                                  Saved $54.99
+                                  Saved $59.99
                                 </span>
                               </div>
                             </div>
@@ -3360,11 +3360,11 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                                   >
                                     <span
-                                      aria-label="Current price: $30.00"
+                                      aria-label="Current price: $27.00"
                                       aria-live="polite"
                                       class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                     >
-                                      $30.00
+                                      $27.00
                                     </span>
                                     <span
                                       aria-atomic="true"
@@ -3373,7 +3373,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     >
                                       Men's Classic Deer Gloves
                                        
-                                      Current price: $30.00
+                                      Current price: $27.00
                                     </span>
                                      
                                     <span
@@ -3401,7 +3401,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                   data-slot="badge"
                                 >
-                                  Saved $69.99
+                                  Saved $72.99
                                 </span>
                               </div>
                             </div>

@@ -33,7 +33,12 @@ vi.mock('@/extensions/bopis/context/pickup-context', () => ({
     usePickup: vi.fn(() => null),
 }));
 
-const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
+// `<Await resolve>` tracks promises by identity. Share a single already-resolved instance for
+// tests that don't exercise rule-based bonus carousels — a per-call `Promise.resolve({})` would
+// re-suspend the boundary every render and break unrelated assertions.
+const EMPTY_RULE_BASED_BONUS_PRODUCTS: Promise<Record<string, never>> = Promise.resolve({});
+
+const renderCartContent = (props: Omit<React.ComponentProps<typeof CartContent>, 'ruleBasedBonusProductsPromise'>) => {
     // Using createMemoryRouter in framework mode is fine
     // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
     // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
@@ -43,7 +48,7 @@ const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
                 path: '/cart',
                 element: (
                     <AllProvidersWrapper>
-                        <CartContent {...props} />
+                        <CartContent ruleBasedBonusProductsPromise={EMPTY_RULE_BASED_BONUS_PRODUCTS} {...props} />
                     </AllProvidersWrapper>
                 ),
             },

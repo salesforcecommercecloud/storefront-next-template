@@ -40,6 +40,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
 }));
 vi.mock('@/lib/turnstile/enforce.server', () => ({
     enforceTurnstile: vi.fn(),
+    resolveVerificationMode: vi.fn(() => 'enforce'),
 }));
 vi.mock('@/lib/cookie-utils.server', () => ({
     createCookie: vi.fn(() => ({

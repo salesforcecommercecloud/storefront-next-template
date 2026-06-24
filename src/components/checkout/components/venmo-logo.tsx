@@ -38,11 +38,10 @@ export default function VenmoLogo({
         <img
             src={venmoLogo}
             alt={decorative ? '' : label}
-            width="48"
-            height="12"
+            width="54"
+            height="11"
             {...(decorative ? { 'aria-hidden': true } : {})}
             className={`${className || ''} h-3 w-auto object-contain`}
-            style={{ filter: 'brightness(0) invert(1)' }}
         />
     );
 }

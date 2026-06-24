@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { Link } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 import logo from '/images/logo.svg';
 import LegalLinks from './legal-links';
 import NewsletterSection from './newsletter-section';
@@ -30,7 +29,7 @@ import Switchers from './switchers';
 export default function MainFooter(): ReactElement {
     const { t } = useTranslation('footer');
     const location = useLocation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const pathWithoutPrefix = stripPathPrefix({ pathname: location.pathname, prefix: config.url?.prefix || '' });
     const isHomepage = pathWithoutPrefix === '' || pathWithoutPrefix === '/';
 

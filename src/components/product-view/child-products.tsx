@@ -20,6 +20,7 @@ import { useProductActions } from '@/hooks/product/use-product-actions';
 import type { ShopperProducts } from '@/scapi';
 import { type ReactElement } from 'react';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
+import { hasPurchasablePrice } from '@/lib/product/price-utils';
 import ChildProductCard from './child-product-card';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
@@ -228,8 +229,19 @@ export default function ChildProducts({
     };
 
     // Allow add to cart if at least one delivery method is available
-    // User can switch delivery options in the UI if their current selection is out of stock
-    const canAddToCart = areAllChildProductsSelected && !hasUnorderableChildProducts && !isCompletelyOutOfStock;
+    // User can switch delivery options in the UI if their current selection is out of stock.
+    // Also require a price for the active currency: a set's price is its lowest child price and a
+    // bundle is charged at the parent price, so a missing parent price means no price-book entry
+    // for this currency (an explicit 0 is still allowed). For sets, per-child price gating also
+    // flows in via hasUnorderableChildProducts (each child card's canAddToCart includes price).
+    // Edit mode bypasses the price gate: an item already in the basket must remain editable even
+    // if the catalog price is currently missing for the active currency.
+    const isEditMode = mode === 'edit';
+    const canAddToCart =
+        areAllChildProductsSelected &&
+        !hasUnorderableChildProducts &&
+        !isCompletelyOutOfStock &&
+        (isEditMode || hasPurchasablePrice(parentProduct));
 
     if (!isProductASet && !isProductABundle) {
         return null;
@@ -246,6 +258,7 @@ export default function ChildProducts({
                         onSelectionChange={setChildProductSelection}
                         onOrderabilityChange={setChildProductOrderability}
                         selectionSource={selectionSource}
+                        isEditMode={isEditMode}
                     />
                 ))}
             </div>

@@ -33,6 +33,16 @@ vi.mock('@/components/image-gallery', () => ({
     },
 }));
 
+// Prop-capture mock for <ProductPrice> so we can assert that the card threads `allowMissingPrice`
+// down to the price display (in lockstep with the gate's allowMissingPrice).
+const capturedProductPriceProps: { last: any } = { last: null };
+vi.mock('@/components/product-price', () => ({
+    default: (props: any) => {
+        capturedProductPriceProps.last = props;
+        return <div data-testid="product-price" />;
+    },
+}));
+
 vi.mock('@/hooks/product/use-current-variant', () => ({
     useCurrentVariant: () => null,
 }));
@@ -133,6 +143,7 @@ describe('ChildProductCard', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         capturedImageGalleryProps.last = null;
+        capturedProductPriceProps.last = null;
 
         // Set up stable mock state
         mockStore.getState.mockReturnValue({
@@ -797,5 +808,89 @@ describe('ChildProductCard', () => {
         });
     });
 
-    // (moved tests into appropriate groups below)
+    describe('price gate (allowMissingPrice flow)', () => {
+        const captureActionsArgs = async () => {
+            const actionsModule = await import('@/hooks/product/use-product-actions');
+            const spy = vi.spyOn(actionsModule, 'useProductActions').mockReturnValue({
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: true,
+                stockLevel: 10,
+                isOutOfStock: false,
+                handleAddToCart: vi.fn(),
+                quantity: 1,
+                setQuantity: vi.fn(),
+            } as never);
+            return spy;
+        };
+
+        test('passes allowMissingPrice=false to useProductActions for set children by default', async () => {
+            const spy = await captureActionsArgs();
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: createSetProduct(),
+                onSelectionChange: mockOnSelectionChange,
+            });
+            expect(spy).toHaveBeenCalledWith(expect.objectContaining({ allowMissingPrice: false }));
+        });
+
+        test('passes allowMissingPrice=true for set children in edit mode (cart-edit)', async () => {
+            // Regression: per-child price gate must bypass in edit mode so
+            // hasUnorderableChildProducts doesn't re-block the parent Update button.
+            const spy = await captureActionsArgs();
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: createSetProduct(),
+                onSelectionChange: mockOnSelectionChange,
+                isEditMode: true,
+            });
+            expect(spy).toHaveBeenCalledWith(expect.objectContaining({ allowMissingPrice: true }));
+        });
+
+        test('passes allowMissingPrice=true for bundle children regardless of mode', async () => {
+            // Bundle children are charged at the parent price, so they should never block on
+            // their own missing price.
+            const spy = await captureActionsArgs();
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: { id: 'b1', name: 'Bundle', type: { bundle: true } } as never,
+                onSelectionChange: mockOnSelectionChange,
+            });
+            expect(spy).toHaveBeenCalledWith(expect.objectContaining({ allowMissingPrice: true }));
+        });
+
+        // Display must apply the same rule as the gate (display/gate invariant). Each gate case
+        // above has a matching display assertion below — if these ever drift the row will show
+        // "Price unavailable" next to an enabled control, or vice versa.
+
+        test('ProductPrice gets allowMissingPrice=false for set children by default (matches gate)', () => {
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: createSetProduct(),
+                onSelectionChange: mockOnSelectionChange,
+            });
+            expect(capturedProductPriceProps.last?.allowMissingPrice).toBe(false);
+        });
+
+        test('ProductPrice gets allowMissingPrice=true for set children in edit mode (matches gate)', () => {
+            // Regression: prior to the fix, the gate took `!isParentProductASet || isEditMode`
+            // but the display only took `!isParentProductASet`, so a set child in cart-edit
+            // rendered "Price unavailable" right next to an enabled parent Update.
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: createSetProduct(),
+                onSelectionChange: mockOnSelectionChange,
+                isEditMode: true,
+            });
+            expect(capturedProductPriceProps.last?.allowMissingPrice).toBe(true);
+        });
+
+        test('ProductPrice gets allowMissingPrice=true for bundle children regardless of mode (matches gate)', () => {
+            renderChildProductCard({
+                childProduct: createStandardProduct(),
+                parentProduct: { id: 'b1', name: 'Bundle', type: { bundle: true } } as never,
+                onSelectionChange: mockOnSelectionChange,
+            });
+            expect(capturedProductPriceProps.last?.allowMissingPrice).toBe(true);
+        });
+    });
 });

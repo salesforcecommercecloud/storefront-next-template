@@ -45,6 +45,8 @@ import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
+export { shouldRevalidate } from '@/lib/routes/revalidation/home';
+
 @PageType({
     name: 'Home Page',
     description: 'Main landing page with hero carousel, featured products, and help sections',

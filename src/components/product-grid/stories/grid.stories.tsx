@@ -73,7 +73,7 @@ const MAX_PRODUCTS = ALL_PRODUCTS.length;
 const meta: Meta<typeof ProductGrid> = {
     title: 'PRODUCTS/Product Grid',
     component: ProductGrid,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         docs: {
             description: {

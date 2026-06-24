@@ -73,7 +73,7 @@ type SyntheticArgs = {
 const meta: Meta<typeof ProductView> = {
     title: 'Components/ProductView/ProductView',
     component: ProductView,
-    tags: ['autodocs'],
+    tags: ['autodocs', 'chromatic-core'],
     parameters: {
         layout: 'fullscreen',
         docs: {

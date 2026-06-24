@@ -15,17 +15,12 @@
  */
 
 /**
- * Einstein Recommender Name Constants
- *
- * These constants represent the recommender names configured in Business Manager
- * and can be used when calling the recommendations API.
- *
- * Public adapter-name identifiers — they ship in the client bundle (no `.server.ts`
- * suffix). They contain no secrets.
+ * Einstein recommender name constants matching Business Manager configuration.
+ * Used by route loaders (via `fetchProductRecommendations`) and recommendation components.
  *
  * @example
  * ```tsx
- * import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+ * import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
  *
  * <ProductRecommendations
  *   recommenderName={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}

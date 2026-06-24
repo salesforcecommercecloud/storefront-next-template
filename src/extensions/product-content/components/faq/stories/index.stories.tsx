@@ -17,12 +17,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockAltSiteObject, mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 import Faq from '../index';
-import type { ReactElement } from 'react';
 
 /** FAQ only mounts when shopper agent is enabled and passes validation (matches unit test fixtures). */
 const faqStoryConfig = {
@@ -38,67 +36,127 @@ const faqStoryConfig = {
     },
 };
 
-const mockQuestions = [
+const DEFAULT_QUESTIONS = [
     'What sizes does this come in?',
     'Which color would work best for a minimalist space?',
     'Will this work in a minimalist living room?',
 ];
 
-function FaqWrapper(): ReactElement {
-    const inRouter = useInRouterContext();
-    const content = (
-        <ConfigProvider config={faqStoryConfig}>
-            <SiteProvider
-                site={faqStoryConfig.commerce.sites[0]}
-                locale={faqStoryConfig.commerce.sites[0].supportedLocales[0]}
-                language={mockSiteObject.defaultLocale}
-                currency={mockSiteObject.defaultCurrency}>
-                <div className="max-w-md p-6">
-                    <Faq questions={mockQuestions} />
-                </div>
-            </SiteProvider>
-        </ConfigProvider>
-    );
+const LONG_QUESTIONS = [
+    'I am furnishing a small studio apartment with limited natural light and a mostly cream and oak palette — would this piece work harmoniously, or would the contrast feel too stark?',
+    'How does the construction handle long-term daily use, particularly in households with pets and kids who tend to be rougher on furniture than the average customer?',
+    'Is there a recommended care routine for keeping the surface looking new across changing seasons in a coastal humid climate?',
+];
 
-    if (inRouter) {
-        return content;
-    }
+type FaqStoryArgs = {
+    questions: string[];
+};
 
-    const router = createMemoryRouter(
-        [
-            {
-                path: '/',
-                element: content,
-            },
-        ],
-        { initialEntries: ['/'] }
-    );
-
-    return <RouterProvider router={router} />;
-}
-
-const meta: Meta<typeof FaqWrapper> = {
+const meta: Meta<FaqStoryArgs> = {
     title: 'Extensions/ProductContent/Faq',
-    component: FaqWrapper,
+    component: Faq,
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
+        docs: {
+            description: {
+                component:
+                    'PDP-level FAQ section that surfaces shopper-agent suggested questions. Mounts only when (a) the commerce agent is enabled and validates, and (b) the shopper-agent context UI flag is on, and (c) at least one question is supplied. Page-level coverage (per WI Step 5) — story renders the full collapsible section with the AI badge, not just the question rows.',
+            },
+        },
     },
+    argTypes: {
+        questions: {
+            description:
+                'Questions resolved from the route loader. Empty array → component returns null (renders nothing).',
+            control: 'object',
+        },
+    },
+    args: {
+        questions: DEFAULT_QUESTIONS,
+    },
+    // composeStories runs outside the global decorator stack; Faq calls useConfig() and useSite()
+    // so we declare the providers on the meta to satisfy both the storybook UI and any snapshot path.
+    decorators: [
+        (Story) => (
+            <ConfigProvider config={faqStoryConfig}>
+                <SiteProvider
+                    site={faqStoryConfig.commerce.sites[0]}
+                    locale={faqStoryConfig.commerce.sites[0].supportedLocales[0]}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <div className="max-w-md p-6">
+                        <Story />
+                    </div>
+                </SiteProvider>
+            </ConfigProvider>
+        ),
+    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof FaqWrapper>;
+type Story = StoryObj<FaqStoryArgs>;
+
+export const Playground: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Edit the questions array directly to explore every authoring shape.',
+            },
+        },
+    },
+};
 
 export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const heading = await canvas.findByText('Ask assistant', {}, { timeout: 5000 });
-        await expect(heading).toBeInTheDocument();
+        await expect(await canvas.findByText(/ask assistant/i)).toBeInTheDocument();
         await expect(canvas.getByText('AI')).toBeInTheDocument();
-        await expect(canvas.getByText('What sizes does this come in?')).toBeInTheDocument();
-        await expect(canvas.getByText('Which color would work best for a minimalist space?')).toBeInTheDocument();
-        await expect(canvas.getByText('Will this work in a minimalist living room?')).toBeInTheDocument();
+        for (const q of DEFAULT_QUESTIONS) {
+            await expect(canvas.getByText(q)).toBeInTheDocument();
+        }
+    },
+};
+
+export const EmptyQuestions: Story = {
+    args: {
+        questions: [],
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'When the loader resolves with no questions (or no shopper-agent context), the component returns null — nothing renders on the page. Coverage for the merchant-facing "no FAQ available" state.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Component returned null — no Ask Assistant heading, no AI badge.
+        await expect(canvas.queryByText(/ask assistant/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByText('AI')).not.toBeInTheDocument();
+    },
+};
+
+export const LongCopy: Story = {
+    args: {
+        questions: LONG_QUESTIONS,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'AC #2 long-copy authoring — verifies the question-row layout (sparkle icon + question text + chevron) handles multi-sentence questions without breaking the truncation/wrap behavior.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(await canvas.findByText(/ask assistant/i)).toBeInTheDocument();
+        await expect(canvas.getByText(LONG_QUESTIONS[0])).toBeInTheDocument();
     },
 };

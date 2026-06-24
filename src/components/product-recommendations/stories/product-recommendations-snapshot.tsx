@@ -28,24 +28,11 @@ const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() =
     return { createContext: React.createContext, actualReactRouter: reactRouter };
 });
 
-// Mock the necessary hooks and providers
-vi.mock('@/hooks/recommenders/use-recommenders', () => ({
-    useRecommenders: vi.fn(() => ({
-        isLoading: false,
-        isEnabled: true,
-        recommendations: {
-            recoUUID: 'test-uuid',
-            recommenderName: 'pdp-similar-items',
-            displayMessage: 'You May Also Like',
-            recs: [],
-        },
-        error: null,
-        getRecommenders: vi.fn(),
-        getRecommendations: vi.fn(),
-        getZoneRecommendations: vi.fn(),
-    })),
-}));
-
+// Pattern 3 cleanup (W-22451618 followup): the `useRecommenders` mock that
+// previously lived here was dead boilerplate — the Playground story now passes
+// a resolved `Promise<Recommendation>` through the `data` prop, which bypasses
+// `useRecommenders` entirely (the hook is only invoked when `data` is absent).
+//
 // Mock react-router hooks
 vi.mock('react-router', () => {
     return {

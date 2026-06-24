@@ -103,6 +103,22 @@ class SignupPage {
     }
 
     /**
+     * Re-assert the form's most fragile fields are present immediately before a
+     * fill. The signup form is server-rendered and present on first paint, so
+     * `validatePageLoaded` passes against the SSR HTML — but React reconciliation
+     * during hydration can briefly detach the SSR input nodes, so the node
+     * vanishes between that check and the `fillField` ("Last Name Input"
+     * disappearing mid-form). Re-asserting here (Last Name first — it's the field
+     * that flakes) narrows the window; the flow layer wraps the fill in a single
+     * retry for the rare case a node detaches mid-fill. `seeElement` is an
+     * assertion (Playwright auto-waits), not a readiness `wait`.
+     */
+    assertFormInteractive(): void {
+        I.seeElement(this.locators.lastNameInput);
+        I.seeElement(this.locators.firstNameInput);
+    }
+
+    /**
      * Fill in the complete signup form
      * @param data - Signup form data
      */

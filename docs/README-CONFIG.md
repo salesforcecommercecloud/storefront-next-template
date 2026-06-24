@@ -35,9 +35,11 @@ export function MyComponent() {
 }
 ```
 
-> Both functions return `AppConfig` because the template augments
-> `AppConfigShape` once in `src/types/config.ts`. Future templates do the same
-> for their own `AppConfig` shape.
+> `getConfig()` returns the full `AppConfig`; `useConfig()` returns the narrowed
+> `Omit<AppConfig, 'serverExtension'>` so client-side reads can't reach
+> server-only namespaces. Both shapes come from the template's two augmentations
+> in `src/types/config.ts` (`AppConfigShape` and `ClientFacingAppConfigShape`).
+> Future templates fill the same two slots for their own shapes.
 
 ## Required vs Optional Variables
 
@@ -85,7 +87,7 @@ Every variable the storefront recognizes is listed here. Set the **Required** ro
 | `PUBLIC__app__features__shopperContext__enabled` | `false` | Shopper context API |
 | `PUBLIC__app__defaultSiteId` | (single-site default) | Override default site |
 | `PUBLIC__app__commerce__sites` | (single-site default) | Multi-site JSON config |
-| `PUBLIC__app__site__cookies__domain` | browser default | Cookie domain (e.g. `.example.com`) |
+| `PUBLIC__app__cookies__domain` | host-only | Global default cookie domain for all cookies (e.g. `.example.com`); per-site `commerce.sites[].cookies.domain` overrides it |
 | `PUBLIC__app__commerce__api__guestRefreshTokenExpirySeconds` | from API response | Override guest refresh-token TTL |
 | `PUBLIC__app__commerce__api__registeredRefreshTokenExpirySeconds` | from API response | Override registered refresh-token TTL |
 | `PUBLIC__app__features__googleCloudAPI__apiKey` | — | Google Address Autocomplete |
@@ -365,6 +367,43 @@ export function loader({ context }: LoaderFunctionArgs) {
 }
 ```
 
+### Extension config auto-discovery
+
+The steps above are for config the template owns. **Extensions** add client-side config without editing `src/types/config.ts` or `config.server.ts`: drop a `config.ts` in the extension folder that default-exports a plain object, and the build prestep (`pnpm dev` / `pnpm build`) discovers it, merges it into `config.app.extension.<camelCaseFolder>`, and derives the type automatically. Merchants then override per environment with `PUBLIC__app__extension__<key>__<setting>` — no core-file edits. See [src/extensions/README.md](../src/extensions/README.md#extension-configuration) for the authoring guide.
+
+Extension keys are set via `PUBLIC__` env vars / `.env`; they are not added to `config-meta.json`, so they don't appear in the create-storefront prompts.
+
+### Server-only extension config (`server-config.ts`)
+
+`config.ts` reaches the browser by design. For values an extension needs at runtime that must **never** be serialized into `window.__APP_CONFIG__` (vendor-side SCAPI service overrides, retry budgets, internal-only endpoints), drop a `server-config.ts` next to `config.ts`:
+
+```typescript
+// src/extensions/loqate-address-verification/server-config.ts
+export default {
+    scapiOverride: '',
+    retryBudget: 3,
+};
+```
+
+Read the value from a server loader, action, or middleware:
+
+```typescript
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+
+export function loader({ context }: LoaderFunctionArgs) {
+    const { scapiOverride } = getConfig(context).serverExtension?.loqateAddressVerification ?? {};
+    // …
+}
+```
+
+Same drop-a-file ergonomics as the client side — the build prestep aggregates every extension's `server-config.ts` into `src/extensions/config/server.ts` (auto-generated, do not edit) and merges it into `config.app.serverExtension.<camelCaseFolder>`. Three structural guarantees keep the values off the client:
+
+- The client config extractor (`src/lib/app-config-client.ts`) strips `app.serverExtension` before writing `window.__APP_CONFIG__`.
+- A Vite plugin (`vite-plugins/server-only-config-guard.ts`) fails the build if any client chunk imports `src/extensions/config/server`.
+- `useConfig()` and `getConfig()`'s client-facing overloads (no-arg and `getConfig(ctx | undefined)`) are type-narrowed to omit `app.serverExtension`, so reading `.serverExtension` from any of them is a TypeScript error in client code. The server `getConfig(context)` overload still returns the full shape. The narrow is wired through the SDK's `ClientFacingAppConfigShape` slot, which the template fills with `ClientAppConfig` (`Omit<AppConfig, ServerOnlyNamespace>`); adding a server-only namespace to `SERVER_ONLY_NAMESPACES` (`src/lib/app-config-client.ts`) updates the runtime extractor and the type narrow together.
+
+There is no `PUBLIC__` override path by design — the same AST validator runs on `server-config.ts`, so a `process.env.X` read still throws at discovery time. For true secrets that *must* vary per environment (SLAS secrets, Marketing Cloud credentials), keep using `process.env` from a server route — never put them in `server-config.ts`.
+
 ## How It Works
 
 1. **Types defined** in `src/types/config.ts` — `AppConfig` defines all app fields, `Config = BaseConfig<AppConfig>`
@@ -376,15 +415,18 @@ export function loader({ context }: LoaderFunctionArgs) {
    - `useConfig()` for React components
    - `window.__APP_CONFIG__` for client code
 
-   `getConfig` and `useConfig` return `AppConfig` automatically because the template augments `AppConfigShape` in `src/types/config.ts`:
+   `getConfig(context)` returns the full `AppConfig`; `getConfig()` (no-context) and `useConfig()` return the narrowed `Omit<AppConfig, 'serverExtension'>` (see "Server-only extension config" above) — all automatic because the template fills two augmentation slots in `src/types/config.ts`:
 
    ```typescript
    declare module '@salesforce/storefront-next-runtime/config' {
        interface AppConfigShape extends AppConfig {}
+       interface ClientFacingAppConfigShape extends ClientAppConfig {}
    }
    ```
 
-   > **Multi-template caveat:** if you build two templates in the same TS program (rare — usually each template has its own `tsconfig`), only one `AppConfigShape extends ...` wins. Fall back to an explicit per-call generic in the loser: `getConfig<MyAppConfig>(context)`.
+   `ClientAppConfig` is `Omit<AppConfig, ServerOnlyNamespace>` from `src/lib/app-config-client.ts`, which keeps the runtime extractor and the type narrow reading the same source.
+
+   > **Multi-template caveat:** if you build two templates in the same TS program (rare — usually each template has its own `tsconfig`), only one `extends ...` per slot wins. Fall back to explicit per-call generics in the loser: `getConfig<MyAppConfig>(context)` and `useConfig<MyClientAppConfig>()`.
 
 5. **Custom middleware** can read the resolved app config from `appConfigContext` — this is the same context that `getConfig(context)` reads from internally:
 
@@ -594,9 +636,16 @@ See `src/components/shopper-agent/README.md` for environment-specific setup.
 
 ### Cookie domain
 
+Sets the default `Domain` on every cookie the storefront writes — auth/session and site-context
+(`site_id`, locale, currency). A per-site `commerce.sites[].cookies.domain` overrides it for that
+site. Unset = host-only scoping; setting a domain is opt-in.
+
 ```bash
-# PUBLIC__app__site__cookies__domain=.example.com
+# PUBLIC__app__cookies__domain=.example.com
 ```
+
+See [Cookie Domain Configuration](./README-COOKIE-DOMAIN.md) for the full guide, including the
+matching Business Manager setting and rollout guidance.
 
 ### Refresh-token expiry overrides
 

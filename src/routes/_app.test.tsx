@@ -25,8 +25,27 @@ vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 
+vi.mock('@/lib/page-designer/component-loader.server', () => ({
+    fetchComponentWithComponentData: vi.fn(),
+}));
+
+vi.mock('@/components/region/embedded-component-region', () => ({
+    EmbeddedComponentRegion: ({ component, regionId }: { component: unknown; regionId: string }) => (
+        <div
+            data-testid="embedded-component-region"
+            data-region-id={regionId}
+            data-has-component={component == null ? 'false' : 'true'}
+        />
+    ),
+}));
+
 vi.mock('@/components/header', () => ({
-    default: ({ children }: { children?: ReactNode }) => <header data-testid="header">{children}</header>,
+    default: ({ children, announcementSlot }: { children?: ReactNode; announcementSlot?: ReactNode }) => (
+        <header data-testid="header" data-has-announcement-slot={announcementSlot ? 'true' : 'false'}>
+            {announcementSlot}
+            {children}
+        </header>
+    ),
 }));
 
 vi.mock('@/components/footer', () => ({
@@ -291,14 +310,51 @@ describe('_app.tsx - Default Layout Route', () => {
             mockFetchCategory.mockResolvedValue(mockRootCategory);
 
             const mockContext = {} as any;
-            const result = loader({ context: mockContext } as any);
+            const result = loader({ context: mockContext, request: new Request('https://example.test/') } as any);
 
             expect(mockFetchCategory).toHaveBeenCalledWith(mockContext, 'root', 1);
             expect(result).toHaveProperty('root');
             expect(result).toHaveProperty('subs');
+            expect(result).toHaveProperty('headerComponent');
 
             const rootCategory = await result.root;
             expect(rootCategory).toEqual(mockRootCategory);
+        });
+
+        it('should fetch header embedded component data with componentId="header"', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories.server');
+            const { fetchComponentWithComponentData } = await import('@/lib/page-designer/component-loader.server');
+            const mockFetchCategory = vi.mocked(fetchCategory);
+            const mockFetchComponent = vi.mocked(fetchComponentWithComponentData);
+
+            mockFetchCategory.mockResolvedValue({ id: 'root', name: 'Root', categories: [] });
+            mockFetchComponent.mockResolvedValue({ id: 'header-component' } as never);
+
+            const mockContext = {} as any;
+            const request = new Request('https://example.test/');
+            const result = loader({ context: mockContext, request } as any);
+
+            expect(mockFetchComponent).toHaveBeenCalledTimes(1);
+            const [args, options] = mockFetchComponent.mock.calls[0];
+            expect(args).toMatchObject({ context: mockContext, request, params: {} });
+            expect(options).toEqual({ componentId: 'header' });
+
+            const headerComponent = await result.headerComponent;
+            expect(headerComponent).toEqual({ id: 'header-component' });
+        });
+
+        it('should propagate null when fetchComponentWithComponentData resolves to null', async () => {
+            const { fetchCategory } = await import('@/lib/api/categories.server');
+            const { fetchComponentWithComponentData } = await import('@/lib/page-designer/component-loader.server');
+            vi.mocked(fetchCategory).mockResolvedValue({ id: 'root', name: 'Root', categories: [] });
+            vi.mocked(fetchComponentWithComponentData).mockResolvedValue(null);
+
+            const result = loader({
+                context: {} as any,
+                request: new Request('https://example.test/'),
+            } as any);
+
+            await expect(result.headerComponent).resolves.toBeNull();
         });
 
         it('should load subcategories for categories with onlineSubCategoriesCount > 0', async () => {
@@ -333,7 +389,7 @@ describe('_app.tsx - Default Layout Route', () => {
                 .mockResolvedValueOnce(mockSubCategory3);
 
             const mockContext = {} as any;
-            const result = loader({ context: mockContext } as any);
+            const result = loader({ context: mockContext, request: new Request('https://example.test/') } as any);
 
             const subs = await result.subs;
 
@@ -359,7 +415,7 @@ describe('_app.tsx - Default Layout Route', () => {
             mockFetchCategory.mockResolvedValue(mockRootCategory);
 
             const mockContext = {} as any;
-            const result = loader({ context: mockContext } as any);
+            const result = loader({ context: mockContext, request: new Request('https://example.test/') } as any);
 
             const subs = await result.subs;
 
@@ -379,7 +435,7 @@ describe('_app.tsx - Default Layout Route', () => {
             mockFetchCategory.mockResolvedValue(mockRootCategory);
 
             const mockContext = {} as any;
-            const result = loader({ context: mockContext } as any);
+            const result = loader({ context: mockContext, request: new Request('https://example.test/') } as any);
 
             const subs = await result.subs;
 
@@ -400,7 +456,7 @@ describe('_app.tsx - Default Layout Route', () => {
             mockFetchCategory.mockResolvedValue(mockRootCategory);
 
             const mockContext = {} as any;
-            const result = loader({ context: mockContext } as any);
+            const result = loader({ context: mockContext, request: new Request('https://example.test/') } as any);
 
             expect(result.root).toBeInstanceOf(Promise);
             expect(result.subs).toBeInstanceOf(Promise);

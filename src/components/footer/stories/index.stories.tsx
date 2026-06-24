@@ -44,7 +44,7 @@ interface FooterStoryArgs {
 
 const meta: Meta<FooterStoryArgs> = {
     title: 'LAYOUT/Footer',
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         layout: 'fullscreen',
         docs: {

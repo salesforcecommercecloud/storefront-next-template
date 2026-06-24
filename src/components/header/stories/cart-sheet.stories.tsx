@@ -18,7 +18,8 @@ import { useEffect, type ReactElement, type ReactNode } from 'react';
 import { expect, within } from 'storybook/test';
 import CartSheet from '../cart-sheet';
 import { Button } from '@/components/ui/button';
-import BasketProvider, { useMiniCart } from '@/providers/basket';
+import BasketProvider from '@/providers/basket';
+import { setMiniCartOpen } from '@/hooks/mini-cart-store';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
@@ -28,10 +29,10 @@ import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 function CartSheetWithState({ children }: { children: ReactNode }): ReactElement {
-    const { setMiniCartOpen } = useMiniCart();
     useEffect(() => {
         setMiniCartOpen(true);
-    }, [setMiniCartOpen]);
+        return () => setMiniCartOpen(false);
+    }, []);
     return <CartSheet>{children}</CartSheet>;
 }
 
