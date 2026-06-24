@@ -168,7 +168,7 @@
     "@types/react-dom": "^19.0.0",
     "@types/semver": "^7.5.8",
     "@vitejs/plugin-react": "5.0.3",
-    "@vitest/coverage-v8": "4.0.18",
+    "@vitest/coverage-v8": "4.1.8",
     "happy-dom": "20.0.10",
     "i18next": "25.5.3",
     "i18next-browser-languagedetector": "8.2.0",
@@ -181,7 +181,7 @@
     "shx": "^0.4.0",
     "tsdown": "^0.15.4",
     "typescript": "^5.6.0",
-    "vitest": "4.0.18"
+    "vitest": "4.1.8"
   },
   "peerDependencies": {
     "@react-router/dev": ">=7.0.0",
