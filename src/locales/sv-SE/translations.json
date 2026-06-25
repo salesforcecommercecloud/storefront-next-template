@@ -355,7 +355,7 @@
                 "minLength": "Kampanjkoden måste bestå av minst 2 tecken."
             },
             "errors": {
-                "invalidCode": "Ogiltig kupongkod",
+                "invalidCode": "Kupongkoden ”{{code}}” är ogiltig.",
                 "expiredCode": "Denna kampanjkod har löpt ut.",
                 "alreadyApplied": "Denna kampanjkod är redan tillämpad.",
                 "notApplicable": "Denna kampanjkod går inte att använda med din kundvagn.",

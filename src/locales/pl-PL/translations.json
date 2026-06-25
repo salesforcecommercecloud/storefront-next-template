@@ -360,7 +360,7 @@
                 "minLength": "Promo musi zawierać co najmniej 2 znaki."
             },
             "errors": {
-                "invalidCode": "Nieważny kod kuponu",
+                "invalidCode": "Kod kuponu „{{code}}” jest nieważny.",
                 "expiredCode": "Ten kod promocyjny wygasł.",
                 "alreadyApplied": "Ten kod promocyjny został już zastosowany.",
                 "notApplicable": "Ten kod promocyjny nie ma zastosowania do Twojego koszyka",

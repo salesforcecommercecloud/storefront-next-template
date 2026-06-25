@@ -365,7 +365,7 @@
                 "minLength": "La promozione deve contenere almeno 2 caratteri."
             },
             "errors": {
-                "invalidCode": "Codice coupon non valido",
+                "invalidCode": "Il codice coupon «{{code}}» non è valido.",
                 "expiredCode": "Questo codice promozionale è scaduto.",
                 "alreadyApplied": "Questo codice promozionale è già stato applicato.",
                 "notApplicable": "Questo codice promozionale non è applicabile al tuo carrello",

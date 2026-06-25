@@ -79,6 +79,8 @@ export function httpStatusForErrorCode(code: string): number {
             return 405;
         case ErrorCode.CONFLICT:
             return 409;
+        case ErrorCode.EXPIRED:
+            return 410;
         case ErrorCode.RATE_LIMITED:
             return 429;
         default:

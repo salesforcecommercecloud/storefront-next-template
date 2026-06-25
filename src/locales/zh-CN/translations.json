@@ -357,7 +357,7 @@
                 "minLength": "促销代码必须至少为 2 个字符。"
             },
             "errors": {
-                "invalidCode": "优惠券代码无效",
+                "invalidCode": "优惠券代码“{{code}}”无效。",
                 "expiredCode": "此促销代码已过期。",
                 "alreadyApplied": "此促销代码已被应用。",
                 "notApplicable": "此促销代码不适用于您的购物车",

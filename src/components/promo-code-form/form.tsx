@@ -29,6 +29,7 @@ import { formatCurrency } from '@/lib/currency';
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { isCouponApplied } from '@/lib/cart/coupon-status';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 //types
@@ -70,6 +71,12 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
 
     const schema = useMemo(() => createPromoCodeFormSchema(t), [t]);
 
+    // Only render coupons that actually produced a discount. SCAPI keeps
+    // valid-but-ineligible coupons (e.g. statusCode 'no_applicable_promotion')
+    // on the basket so they auto-apply once a qualifying item is added, but
+    // they must not be presented to the shopper as applied.
+    const appliedCoupons = useMemo(() => basket?.couponItems?.filter(isCouponApplied) ?? [], [basket?.couponItems]);
+
     const form = useForm<PromoCodeFormData>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -92,8 +99,11 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 form.reset({ code: '' });
                 addToast(t('promoCode.successMessage'), 'success');
             } else {
-                // Get the error message from the API response
-                const errorMessage = t('promoCode.errorMessage');
+                // Prefer the server's status-specific message (e.g. the generic
+                // "unable to apply" message for a valid-but-ineligible or unknown
+                // coupon) and fall back to the generic message when the action
+                // didn't provide one.
+                const errorMessage = applyFetcher.data.error?.message || t('promoCode.errorMessage');
 
                 // Set the form error with the specific API error message
                 form.setError('code', {
@@ -158,17 +168,17 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 </AccordionItem>
             </Accordion>
 
-            {basket && basket.couponItems && basket.couponItems.length > 0 && (
+            {appliedCoupons.length > 0 && (
                 <div className="space-y-1" data-testid="applied-coupons">
-                    {basket.couponItems.map((item) => (
+                    {appliedCoupons.map((item) => (
                         <AppliedCouponRow
                             key={item.couponItemId}
                             item={item}
                             basketId={basketId}
-                            currency={basket.currency ?? siteCurrency}
+                            currency={basket?.currency ?? siteCurrency}
                             priceAdjustments={[
-                                ...(basket.orderPriceAdjustments ?? []),
-                                ...(basket.productItems ?? []).flatMap((p) => p.priceAdjustments ?? []),
+                                ...(basket?.orderPriceAdjustments ?? []),
+                                ...(basket?.productItems ?? []).flatMap((p) => p.priceAdjustments ?? []),
                             ]}
                         />
                     ))}

@@ -373,7 +373,7 @@
                 "minLength": "Promo must be at least 2 characters long."
             },
             "errors": {
-                "invalidCode": "Invalid coupon code",
+                "invalidCode": "Coupon code '{{code}}' is invalid.",
                 "expiredCode": "This promo code has expired.",
                 "alreadyApplied": "This promo code is already applied.",
                 "notApplicable": "This promo code isn't applicable to your cart",

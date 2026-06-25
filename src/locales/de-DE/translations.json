@@ -355,7 +355,7 @@
                 "minLength": "Aktionscode muss mindestens 2 Zeichen enthalten."
             },
             "errors": {
-                "invalidCode": "Ungültiger Gutscheincode",
+                "invalidCode": "Der Gutscheincode „{{code}}“ ist ungültig.",
                 "expiredCode": "Dieser Aktionscode ist abgelaufen.",
                 "alreadyApplied": "Dieser Aktionscode wurde bereits angewendet.",
                 "notApplicable": "Dieser Aktionscode gilt nicht für Ihren Warenkorb.",

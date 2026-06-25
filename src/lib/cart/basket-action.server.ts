@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { data, type ActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2 } from '@/scapi';
+import { ApiError, type ShopperBasketsV2 } from '@/scapi';
 import type { AppClients } from '@/scapi/custom-clients';
 import type { Logger } from '@/lib/logger';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
@@ -73,7 +73,8 @@ type BasketActionData = ReturnType<typeof data<BasketActionResponse>>;
  * - `BasketActionData` — A `data()`-wrapped {@link BasketActionResponse} for
  *   validation errors or other custom responses mid-handler.
  * - Throwing — The factory catches the error and returns
- *   `{ success: false, error }` with status 500.
+ *   `{ success: false, error }`. A thrown SCAPI 4xx (e.g. an unknown coupon
+ *   code → 400) passes its status through; 5xx and non-API errors become 500.
  */
 type HandlerResult = Basket | BasketActionData;
 
@@ -195,7 +196,12 @@ export function createBasketAction<TInput>(
             return data({ success: true, basket: basketResult });
         } catch (error) {
             logger.error(`${action}: failed`, { error });
-            return data({ success: false, error: createActionError({ error }) }, { status: 500 });
+            // A thrown SCAPI 4xx is a client/business outcome (e.g. an unknown
+            // coupon code → 400), not a server fault — pass its status through so
+            // it isn't misreported as a 500 in error-rate monitoring. Server-side
+            // (5xx) and non-API errors still surface as 500.
+            const status = error instanceof ApiError && error.status >= 400 && error.status < 500 ? error.status : 500;
+            return data({ success: false, error: createActionError({ error }) }, { status });
         }
     };
 }

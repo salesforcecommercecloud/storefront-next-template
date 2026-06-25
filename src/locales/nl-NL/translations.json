@@ -354,7 +354,7 @@
                 "minLength": "Promo moet uit minstens 2 tekens bestaan."
             },
             "errors": {
-                "invalidCode": "Ongeldige code kortingsbon",
+                "invalidCode": "De kortingsboncode ‘{{code}}’ is ongeldig.",
                 "expiredCode": "Deze promotiecode is verlopen.",
                 "alreadyApplied": "Deze promotiecode is al toegepast.",
                 "notApplicable": "Deze promotiecode geldt niet voor je winkelwagen",

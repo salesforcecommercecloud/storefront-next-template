@@ -26,7 +26,11 @@ import { resourceRoutes } from '@/route-paths';
 
 const { t } = getTranslation();
 
-type CouponItemFixture = { couponItemId?: string; code: string; statusCode?: 'applied' };
+type CouponItemFixture = {
+    couponItemId?: string;
+    code: string;
+    statusCode?: 'applied' | 'adhoc' | 'no_applicable_promotion' | 'coupon_code_unknown';
+};
 
 /**
  * Render `<PromoCodeForm>` against a real `createMemoryRouter` whose
@@ -180,21 +184,28 @@ describe('PromoCodeForm', () => {
         expect(await findToast(t('cart:promoCode.successMessage'))).toBeInTheDocument();
     });
 
-    test('shows error toast on apply failure', async () => {
+    test('surfaces the server status-specific error message on apply failure', async () => {
         const user = userEvent.setup();
+        // A valid-but-ineligible coupon: SCAPI returns statusCode
+        // 'no_applicable_promotion', which the add action maps to this
+        // invalidCode message (the same one returned for unknown/disabled codes
+        // and for a code SCAPI rejects outright, so the form can't be used to
+        // tell which codes exist). The message echoes the shopper's own code via
+        // the `{{code}}` placeholder.
+        const serverMessage = t('cart:promoCode.errors.invalidCode', { code: 'INELIGIBLE' });
         renderWithFetcherActions({
-            addAction: () => ({ success: false, error: { code: 'OPERATION_FAILED', message: 'Invalid' } }),
+            addAction: () => ({ success: false, error: { code: 'INVALID_INPUT', message: serverMessage } }),
         });
 
-        await user.type(screen.getByPlaceholderText(t('cart:promoCode.placeholder')), 'INVALID');
+        await user.type(screen.getByPlaceholderText(t('cart:promoCode.placeholder')), 'INELIGIBLE');
         await user.click(screen.getByRole('button', { name: t('cart:promoCode.apply') }));
 
-        // The same error string is rendered twice on failure: in the form's inline error AND in the toast.
+        // The server message is rendered in both the inline form error and the toast.
         // Scope to the toast region so the assertion is unambiguous.
-        expect(await findToast(t('cart:promoCode.errorMessage'))).toBeInTheDocument();
+        expect(await findToast(serverMessage)).toBeInTheDocument();
     });
 
-    test('shows error toast when apply response has no specific message', async () => {
+    test('falls back to the generic error toast when the apply response has no message', async () => {
         const user = userEvent.setup();
         renderWithFetcherActions({ addAction: () => ({ success: false }) });
 
@@ -237,6 +248,35 @@ describe('PromoCodeForm', () => {
         const couponBasket = (couponItems: CouponItemFixture[]) => ({
             basketId: 'test-basket-id',
             couponItems,
+        });
+
+        test('does not render coupons that were added but not applied (e.g. no_applicable_promotion)', () => {
+            renderWithFetcherActions({
+                basket: couponBasket([
+                    { couponItemId: 'ci-1', code: 'APPLIED', statusCode: 'applied' },
+                    { couponItemId: 'ci-2', code: 'INELIGIBLE', statusCode: 'no_applicable_promotion' },
+                    { couponItemId: 'ci-3', code: 'BOGUS', statusCode: 'coupon_code_unknown' },
+                ]),
+            });
+
+            // Only the genuinely-applied coupon is presented to the shopper.
+            expect(screen.getByText('APPLIED')).toBeInTheDocument();
+            expect(screen.queryByText('INELIGIBLE')).not.toBeInTheDocument();
+            expect(screen.queryByText('BOGUS')).not.toBeInTheDocument();
+            const removeButtons = screen.getAllByRole('button', {
+                name: new RegExp(`^${t('cart:promoCode.remove')}\\s`),
+            });
+            expect(removeButtons).toHaveLength(1);
+        });
+
+        test('does not render the applied-coupons container when no coupon is applied', () => {
+            renderWithFetcherActions({
+                basket: couponBasket([
+                    { couponItemId: 'ci-1', code: 'INELIGIBLE', statusCode: 'no_applicable_promotion' },
+                ]),
+            });
+
+            expect(screen.queryByTestId('applied-coupons')).not.toBeInTheDocument();
         });
 
         test('renders the coupon code and a remove button for each applied coupon', () => {

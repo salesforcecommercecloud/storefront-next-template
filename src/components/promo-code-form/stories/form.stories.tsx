@@ -43,6 +43,21 @@ const basketWithAppliedCoupon = {
     ],
 } as ShopperBasketsV2.schemas['Basket'];
 
+// A coupon SCAPI recognized but could not apply (valid code, nothing in the
+// cart qualifies). It is parked on the basket as `no_applicable_promotion` but
+// must NOT be presented to the shopper as applied.
+const basketWithNotApplicableCoupon = {
+    basketId: 'not-applicable-coupon-basket',
+    currency: 'GBP',
+    couponItems: [
+        {
+            couponItemId: 'coupon-not-applicable-1',
+            code: 'PRODUCT',
+            statusCode: 'no_applicable_promotion',
+        },
+    ],
+} as ShopperBasketsV2.schemas['Basket'];
+
 const meta: Meta<typeof PromoCodeForm> = {
     component: PromoCodeForm,
     title: 'CART/Promo Code Form',
@@ -66,6 +81,7 @@ Stories:
 | **Default** | Empty basket — form open, accordion expanded, no applied coupons. \`basket\` is a control so different IDs / couponItems can be swapped without spawning new stories (Pattern 10) |
 | **WithAppliedCoupon** | Basket has one applied coupon (no discount line) — verifies the badge + remove (×) affordance |
 | **WithCouponDiscount** | Basket has one applied coupon plus a matching \`orderPriceAdjustment\` — verifies the per-coupon discount amount renders next to the badge. Backed by \`basketWithPromoError\` |
+| **WithNotApplicableCoupon** | Basket holds a valid-but-ineligible coupon (\`statusCode: 'no_applicable_promotion'\`) — verifies it is NOT presented as applied (no applied-coupons list) |
                 `,
             },
         },
@@ -152,5 +168,27 @@ export const WithCouponDiscount: Story = {
         await expect(appliedCoupons).toHaveTextContent('SAVE10');
         // Discount line: -£3.84 (formatted via the basket's GBP currency)
         await expect(appliedCoupons.textContent ?? '').toMatch(/£3\.84/);
+    },
+};
+
+export const WithNotApplicableCoupon: Story = {
+    args: {
+        basket: basketWithNotApplicableCoupon,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'A valid coupon code that no cart item qualifies for. SCAPI returns HTTP 200 and parks the coupon as `no_applicable_promotion`, but the form filters it out so the shopper never sees a false "applied" state. The applied-coupons list is absent.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // The coupon is on the basket but not applied — it must not be rendered.
+        await expect(canvas.queryByTestId('applied-coupons')).not.toBeInTheDocument();
+        await expect(canvas.queryByText('PRODUCT')).not.toBeInTheDocument();
     },
 };

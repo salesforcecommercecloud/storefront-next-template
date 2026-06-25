@@ -354,7 +354,7 @@
                 "minLength": "Kampanjakoodin on oltava vähintään 2 merkkiä pitkä."
             },
             "errors": {
-                "invalidCode": "Virheellinen kuponkikoodi",
+                "invalidCode": "Kuponkikoodi ”{{code}}” ei kelpaa.",
                 "expiredCode": "Tämä kampanjakoodi on vanhentunut.",
                 "alreadyApplied": "Tätä kampanjakoodia on jo käytetty.",
                 "notApplicable": "Tämä kampanjakoodi ei koske ostoskoriasi",

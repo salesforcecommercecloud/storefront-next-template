@@ -358,7 +358,7 @@
                 "minLength": "La promo doit comporter au moins 2 caractères."
             },
             "errors": {
-                "invalidCode": "Code promo non valide",
+                "invalidCode": "Le code promo « {{code}} » n’est pas valide.",
                 "expiredCode": "Ce code promo a expiré.",
                 "alreadyApplied": "Ce code promo est déjà appliqué.",
                 "notApplicable": "Ce code promo ne s’applique pas à votre panier",

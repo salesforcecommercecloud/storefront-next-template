@@ -356,7 +356,7 @@
                 "minLength": "A promoção deve ter pelo menos 2 caracteres."
             },
             "errors": {
-                "invalidCode": "Código de cupom inválido",
+                "invalidCode": "O código de cupão “{{code}}” é inválido.",
                 "expiredCode": "Este código promocional expirou.",
                 "alreadyApplied": "Este código promocional já está aplicado.",
                 "notApplicable": "Este código promocional não se aplica ao seu carrinho",

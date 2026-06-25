@@ -357,7 +357,7 @@
                 "minLength": "促銷碼長度必須至少為 2 個字元。"
             },
             "errors": {
-                "invalidCode": "無效的折價券代碼",
+                "invalidCode": "折價券代碼「{{code}}」無效。",
                 "expiredCode": "此促銷代碼已到期。",
                 "alreadyApplied": "此促銷碼已套用。",
                 "notApplicable": "此促銷代碼不適用於您的購物車",
