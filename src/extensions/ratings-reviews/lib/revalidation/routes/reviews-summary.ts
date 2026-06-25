@@ -16,7 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { resourceRoutes } from '@/route-paths';
-import { getActionPath } from '@/lib/routes/revalidation/shared';
+import { getActionPath } from '@/lib/revalidation/routes/shared';
 import type { AddReviewResponse } from '@/extensions/ratings-reviews/routes/action.add-review';
 
 /**

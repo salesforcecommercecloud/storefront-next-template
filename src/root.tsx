@@ -182,7 +182,7 @@ const i18nextOnClient =
           })
         : undefined;
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/root';
+export { shouldRevalidate } from '@/lib/revalidation/routes/root';
 
 export const loader = ({
     context,

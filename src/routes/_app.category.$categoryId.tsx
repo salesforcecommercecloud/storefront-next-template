@@ -227,7 +227,7 @@ export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> 
     };
 }
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/category';
+export { shouldRevalidate } from '@/lib/revalidation/routes/category';
 
 /**
  * Category page component that displays a product category with filtering, sorting, and pagination.

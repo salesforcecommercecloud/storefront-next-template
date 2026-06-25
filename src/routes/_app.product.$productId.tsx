@@ -16,7 +16,7 @@
 import { useEffect, useRef, Suspense, Fragment } from 'react';
 import { Await, useRouteLoaderData } from 'react-router';
 import type { loader as rootLoader } from '@/root';
-import { shouldRevalidate as shouldRevalidateProduct } from '@/lib/routes/revalidation/product';
+import { shouldRevalidate as shouldRevalidateProduct } from '@/lib/revalidation/routes/product';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';

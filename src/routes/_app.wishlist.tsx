@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 import { routes } from '@/route-paths';
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/wishlist';
+export { shouldRevalidate } from '@/lib/revalidation/routes/wishlist';
 
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are

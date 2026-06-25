@@ -45,7 +45,7 @@ import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/home';
+export { shouldRevalidate } from '@/lib/revalidation/routes/home';
 
 @PageType({
     name: 'Home Page',

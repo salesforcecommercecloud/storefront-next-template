@@ -19,8 +19,8 @@ import { type ReactElement, Suspense, useState } from 'react';
 import { Await, useLoaderData } from 'react-router';
 import type { Route } from './+types/_app.cart';
 
-// Revalidation policy — see lib/routes/revalidation/cart.ts.
-export { shouldRevalidate } from '@/lib/routes/revalidation/cart';
+// Revalidation policy — see lib/revalidation/routes/cart.ts.
+export { shouldRevalidate } from '@/lib/revalidation/routes/cart';
 
 // Commerce SDK
 import {

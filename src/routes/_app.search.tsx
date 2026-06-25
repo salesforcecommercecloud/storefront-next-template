@@ -153,7 +153,7 @@ export async function loader(args: Route.LoaderArgs): Promise<SearchPageData> {
     };
 }
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/category';
+export { shouldRevalidate } from '@/lib/revalidation/routes/category';
 
 function ProductGridError() {
     const rawError = useAsyncError();

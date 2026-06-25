@@ -35,7 +35,7 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 import { loader as loaderImpl, shouldRevalidate } from './resource.reviews-summary';
-import { shouldRevalidate as shouldRevalidateImpl } from '@/extensions/ratings-reviews/lib/routes/revalidation/reviews-summary';
+import { shouldRevalidate as shouldRevalidateImpl } from '@/extensions/ratings-reviews/lib/revalidation/routes/reviews-summary';
 import { getReviewsSummary } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { expectStatus } from '@/lib/test-utils';
 import { resourceRoutes } from '@/route-paths';

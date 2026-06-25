@@ -21,7 +21,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
-import { shouldRevalidate as sharedShouldRevalidate } from '@/lib/routes/revalidation/category';
+import { shouldRevalidate as sharedShouldRevalidate } from '@/lib/revalidation/routes/category';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search.server';
@@ -1291,7 +1291,7 @@ describe('SearchPage', () => {
 });
 
 describe('SearchPage shouldRevalidate', () => {
-    // The revalidation policy itself is covered by src/lib/routes/revalidation/category.test.ts. Here we
+    // The revalidation policy itself is covered by src/lib/revalidation/routes/category.test.ts. Here we
     // only assert the route wires up that exact function, so the behavior isn't re-tested per route.
     test('re-exports the shared listing revalidation policy', () => {
         expect(shouldRevalidate).toBe(sharedShouldRevalidate);

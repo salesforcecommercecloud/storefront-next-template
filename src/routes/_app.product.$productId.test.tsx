@@ -274,11 +274,11 @@ describe('Product Detail Route', () => {
 
     describe('shouldRevalidate export', () => {
         // The policy itself (navigation axis + action-axis denylist) is covered by
-        // src/lib/routes/revalidation/product.test.ts. Here we only assert the route wires up that
+        // src/lib/revalidation/routes/product.test.ts. Here we only assert the route wires up that
         // exact function, so the behavior isn't re-tested at the route.
         test('re-exports the shared product revalidation policy', async () => {
             const { shouldRevalidate: shouldRevalidateRoute } = await import('./_app.product.$productId');
-            const { shouldRevalidate: shouldRevalidateProduct } = await import('@/lib/routes/revalidation/product');
+            const { shouldRevalidate: shouldRevalidateProduct } = await import('@/lib/revalidation/routes/product');
             expect(shouldRevalidateRoute).toBe(shouldRevalidateProduct);
         });
     });

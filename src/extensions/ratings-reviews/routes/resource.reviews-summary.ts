@@ -20,7 +20,7 @@ import { extractResponseError } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
 import { getReviewsSummary, type ReviewsSummaryData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 
-export { shouldRevalidate } from '@/extensions/ratings-reviews/lib/routes/revalidation/reviews-summary';
+export { shouldRevalidate } from '@/extensions/ratings-reviews/lib/revalidation/routes/reviews-summary';
 
 /**
  * Result of the reviews-summary lookup.

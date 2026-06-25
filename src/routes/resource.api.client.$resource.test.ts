@@ -1212,11 +1212,11 @@ describe('Commerce SDK resource', () => {
 });
 
 describe('shouldRevalidate export', () => {
-    // The policy itself is covered by src/lib/routes/revalidation/api-client.test.ts. Here we only
+    // The policy itself is covered by src/lib/revalidation/routes/api-client.test.ts. Here we only
     // assert the route wires up that exact function, so the behavior isn't re-tested at the route.
     it('re-exports the api-client revalidation policy', async () => {
         const { shouldRevalidate } = await import('./resource.api.client.$resource');
-        const { shouldRevalidate: shouldRevalidatePolicy } = await import('@/lib/routes/revalidation/api-client');
+        const { shouldRevalidate: shouldRevalidatePolicy } = await import('@/lib/revalidation/routes/api-client');
         expect(shouldRevalidate).toBe(shouldRevalidatePolicy);
     });
 });

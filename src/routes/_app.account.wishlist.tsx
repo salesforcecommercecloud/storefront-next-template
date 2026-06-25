@@ -24,7 +24,7 @@ import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 
-export { shouldRevalidate } from '@/lib/routes/revalidation/wishlist';
+export { shouldRevalidate } from '@/lib/revalidation/routes/wishlist';
 
 /**
  * Server-side loader. Delegates to `loadWishlistPageData` (shared with the

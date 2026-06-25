@@ -1074,11 +1074,11 @@ describe('root.tsx', () => {
     });
 
     describe('shouldRevalidate export', () => {
-        // The policy itself is covered by src/lib/routes/revalidation/root.test.ts. Here we only
+        // The policy itself is covered by src/lib/revalidation/routes/root.test.ts. Here we only
         // assert root wires up that exact function, so the behavior isn't re-tested at the route.
         it('re-exports the shared root revalidation policy', async () => {
             const { shouldRevalidate } = await import('./root');
-            const { shouldRevalidate: shouldRevalidateRoot } = await import('@/lib/routes/revalidation/root');
+            const { shouldRevalidate: shouldRevalidateRoot } = await import('@/lib/revalidation/routes/root');
             expect(shouldRevalidate).toBe(shouldRevalidateRoot);
         });
     });
