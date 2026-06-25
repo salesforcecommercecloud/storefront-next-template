@@ -13,9 +13,9 @@ import zlib from "node:zlib";
 import morgan from "morgan";
 import { minimatch } from "minimatch";
 import { ROOT_CONTEXT, SpanStatusCode, context, propagation, trace } from "@opentelemetry/api";
+import { ExportResultCode, W3CTraceContextPropagator, hrTimeToTimeStamp, parseTraceParent } from "@opentelemetry/core";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { AlwaysOnSampler, ConsoleSpanExporter, ParentBasedSampler, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { ExportResultCode, W3CTraceContextPropagator, hrTimeToTimeStamp } from "@opentelemetry/core";
 import { Resource } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
@@ -463,7 +463,12 @@ function createOtelExpressMiddleware() {
 		try {
 			const url = new URL(req.originalUrl || req.url, "http://localhost").pathname;
 			const method = req.method;
-			const parentContext = propagation.extract(ROOT_CONTEXT, req.headers);
+			const traceparent = req.headers.traceparent;
+			const inboundSpanContext = typeof traceparent === "string" ? parseTraceParent(traceparent) : null;
+			const parentContext = inboundSpanContext ? trace.setSpanContext(ROOT_CONTEXT, {
+				...inboundSpanContext,
+				isRemote: true
+			}) : ROOT_CONTEXT;
 			tracer.startActiveSpan(`[sfnext] server ${method} ${url}`, { attributes: {
 				"http.request.method": method,
 				"url.path": url
@@ -472,8 +477,8 @@ function createOtelExpressMiddleware() {
 					const spanContext = trace.getSpan(context.active())?.spanContext();
 					if (spanContext) {
 						const flags = spanContext.traceFlags.toString(16).padStart(2, "0");
-						const traceparent = `00-${spanContext.traceId}-${spanContext.spanId}-${flags}`;
-						res.setHeader("traceparent", traceparent);
+						const responseTraceparent = `00-${spanContext.traceId}-${spanContext.spanId}-${flags}`;
+						res.setHeader("traceparent", responseTraceparent);
 					}
 				} catch {}
 				const serverCtx = context.active();

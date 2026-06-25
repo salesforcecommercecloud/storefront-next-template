@@ -24,20 +24,24 @@
  * Uses `startActiveSpan` for the server span so all downstream spans (React Router's
  * `request`, loaders, middleware) automatically become children via OTel context propagation.
  *
- * **Inbound trace continuation:** the server span is started in the context extracted
- * from the request's W3C `traceparent` header (stamped by MRT upstream), via the
- * globally-registered W3CTraceContextPropagator (see `../setup`). When the inbound
- * trace is sampled, the server span — and every child span and outbound fetch — joins
- * MRT's trace. When the header is absent or malformed, extraction yields ROOT_CONTEXT
- * and a fresh root trace is started instead. The sampler honors the inbound sampled
- * flag (see `../setup`); this middleware adds no sampling logic of its own.
+ * **Inbound trace continuation:** the server span is started in the context built from
+ * the request's W3C `traceparent` header (stamped by MRT upstream). We parse the header
+ * and build the parent context with `trace.setSpanContext` rather than the global
+ * `propagation.extract`, because in the externalized MRT Lambda bundle the W3C propagator
+ * registered in `../setup` is not visible to the `propagation` API as resolved from this
+ * module (see the note at the continuation site below). When the inbound trace is sampled,
+ * the server span — and every child span and outbound fetch — joins MRT's trace. When the
+ * header is absent or malformed, the parent context stays ROOT_CONTEXT and a fresh root
+ * trace is started instead. The sampler honors the inbound sampled flag (see `../setup`);
+ * this middleware adds no sampling logic of its own.
  *
  * Listens to both `close` and `finish` events with a once-guard — dev server emits
  * `close`, MRT Lambda adapter emits `finish`.
  */
 
 import type { RequestHandler } from 'express';
-import { context, propagation, ROOT_CONTEXT, type Span, SpanStatusCode, trace } from '@opentelemetry/api';
+import { context, ROOT_CONTEXT, type Span, SpanStatusCode, trace } from '@opentelemetry/api';
+import { parseTraceParent } from '@opentelemetry/core';
 import { initTelemetry } from '../setup';
 
 export function createOtelExpressMiddleware(): RequestHandler {
@@ -50,10 +54,25 @@ export function createOtelExpressMiddleware(): RequestHandler {
             const url = new URL(req.originalUrl || req.url, 'http://localhost').pathname;
             const method = req.method;
 
-            // Continue the trace described by the inbound `traceparent` header. The
-            // standard propagator deserializes it into a parent context; a missing or
-            // malformed header leaves ROOT_CONTEXT unchanged (→ fresh root trace).
-            const parentContext = propagation.extract(ROOT_CONTEXT, req.headers);
+            // Continue the trace described by the inbound `traceparent` header (stamped by
+            // MRT upstream). We parse it with `@opentelemetry/core`'s `parseTraceParent`
+            // (the W3C spec parser — rejects malformed, all-zero, and reserved-version
+            // headers) and build the parent context via `trace.setSpanContext`, rather than
+            // the global `propagation.extract`: in the externalized MRT Lambda bundle a
+            // different `@opentelemetry/api` instance owns the global registry, so the W3C
+            // propagator registered in `../setup` is invisible here — `propagation.fields()`
+            // is `[]`, `propagation.extract` falls back to the no-op propagator and returns
+            // ROOT_CONTEXT, and every request would start a fresh root trace split from MRT's.
+            // (Confirmed in live Lambda logs; passes locally only because the dev server has a
+            // single API instance.) `parseTraceParent` is a pure function (no global lookup),
+            // and `setSpanContext` writes through the realm-global context-key symbols
+            // (`Symbol.for(...)`) the provider's tracer reads — so both survive the split. A
+            // missing/malformed header leaves ROOT_CONTEXT (→ fresh root).
+            const traceparent = req.headers.traceparent;
+            const inboundSpanContext = typeof traceparent === 'string' ? parseTraceParent(traceparent) : null;
+            const parentContext = inboundSpanContext
+                ? trace.setSpanContext(ROOT_CONTEXT, { ...inboundSpanContext, isRemote: true })
+                : ROOT_CONTEXT;
 
             // Pass parentContext explicitly so the server span continues MRT's trace
             // (shared trace ID, parented to MRT's span) and becomes the active span
@@ -68,8 +87,8 @@ export function createOtelExpressMiddleware(): RequestHandler {
                         const spanContext = trace.getSpan(context.active())?.spanContext();
                         if (spanContext) {
                             const flags = spanContext.traceFlags.toString(16).padStart(2, '0');
-                            const traceparent = `00-${spanContext.traceId}-${spanContext.spanId}-${flags}`;
-                            res.setHeader('traceparent', traceparent);
+                            const responseTraceparent = `00-${spanContext.traceId}-${spanContext.spanId}-${flags}`;
+                            res.setHeader('traceparent', responseTraceparent);
                         }
                     } catch {
                         // traceparent header is non-essential — skip on failure

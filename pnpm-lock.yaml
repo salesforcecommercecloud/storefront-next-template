@@ -371,7 +371,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.1
-        version: 4.12.1(playwright-core@1.61.0)
+        version: 4.12.1(playwright-core@1.61.1)
       '@codeceptjs/allure-legacy':
         specifier: ^1.0.2
         version: 1.0.2
@@ -380,7 +380,7 @@ importers:
         version: 1.0.6(codeceptjs@3.7.5(@babel/core@7.29.7)(@jest/environment@30.4.1)(@jest/types@30.4.1)(@types/node@24.3.0)(@types/react@19.1.13)(debug@4.4.3)(expect@30.4.1)(jest-environment-node@30.4.1)(jest@30.4.2(@types/node@24.3.0)(ts-node@10.9.2(@swc/core@1.15.43)(@types/node@24.3.0)(typescript@5.9.2)))(react@19.2.3))
       '@playwright/test':
         specifier: ^1.58.0
-        version: 1.61.0
+        version: 1.61.1
       '@types/chai':
         specifier: ^4.3.0
         version: 4.3.20
@@ -2565,8 +2565,8 @@ packages:
     resolution: {integrity: sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
-  '@playwright/test@1.61.0':
-    resolution: {integrity: sha512-cKA5B6lpFEMyMGjxF54QihfYpB4FkEGH+qZhtArDEG+wezQAJY8Pq6C7T1SjWz+FFzt3TbyoXBQYk/0292TdJA==}
+  '@playwright/test@1.61.1':
+    resolution: {integrity: sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -8862,8 +8862,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-core@1.61.0:
-    resolution: {integrity: sha512-caX7TrY3Ml6egyDX0WUcTHDxodl/b51y5wJOdCEA36QviK/s2g081hvmGs8eaE3DWb6NYZQ6BjO/QkNRPenoPA==}
+  playwright-core@1.61.1:
+    resolution: {integrity: sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -8872,8 +8872,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.61.0:
-    resolution: {integrity: sha512-Z+7BeeqQPRRzklHsVFP4KTGIyMxKUmfeRA4WisM6G3/XW6nwGeX6fX9qYaDa+CiUqpOkb2f6X3nar05R3kSuJQ==}
+  playwright@1.61.1:
+    resolution: {integrity: sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -11105,10 +11105,10 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@axe-core/playwright@4.12.1(playwright-core@1.61.0)':
+  '@axe-core/playwright@4.12.1(playwright-core@1.61.1)':
     dependencies:
       axe-core: 4.12.1
-      playwright-core: 1.61.0
+      playwright-core: 1.61.1
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -12942,9 +12942,9 @@ snapshots:
 
   '@pkgr/core@0.3.6': {}
 
-  '@playwright/test@1.61.0':
+  '@playwright/test@1.61.1':
     dependencies:
-      playwright: 1.61.0
+      playwright: 1.61.1
 
   '@pnpm/config.env-replace@1.1.0': {}
 
@@ -14190,7 +14190,7 @@ snapshots:
       jest-watch-typeahead: 3.0.1(jest@30.4.2(@types/node@24.3.0)(ts-node@10.9.2(@swc/core@1.15.43)(@types/node@24.3.0)(typescript@5.9.2)))
       nyc: 15.1.0
       playwright: 1.58.0
-      playwright-core: 1.61.0
+      playwright-core: 1.61.1
       rimraf: 3.0.2
       storybook: 10.0.6(@testing-library/dom@10.4.1)(msw@2.11.3(@types/node@24.3.0)(typescript@5.9.2))(prettier@3.6.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
       uuid: 8.3.2
@@ -20389,7 +20389,7 @@ snapshots:
 
   playwright-core@1.58.0: {}
 
-  playwright-core@1.61.0: {}
+  playwright-core@1.61.1: {}
 
   playwright@1.58.0:
     dependencies:
@@ -20397,9 +20397,9 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  playwright@1.61.0:
+  playwright@1.61.1:
     dependencies:
-      playwright-core: 1.61.0
+      playwright-core: 1.61.1
     optionalDependencies:
       fsevents: 2.3.2
 

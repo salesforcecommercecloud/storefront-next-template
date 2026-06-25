@@ -49,7 +49,6 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
     return {
         ...original,
         ROOT_CONTEXT: 'mock-root-context',
-        propagation: { extract: vi.fn(() => 'mock-parent-context') },
         context: { active: vi.fn(() => 'mock-context') },
         SpanStatusCode: { UNSET: 0, OK: 1, ERROR: 2 },
         trace: {
@@ -60,13 +59,21 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
                     traceFlags: 1,
                 }),
             })),
+            // The middleware builds the parent context by hand (not via the global
+            // propagator) to survive the multi-`@opentelemetry/api`-instance split in the
+            // externalized MRT bundle. Return a sentinel so we can assert the server span
+            // is started in this context when an inbound traceparent is present.
+            setSpanContext: vi.fn(() => 'mock-parent-context'),
         },
     };
 });
 
 import { createOtelExpressMiddleware } from './middleware';
 import { initTelemetry } from '../setup';
-import { propagation, ROOT_CONTEXT } from '@opentelemetry/api';
+import { ROOT_CONTEXT, trace } from '@opentelemetry/api';
+
+/** A well-formed inbound W3C traceparent used to exercise the continuation path. */
+const INBOUND_TRACEPARENT = '00-11111111111111111111111111111111-2222222222222222-01';
 
 /** Create a minimal mock Express request. */
 function mockRequest(method = 'GET', url = '/products', headers: Record<string, string> = {}) {
@@ -112,34 +119,67 @@ describe('createOtelExpressMiddleware', () => {
             middleware(mockRequest(), res as never, vi.fn());
 
             // No inbound extraction and no outbound/response header when disabled.
-            // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
-            expect(propagation.extract).not.toHaveBeenCalled();
+            expect(trace.setSpanContext).not.toHaveBeenCalled();
             // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
             expect(res.setHeader).not.toHaveBeenCalled();
         });
     });
 
     describe('inbound trace continuation', () => {
-        it('extracts the parent context from the request headers via the propagator', () => {
+        it('parses the inbound traceparent and builds the parent context by hand', () => {
             const middleware = createOtelExpressMiddleware();
-            const headers = { traceparent: '00-11111111111111111111111111111111-2222222222222222-01' };
-            const req = mockRequest('GET', '/products', headers);
+            const req = mockRequest('GET', '/products', { traceparent: INBOUND_TRACEPARENT });
 
             middleware(req, mockResponse() as never, vi.fn());
 
-            // Standard W3C extraction — no hand-rolled header parsing.
-            // eslint-disable-next-line @typescript-eslint/unbound-method -- vi.fn() mock, no real `this` binding
-            expect(propagation.extract).toHaveBeenCalledWith(ROOT_CONTEXT, headers);
+            // Parsed from INBOUND_TRACEPARENT, not deserialized via the global propagator
+            // (which is registered on a different @opentelemetry/api instance in the MRT bundle).
+            expect(trace.setSpanContext).toHaveBeenCalledWith(ROOT_CONTEXT, {
+                traceId: '11111111111111111111111111111111',
+                spanId: '2222222222222222',
+                traceFlags: 1,
+                isRemote: true,
+            });
         });
 
-        it('starts the server span in the extracted parent context (4-arg overload)', () => {
+        it('starts the server span in the parent context built from the inbound header', () => {
             const middleware = createOtelExpressMiddleware();
-            middleware(mockRequest(), mockResponse() as never, vi.fn());
+            const req = mockRequest('GET', '/products', { traceparent: INBOUND_TRACEPARENT });
+
+            middleware(req, mockResponse() as never, vi.fn());
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
                 '[sfnext] server GET /products',
                 { attributes: { 'http.request.method': 'GET', 'url.path': '/products' } },
                 'mock-parent-context',
+                expect.any(Function)
+            );
+        });
+
+        it('leaves the parent context as ROOT when no traceparent header is present', () => {
+            const middleware = createOtelExpressMiddleware();
+            middleware(mockRequest('GET', '/products'), mockResponse() as never, vi.fn());
+
+            expect(trace.setSpanContext).not.toHaveBeenCalled();
+            expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
+                '[sfnext] server GET /products',
+                expect.anything(),
+                ROOT_CONTEXT,
+                expect.any(Function)
+            );
+        });
+
+        it('leaves the parent context as ROOT when the traceparent header is malformed', () => {
+            const middleware = createOtelExpressMiddleware();
+            const req = mockRequest('GET', '/products', { traceparent: 'not-a-valid-traceparent' });
+
+            middleware(req, mockResponse() as never, vi.fn());
+
+            expect(trace.setSpanContext).not.toHaveBeenCalled();
+            expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
+                '[sfnext] server GET /products',
+                expect.anything(),
+                ROOT_CONTEXT,
                 expect.any(Function)
             );
         });
@@ -167,7 +207,7 @@ describe('createOtelExpressMiddleware', () => {
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
                 '[sfnext] server GET /',
                 { attributes: { 'http.request.method': 'GET', 'url.path': '/' } },
-                'mock-parent-context',
+                'mock-root-context',
                 expect.any(Function)
             );
         });
@@ -179,7 +219,7 @@ describe('createOtelExpressMiddleware', () => {
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
                 '[sfnext] server POST /cart',
                 { attributes: { 'http.request.method': 'POST', 'url.path': '/cart' } },
-                'mock-parent-context',
+                'mock-root-context',
                 expect.any(Function)
             );
         });
