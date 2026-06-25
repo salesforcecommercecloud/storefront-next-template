@@ -32,7 +32,7 @@
  *                     #   by tag, not by file path or name.
  *
  * Snapshot tests use vitest. Interaction/a11y tests orchestrate a server
- * (storybook dev or `npx serve` of the static build) plus `test-storybook`,
+ * (storybook dev or a local `serve` of the static build) plus `test-storybook`,
  * with cleanup of the server process when done.
  */
 import { spawn } from 'node:child_process';
@@ -113,8 +113,14 @@ if (flags.static) {
     if (buildCode !== 0) process.exit(buildCode);
 }
 
+// Serve the static build with the LOCAL `serve` binary (a devDependency) via
+// `pnpm exec`, NOT `npx serve`. `npx serve` resolved `serve` from the network on
+// every run (it wasn't a dependency), which intermittently blew past the
+// readiness window under CI load and surfaced only as a blind
+// `wait-on ... Timed out` — the static-server-startup flake. `pnpm exec` uses
+// the installed binary, so there's no per-run fetch. Same for `wait-on` below.
 const serverCmd = flags.static
-    ? { cmd: 'npx', args: ['serve', '.storybook/storybook-static', '-p', String(port)] }
+    ? { cmd: 'pnpm', args: ['exec', 'serve', '.storybook/storybook-static', '-p', String(port)] }
     : { cmd: 'pnpm', args: ['storybook'] };
 
 const server = spawn(serverCmd.cmd, serverCmd.args, {
@@ -122,9 +128,27 @@ const server = spawn(serverCmd.cmd, serverCmd.args, {
     stdio: 'pipe',
     shell: process.platform === 'win32',
 });
-// Drain output so the pipe buffer doesn't fill and block the child
-server.stdout.on('data', () => {});
-server.stderr.on('data', () => {});
+
+// Buffer the server's output (capped) so that if it fails to come up we can
+// PRINT what it said, instead of swallowing it and leaving only a bare
+// `wait-on` timeout with no diagnostics. Still drained continuously so the pipe
+// buffer can't fill and block the child.
+let serverLog = '';
+const recordServerOutput = (chunk) => {
+    serverLog += chunk.toString();
+    if (serverLog.length > 8192) serverLog = serverLog.slice(-8192);
+};
+server.stdout.on('data', recordServerOutput);
+server.stderr.on('data', recordServerOutput);
+
+// Detect the server dying before it ever became ready — otherwise we'd wait the
+// full wait-on timeout for a process that's already gone. Flips to true on exit.
+let serverExited = false;
+let serverExitInfo = '';
+server.on('exit', (code, signal) => {
+    serverExited = true;
+    serverExitInfo = `code=${code} signal=${signal}`;
+});
 
 const cleanup = () => {
     try {
@@ -139,11 +163,37 @@ process.on('SIGINT', () => {
     process.exit(130);
 });
 
+const failServer = (reason) => {
+    console.error(`\n❌ Static Storybook server failed to start: ${reason}`);
+    if (serverExited) console.error(`   server process exited early (${serverExitInfo})`);
+    if (serverLog.trim()) {
+        console.error('   --- server output (last 8KB) ---');
+        console.error(
+            serverLog
+                .trim()
+                .split('\n')
+                .map((l) => `   ${l}`)
+                .join('\n')
+        );
+    }
+    cleanup();
+    process.exit(1);
+};
+
 try {
-    const waitCode = await run('npx', ['wait-on', url, '--timeout', '120000']);
+    // Race readiness (LOCAL wait-on binary) against the server dying — no point
+    // waiting the full timeout for a process that's already gone. `serverExited`
+    // (set by the server.on('exit') handler above) covers the already-dead case;
+    // server.once('exit') covers a death mid-wait.
+    const waitCode = await Promise.race([
+        run('pnpm', ['exec', 'wait-on', url, '--timeout', '120000']),
+        new Promise((resolve) => {
+            if (serverExited) return resolve(1);
+            server.once('exit', () => resolve(1));
+        }),
+    ]);
     if (waitCode !== 0) {
-        cleanup();
-        process.exit(waitCode);
+        failServer(serverExited ? 'process exited before serving' : `timed out waiting for ${url}`);
     }
     // Give storybook a moment to settle (mirrors `sleep 1` from the original bash)
     await new Promise((r) => setTimeout(r, 1000));
