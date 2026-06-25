@@ -170,6 +170,79 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formAction, actionR
 > [!CAUTION]
 > Judge a gate by its adequacy, not its presence. A `shouldRevalidate` that only checks whether `formAction` is set, without inspecting whether the result touched its data, still re-runs on *every* action. The adequate shape is the inverse: opt in only when `actionResult` carries this loader's data, so unrelated submissions are skipped. A gate that handles today's actions can still miss one you add later.
 
+### Tag-based gating across many routes
+
+The hand-written `actionResult` checks above work per route, but they don't compose: every loader re-derives "does this payload touch my data," and an action and the routes that depend on it are coupled by an ad-hoc field name (`basket`, `productsModified`) that only convention keeps in sync. When a mutation feeds several routes and fetchers, that convention is easy to break.
+
+The `src/lib/revalidation/tags/` primitives turn that implicit coupling into an explicit contract. An action **emits** the tags it touched; a route **subscribes** to the tags it depends on; a shared matcher decides overlap. No route inspects payload shapes, and adding a subscriber never requires editing the action. A submission revalidates the route only when one emitted tag matches one subscribed tag, and an action that reports **no** tags falls back to React Router's default (revalidate), so untagged and legacy actions stay safe.
+
+#### Define tags once, in a per-domain catalog
+
+> [!IMPORTANT]
+> Tags are plain strings, and that makes hand-typing them a footgun: a typo never errors, it just silently matches nothing, so the route quietly stops revalidating. The string the action emits must also equal the string the route subscribes with, across a boundary where no type survives (`actionResult` is typed `any`). **Don't hand-type tag strings.** Give each domain a **tag catalog** — a small typed module of builders — and import it on both sides. A misspelled name then becomes a compile error instead of a silent miss, and the `.` / `:` syntax lives in one place.
+
+A catalog is a sibling of `tags/index.ts`, one module per domain, owned by you (the names are merchant-specific — the framework ships only the primitives, never the catalogs):
+
+```typescript
+// src/lib/revalidation/tags/cart.ts
+export const cartTags = {
+  all: 'cart.*',
+  lineItem: (id: string) => `cart.lineItems:${id}` as const,
+} as const;
+```
+
+```typescript
+// src/lib/revalidation/tags/product.ts
+export const productTags = {
+  of: (sku: string) => `product:${sku}.*` as const,
+  priceOf: (sku: string) => `product:${sku}.price` as const,
+} as const;
+```
+
+Both sides then spell tags through the catalog, never as literals:
+
+- **Emit** — an action attaches the tags it changed to its result:
+
+  ```typescript
+  import { withRevalidateTags } from '@/lib/revalidation/tags';
+  import { cartTags } from '@/lib/revalidation/tags/cart';
+
+  // returns { ...data, revalidateTags: ['cart.lineItems:li-7'] }
+  return withRevalidateTags({ basket }, [cartTags.lineItem('li-7')]);
+  ```
+
+- **Subscribe** — a route exports a `shouldRevalidate` built from the tags it reads:
+
+  ```typescript
+  import { shouldRevalidateForTags } from '@/lib/revalidation/tags';
+  import { cartTags } from '@/lib/revalidation/tags/cart';
+  import { productTags } from '@/lib/revalidation/tags/product';
+
+  // Static — a broad subscription to any cart change:
+  export const shouldRevalidate = shouldRevalidateForTags([cartTags.all]);
+
+  // Dynamic — pin to the entity in the route params:
+  export const shouldRevalidate = shouldRevalidateForTags(({ params }) => [productTags.of(params.sku ?? '')]);
+  ```
+
+The cart action and the cart routes import `tags/cart.ts` and nothing else. A runnable example of the convention lives in [`src/lib/revalidation/tags/index.example.test.ts`](../src/lib/revalidation/tags/index.example.test.ts).
+
+#### Tag syntax
+
+The catalog builders encapsulate this grammar — read it to design a catalog, not to hand-write tags at the call site. Tags are dot-separated segments, each optionally pinning an instance with `:id`, with an optional `.*` wildcard suffix. Matching follows **publish specific, subscribe broad** — mutations emit the exact tag they touched; subscriptions declare whatever granularity they depend on.
+
+| Subscribed pattern | Emitted tag | Matches | Why |
+| --- | --- | --- | --- |
+| `cart.*` | `cart.lineItems:li-7` | ✅ | wildcard prefix at any depth |
+| `cart.lineItems` | `cart.lineItems:li-7` | ✅ | subscriber omits the id → all instances |
+| `cart.lineItems:li-7` | `cart.lineItems:li-9` | ❌ | both pin an id and they differ |
+| `product.price` | `product:ABC.price` | ✅ | subscriber omits the id → any product |
+| `checkout.update` | `checkout.payment` | ❌ | different operation |
+
+The `.*` wildcard is **subscriber-only**: it widens a subscription's reach. On the emitted side it is a literal segment named `*`, not a wildcard — so an emitted or implied `cart.*` matches only a subscription to the literal `cart.*`, never the cart subtree the author meant. This is one more reason to let a catalog build emitted tags rather than typing them by hand.
+
+Two helpers build on the matcher: `tagGroup(tag, deps)` bundles a tag with the tags it transitively depends on (subscriber side), and `tagImplications(map)` expands an emitted tag into the concrete tags it cascades to (emitter side). Implied values land on the emitted side, so they follow the same literal-`.*` rule above — keep them concrete. See the JSDoc in `tags/index.ts` for both.
+
 ### Cache shell data that never changes per shopper
 
 Some loaders fetch data that no shopper action can change, such as the navigation menu. Return `false` unconditionally so it loads once and is never re-fetched:
