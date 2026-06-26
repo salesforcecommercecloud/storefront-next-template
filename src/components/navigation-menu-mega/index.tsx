@@ -193,7 +193,14 @@ export function MobileMenuDropdown(): ReactElement | null {
     const { t } = useTranslation('header');
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-    if (!context) return null;
+    // Mount the category list only while the menu is open. Each MobileMenuCategory subscribes to the sub-category
+    // store via useSubCategory (useSyncExternalStore). Keeping that subtree mounted while the menu is closed puts the
+    // subscribers in the SSR/hydration tree, so the post-hydration store fill re-renders the header and cascades into
+    // a whole-page flicker. Gating the mount on `isOpen` keeps the subscribers out of the initial render — matching
+    // the desktop mega panel, whose subscribers live inside the lazily-mounted Radix content.
+    if (!context || !context.isOpen) {
+        return null;
+    }
 
     const toggleCategory = (categoryId: string) => {
         setExpandedCategories((prev) => {
@@ -208,12 +215,7 @@ export function MobileMenuDropdown(): ReactElement | null {
     };
 
     return (
-        <div
-            className={cn(
-                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground shadow-lg z-40 max-h-[70vh] overflow-y-auto',
-                { hidden: !context.isOpen }
-            )}
-            aria-hidden={!context.isOpen}>
+        <div className="lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground shadow-lg z-40 max-h-[70vh] overflow-y-auto">
             <nav className="px-4 py-4" aria-label={t('mobileNavigation', 'Mobile navigation menu')}>
                 <ul className="space-y-1">
                     {context.categories.map((category) => (
