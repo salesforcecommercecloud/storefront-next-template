@@ -84,21 +84,21 @@ const baseConfig = defineConfig([
     jsonc.configs['flat/recommended-with-json'],
     {
         // Ignore generated SCAPI client files, ejected shadcn/ui components, and Claude settings
-       ignores: [
-        '**/src/scapi-client/generated/**',
-        '**/src/scapi/generated/**',
-        '**/src/scapi/custom-clients.ts',
-        '**/src/components/ui/**',
-        '**/src/dashboard/components/ui/**',
-        // Pristine upstream shadcn snapshots used by the sync-shadcn skill as merge
-        // baselines. Verbatim upstream source (vanilla @/ imports, no copyright header) —
-        // not Salesforce code and never imported, so it is excluded from linting.
-        '**/.shadcn-baseline/**',
-        '**/src/lib/page-designer/static-registry.ts',
-        '.claude/**',
-        '**/lighthouserc.cjs',
-        '**/generate-config.cjs'
-      ]
+        ignores: [
+            '**/src/scapi-client/generated/**',
+            '**/src/scapi/generated/**',
+            '**/src/scapi/custom-clients.ts',
+            '**/src/components/ui/**',
+            '**/src/dashboard/components/ui/**',
+            // Pristine upstream shadcn snapshots used by the sync-shadcn skill as merge
+            // baselines. Verbatim upstream source (vanilla @/ imports, no copyright header) —
+            // not Salesforce code and never imported, so it is excluded from linting.
+            '**/.shadcn-baseline/**',
+            '**/src/lib/page-designer/static-registry.ts',
+            '.claude/**',
+            '**/lighthouserc.cjs',
+            '**/generate-config.cjs',
+        ],
     },
     {
         // Plain Node scripts (.js / .mjs / .cjs) aren't part of the TS project,
@@ -287,7 +287,12 @@ const baseConfig = defineConfig([
     {
         // Multi-site navigation wrappers — these legitimately import from react-router.
         // Also covers flat link.tsx used in packages without multi-site routing (e.g. storefront-next-ci).
-        files: ['**/src/components/link/index.tsx', '**/src/components/link.tsx', '**/src/dashboard/components/link.tsx', '**/src/hooks/use-navigate.ts'],
+        files: [
+            '**/src/components/link/index.tsx',
+            '**/src/components/link.tsx',
+            '**/src/dashboard/components/link.tsx',
+            '**/src/hooks/use-navigate.ts',
+        ],
         rules: {
             'no-restricted-imports': 'off',
             // These files export hooks/functions alongside any components
@@ -347,8 +352,7 @@ const baseConfig = defineConfig([
                                 '@salesforce/storefront-next-runtime/scapi',
                                 '@salesforce/storefront-next-runtime/scapi/*',
                             ],
-                            message:
-                                'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
+                            message: 'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
                         },
                     ],
                 },

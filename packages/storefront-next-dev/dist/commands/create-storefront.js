@@ -153,7 +153,7 @@ const createStorefront = async (options = {}) => {
 					logger.warn(`${dependentNames} requires ${addedName}. ${addedName} has been automatically added.`);
 				}
 			}
-			trimExtensions(outputPath, Object.fromEntries(resolvedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions });
+			await trimExtensions(outputPath, Object.fromEntries(resolvedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions });
 		}
 	}
 	const configMetaPath = fs.existsSync(path.join(outputPath, "config-meta.json")) ? path.join(outputPath, "config-meta.json") : path.join(outputPath, "src", "config", "config-meta.json");

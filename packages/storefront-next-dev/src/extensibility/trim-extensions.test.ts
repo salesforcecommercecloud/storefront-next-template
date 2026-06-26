@@ -137,7 +137,7 @@ const reloadModule = async () => {
 };
 
 describe('trim-extensions', () => {
-    let trimExtensions: (dir: string, ext: Record<string, boolean>, config?: any) => void;
+    let trimExtensions: (dir: string, ext: Record<string, boolean>, config?: any) => Promise<void>;
 
     beforeEach(async () => {
         vi.resetModules();
@@ -153,7 +153,7 @@ describe('trim-extensions', () => {
     });
 
     describe('single line markers', () => {
-        it('removes single lines marked with @sfdc-extension-line when extension is disabled', () => {
+        it('removes single lines marked with @sfdc-extension-line when extension is disabled', async () => {
             const code = `
                 const test = () => {
                     // @sfdc-extension-line SFDC_EXT_featureA
@@ -171,13 +171,13 @@ describe('trim-extensions', () => {
             `;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
+            await trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
 
             const result = readFile('/mock/dir/src/components/test.tsx') as string;
             expect(result).toEqualTrimmedLines(expected);
         });
 
-        it('preserves single lines when extension is enabled', () => {
+        it('preserves single lines when extension is enabled', async () => {
             const code = `
                 const test = () => {
                     // @sfdc-extension-line SFDC_EXT_featureA
@@ -187,14 +187,14 @@ describe('trim-extensions', () => {
             `;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
+            await trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
 
             const result = readFile('/mock/dir/src/components/test.tsx') as string;
             expect(result).toContain('featureA');
             expect(result).toContain('Feature A');
         });
 
-        it('handles multiple single line markers', () => {
+        it('handles multiple single line markers', async () => {
             const code = `
                 MyClass.PropTypes = {
                     name: PropTypes.string,
@@ -206,14 +206,18 @@ describe('trim-extensions', () => {
             `;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig);
+            await trimExtensions(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig
+            );
 
             const result = readFile('/mock/dir/src/components/test.tsx') as string;
             expect(result).toContain('featureAProp');
             expect(result).not.toContain('featureBProp');
         });
 
-        it('handles tsx elements in return statements', () => {
+        it('handles tsx elements in return statements', async () => {
             const code = `
                 function test() {
                     return (
@@ -228,7 +232,11 @@ describe('trim-extensions', () => {
             `;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig);
+            await trimExtensions(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig
+            );
 
             const result = readFile('/mock/dir/src/components/test.tsx') as string;
             expect(result).toContain('<ComponentA />');
@@ -237,7 +245,7 @@ describe('trim-extensions', () => {
     });
 
     describe('block markers', () => {
-        it('removes code blocks guarded by block markers when extension is disabled', () => {
+        it('removes code blocks guarded by block markers when extension is disabled', async () => {
             const code = `
                 // @sfdc-extension-block-start SFDC_EXT_featureA
                 const featureAVar1 = 'Feature A variable 1';
@@ -249,12 +257,12 @@ describe('trim-extensions', () => {
                 const anotherVar = 'Another variable';
             `;
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
+            await trimExtensions('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig);
             const result = readFile('/mock/dir/src/components/test.tsx') as string;
             expect(result).toEqualTrimmedLines(expected);
         });
 
-        it('preserves code blocks when extension is enabled', () => {
+        it('preserves code blocks when extension is enabled', async () => {
             const code = `
                 // @sfdc-extension-block-start SFDC_EXT_featureA
                 const featureA = 'Feature A';
@@ -263,14 +271,14 @@ describe('trim-extensions', () => {
             `;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
+            await trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig);
 
             const content = readFile('/mock/dir/src/components/test.tsx');
             expect(content).toContain('featureA');
             expect(content).toContain('Feature A');
         });
 
-        it('handles nested code blocks correctly', () => {
+        it('handles nested code blocks correctly', async () => {
             const code = `
                 // @sfdc-extension-block-start SFDC_EXT_featureA
                 const featureAVar = 'Feature A variable 1';
@@ -285,7 +293,7 @@ describe('trim-extensions', () => {
                 // @sfdc-extension-block-end SFDC_EXT_featureA
             `;
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions(
+            await trimExtensions(
                 '/mock/dir',
                 { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
                 mockedExtensionConfig,
@@ -295,7 +303,7 @@ describe('trim-extensions', () => {
             expect(result).toEqualTrimmedLines(expected);
         });
 
-        it('handles nested line markers within blocks', () => {
+        it('handles nested line markers within blocks', async () => {
             const code = `
                 // @sfdc-extension-block-start SFDC_EXT_featureA
                 const featureAVar = 'Feature A variable 1';
@@ -309,7 +317,7 @@ describe('trim-extensions', () => {
                 // @sfdc-extension-block-end SFDC_EXT_featureA
             `;
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions(
+            await trimExtensions(
                 '/mock/dir',
                 { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
                 mockedExtensionConfig,
@@ -329,9 +337,9 @@ describe('trim-extensions', () => {
             const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            expect(() =>
+            await expect(
                 trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
-            ).toThrow(
+            ).rejects.toThrow(
                 `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureA but got SFDC_EXT_featureB`
             );
         });
@@ -345,9 +353,9 @@ describe('trim-extensions', () => {
             const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
-                `Unclosed end marker found in ${filePath}: SFDC_EXT_featureA`
-            );
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)
+            ).rejects.toThrow(`Unclosed end marker found in ${filePath}: SFDC_EXT_featureA`);
         });
 
         it('throws error when start marker is missing', async () => {
@@ -358,7 +366,9 @@ describe('trim-extensions', () => {
             const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            expect(() => trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)).toThrow(
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)
+            ).rejects.toThrow(
                 `Block marker mismatch in ${filePath}, encountered end marker SFDC_EXT_featureA without a matching start marker`
             );
         });
@@ -376,9 +386,9 @@ describe('trim-extensions', () => {
             const filePath = path.join(path.sep, 'mock', 'dir', 'src', 'components', 'test.tsx');
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            expect(() =>
+            await expect(
                 trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true)
-            ).toThrow(
+            ).rejects.toThrow(
                 `Block marker mismatch in ${filePath}, expected end marker for SFDC_EXT_featureB but got SFDC_EXT_featureA`
             );
         });
@@ -396,7 +406,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
             expect(console.warn).toHaveBeenCalledWith(
                 expect.stringContaining('[sfnext:warn]'),
@@ -424,7 +434,12 @@ describe('trim-extensions', () => {
             );
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true },
+                mockedExtensionConfig,
+                true
+            );
             expect(fileExists('/mock/dir/src/routes/featureARoute.tsx')).toBe(false);
             expect(fileExists('/mock/dir/src/routes/featureBRoute.tsx')).toBe(true);
             // logger.debug outputs two args: [sfnext:debug] prefix + message
@@ -445,7 +460,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
             // File should still exist
             expect(fileExists('/mock/dir/src/components/enabledExt.tsx')).toBe(true);
@@ -461,7 +476,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
             expect(console.warn).toHaveBeenCalledWith(
                 expect.stringContaining('[sfnext:warn]'),
@@ -485,9 +500,9 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            expect(() => {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-            }).toThrow('Simulated delete error');
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)
+            ).rejects.toThrow('Simulated delete error');
 
             expect(console.error).toHaveBeenCalledWith(
                 expect.stringContaining('[sfnext:error]'),
@@ -514,7 +529,12 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true },
+                mockedExtensionConfig,
+                true
+            );
 
             // The entire disabled extension directory should be removed
             expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(false);
@@ -537,7 +557,12 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
 
             // The enabled extension directory should be preserved
             expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(true);
@@ -552,7 +577,12 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
 
             // Feature A should be preserved, Feature B should be removed
             expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(true);
@@ -565,7 +595,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureC: false }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureC: false }, mockedExtensionConfig, true);
 
             // Feature C has no folder property, so folder should not be deleted
             expect(fileExists('/mock/dir/src/extensions/feature-c')).toBe(true);
@@ -586,7 +616,12 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
 
             expect(console.error).toHaveBeenCalledWith(
                 expect.stringContaining('[sfnext:error]'),
@@ -610,7 +645,12 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
+            await trimExt(
+                '/mock/dir',
+                { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false },
+                mockedExtensionConfig,
+                true
+            );
 
             expect(console.error).toHaveBeenCalledWith(
                 expect.stringContaining('[sfnext:error]'),
@@ -619,6 +659,51 @@ describe('trim-extensions', () => {
 
             vol.rmSync = originalRmSync;
             consoleSpy.mockRestore();
+        });
+
+        it('aborts before deleting any folder when the config rewrite (Prettier) throws', async () => {
+            // Regression (W-23074938): updateExtensionConfig formats config.json with the
+            // consumer's Prettier and throws on a bad Prettier setup. The config rewrite must
+            // run BEFORE folder deletion so a format failure leaves the project untouched
+            // rather than half-trimmed (folders gone, config.json still listing them).
+            const consoleSpy = mockConsole('warn');
+
+            // Force the format step to throw — simulates a broken .prettierrc / plugin on a
+            // customer project. createRequire can't resolve prettier from /mock, so the SDK
+            // falls back to import('prettier'), which this mock intercepts.
+            vi.doMock('prettier', () => ({
+                default: {
+                    resolveConfig: () => Promise.resolve({}),
+                    format: () => Promise.reject(new Error('Bad Prettier config')),
+                },
+            }));
+
+            vol.mkdirSync('/mock/dir/src/extensions/feature-a/components', { recursive: true });
+            vol.writeFileSync(
+                '/mock/dir/src/extensions/feature-a/components/component.tsx',
+                `export const Component = 'Component';`
+            );
+
+            const mod = await reloadModule();
+            const trimExt = mod.default || mod;
+
+            try {
+                await expect(
+                    trimExt(
+                        '/mock/dir',
+                        { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true },
+                        mockedExtensionConfig,
+                        true
+                    )
+                ).rejects.toThrow('Prettier formatting failed');
+
+                // The disabled extension's folder must still be on disk — deletion never ran.
+                expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(true);
+                expect(fileExists('/mock/dir/src/extensions/feature-a/components/component.tsx')).toBe(true);
+            } finally {
+                vi.doUnmock('prettier');
+                consoleSpy.mockRestore();
+            }
         });
 
         it('handles missing extension folders gracefully', async () => {
@@ -631,9 +716,9 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
 
             // Should not throw error when extension folder doesn't exist
-            expect(() => {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
-            }).not.toThrow();
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true)
+            ).resolves.not.toThrow();
         });
 
         it('handles extensionConfig with undefined extensions property', async () => {
@@ -649,14 +734,12 @@ describe('trim-extensions', () => {
             // This should trigger the || {} fallback on line 221
             // @ts-expect-error - Testing defensive code path
             const configWithUndefinedExtensions = { extensions: undefined };
-            expect(() => {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, configWithUndefinedExtensions, true);
-            }).not.toThrow();
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, configWithUndefinedExtensions, true)
+            ).resolves.not.toThrow();
 
             // Also test with null extensionConfig to ensure optional chaining works
-            expect(() => {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, null, true);
-            }).not.toThrow();
+            await expect(trimExt('/mock/dir', { SFDC_EXT_featureA: false }, null, true)).resolves.not.toThrow();
         });
 
         it('returns early when extensions directory does not exist', async () => {
@@ -684,7 +767,7 @@ describe('trim-extensions', () => {
             // This will fail at updateExtensionConfig (because config.json is gone),
             // but deleteExtensionFolders should have returned early without error (lines 218-219)
             try {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+                await trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
                 // Should not reach here
                 expect(true).toBe(false);
             } catch (error: unknown) {
@@ -722,7 +805,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt(
+            await trimExt(
                 '/mock/dir',
                 { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false, SFDC_EXT_featureC: false },
                 extensionConfig,
@@ -747,7 +830,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
 
             expect(fileExists('/mock/dir/node_modules/some-package/index.tsx')).toBe(true);
         });
@@ -761,19 +844,19 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+            await trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
 
             expect(fileExists('/mock/dir/src/components/test.txt')).toBe(true);
             const content = readFile('/mock/dir/src/components/test.txt');
             expect(content).toContain('@sfdc-extension-line');
         });
 
-        it('only writes file if content changed', () => {
+        it('only writes file if content changed', async () => {
             const consoleSpy = mockConsole('log');
             const code = `export const Test = 'test';`;
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', code);
-            trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
+            await trimExtensions('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
             // Should not log "Updated file" if content didn't change
             const logCalls = (console.log as any).mock.calls.map((call: any[]) => call.join(' ')).join('\n');
@@ -798,7 +881,7 @@ describe('trim-extensions', () => {
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
             try {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
+                await trimExt('/mock/dir', { SFDC_EXT_featureA: false }, mockedExtensionConfig, true);
             } catch (error: unknown) {
                 expect((error as Error).message).toContain('Simulated write error');
             }
@@ -825,7 +908,7 @@ describe('trim-extensions', () => {
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
-            trimExt('/mock/dir', {}, { extensions: {} }, true);
+            await trimExt('/mock/dir', {}, { extensions: {} }, true);
 
             // Should log early return message via logger.debug
             expect(console.log).toHaveBeenCalledWith(
@@ -845,15 +928,13 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
 
             // Test with undefined extensionConfig
-            expect(() => {
-                trimExt('/mock/dir', {}, undefined, false);
-            }).not.toThrow();
+            await expect(trimExt('/mock/dir', {}, undefined, false)).resolves.not.toThrow();
 
             // Test with extensionConfig but undefined extensions property
-            expect(() => {
+            await expect(
                 // @ts-expect-error - Testing defensive code path
-                trimExt('/mock/dir', {}, { extensions: undefined });
-            }).not.toThrow();
+                trimExt('/mock/dir', {}, { extensions: undefined })
+            ).resolves.not.toThrow();
         });
 
         it('emits debug logs when SFCC_LOG_LEVEL=debug', async () => {
@@ -866,7 +947,7 @@ describe('trim-extensions', () => {
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
 
-            trimExt('/mock/dir', {}, mockedExtensionConfig);
+            await trimExt('/mock/dir', {}, mockedExtensionConfig);
             expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
             expect(console.log).toHaveBeenCalled();
 
@@ -881,9 +962,9 @@ describe('trim-extensions', () => {
             vol.mkdirSync('/mock/dir/src/extensions', { recursive: true });
             vol.writeFileSync('/mock/dir/src/extensions/file.txt', 'not a directory');
 
-            expect(() => {
-                trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
-            }).not.toThrow();
+            await expect(
+                trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true)
+            ).resolves.not.toThrow();
             expect(fileExists('/mock/dir/src/extensions/file.txt')).toBe(true);
         });
     });

@@ -261,7 +261,7 @@ export const createStorefront = async (
             }
 
             const enabledExtensions = Object.fromEntries(resolvedExtensions.map((ext: string) => [ext, true]));
-            trimExtensions(outputPath, enabledExtensions, { extensions: extensionConfig.extensions });
+            await trimExtensions(outputPath, enabledExtensions, { extensions: extensionConfig.extensions });
         }
     }
     // interview for config overrides

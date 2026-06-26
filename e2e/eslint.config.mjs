@@ -21,7 +21,7 @@
 // This package uses TypeScript but does NOT use React
 // ============================================================================
 
-const baseConfig = await import('../../../eslint.config.js');
+const baseConfig = await import('../eslint.config.js');
 
 export default [
     ...baseConfig.default,

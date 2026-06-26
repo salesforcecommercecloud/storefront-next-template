@@ -125,7 +125,7 @@ const handleUninstall = async (extensionConfig, options) => {
 	});
 	const extensionsToUninstallSet = new Set(extensionsToUninstall);
 	installedExtensions = installedExtensions.filter((ext) => !extensionsToUninstallSet.has(ext));
-	trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig });
+	await trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig });
 	consoleLog(" Extensions uninstalled.", "success");
 };
 /**
