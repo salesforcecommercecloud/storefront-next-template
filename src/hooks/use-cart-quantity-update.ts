@@ -28,20 +28,24 @@ import { useToast } from '@/components/toast';
 
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useBasketUpdater } from '@/providers/basket';
 
 // Constants
 import { resourceRoutes } from '@/route-paths';
 // Types
-import type { ActionResponse } from '@/routes/types/action-responses';
+import type { ShopperBasketsV2 } from '@/scapi';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 
 /**
- * The constraint `{ success?: boolean }` is intentionally weak: this hook submits to two
- * different action routes (`removeAction` from config, `/action/cart-item-update`) whose
- * full response shapes differ, but the hook only reads `fetcher.data?.success`. Callers
- * pin a richer type if they want narrower access.
+ * The constraint is intentionally weak: this hook submits to two different action routes (`removeAction` from config,
+ * `/action/cart-item-update`) whose full response shapes differ. The hook reads `fetcher.data?.success` and the
+ * optional `fetcher.data?.basket` it publishes back into `BasketProvider` — both routes wrap success as
+ * `{ success: true, basket }` via `createBasketAction`. Callers pin a richer type if they want narrower access.
  */
-interface UseCartQuantityUpdateProps<TResponse extends { success?: boolean }> {
+interface UseCartQuantityUpdateProps<
+    TResponse extends { success?: boolean; basket?: ShopperBasketsV2.schemas['Basket'] },
+> {
     /** Cart item ID for API calls */
     itemId: string;
     /** Initial quantity value */
@@ -107,7 +111,9 @@ interface UseCartQuantityUpdateReturn {
  * });
  * ```
  */
-export function useCartQuantityUpdate<TResponse extends { success?: boolean } = ActionResponse>({
+export function useCartQuantityUpdate<
+    TResponse extends { success?: boolean; basket?: ShopperBasketsV2.schemas['Basket'] } = BasketActionResponse,
+>({
     itemId,
     initialValue,
     stockLevel,
@@ -117,6 +123,7 @@ export function useCartQuantityUpdate<TResponse extends { success?: boolean } = 
     const config = useConfig();
     const { addToast } = useToast();
     const { t } = useTranslation('quantitySelector');
+    const updateBasket = useBasketUpdater();
 
     const effectiveDebounceDelay = debounceDelay || config.pages.cart.quantityUpdateDebounce;
     const removeAction = config.pages.cart.removeAction;
@@ -275,6 +282,12 @@ export function useCartQuantityUpdate<TResponse extends { success?: boolean } = 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data) {
             if (fetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                if (fetcher.data.basket) {
+                    updateBasket(fetcher.data.basket);
+                }
                 // Update the last successful quantity to the pending quantity that triggered this API call
                 if (pendingQuantity !== null) {
                     setLastSuccessfulQuantity(pendingQuantity);
@@ -291,7 +304,7 @@ export function useCartQuantityUpdate<TResponse extends { success?: boolean } = 
         }
         //As addToast is unlikely to change, we don't need to include it in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetcher.state, fetcher.data, itemId]);
+    }, [fetcher.state, fetcher.data, itemId, updateBasket]);
 
     // Cleanup debounce on unmount
     useEffect(() => {

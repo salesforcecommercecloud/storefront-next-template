@@ -22,6 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/toast';
+import { useBasketUpdater } from '@/providers/basket';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { getBonusProductCountsForPromotion } from '@/lib/cart/bonus-product-utils';
 import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product/product-utils';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -59,6 +61,7 @@ export default function BonusProductSelection({
 }: BonusProductSelectionProps): ReactElement {
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
     const { t, i18n } = useTranslation();
     const config = useConfig();
     const { currency } = useSite();
@@ -112,7 +115,15 @@ export default function BonusProductSelection({
             if (processedDataRef.current !== addToCartFetcher.data) {
                 processedDataRef.current = addToCartFetcher.data;
 
-                if (!addToCartFetcher.data.success) {
+                if (addToCartFetcher.data.success) {
+                    // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                    // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                    // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                    const responseBasket = (addToCartFetcher.data as BasketActionResponse).basket;
+                    if (responseBasket) {
+                        updateBasket(responseBasket);
+                    }
+                } else {
                     addToast(
                         t('product:bonusProducts.failedToAdd', {
                             error: addToCartFetcher.data.error?.message || t('product:unknownError'),
@@ -122,7 +133,7 @@ export default function BonusProductSelection({
                 }
             }
         }
-    }, [addToCartFetcher.state, addToCartFetcher.data, addToast, t]);
+    }, [addToCartFetcher.state, addToCartFetcher.data, addToast, t, updateBasket]);
 
     const handleSelectProduct = (
         productId: string,

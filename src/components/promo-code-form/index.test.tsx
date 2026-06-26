@@ -24,6 +24,12 @@ import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { resourceRoutes } from '@/route-paths';
 
+// Mock only useBasketUpdater so the publish-back can be asserted; the rest of the provider is unused by this subtree.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', () => ({
+    useBasketUpdater: () => mockUpdateBasket,
+}));
+
 const { t } = getTranslation();
 
 type CouponItemFixture = {
@@ -107,6 +113,14 @@ const deferred = <T,>() => {
 };
 
 describe('PromoCodeForm', () => {
+    beforeEach(() => {
+        mockUpdateBasket.mockClear();
+    });
+
+    afterEach(() => {
+        mockUpdateBasket.mockClear();
+    });
+
     test('renders accordion with promo code title', () => {
         renderWithFetcherActions();
 
@@ -182,6 +196,41 @@ describe('PromoCodeForm', () => {
 
         // Sonner renders the toast text into the document; assert against the rendered string.
         expect(await findToast(t('cart:promoCode.successMessage'))).toBeInTheDocument();
+    });
+
+    test('publishes the action-response basket into BasketProvider on successful apply', async () => {
+        const user = userEvent.setup();
+        const responseBasket = { basketId: 'test-basket-id', lastModified: '2026-06-24T10:00:00.000Z' };
+        renderWithFetcherActions({ addAction: () => ({ success: true, basket: responseBasket }) });
+
+        await user.type(screen.getByPlaceholderText(t('cart:promoCode.placeholder')), 'SAVE20');
+        await user.click(screen.getByRole('button', { name: t('cart:promoCode.apply') }));
+
+        await waitFor(() => expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket));
+    });
+
+    test('does not publish a basket when the apply response carries none', async () => {
+        const user = userEvent.setup();
+        renderWithFetcherActions({ addAction: () => ({ success: true }) });
+
+        await user.type(screen.getByPlaceholderText(t('cart:promoCode.placeholder')), 'SAVE20');
+        await user.click(screen.getByRole('button', { name: t('cart:promoCode.apply') }));
+
+        expect(await findToast(t('cart:promoCode.successMessage'))).toBeInTheDocument();
+        expect(mockUpdateBasket).not.toHaveBeenCalled();
+    });
+
+    test('does not publish a basket on a failed apply', async () => {
+        const user = userEvent.setup();
+        renderWithFetcherActions({
+            addAction: () => ({ success: false, basket: { basketId: 'test-basket-id' } }),
+        });
+
+        await user.type(screen.getByPlaceholderText(t('cart:promoCode.placeholder')), 'INVALID');
+        await user.click(screen.getByRole('button', { name: t('cart:promoCode.apply') }));
+
+        expect(await findToast(t('cart:promoCode.errorMessage'))).toBeInTheDocument();
+        expect(mockUpdateBasket).not.toHaveBeenCalled();
     });
 
     test('surfaces the server status-specific error message on apply failure', async () => {
@@ -401,6 +450,32 @@ describe('PromoCodeForm', () => {
             await user.click(screen.getByRole('button', { name: new RegExp(`^${t('cart:promoCode.remove')}\\s`) }));
 
             expect(await findToast(t('cart:promoCode.removeSuccessMessage'))).toBeInTheDocument();
+        });
+
+        test('publishes the action-response basket into BasketProvider on successful removal', async () => {
+            const user = userEvent.setup();
+            const responseBasket = { basketId: 'test-basket-id', lastModified: '2026-06-24T10:00:00.000Z' };
+            renderWithFetcherActions({
+                basket: couponBasket([{ couponItemId: 'ci-1', code: '5TIES', statusCode: 'applied' }]),
+                removeAction: () => ({ success: true, basket: responseBasket }),
+            });
+
+            await user.click(screen.getByRole('button', { name: new RegExp(`^${t('cart:promoCode.remove')}\\s`) }));
+
+            await waitFor(() => expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket));
+        });
+
+        test('does not publish a basket on a failed removal', async () => {
+            const user = userEvent.setup();
+            renderWithFetcherActions({
+                basket: couponBasket([{ couponItemId: 'ci-1', code: '5TIES', statusCode: 'applied' }]),
+                removeAction: () => ({ success: false, error: { code: 'OPERATION_FAILED', message: 'oops' } }),
+            });
+
+            await user.click(screen.getByRole('button', { name: new RegExp(`^${t('cart:promoCode.remove')}\\s`) }));
+
+            expect(await findToast(t('cart:promoCode.removeErrorMessage'))).toBeInTheDocument();
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
         });
 
         test('shows error toast when removal fails', async () => {

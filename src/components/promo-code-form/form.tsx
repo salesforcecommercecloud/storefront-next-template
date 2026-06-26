@@ -28,12 +28,14 @@ import { formatCurrency } from '@/lib/currency';
 //hooks
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
+import { useBasketUpdater } from '@/providers/basket';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
 import { isCouponApplied } from '@/lib/cart/coupon-status';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 //types
 import { createPromoCodeFormSchema, type PromoCodeFormData } from './index';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { type AppliedCouponRowProps, type PromoCodeFormProps } from './types';
 import { useTranslation } from 'react-i18next';
 
@@ -67,6 +69,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
     const [isOpen, setIsOpen] = useState(true);
     const { applyPromoCode, applyFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
     const { currency: siteCurrency } = useSite();
 
     const schema = useMemo(() => createPromoCodeFormSchema(t), [t]);
@@ -96,6 +99,13 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
     useEffect(() => {
         if (applyFetcher.data) {
             if (applyFetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                const responseBasket = (applyFetcher.data as BasketActionResponse).basket;
+                if (responseBasket) {
+                    updateBasket(responseBasket);
+                }
                 form.reset({ code: '' });
                 addToast(t('promoCode.successMessage'), 'success');
             } else {
@@ -117,7 +127,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
         }
         // addToast is stable and does not need to be in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [applyFetcher.data, form, t]);
+    }, [applyFetcher.data, form, t, updateBasket]);
 
     /**
      * Handles form submission for applying a promo code.
@@ -203,11 +213,19 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
     const { t, i18n } = useTranslation('cart');
     const { removePromoCode, removeFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
     const isRemoving = removeFetcher.state !== FETCHER_STATES.IDLE;
 
     useEffect(() => {
         if (removeFetcher.data) {
             if (removeFetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                const responseBasket = (removeFetcher.data as BasketActionResponse).basket;
+                if (responseBasket) {
+                    updateBasket(responseBasket);
+                }
                 addToast(t('promoCode.removeSuccessMessage'), 'success');
             } else if (removeFetcher.data.error) {
                 addToast(t('promoCode.removeErrorMessage'), 'error');
@@ -215,7 +233,7 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
         }
         // addToast is stable and does not need to be in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [removeFetcher.data, t]);
+    }, [removeFetcher.data, t, updateBasket]);
 
     // Sum every price adjustment (order-level AND line-item-level) tied to this coupon.
     // SCAPI splits coupon discounts across both based on whether the promotion targets

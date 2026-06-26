@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useToast } from '@/components/toast';
+import { useBasketUpdater } from '@/providers/basket';
 import ProductViewProvider, { useProductView } from '@/providers/product-view';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from '@/components/product-view/product-info';
@@ -70,6 +71,7 @@ export function BonusProductModal({
     const { t } = useTranslation();
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
 
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [variationValues, setVariationValues] = useState<Record<string, string>>({});
@@ -121,6 +123,10 @@ export function BonusProductModal({
 
         if (addToCartFetcher.state === 'idle' && addToCartFetcher.data) {
             if (addToCartFetcher.data.success && addToCartFetcher.data.basket) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                updateBasket(addToCartFetcher.data.basket);
                 setIsAddingToCart(false);
                 onOpenChange(false);
             } else if (addToCartFetcher.data.success === false) {
@@ -132,7 +138,7 @@ export function BonusProductModal({
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAddingToCart, addToCartFetcher.state, addToCartFetcher.data]);
+    }, [isAddingToCart, addToCartFetcher.state, addToCartFetcher.data, updateBasket]);
 
     const matchingVariant = useMemo(() => {
         if (!currentProduct?.variants) return undefined;

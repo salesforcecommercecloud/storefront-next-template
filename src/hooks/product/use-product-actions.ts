@@ -369,6 +369,9 @@ export function useProductActions({
         }
         if (cartFetcher.data?.success && cartFetcher.data.basket) {
             const basketData = cartFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+            // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+            // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
             updateBasket(basketData);
 
             setIsAddingToOrUpdatingCart(false);
@@ -395,6 +398,9 @@ export function useProductActions({
         }
         if (multipleItemsFetcher.data?.success && multipleItemsFetcher.data.basket) {
             const basketData = multipleItemsFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+            // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+            // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             setMiniCartOpen(true);
@@ -413,6 +419,9 @@ export function useProductActions({
         }
         if (bundleFetcher.data?.success && bundleFetcher.data.basket) {
             const basketData = bundleFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+            // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+            // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             setMiniCartOpen(true);

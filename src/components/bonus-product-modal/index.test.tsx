@@ -54,6 +54,14 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
+// Stub only useBasketUpdater so the publish-back can be asserted; keep the rest of the provider real for any
+// AllProvidersWrapper consumers.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/providers/basket')>()),
+    useBasketUpdater: () => mockUpdateBasket,
+}));
+
 vi.mock('@/providers/product-view', () => ({
     default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     useProductView: () => ({
@@ -390,6 +398,19 @@ describe('BonusProductModal', () => {
             expect(successCalls).toHaveLength(0);
             // Modal close was requested
             expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+        });
+
+        it('publishes the action-response basket into BasketProvider on success', () => {
+            const responseBasket = { basketId: 'b1', lastModified: '2026-06-24T10:00:00.000Z' };
+            setupAndClickAdd({ success: true, basket: responseBasket });
+
+            expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket);
+        });
+
+        it('does not publish a basket on a failed add-to-cart', () => {
+            setupAndClickAdd({ success: false, error: { message: 'Inventory short' } });
+
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
         });
 
         it('shows an error toast when add-to-cart fails', () => {

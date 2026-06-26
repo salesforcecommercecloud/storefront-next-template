@@ -236,6 +236,9 @@ export function useCheckoutActions(options?: {
 
         // Transition: SUBMITTED -> BASKET_UPDATED (spread preserves recalculating and any future fields)
         actionRef.current = { ...actionRef.current, state: ActionState.BASKET_UPDATED };
+        // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+        // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+        // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
         updateBasket(fetcher.data.basket);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactFetcher.data, shippingAddressFetcher.data, shippingOptionsFetcher.data, paymentFetcher.data]);

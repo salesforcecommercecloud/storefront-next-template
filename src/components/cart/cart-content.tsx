@@ -140,7 +140,9 @@ export default function CartContent({
     );
 
     // Sync cart page loader basket into basket context pre-paint, so descendants like CartDeliveryOption observe the
-    // hydrated basket on the first painted frame
+    // hydrated basket on the first painted frame.
+    // Shape-safe: no basket read or mutation sets `expand`, so every response carries the SCAPI default and can't
+    // down-shape provider consumers.
     const updateBasket = useBasketUpdater();
     useLayoutEffect(() => {
         if (basket?.basketId) {

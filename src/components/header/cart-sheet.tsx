@@ -114,6 +114,9 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
             processedDataRef.current = fetcher.data;
             if (fetcher.data.success) {
                 if (fetcher.data.basket) {
+                    // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                    // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                    // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
                     updateBasket(fetcher.data.basket);
                 }
                 addToast(t('success'), 'success');

@@ -35,6 +35,12 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
+// Mock only useBasketUpdater so the publish-back can be asserted; the rest of the provider is unused by this subtree.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', () => ({
+    useBasketUpdater: () => mockUpdateBasket,
+}));
+
 // Mock the useItemFetcher hook
 const mockFetcher = {
     submit: vi.fn(),
@@ -62,6 +68,7 @@ describe('RemoveItemButtonWithConfirmation', () => {
         mockFetcher.state = 'idle';
         mockFetcher.data = undefined;
         mockUseItemFetcher.mockReturnValue(mockFetcher);
+        mockUpdateBasket.mockClear();
     });
 
     test('renders remove button with correct text and attributes', () => {
@@ -154,6 +161,49 @@ describe('RemoveItemButtonWithConfirmation', () => {
         );
 
         expect(mockAddToast).toHaveBeenCalledWith(t('removeItem:success'), 'success');
+    });
+
+    test('publishes the action-response basket into BasketProvider on successful remove', () => {
+        const responseBasket = { basketId: 'test-basket-id', lastModified: '2026-06-24T10:00:00.000Z' };
+        mockFetcher.state = 'idle';
+        mockFetcher.data = { success: true, basket: responseBasket };
+        mockUseItemFetcher.mockReturnValue(mockFetcher);
+
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={getDefaultConfig()} />
+            </ConfigProvider>
+        );
+
+        expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket);
+    });
+
+    test('does not publish a basket when the remove response carries none', () => {
+        mockFetcher.state = 'idle';
+        mockFetcher.data = { success: true };
+        mockUseItemFetcher.mockReturnValue(mockFetcher);
+
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={getDefaultConfig()} />
+            </ConfigProvider>
+        );
+
+        expect(mockUpdateBasket).not.toHaveBeenCalled();
+    });
+
+    test('does not publish a basket on a failed remove', () => {
+        mockFetcher.state = 'idle';
+        mockFetcher.data = { success: false, basket: { basketId: 'test-basket-id' } };
+        mockUseItemFetcher.mockReturnValue(mockFetcher);
+
+        render(
+            <ConfigProvider config={mockConfig}>
+                <RemoveItemButtonWithConfirmation itemId="item-123" config={getDefaultConfig()} />
+            </ConfigProvider>
+        );
+
+        expect(mockUpdateBasket).not.toHaveBeenCalled();
     });
 
     test('shows error toast when fetcher returns error data', () => {

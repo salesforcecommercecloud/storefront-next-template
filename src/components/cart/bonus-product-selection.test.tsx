@@ -58,6 +58,12 @@ vi.mock('@/components/toast', () => ({
     useToast: vi.fn(() => ({ addToast: mockAddToast })),
 }));
 
+// Mock only useBasketUpdater so the publish-back can be asserted; the rest of the provider is unused by this subtree.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', () => ({
+    useBasketUpdater: () => mockUpdateBasket,
+}));
+
 // Mock bonus-product-utils
 // Default: all slots filled (for existing tests)
 vi.mock('@/lib/cart/bonus-product-utils', () => ({
@@ -450,6 +456,42 @@ describe('BonusProductSelection', () => {
             await waitFor(() => {
                 expect(mockAddToast).not.toHaveBeenCalled();
             });
+        });
+
+        test('publishes the action-response basket into BasketProvider on successful direct add', async () => {
+            const responseBasket = { basketId: 'basket-1', lastModified: '2026-06-24T10:00:00.000Z' };
+            mockRequiresVariantSelection.mockReturnValue(false);
+            mockFetcher.state = 'idle';
+            mockFetcher.data = { success: true, basket: responseBasket };
+
+            const props = getDefaultProps();
+            renderWithRouter(<BonusProductSelection {...props} />);
+
+            await waitFor(() => expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket));
+        });
+
+        test('does not publish a basket when the direct-add response carries none', async () => {
+            mockRequiresVariantSelection.mockReturnValue(false);
+            mockFetcher.state = 'idle';
+            mockFetcher.data = { success: true };
+
+            const props = getDefaultProps();
+            renderWithRouter(<BonusProductSelection {...props} />);
+
+            await waitFor(() => expect(mockAddToast).not.toHaveBeenCalled());
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
+        });
+
+        test('does not publish a basket on a failed direct add', async () => {
+            mockRequiresVariantSelection.mockReturnValue(false);
+            mockFetcher.state = 'idle';
+            mockFetcher.data = { success: false, basket: { basketId: 'basket-1' }, error: 'Out of stock' };
+
+            const props = getDefaultProps();
+            renderWithRouter(<BonusProductSelection {...props} />);
+
+            await waitFor(() => expect(mockAddToast).toHaveBeenCalled());
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
         });
 
         test('shows error toast after failed direct add', async () => {

@@ -86,7 +86,9 @@ function CheckoutView({
 }: RouteComponentProps<CheckoutPageData>) {
     const { t } = useTranslation('checkout');
     // Imperatively update root BasketProvider with loader basket
-    // This ensures cart badge and other components see the updated basket
+    // This ensures cart badge and other components see the updated basket.
+    // Shape-safe: no basket read or mutation sets `expand`, so every response carries the SCAPI default and can't
+    // down-shape provider consumers.
     const updateBasket = useBasketUpdater();
     const { addToast } = useToast();
     useLayoutEffect(() => {

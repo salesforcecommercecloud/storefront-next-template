@@ -27,12 +27,16 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 // Hooks
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useBasketUpdater } from '@/providers/basket';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/toast';
 import { useTranslation } from 'react-i18next';
+
+// Types
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 
 export interface RemoveItemConfig {
     action: string;
@@ -74,11 +78,19 @@ export function RemoveItemButtonWithConfirmation({
     const isLoading = fetcher.state === 'submitting';
     const [showConfirmation, setShowConfirmation] = useState(false);
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
 
     // Handle UI effects (toast notifications)
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data) {
             if (fetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                const responseBasket = (fetcher.data as BasketActionResponse).basket;
+                if (responseBasket) {
+                    updateBasket(responseBasket);
+                }
                 addToast(t('success'), 'success');
             } else {
                 addToast(t('failed'), 'error');
@@ -86,7 +98,7 @@ export function RemoveItemButtonWithConfirmation({
         }
         //As addToast is unlikely to change, we don't need to include it in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetcher.state, fetcher.data, t]);
+    }, [fetcher.state, fetcher.data, t, updateBasket]);
 
     // Remove item function
     const removeItem = useCallback(() => {
