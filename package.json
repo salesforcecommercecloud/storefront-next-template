@@ -42,7 +42,6 @@
     "extensions:list": "node scripts/list-extension-points.js",
     "eslint:generate-config": "node scripts/generate-eslint-config.js",
     "b2c": "b2c",
-    "storybook:test:mirror": "bash scripts/storybook-mirror-check.sh",
     "e2e": "pnpm --filter ./e2e e2e",
     "a11y": "pnpm --filter ./e2e a11y"
   },
