@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Per-vertical primary font binding. Verticals override this module via
- * `src/verticals/${VERTICAL}/lib/fonts.ts` to ship a different woff2 file
- * (and matching `@font-face` declaration in their theme css) without forking
- * `root.tsx`. The `@/lib/fonts` import in `root.tsx` resolves vertical-first
- * via the `@/` alias chain in dev, and the mirror script flattens the
- * vertical's override over canonical at build time.
- */
+/** The site's primary font, bound to `<body>` in `root.tsx`. */
 import sen from '/fonts/sen-variable.woff2';
 
 export const primaryFont = sen;

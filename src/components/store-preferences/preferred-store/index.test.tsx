@@ -23,8 +23,6 @@ import PreferredStore from '.';
 
 const { t } = getTranslation();
 
-// Mock react-router (preserve real exports so getTranslation's middleware
-// dependency on createContext keeps working under VERTICAL=cosmetic).
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
     return {

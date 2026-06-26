@@ -124,9 +124,8 @@ import StoreLocatorProvider from '@/extensions/store-locator/providers/store-loc
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
-// Layout Components - logo for error page. Imported via `@/...` so the Vite
-// vertical resolver swaps in the active vertical's logo override (e.g. cosmetic's
-// inline-SVG wordmark) instead of the canonical raster asset.
+// Layout Components - logo for error page. Imported via `@/...` so different
+// logo implementations (raster, inline-SVG, etc.) can be provided per brand.
 import Logo from '@/components/logo';
 
 export const links: Route.LinksFunction = () => {

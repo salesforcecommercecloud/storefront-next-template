@@ -33,7 +33,7 @@ function buildSlides(count: number, longCopy: boolean): HeroSlide[] {
     const titles = ['Welcome to Our Store', 'New Collection', 'Special Offers', 'Outdoor Adventures', 'Members Only'];
     const subtitles = [
         'Discover amazing products',
-        'Latest fashion trends',
+        'Latest seasonal styles',
         'Limited time deals',
         'Built for the wild',
         'Early access perks',

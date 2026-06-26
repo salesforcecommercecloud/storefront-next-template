@@ -183,7 +183,7 @@ vi.mock('react-i18next', async () => {
                     'featuredContent.men.ctaText': 'EXPLORE COLLECTION',
                     'featuredContent.styleForRealLife.title': 'Style for Real Life',
                     'featuredContent.styleForRealLife.description':
-                        'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.\n\nDiscover pieces that move with you, adapt to your life, and become the foundation of a wardrobe that works—every day, everywhere.',
+                        'We believe style should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless appeal.\n\nDiscover pieces that move with you, adapt to your life, and become the foundation of a wardrobe that works—every day, everywhere.',
                 };
                 return translations[normalizedKey] || key;
             },
@@ -349,23 +349,26 @@ describe('HomePage', () => {
     });
 
     describe('Featured Content Cards Section', () => {
+        // Assert against the copy the component renders (the react-i18next mock
+        // above), not getTranslation()'s base bundle — the latter resolves to the
+        // active brand's merged locales, which differ when a brand overlay is active.
         const contentCardTests = [
             {
                 description: 'renders women content card',
-                titleKey: 'home:featuredContent.women.title',
-                contentKey: 'home:featuredContent.women.description',
+                title: 'Women',
+                content: 'Discover our curated collection of sophisticated footwear designed for the modern woman.',
             },
             {
                 description: 'renders men content card',
-                titleKey: 'home:featuredContent.men.title',
-                contentKey: 'home:featuredContent.men.description',
+                title: 'Men',
+                content: "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
             },
         ];
 
-        test.each(contentCardTests)('$description', ({ titleKey, contentKey }) => {
+        test.each(contentCardTests)('$description', ({ title, content }) => {
             renderComponent();
-            expect(screen.getByText(t(titleKey))).toBeInTheDocument();
-            expect(screen.getByText(t(contentKey))).toBeInTheDocument();
+            expect(screen.getByText(title)).toBeInTheDocument();
+            expect(screen.getByText(content)).toBeInTheDocument();
         });
 
         test('renders all content cards with correct count', () => {

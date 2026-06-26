@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-// Canonical brand logo. The raster asset resolves through the public-asset
-// vertical overlay (`/images/logo.svg`), but verticals that ship a bespoke
-// (e.g. inline-SVG) logo override this whole component via `@/components/logo` —
-// the Vite vertical resolver checks `src/verticals/${VERTICAL}/components/logo`
-// first. Keeping the logo behind a component (instead of a hardcoded `<img>`)
-// lets the error page and any other consumer pick up the vertical's logo.
+// Brand logo. Renders the `/images/logo.svg` raster asset. A brand can ship a
+// bespoke (e.g. inline-SVG) logo by overriding this whole component at
+// `@/components/logo`. Keeping the logo behind a component (instead of a
+// hardcoded `<img>`) lets the error page and any other consumer pick up the
+// active brand's logo.
 import logo from '/images/logo.svg';
 
 interface LogoProps {

@@ -126,10 +126,9 @@ export default function DefaultLayout({ loaderData: { root, subs, headerComponen
 
     // Reflect the route's `handle.ui` config onto <main> as data-* attributes
     // during render, so the correct top padding is present in the SSR'd HTML.
-    // A vertical's CSS (e.g. cosmetic) keys <main> padding off these; emitting
-    // them at render (not in a post-hydration effect) avoids a layout shift
-    // (CLS) when the padding would otherwise be added after first paint.
-    // Inert for verticals with no matching CSS (fashion/canonical).
+    // If your CSS keys <main> padding off these, emitting them at render (not
+    // in a post-hydration effect) avoids a layout shift (CLS) when the padding
+    // would otherwise be added after first paint. Inert if no CSS matches.
     const mainPaddingAttrs = mainPaddingDataAttributes(usePageUIConfig());
 
     // <WishlistMergeToast> stays at the app shell — it reads URL params and a one-time

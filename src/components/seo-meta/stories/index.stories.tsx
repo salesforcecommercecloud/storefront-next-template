@@ -79,7 +79,7 @@ export const RawTitle: Story = {
     args: {
         rawTitle: true,
         title: 'NextGen PWA Kit Store',
-        description: 'Your one-stop shop for premium fashion.',
+        description: 'Your one-stop shop for premium products.',
     },
 };
 

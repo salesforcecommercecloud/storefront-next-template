@@ -128,10 +128,7 @@ describe('Cart route loader', () => {
         expect(result.pageUrl).toContain('/cart');
     });
 
-    test('skips the Einstein recommendation fetches when the vertical disables recommendations', async () => {
-        // Cosmetic sets showRecommendations: false. The loader must not issue either
-        // recommendation call, and the rec promises must still resolve to an empty
-        // Recommendation so the shape the component pins stays stable.
+    test('skips the Einstein recommendation fetches when recommendations are disabled', async () => {
         uiConfig.pages.cart.showRecommendations = false;
 
         const result = loader(createLoaderArgs()) as any;
@@ -142,8 +139,6 @@ describe('Cart route loader', () => {
     });
 
     test('issues the Einstein recommendation fetches when recommendations are enabled', async () => {
-        // Canonical/fashion default. CART_RECENTLY_VIEWED fires immediately; CART_MAY_ALSO_LIKE
-        // chains off the basket — awaiting it forces both calls through.
         const result = loader(createLoaderArgs()) as any;
         await result.cartMayAlsoLikePromise;
         await result.cartRecentlyViewedPromise;

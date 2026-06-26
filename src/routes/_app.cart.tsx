@@ -64,11 +64,10 @@ import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
- * Page-level UI config read from the route handle. `hasTopPadding` adds the
- * vertical-spacing token on top of the header height so the cart's first row
- * clears the header with the same breathing room as the PDP. Consumed by
- * verticals that render a PageConfigManager (cosmetic today); inert elsewhere
- * (fashion/canonical keep `<main>`'s default `pt-8`).
+ * Page-level UI config read from the route handle. `hasTopPadding` adds extra
+ * vertical spacing on top of the header height so the cart's first row clears
+ * the header with the same breathing room as the PDP. Only applies when your
+ * CSS keys off `data-has-top-padding`; otherwise defaults to `pt-8`.
  */
 export const handle = {
     ui: {

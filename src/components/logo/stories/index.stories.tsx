@@ -24,7 +24,7 @@ const meta: Meta<typeof Logo> = {
         docs: {
             description: {
                 component:
-                    'Canonical brand logo. Renders the `/images/logo.svg` raster asset. A vertical that ships a bespoke logo overrides this whole component via the Vite vertical resolver (`@/components/logo`), so consumers (header, error page) pick up the active vertical’s logo. Sizing is controlled by the caller via `className`.',
+                    'Brand logo component. Renders the `/images/logo.svg` raster asset. Override this component at `@/components/logo` for brand-specific logos. Sizing is controlled by the caller via `className`.',
             },
         },
     },

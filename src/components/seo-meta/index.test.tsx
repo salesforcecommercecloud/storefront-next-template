@@ -27,9 +27,8 @@ function getMetaProperty(property: string) {
     return document.head.querySelector(`meta[property="${property}"]`);
 }
 
-// Site name is vertical-driven (derived from the active i18n bundle), so tests
-// resolve it the same way SeoMeta does instead of hardcoding the canonical
-// "Market Street" value. Verticals like cosmetic override common.defaultSiteName.
+// Site name comes from the active i18n bundle (common.defaultSiteName), so
+// tests resolve it the same way SeoMeta does instead of hardcoding a value.
 // Resolved lazily inside each test — i18n is initialized by vitest setup, which
 // hasn't run by the time module-level top-level code evaluates.
 const siteName = () => i18next.t(DEFAULT_SITE_NAME_KEY, { ns: 'common' });

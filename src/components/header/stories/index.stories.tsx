@@ -17,7 +17,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { type ReactElement } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-// Vertical resolver requires the @/ alias (cosmetic overrides header) — keep over '../index'.
 import Header from '@/components/header';
 import AnnouncementBanner from '@/components/announcement-banner';
 import AuthProvider from '@/providers/auth';

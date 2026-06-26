@@ -19,16 +19,13 @@ import { useMatches } from 'react-router';
 /**
  * Page-level UI configuration, declared per-route via the `handle.ui` export.
  *
- * This is a CANONICAL contract: routes in any vertical may set it (e.g.
- * `routes/_app.cart.tsx` and the cosmetic PDP both export
- * `handle.ui.main.hasTopPadding`). The shell (`routes/_app.tsx`) reads it
- * during render and reflects it onto `<main>` as `data-*` attributes, so the
- * correct layout is present in the SERVER-rendered HTML — no post-hydration
- * mutation, no layout shift (CLS).
+ * Any route may set this (e.g. cart, product detail, home). The shell
+ * (`routes/_app.tsx`) reads it during render and reflects it onto `<main>` as
+ * `data-*` attributes, so the correct layout is present in the SERVER-rendered
+ * HTML — no post-hydration mutation, no layout shift (CLS).
  *
- * The attributes are inert unless a vertical's CSS keys off them. Fashion ships
- * no such CSS (the attributes do nothing); cosmetic's `theme/base.css` keys
- * `<main>` padding off `data-has-top-padding` / `data-hero-bleed`.
+ * The attributes are inert unless your CSS keys off them. You can style `<main>`
+ * padding based on `data-has-top-padding` / `data-hero-bleed` as needed.
  *
  * @example
  * ```tsx
