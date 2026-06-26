@@ -31,9 +31,11 @@ vi.mock('@/hooks/use-navigate', () => ({
 const renderComponent = ({
     category,
     initialPath = '/',
+    categoryLabel,
 }: {
     category?: ShopperProducts.schemas['Category'];
     initialPath?: string;
+    categoryLabel?: string;
 }) => {
     const router = createMemoryRouter(
         [
@@ -41,7 +43,7 @@ const renderComponent = ({
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <QuickFilters category={category} />
+                        <QuickFilters category={category} categoryLabel={categoryLabel} />
                     </ConfigProvider>
                 ),
             },
@@ -49,7 +51,7 @@ const renderComponent = ({
                 path: '/category/:categoryId',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <QuickFilters category={category} />
+                        <QuickFilters category={category} categoryLabel={categoryLabel} />
                     </ConfigProvider>
                 ),
             },
@@ -219,5 +221,46 @@ describe('QuickFilters', () => {
 
         const button = screen.getByRole('button', { name: 'Tops' });
         expect(button).toHaveAttribute('aria-pressed');
+    });
+
+    test('renders "Shop by {label}" header when categoryLabel is provided', () => {
+        const category = {
+            id: 'womens',
+            name: 'Women',
+            categories: [{ id: 'womens-tops', name: 'Tops' }],
+        };
+
+        renderComponent({ category, categoryLabel: 'Women' });
+
+        expect(screen.getByText('Shop by Women')).toBeInTheDocument();
+        // Header label is also the group's accessible name when present.
+        expect(screen.getByRole('group', { name: 'Shop by Women' })).toBeInTheDocument();
+    });
+
+    test('omits the header when categoryLabel is not provided', () => {
+        const category = {
+            id: 'womens',
+            name: 'Women',
+            categories: [{ id: 'womens-tops', name: 'Tops' }],
+        };
+
+        renderComponent({ category });
+
+        expect(screen.queryByText(/^Shop by/)).not.toBeInTheDocument();
+        // Falls back to the generic group label.
+        expect(screen.getByRole('group', { name: 'Quick category filters' })).toBeInTheDocument();
+    });
+
+    test('has data-slot attribute for deterministic selection', () => {
+        const category = {
+            id: 'mens',
+            name: 'Men',
+            categories: [{ id: 'mens-tops', name: 'Tops' }],
+        };
+
+        renderComponent({ category });
+
+        const container = screen.getByRole('group', { name: 'Quick category filters' });
+        expect(container).toHaveAttribute('data-slot', 'quick-filters');
     });
 });

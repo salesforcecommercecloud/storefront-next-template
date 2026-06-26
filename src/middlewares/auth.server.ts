@@ -662,14 +662,17 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * - `usid`: User session ID (expires with refresh token). Mirrors the value derived from the access token JWT
  *   `sub` claim. sf-next reads `usid` from the JWT, not from this cookie; the cookie is kept so hybrid
  *   storefronts can forward it to ECOM, which does not parse the access token for `usid`.
- * - `cc-idp-at`: IDP access token (for social login, expires with SLAS access token)
+ * - `idp_access_token`: IDP access token (for social login, expires with SLAS access token)
  * - `cc-cv`: OAuth2 PKCE code verifier (server-only httpOnly cookie, short-lived, 5 min expiry)
  *
  * `customerId` is NOT persisted as a cookie — it is derived per-request from the SLAS access token JWT
  * `isb` claim (via `gcid`/`rcid`).
  *
- * User type is determined by which refresh token cookie exists (cc-nx-g = guest, cc-nx = registered).
- * Only one refresh token cookie exists at a time - a user cannot be both guest and registered.
+ * User type is derived from the access-token JWT (`rcid` present in the `isb` claim → registered,
+ * otherwise guest — see `deriveUserTypeFromClaims`), NOT from which refresh token cookie exists.
+ * The refresh-cookie name is only consulted as a cold-start fallback when no access token has been
+ * issued yet, and as the response-side decision for which refresh cookie to write/delete. Only one
+ * refresh token cookie exists at a time - a user cannot be both guest and registered.
  *
  * All cookies use httpOnly: true to prevent client-side JavaScript access (XSS protection).
  * ECOM hybrid storefronts can still read cookies from the incoming request headers server-side.
@@ -1023,8 +1026,9 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Use correct cookie name based on user type (cc-nx-g for guest, cc-nx for registered)
         //
         // NOTE: userType itself is NOT written to cookies - only the refresh token is written
-        // to the appropriate cookie name (cc-nx-g or cc-nx). On next request, userType will
-        // be derived from which cookie exists.
+        // to the appropriate cookie name (cc-nx-g or cc-nx). On the next request userType is
+        // derived from the access-token JWT (see deriveUserTypeFromClaims); the cookie name is
+        // only a cold-start fallback when no access token is present.
         const refreshTokenValue = authStorage.get('refreshToken');
         if (refreshTokenValue && typeof refreshTokenValue === 'string' && refreshTokenExpiryValue && userTypeValue) {
             const refreshTokenCookie =

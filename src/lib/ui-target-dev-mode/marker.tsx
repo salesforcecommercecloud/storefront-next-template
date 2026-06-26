@@ -108,7 +108,7 @@ export function UITargetDevMarker({ targetId, children, __file__, __hasChildren_
             {/* Expanded info panel — absolute so it overlays without disrupting flow */}
             {expanded && (
                 <div
-                    className="absolute left-0 top-7 z-[10000] w-80 rounded-none p-3 shadow-2xl"
+                    className="absolute left-0 top-7 z-[10000] w-80 p-3 shadow-2xl"
                     style={{ border: `2px solid ${C.accent}`, background: C.white }}>
                     <div className="mb-2 flex items-start justify-between">
                         <h4 className="font-mono text-sm font-bold" style={{ color: C.accent }}>

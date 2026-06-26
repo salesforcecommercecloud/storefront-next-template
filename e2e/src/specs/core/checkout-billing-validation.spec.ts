@@ -16,12 +16,6 @@
 
 Feature('Checkout Billing Address Validation Tests').tag('@core').tag('@checkout').tag('@billing-validation');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, apiCartSetupFlow } = inject();
 import { expect } from 'chai';
 import {
@@ -30,8 +24,11 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
 
-scenarioFn('Billing address validation — required fields show errors', async () => {
+installLoginPrefsStubHooks();
+
+Scenario('Billing address validation — required fields show errors', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -66,4 +63,5 @@ scenarioFn('Billing address validation — required fields show errors', async (
 })
     .config({ retries: 0 })
     .tag('@billing-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

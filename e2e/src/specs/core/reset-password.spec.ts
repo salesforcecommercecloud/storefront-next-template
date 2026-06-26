@@ -16,22 +16,47 @@
 
 Feature('Reset Password').tag('@core').tag('@auth');
 
-// TODO: Skipped to keep the new pre-merge @core gate green on day one.
-//   1. "User can request password reset" — using a fixed email triggers the
-//      password-reset rate limit in CI; the "Check Your Email" heading never
-//      appears after submitting a known account email.
-//   2. "User can reset password using magic link" — flaky on the pre-merge
-//      pool target. Re-enable when both root causes are addressed.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
-const { forgotPasswordPage, resetPasswordPage } = inject();
+// The Before hook now uses apiSignupFlow (SCAPI register + cookie injection)
+// instead of the UI signup form, so the magic-link scenario's setup no longer
+// flakes (cc-nx_ cookie timeout / "Last Name Input" disappearing mid-form).
+//
+// "User can request password reset" previously failed because the "Check Your
+// Email" heading never appeared after submitting a known account email — the
+// SLAS client wasn't configured for the password-reset operation, so the
+// request failed and the success heading never rendered. With the SLAS client
+// now configured for password reset, the scenario is re-enabled.
+//
+// NOTE: that fix is NOT in this repo — it's a SLAS client change made in the
+// SLAS Admin UI: Clients > (select the client id) > Site Configuration > set the
+// Domain Identity. This spec's stability therefore depends on environment state
+// that isn't version-controlled here: if that SLAS client config regresses, this
+// scenario flakes again with no code-level signal. If it starts failing on
+// "Check Your Email", check the SLAS Admin UI client's Site Configuration
+// (Domain Identity) before looking for a code cause.
+const { storefrontPage, forgotPasswordPage, resetPasswordPage, apiSignupFlow } = inject();
 import { expect } from 'chai';
 
-// Get test email from environment variable or use default
-const testEmail = process.env.E2E_TEST_USER_EMAIL || 'e2e.test.user@gmail.com';
+/**
+ * Spec-scoped account credentials, lazily created on the first scenario.
+ * Keeping these in module-level variables (not the shared credential file)
+ * ensures this worker's account is never touched by other parallel workers.
+ */
+let specEmail = '';
 
-scenarioFn('User can request password reset', () => {
+/**
+ * Before hook: on the first scenario, create a dedicated account via signup.
+ * On every subsequent scenario, clear cookies and re-login with stored creds.
+ * This ensures the tests avoid hitting the password reset limit for a shopper's email.
+ */
+Before(async () => {
+    if (!specEmail) {
+        await storefrontPage.clearCookies();
+        const { signupData } = await apiSignupFlow.execute();
+        specEmail = signupData.email;
+    }
+});
+
+Scenario('User can request password reset', () => {
     // Navigate to the forgot password page
     forgotPasswordPage.navigate();
 
@@ -39,7 +64,7 @@ scenarioFn('User can request password reset', () => {
     forgotPasswordPage.validateResetPasswordHeading();
 
     // Enter email address
-    forgotPasswordPage.enterEmail(testEmail);
+    forgotPasswordPage.enterEmail(specEmail);
 
     // Submit the form
     forgotPasswordPage.submitForm();
@@ -50,13 +75,13 @@ scenarioFn('User can request password reset', () => {
     .tag('@reset-password')
     .tag('@forgot-password-form');
 
-scenarioFn('User can reset password using magic link', async () => {
+Scenario('User can reset password using magic link', async () => {
     // Test data
     const testToken = '12345678';
     const testPassword = 'NewSecureP@ssw0rd!';
 
     // Navigate to reset password page with token and email
-    resetPasswordPage.navigate(testToken, testEmail);
+    resetPasswordPage.navigate(testToken, specEmail);
 
     // Dismiss cookie/consent dialog first so heading is visible, then verify heading
     await resetPasswordPage.dismissCookieDialog();
@@ -78,7 +103,7 @@ scenarioFn('User can reset password using magic link', async () => {
     // Verify request payload
     const params = new URLSearchParams(resetPasswordRequest.postData ?? '');
     expect(params.get('token'), 'Request should include token').to.equal(testToken);
-    expect(params.get('email'), 'Request should include email').to.equal(testEmail);
+    expect(params.get('email'), 'Request should include email').to.equal(specEmail);
     expect(params.get('newPassword'), 'Request should include password').to.equal(testPassword);
     expect(params.get('confirmPassword'), 'Request should include confirm password').to.equal(testPassword);
 })

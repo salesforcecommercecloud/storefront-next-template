@@ -43,12 +43,12 @@ const mapColorNameToHex = (colorName: string): string | null => {
 };
 
 const colorOptionButtonClass = cn(
-    'flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none',
+    'flex w-full min-w-0 flex-col items-center gap-2 border-0 bg-transparent p-1 text-center ',
     'whitespace-normal hover:bg-muted/40',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
 );
 
-const swatchBaseClass = 'size-8 shrink-0 rounded-none border';
+const swatchBaseClass = 'size-8 shrink-0 border';
 const swatchSelectedClass = cn(
     swatchBaseClass,
     'border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background'

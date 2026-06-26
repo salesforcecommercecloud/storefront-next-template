@@ -73,7 +73,7 @@ export function EstimatedDeliveryModalContent({
                     </Typography>
                     <div className="space-y-3">
                         {shippingOptions.map((option) => (
-                            <div key={option.name} className="rounded-none border border-border p-4">
+                            <div key={option.name} className="border border-border p-4">
                                 <div className="mb-2 flex items-start justify-between">
                                     <div>
                                         <Typography as="p" className="font-medium text-foreground">

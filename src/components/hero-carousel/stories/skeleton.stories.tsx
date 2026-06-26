@@ -16,39 +16,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 import HeroCarouselSkeleton from '../skeleton';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('interaction');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            const button = target.closest('button, [role="button"]');
-            if (button) {
-                const label = button.textContent?.trim() || button.getAttribute('aria-label') || '';
-                logClick({ type: 'click', element: 'button', label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof HeroCarouselSkeleton> = {
     title: 'COMMON/HeroCarouselSkeleton',
@@ -58,74 +26,49 @@ const meta: Meta<typeof HeroCarouselSkeleton> = {
         layout: 'fullscreen',
         docs: {
             description: {
-                component: `
-HeroCarouselSkeleton component provides a loading state placeholder for hero carousels.
-
-## Features
-
-- **Loading State**: Skeleton UI that mimics hero carousel layout
-- **Configurable**: Supports custom slide count, dots, and navigation visibility
-- **Responsive**: Adapts to different screen sizes
-- **Accessibility**: Includes screen reader text
-
-## Usage
-
-This component is used as a fallback while hero carousel data is being fetched, providing visual feedback during loading states.
-                `,
+                component:
+                    'Loading-state placeholder for the hero carousel. Used by `withSuspense(HeroCarouselPlain, { fallback })` while slide data is being fetched. Pure presentational — `slideCount`, `showDots`, and `showNavigation` mirror the live component so the skeleton matches what eventually replaces it.',
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
     argTypes: {
         slideCount: {
-            description: 'Number of slides to show in dots',
+            description: 'Number of dot placeholders to render (matches the live carousel).',
             control: { type: 'number', min: 1, max: 10 },
         },
         showDots: {
-            description: 'Whether to show navigation dots skeleton',
+            description: 'Render the dot-indicator skeleton row.',
             control: 'boolean',
         },
         showNavigation: {
-            description: 'Whether to show navigation controls skeleton',
+            description: 'Render the prev/next button skeletons.',
             control: 'boolean',
         },
+    },
+    args: {
+        slideCount: 3,
+        showDots: true,
+        showNavigation: true,
     },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof HeroCarouselSkeleton>;
 
 export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: `
-Default hero carousel skeleton showing:
-- Full-width hero image skeleton
-- Content overlay with title and subtitle skeletons
-- CTA button skeleton
-- Navigation dots skeleton (3 slides)
-- Navigation controls skeleton
-
-This is the standard loading state for hero carousels.
-                `,
+                story: 'Default skeleton: 3 dots, prev/next button placeholders, full pulsing image + title + subtitle + CTA stand-ins.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Verify skeleton structure is present
-        const skeleton = canvasElement.querySelector('.animate-pulse');
-        await expect(skeleton).toBeInTheDocument();
-
-        // Verify navigation dots are present (default slideCount is 3)
+        // The component's signature affordance: `animate-pulse` on the root.
+        await expect(canvasElement.querySelector('.animate-pulse')).toBeInTheDocument();
+        // 3 dot placeholders by default.
         const dotsContainer = canvasElement.querySelector('.absolute.bottom-6');
         await expect(dotsContainer).toBeInTheDocument();
     },

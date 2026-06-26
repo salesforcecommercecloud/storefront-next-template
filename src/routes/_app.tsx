@@ -16,6 +16,7 @@
 import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import type { Route } from './+types/_app';
+import { usePageUIConfig, mainPaddingDataAttributes } from '@/lib/routes/page-ui-config';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { type ShopperProducts } from '@/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
@@ -24,10 +25,16 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
 import { WishlistMergeToast } from '@/components/wishlist/wishlist-merge-toast';
+import { EmbeddedComponentRegion } from '@/components/region/embedded-component-region';
+import {
+    fetchComponentWithComponentData,
+    type ComponentWithComponentData,
+} from '@/lib/page-designer/component-loader.server';
 
 type LoaderData = {
     root: Promise<ShopperProducts.schemas['Category']>;
     subs: Promise<ShopperProducts.schemas['Category'][]>;
+    headerComponent: Promise<ComponentWithComponentData | null>;
 };
 
 /**
@@ -46,7 +53,7 @@ export function shouldRevalidate() {
     return false;
 }
 
-export function loader({ context }: Route.LoaderArgs): LoaderData {
+export function loader({ context, request }: Route.LoaderArgs): LoaderData {
     const logger = getLogger(context);
     const config = getConfig(context);
     const { rootCategoryId, maxDepth } = config.pages.navigation;
@@ -83,9 +90,16 @@ export function loader({ context }: Route.LoaderArgs): LoaderData {
               )
             : Promise.resolve([]);
 
+    // Fetch header embedded component data (non-blocking, streamed to client, should be blocking once data is available from KVS to avoid layout shift)
+    const headerComponentPromise = fetchComponentWithComponentData(
+        { context, request, params: {} } as Route.LoaderArgs,
+        { componentId: 'header' }
+    );
+
     return {
         root: rootCategoryPromise,
         subs: subCategoriesPromise,
+        headerComponent: headerComponentPromise,
     };
 }
 
@@ -100,13 +114,23 @@ export function loader({ context }: Route.LoaderArgs): LoaderData {
  * Routes that need this layout should be prefixed with `_app.` in their filename.
  * For routes without default header/footer (e.g., login), use the `_empty.` prefix instead.
  */
-export default function DefaultLayout({ loaderData: { root, subs } }: { loaderData: LoaderData }) {
+export default function DefaultLayout({ loaderData: { root, subs, headerComponent } }: { loaderData: LoaderData }) {
     const refRoot = useRef<Promise<ShopperProducts.schemas['Category']> | undefined>(undefined);
     const refSubs = useRef<Promise<ShopperProducts.schemas['Category'][]> | undefined>(undefined);
-    if (!refRoot.current && !refSubs.current) {
+    const refHeaderComponent = useRef<Promise<ComponentWithComponentData | null> | undefined>(undefined);
+    if (!refRoot.current && !refSubs.current && !refHeaderComponent.current) {
         refRoot.current = root;
         refSubs.current = subs;
+        refHeaderComponent.current = headerComponent;
     }
+
+    // Reflect the route's `handle.ui` config onto <main> as data-* attributes
+    // during render, so the correct top padding is present in the SSR'd HTML.
+    // A vertical's CSS (e.g. cosmetic) keys <main> padding off these; emitting
+    // them at render (not in a post-hydration effect) avoids a layout shift
+    // (CLS) when the padding would otherwise be added after first paint.
+    // Inert for verticals with no matching CSS (fashion/canonical).
+    const mainPaddingAttrs = mainPaddingDataAttributes(usePageUIConfig());
 
     // <WishlistMergeToast> stays at the app shell — it reads URL params and a one-time
     // cookie set by the post-login redirect target, not wishlist state. Routes that need
@@ -115,10 +139,13 @@ export default function DefaultLayout({ loaderData: { root, subs } }: { loaderDa
     return (
         <>
             <WishlistMergeToast />
-            <Header>
+            <Header
+                announcementSlot={
+                    <EmbeddedComponentRegion component={refHeaderComponent.current} regionId="announcement" />
+                }>
                 <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
-            <main className="grow pt-8">
+            <main className="grow pt-8" {...mainPaddingAttrs}>
                 <Outlet />
             </main>
             <Footer />

@@ -288,7 +288,7 @@ describe('root.tsx', () => {
         // script tag (or terminate the JS string literal). CSP-with-nonce does NOT
         // protect against breakout from inside an already-nonce'd script — the
         // escape is the only line of defense, so a regression here is silent and
-        // exploitable. See packages/template-retail-rsc-app/src/root.tsx Layout()
+        // exploitable. See packages/template/src/root.tsx Layout()
         // for the matching escape logic.
         it('escapes <, >, &, U+2028, and U+2029 in the inline __APP_CONFIG__ script', async () => {
             const reactRouter = await import('react-router');
@@ -426,7 +426,7 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError.defaultTitle)).toBeInTheDocument();
                 expect(getByText('Error: Test error')).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
@@ -440,7 +440,7 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError.defaultTitle)).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
                 expect(stackElement).toBeInTheDocument();
@@ -457,8 +457,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('Page not found')).toBeInTheDocument();
-                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['404'].title)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['404'].details)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -473,9 +473,9 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('500')).toBeInTheDocument();
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError['500'].title)).toBeInTheDocument();
                 // 500 errors show friendly translated message instead of statusText
-                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['500'].message)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -505,7 +505,7 @@ describe('root.tsx', () => {
                 error.stack = undefined;
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError.defaultTitle)).toBeInTheDocument();
                 expect(getByText('Error: Test error')).toBeInTheDocument();
             });
 
@@ -513,7 +513,7 @@ describe('root.tsx', () => {
                 const error = new Error('');
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError.defaultTitle)).toBeInTheDocument();
             });
 
             it('should render predefined 404 error message for route errors with 404 status', () => {
@@ -526,8 +526,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('Page not found')).toBeInTheDocument();
-                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['404'].title)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['404'].details)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -542,9 +542,9 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('500')).toBeInTheDocument();
-                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(enGBRouteError['500'].title)).toBeInTheDocument();
                 // 500 errors show friendly translated message instead of statusText
-                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
+                expect(getByText(enGBRouteError['500'].message)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -1070,6 +1070,16 @@ describe('root.tsx', () => {
             const { clientMiddleware } = await import('./root');
             expect(Array.isArray(clientMiddleware)).toBe(true);
             expect(clientMiddleware.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('shouldRevalidate export', () => {
+        // The policy itself is covered by src/lib/routes/revalidation/root.test.ts. Here we only
+        // assert root wires up that exact function, so the behavior isn't re-tested at the route.
+        it('re-exports the shared root revalidation policy', async () => {
+            const { shouldRevalidate } = await import('./root');
+            const { shouldRevalidate: shouldRevalidateRoot } = await import('@/lib/routes/revalidation/root');
+            expect(shouldRevalidate).toBe(shouldRevalidateRoot);
         });
     });
 

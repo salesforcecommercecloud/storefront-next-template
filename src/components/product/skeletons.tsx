@@ -94,7 +94,7 @@ export function ProductMainSkeleton() {
             {/* Product Information Accordion */}
             <div className="mt-16 space-y-4">
                 {Array.from({ length: config.global.skeleton.accordionSections }, (_, index) => (
-                    <div key={`accordion-${index}`} className="border rounded-none p-4">
+                    <div key={`accordion-${index}`} className="border p-4">
                         <Skeleton className="h-6 w-48" />
                     </div>
                 ))}

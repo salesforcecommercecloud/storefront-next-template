@@ -201,9 +201,10 @@ export default function InventoryMessage({
 
     return (
         <div
+            data-slot="inventory-message"
             className={cn('flex items-center gap-2', className, isUnknown && !showUnknownStatus && 'hidden')}
             {...(isUnknown && !showUnknownStatus && { 'aria-hidden': true })}>
-            <span aria-hidden="true" className={cn('h-2 w-2 shrink-0 rounded-none bg-current', statusInfo.className)} />
+            <span aria-hidden="true" className={cn('h-2 w-2 shrink-0 bg-current', statusInfo.className)} />
             <p className={cn('text-sm font-medium', statusInfo.className)}>{statusInfo.message}</p>
         </div>
     );

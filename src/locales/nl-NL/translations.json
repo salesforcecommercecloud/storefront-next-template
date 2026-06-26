@@ -1543,6 +1543,7 @@
         "failedToAddProductToCartError": "Toevoegen van product aan winkelwagen is mislukt:",
         "failedToAddProductToWishlistError": "Toevoegen van product aan verlanglijst is mislukt:",
         "price": {
+            "unavailable": "Prijs niet beschikbaar",
             "currentPriceFrom": "Huidige prijs vanaf {{price}}",
             "currentPrice": "Huidige prijs: {{price}}",
             "from": "Vanaf {{price}}",

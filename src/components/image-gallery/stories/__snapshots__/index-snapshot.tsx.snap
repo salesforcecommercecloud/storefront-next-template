@@ -5,7 +5,8 @@ exports[`ImageGallery stories snapshot > Default story renders and matches snaps
   class="space-y-4"
 >
   <div
-    class="relative aspect-square overflow-hidden rounded-none bg-muted"
+    class="relative aspect-square overflow-hidden bg-muted"
+    data-gallery-hero="true"
   >
     <div
       class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -61,7 +62,7 @@ exports[`ImageGallery stories snapshot > Default story renders and matches snaps
 
 exports[`ImageGallery stories snapshot > Empty story renders and matches snapshot 1`] = `
 <div
-  class="aspect-square bg-muted rounded-none flex items-center justify-center"
+  class="aspect-square bg-muted flex items-center justify-center"
 >
   <div
     class="text-center text-muted-foreground"

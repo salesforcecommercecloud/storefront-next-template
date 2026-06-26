@@ -70,8 +70,8 @@ export function ProductItemVariantImage({
 
     if (!productItem) {
         return (
-            <div className={cn('bg-muted rounded-none flex-shrink-0 w-16', className)}>
-                <div className="w-full h-full bg-muted rounded-none" />
+            <div className={cn('bg-muted flex-shrink-0 w-16', className)}>
+                <div className="w-full h-full bg-muted" />
             </div>
         );
     }
@@ -87,8 +87,9 @@ export function ProductItemVariantImage({
 
     return (
         <div
+            data-slot="product-item-image"
             className={cn(
-                'bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
+                'bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
                 className
             )}>
             {image && optimizedImageUrl ? (
@@ -98,7 +99,7 @@ export function ProductItemVariantImage({
                     className="h-full w-full object-contain"
                 />
             ) : (
-                <div className="w-full h-full bg-muted rounded-none" />
+                <div className="w-full h-full bg-muted" />
             )}
         </div>
     );
@@ -125,11 +126,7 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
     return (
         <div className="mb-2 md:mb-4 flex items-start gap-2 min-w-0">
             {isBonusProduct && (
-                <Badge
-                    variant="default"
-                    className="rounded-none"
-                    role="status"
-                    aria-label={tProduct('bonusProductAriaLabel')}>
+                <Badge variant="default" className="" role="status" aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
                 </Badge>
             )}
@@ -225,7 +222,7 @@ export function ProductItemPromotions({
     const badge = (
         <Badge
             className={cn(
-                'h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words',
+                'h-auto min-h-0 border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words',
                 className
             )}>
             {tMiniCart('saved', {
@@ -380,7 +377,7 @@ function ProductItem({
     // Default variant - full product item with card styling
     return (
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
-            <div className="bg-card text-card-foreground border-0 shadow-none rounded-none">
+            <div className="bg-card text-card-foreground border-0 ">
                 <div className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
                     <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
                         <div className="flex-shrink-0 flex items-start justify-center">

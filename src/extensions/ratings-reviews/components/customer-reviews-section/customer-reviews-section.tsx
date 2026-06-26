@@ -175,7 +175,7 @@ export default function CustomerReviewsSection({
                             <p className="text-muted-foreground pt-4">{t('section.noReviewsForProduct')}</p>
                         ) : (
                             <div className="space-y-6 pt-4">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 rounded-none bg-secondary">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 bg-secondary">
                                     <div className="flex flex-col items-start space-y-2">
                                         <StarRating
                                             rating={aggregateRating.average}

@@ -20,6 +20,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
+import { uiConfig } from '@/lib/config.ui';
 
 // CartContent is heavy and not what's under test — render its `recommendationsSlot`
 // inline so the route-level Suspense + ProductRecommendationSkeleton fallback wiring
@@ -66,6 +67,12 @@ vi.mock('@/components/cart/cart-skeleton', () => ({
     ),
 }));
 
+// Per-page UI flags. Default to the canonical value (recommendations on) so the
+// existing recommendation tests below are unaffected; the gating test flips it per-case.
+vi.mock('@/lib/config.ui', () => ({
+    uiConfig: { pages: { cart: { showRecommendations: true } } },
+}));
+
 vi.mock('@/components/cart/cart-load-error', () => ({
     CartLoadError: () => <div data-testid="cart-load-error" />,
 }));
@@ -104,6 +111,7 @@ const renderCartRoute = async (loaderData: {
                     wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
                     cartMayAlsoLikePromise: loaderData.cartMayAlsoLikePromise,
                     cartRecentlyViewedPromise: loaderData.cartRecentlyViewedPromise,
+                    ruleBasedBonusProductsPromise: Promise.resolve({}),
                     basketSnapshot: null,
                     pageUrl: 'http://localhost/cart',
                 }),
@@ -122,6 +130,8 @@ const renderCartRoute = async (loaderData: {
 describe('Cart route component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        // Reset to the canonical default — the gating test mutates this.
+        uiConfig.pages.cart.showRecommendations = true;
     });
 
     describe('Recommendations skeleton fallback', () => {
@@ -142,16 +152,16 @@ describe('Cart route component', () => {
             });
 
             const skeletons = await screen.findAllByTestId('product-recommendation-skeleton');
-            expect(skeletons).toHaveLength(2);
+            expect(skeletons).toHaveLength(1);
 
-            // Each skeleton receives the translated title for its recommender so the heading
-            // doesn't pop in when the promise resolves.
+            // The skeleton receives the translated title for its recommender so the heading doesn't pop in when the
+            // promise resolves.
             const titles = skeletons.map((el) => el.textContent);
-            expect(titles).toContain('You might also like');
-            expect(titles).toContain('Recently viewed');
+            expect(titles).toHaveLength(1);
+            expect(titles[0]).toBe('You might also like');
         });
 
-        test('renders the rec skeletons via the CartSkeleton fallback while basketDataPromise is pending', async () => {
+        test('renders the rec skeleton via the CartSkeleton fallback while basketDataPromise is pending', async () => {
             // Gate A: when the basket itself hasn't resolved yet, the resolved-branch <CartBody>
             // (and its rec Suspense boundaries) aren't in the tree. The route-level CartSkeleton
             // fallback must therefore render the rec skeletons itself, otherwise the cart's upper
@@ -171,6 +181,7 @@ describe('Cart route component', () => {
                             wishlistInitialState: Promise.resolve(EMPTY_WISHLIST_STATE),
                             cartMayAlsoLikePromise: pendingRecs,
                             cartRecentlyViewedPromise: pendingRecs,
+                            ruleBasedBonusProductsPromise: Promise.resolve({}),
                             basketSnapshot: { uniqueProductCount: 1 },
                             pageUrl: 'http://localhost/cart',
                         }),
@@ -191,13 +202,13 @@ describe('Cart route component', () => {
             });
             expect(screen.queryByTestId('cart-content-stub')).not.toBeInTheDocument();
 
-            // The rec skeletons must already be in the DOM — passed through CartSkeleton's
+            // The rec skeleton must already be in the DOM — passed through CartSkeleton's
             // recommendationsSlot — so the carousel area doesn't pop in once the basket resolves.
             const skeletons = await screen.findAllByTestId('product-recommendation-skeleton');
-            expect(skeletons).toHaveLength(2);
+            expect(skeletons).toHaveLength(1);
             const titles = skeletons.map((el) => el.textContent);
-            expect(titles).toContain('You might also like');
-            expect(titles).toContain('Recently viewed');
+            expect(titles).toHaveLength(1);
+            expect(titles[0]).toBe('You might also like');
         });
 
         test('does not render ProductRecommendationSkeleton once recommendation promises resolve', async () => {
@@ -216,6 +227,28 @@ describe('Cart route component', () => {
                 expect(screen.getAllByTestId('product-recommendations-resolved')).toHaveLength(2);
             });
             expect(screen.queryByTestId('product-recommendation-skeleton')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Recommendations gating (uiConfig.pages.cart.showRecommendations)', () => {
+        test('renders no recommendation region when the vertical disables recommendations', async () => {
+            // Cosmetic sets showRecommendations: false via the vertical-resolved config.ui
+            // override. The loader still returns (empty) rec promises so the shape stays stable,
+            // but the route must render neither the live slot nor its reserved-space skeleton.
+            uiConfig.pages.cart.showRecommendations = false;
+
+            await renderCartRoute({
+                cartMayAlsoLikePromise: Promise.resolve({ recs: [] }),
+                cartRecentlyViewedPromise: Promise.resolve({ recs: [] }),
+            });
+
+            await waitFor(() => {
+                expect(screen.getByTestId('cart-content-stub')).toBeInTheDocument();
+            });
+
+            // No skeleton, no resolved carousel — the recommendationsSlot is undefined.
+            expect(screen.queryByTestId('product-recommendation-skeleton')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('product-recommendations-resolved')).not.toBeInTheDocument();
         });
     });
 });

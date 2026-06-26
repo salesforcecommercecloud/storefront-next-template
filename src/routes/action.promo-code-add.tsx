@@ -15,8 +15,9 @@
  */
 import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
-import { createActionError } from '@/lib/action-error-helpers.server';
+import { createActionError, httpStatusForErrorCode } from '@/lib/action-error-helpers.server';
 import { createPromoCodeFormSchema } from '@/components/promo-code-form';
+import { getCouponStatusError } from '@/lib/cart/coupon-status';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ErrorCode } from '@/lib/error-codes';
 
@@ -37,8 +38,13 @@ export const action = createBasketAction(
         action: BasketAction.PromoCodeAdd,
         parse: (fd) => ({ promoCode: fd.get('promoCode') as string }),
     },
-    async ({ input, basketId, clients, logger }) => {
-        const { t } = getTranslation();
+    async ({ input, basket, basketId, clients, logger, context }) => {
+        // Pass `context` so `t()` resolves against the request-scoped i18next
+        // instance the middleware populated. Bare `getTranslation()` returns the
+        // uninitialized module-global instance, so keys like
+        // `cart:promoCode.errors.notApplicable` don't resolve to the loaded
+        // translation and the shopper sees a generic fallback string instead.
+        const { t } = getTranslation(context);
         const promoCodeFormSchema = createPromoCodeFormSchema(t);
         const validationResult = promoCodeFormSchema.safeParse({ code: input.promoCode });
 
@@ -67,6 +73,28 @@ export const action = createBasketAction(
                 code: validatedPromoCode,
             },
         });
+
+        // SCAPI returns HTTP 200 and adds the coupon item even when the code is
+        // valid but no promotion in the cart qualifies (e.g. statusCode
+        // 'no_applicable_promotion'). Inspect the newly-added coupon's status so
+        // an ineligible code surfaces as a failure instead of a false "applied".
+        const priorCouponItemIds = new Set(basket.couponItems?.map((c) => c.couponItemId));
+        const addedCoupon =
+            updatedBasket.couponItems?.find((c) => !priorCouponItemIds.has(c.couponItemId)) ??
+            updatedBasket.couponItems?.find((c) => c.code === validatedPromoCode);
+
+        const statusError = addedCoupon && getCouponStatusError(addedCoupon.statusCode);
+        if (statusError) {
+            logger.info('PromoCodeAdd: coupon not applied', { statusCode: addedCoupon?.statusCode });
+            return data(
+                {
+                    success: false,
+                    error: createActionError({ code: statusError.code, message: t(statusError.messageKey) }),
+                },
+                { status: httpStatusForErrorCode(statusError.code) }
+            );
+        }
+
         return updatedBasket;
     }
 );

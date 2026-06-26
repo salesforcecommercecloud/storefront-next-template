@@ -39,6 +39,7 @@ import {
     getPromotionCalloutTextFromProduct,
     getBonusProductCountsForPromotion,
     calculateMaxQuantityForBonusProduct,
+    getBonusDiscountSlotsForPromotion,
     type BonusPromotionMap,
     type ProductWithPromotions,
     type ProductsWithPromotionsMap,
@@ -1246,5 +1247,188 @@ describe('calculateMaxQuantityForBonusProduct', () => {
         const result = calculateMaxQuantityForBonusProduct(productItem1, allProductItems, mockBonusDiscountLineItems);
 
         expect(result).toBe(2);
+    });
+});
+
+describe('getBonusDiscountSlotsForPromotion', () => {
+    it('returns empty slots when basket is null', () => {
+        expect(getBonusDiscountSlotsForPromotion(null, 'promo-1')).toEqual([]);
+    });
+
+    it('returns empty slots when basket is undefined', () => {
+        expect(getBonusDiscountSlotsForPromotion(undefined, 'promo-1')).toEqual([]);
+    });
+
+    it('returns empty slots when promotionId is null', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 }],
+        });
+        expect(getBonusDiscountSlotsForPromotion(basket, null)).toEqual([]);
+    });
+
+    it('returns empty slots when no bonusDiscountLineItems', () => {
+        const basket = createMockBasket({ bonusDiscountLineItems: [] });
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([]);
+    });
+
+    it('returns empty slots when no BLI matches the promotion', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-other', maxBonusItems: 2 }],
+            productItems: [
+                // Bonus items linked to a different BLI must not be counted against an empty result.
+                {
+                    itemId: 'item-1',
+                    productId: 'tie-red',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-1',
+                    quantity: 1,
+                    price: 0,
+                },
+            ],
+        });
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([]);
+    });
+
+    it('returns the matching slot with no selections when nothing is selected', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 }],
+            productItems: [],
+        });
+
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([
+            { id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 0 },
+        ]);
+    });
+
+    it('accumulates selected bonus product quantities into bonusProductsSelected', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 3 }],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'tie-red',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-1',
+                    quantity: 2,
+                    price: 0,
+                },
+            ],
+        });
+
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([
+            { id: 'bli-1', maxBonusItems: 3, bonusProductsSelected: 2 },
+        ]);
+    });
+
+    it('returns one row per BLI when multiple BLIs target the same promotion', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [
+                { id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 },
+                { id: 'bli-2', promotionId: 'promo-1', maxBonusItems: 3 },
+            ],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'tie-red',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-2',
+                    quantity: 1,
+                    price: 0,
+                },
+            ],
+        });
+
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([
+            { id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 0 },
+            { id: 'bli-2', maxBonusItems: 3, bonusProductsSelected: 1 },
+        ]);
+    });
+
+    it('returns fully-claimed slot rows so the modal can render them', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [
+                { id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 },
+                { id: 'bli-2', promotionId: 'promo-1', maxBonusItems: 3 },
+            ],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'tie-red',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-1',
+                    quantity: 2,
+                    price: 0,
+                },
+            ],
+        });
+
+        const slots = getBonusDiscountSlotsForPromotion(basket, 'promo-1');
+        expect(slots).toHaveLength(2);
+        expect(slots[0]).toEqual({ id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 2 });
+    });
+
+    it('does not count bonus items linked to BLIs of a different promotion', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [
+                { id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 },
+                { id: 'bli-2', promotionId: 'promo-2', maxBonusItems: 1 },
+            ],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'mug-1',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-2',
+                    quantity: 1,
+                    price: 0,
+                },
+            ],
+        });
+
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([
+            { id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 0 },
+        ]);
+    });
+
+    it('ignores non-bonus product items when tallying selections', () => {
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 }],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'shirt-1',
+                    bonusProductLineItem: false,
+                    bonusDiscountLineItemId: 'bli-1',
+                    quantity: 5,
+                    price: 100,
+                },
+            ],
+        });
+
+        const slots = getBonusDiscountSlotsForPromotion(basket, 'promo-1');
+        expect(slots[0].bonusProductsSelected).toBe(0);
+    });
+
+    it('reports bonusProductsSelected verbatim when SCAPI over-allocates a slot', () => {
+        // Concurrent session updates can briefly leave a basket where a bonus product item's quantity exceeds its
+        // slot's maxBonusItems. The helper passes the raw count through; the modal clamps `remainingCapacity` to
+        // zero downstream via `Math.max(0, maxBonusItems - bonusProductsSelected)`.
+        const basket = createMockBasket({
+            bonusDiscountLineItems: [{ id: 'bli-1', promotionId: 'promo-1', maxBonusItems: 2 }],
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'mug-1',
+                    bonusProductLineItem: true,
+                    bonusDiscountLineItemId: 'bli-1',
+                    quantity: 3,
+                    price: 0,
+                },
+            ],
+        });
+
+        expect(getBonusDiscountSlotsForPromotion(basket, 'promo-1')).toEqual([
+            { id: 'bli-1', maxBonusItems: 2, bonusProductsSelected: 3 },
+        ]);
     });
 });

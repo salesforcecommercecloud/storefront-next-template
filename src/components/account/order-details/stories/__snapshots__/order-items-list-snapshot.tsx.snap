@@ -8,7 +8,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Sweater"
@@ -17,7 +17,8 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         href="/RefArchGlobal/en-GB/product/701643108633M"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          data-slot="product-item-image"
         >
           <img
             alt="Sweater"
@@ -107,7 +108,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
           </span>
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"
@@ -138,7 +139,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Product One"
@@ -147,10 +148,11 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         href="/RefArchGlobal/en-GB/product/prod-1"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          data-slot="product-item-image"
         >
           <div
-            class="w-full h-full bg-muted rounded-none"
+            class="w-full h-full bg-muted"
           />
         </div>
       </a>
@@ -205,7 +207,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
            
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"
@@ -221,7 +223,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Product Two"
@@ -230,10 +232,11 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         href="/RefArchGlobal/en-GB/product/prod-2"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          data-slot="product-item-image"
         >
           <div
-            class="w-full h-full bg-muted rounded-none"
+            class="w-full h-full bg-muted"
           />
         </div>
       </a>
@@ -288,7 +291,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
            
         </div>
         <a
-          class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
           data-discover="true"
           data-size="sm"
           data-slot="button"

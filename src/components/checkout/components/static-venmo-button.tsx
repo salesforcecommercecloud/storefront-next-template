@@ -35,7 +35,7 @@ export default function StaticVenmoButton({ onClick, disabled = false }: StaticV
         <Button
             onClick={onClick}
             disabled={disabled}
-            className="w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+            className="w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#0077D9] text-background border-0 flex items-center justify-center transition-colors"
             aria-label={t('expressPayments.venmoLabel') || 'Venmo'}>
             <VenmoLogo className="flex-shrink-0" decorative />
         </Button>

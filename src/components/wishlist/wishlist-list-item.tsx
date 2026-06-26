@@ -24,6 +24,7 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { createProductUrl, getDisplayVariationValues, requiresVariantSelection } from '@/lib/product/product-utils';
+import { isAvailablePrice } from '@/lib/product/price-utils';
 import { useToast } from '@/components/toast';
 import { useAnalytics } from '@/hooks/use-analytics';
 import InventoryMessage from '@/components/inventory-message';
@@ -193,7 +194,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
 
     return (
         <div data-testid={`wishlist-item-${wishlistItem.id}`}>
-            <div className="flex gap-4 p-4 border border-border rounded-none bg-card">
+            <div className="flex gap-4 p-4 border border-border bg-card">
                 {/* Product Image */}
                 <Link to={pdpUrl} className="flex-shrink-0 self-start" aria-label={product.name}>
                     <div className="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center">
@@ -257,9 +258,26 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                         </button>
                     </div>
 
-                    {/* Price */}
+                    {/* Price — display tracks the gate's view of the saved selection.
+                        Default: render the master so PromoCallout / range / lowest-priced-variant
+                        stay correct (variants don't carry productPromotions on getProduct, so
+                        passing the variant would silently drop promo callouts).
+                        Exception: when a specific variant was saved AND that variant has no price
+                        for the active currency, render the variant directly so the price area
+                        renders "Price unavailable" instead of the master's misleading-but-real
+                        lowest-priced fallback. The gate evaluates the saved variant via
+                        useProductActions(currentVariant) above, so this keeps display + gate in
+                        agreement on the same row. */}
                     <div className="flex flex-col gap-2 flex-shrink-0 md:items-end md:text-right">
-                        <ProductPrice type="unit" product={product} currency={currency} />
+                        <ProductPrice
+                            type="unit"
+                            product={
+                                currentVariant && !isAvailablePrice(currentVariant.price)
+                                    ? (currentVariant as unknown as Product)
+                                    : product
+                            }
+                            currency={currency}
+                        />
                         {isResolvedVariantOutOfStock ? (
                             <Button type="button" disabled size="sm" variant="default" className={CTA_BUTTON_CLASS}>
                                 {t('outOfStockLabel')}
@@ -273,16 +291,38 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                                 className={CTA_BUTTON_CLASS}>
                                 {t('selectOptions')}
                             </Button>
-                        ) : canAddToCart ? (
-                            <Button
-                                onClick={() => void handleAddToCart()}
-                                disabled={isAddingToOrUpdatingCart}
-                                size="sm"
-                                variant="default"
-                                className={CTA_BUTTON_CLASS}>
-                                {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
-                            </Button>
-                        ) : null}
+                        ) : (
+                            <>
+                                <Button
+                                    onClick={() => void handleAddToCart()}
+                                    disabled={!canAddToCart || isAddingToOrUpdatingCart}
+                                    size="sm"
+                                    variant="default"
+                                    className={CTA_BUTTON_CLASS}
+                                    // When this branch is reached with !canAddToCart, inventory is
+                                    // already excluded (skipInventoryValidation: true) and a variant
+                                    // is selected (otherwise needsVariantSelection above would have
+                                    // matched), so the only remaining reason is no price for the
+                                    // active currency. Surface that to assistive tech and on hover.
+                                    aria-describedby={
+                                        !canAddToCart && !isAddingToOrUpdatingCart
+                                            ? `wishlist-cta-reason-${wishlistItem.id ?? product.id}`
+                                            : undefined
+                                    }
+                                    title={
+                                        !canAddToCart && !isAddingToOrUpdatingCart ? t('price.unavailable') : undefined
+                                    }>
+                                    {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
+                                </Button>
+                                {!canAddToCart && !isAddingToOrUpdatingCart ? (
+                                    <span
+                                        id={`wishlist-cta-reason-${wishlistItem.id ?? product.id}`}
+                                        className="sr-only">
+                                        {t('price.unavailable')}
+                                    </span>
+                                ) : null}
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

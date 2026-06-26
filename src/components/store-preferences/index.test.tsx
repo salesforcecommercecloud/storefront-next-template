@@ -16,14 +16,22 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
 import { useLoaderData } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import StorePreferences from '.';
 
-// Mock react-router
-vi.mock('react-router', () => ({
-    href: (path: string) => path,
-    useLoaderData: vi.fn(),
-    useNavigation: vi.fn(() => ({ state: 'idle' })),
-}));
+const { t } = getTranslation();
+
+// Mock react-router (preserve real exports so getTranslation's middleware
+// dependency on createContext keeps working under VERTICAL=cosmetic).
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        href: (path: string) => path,
+        useLoaderData: vi.fn(),
+        useNavigation: vi.fn(() => ({ state: 'idle' })),
+    };
+});
 
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 // Mock ChangeStoreButton to avoid client component issues in tests
@@ -56,9 +64,7 @@ describe('StorePreferences', () => {
 
         test('renders Store Preferences subtitle', () => {
             renderStorePreferences();
-            expect(
-                screen.getByText('Manage your preferred store locations and pickup preferences')
-            ).toBeInTheDocument();
+            expect(screen.getByText(t('account:storePreferences.subtitle'))).toBeInTheDocument();
         });
 
         // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
@@ -79,9 +85,7 @@ describe('StorePreferences', () => {
 
         test('renders empty state when no store selected', () => {
             renderStorePreferences();
-            expect(
-                screen.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
-            ).toBeInTheDocument();
+            expect(screen.getByText(t('account:storePreferences.preferredStore.noStoreSelected'))).toBeInTheDocument();
         });
         // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 

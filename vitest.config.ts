@@ -40,6 +40,10 @@ export default defineConfig((configEnv) =>
                 setupFiles: ['./vitest.setup.ts'],
                 include: ['**/*.{test,spec}.{ts,tsx}'],
                 exclude: [...configDefaults.exclude, '.storybook/**/*', 'e2e/**/*'],
+                // Windows CI runners are noticeably slower than macOS/Linux for tests with
+                // Suspense/lazy chunks. Bump the per-test timeout to absorb that variance
+                // without forcing every flaky test to opt in individually.
+                testTimeout: 15000,
                 coverage: {
                     reporter: [...new Set([...coverageConfigDefaults.reporter, 'json', 'json-summary'])],
                     include: ['src/**/*.{ts,tsx}'],

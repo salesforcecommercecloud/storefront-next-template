@@ -29,7 +29,7 @@ import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.se
 import type { WishlistInitialState } from '@/lib/wishlist/state';
 import { WishlistProvider } from '@/providers/wishlist';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 
@@ -97,14 +97,14 @@ export default function AccountOverviewRoute(): ReactElement {
 
     const curatedTitle = t('overview.curatedForYou.title');
     const recommendationsSkeleton = (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
             </CardContent>
         </Card>
     );
     const recommendationsSlot = (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <ProductRecommendations
                     recommenderName={EINSTEIN_RECOMMENDERS.EMPTY_SEARCH_RESULTS_MOST_VIEWED}

@@ -20,7 +20,13 @@ import { Await, useLoaderData } from 'react-router';
 import type { Route } from './+types/_app.cart';
 
 // Commerce SDK
-import { type ShopperBasketsV2, type ShopperProducts, type ShopperPromotions, type ShopperStores } from '@/scapi';
+import {
+    type ShopperBasketsV2,
+    type ShopperProducts,
+    type ShopperPromotions,
+    type ShopperSearch,
+    type ShopperStores,
+} from '@/scapi';
 
 // Middlewares
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
@@ -29,11 +35,14 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
 import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
+import { fetchRuleBasedBonusProductsForBasket } from '@/lib/cart/rule-based-bonus.server';
 import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
 import type { WishlistInitialState } from '@/lib/wishlist/state';
 import { WishlistProvider } from '@/providers/wishlist';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
+import { uiConfig } from '@/lib/config.ui';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 
@@ -50,6 +59,21 @@ import { useTranslation } from 'react-i18next';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+/**
+ * Page-level UI config read from the route handle. `hasTopPadding` adds the
+ * vertical-spacing token on top of the header height so the cart's first row
+ * clears the header with the same breathing room as the PDP. Consumed by
+ * verticals that render a PageConfigManager (cosmetic today); inert elsewhere
+ * (fashion/canonical keep `<main>`'s default `pt-8`).
+ */
+export const handle = {
+    ui: {
+        main: {
+            hasTopPadding: true,
+        },
+    },
+};
 
 /**
  * Data structure returned by the cart loader.
@@ -73,6 +97,7 @@ type CartPageData = {
     wishlistInitialState: Promise<WishlistInitialState>;
     cartMayAlsoLikePromise: Promise<Recommendation>;
     cartRecentlyViewedPromise: Promise<Recommendation>;
+    ruleBasedBonusProductsPromise: Promise<Record<string, ShopperSearch.schemas['ProductSearchHit'][]>>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
@@ -106,7 +131,7 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
 
         const [{ productsByItemId, bonusProductsById }, promotions, storesByStoreIdRaw] = await Promise.all([
             fetchProductsInBasket(context, basket),
-            fetchPromotionsForBasket(context, basket?.productItems ?? []),
+            fetchPromotionsForBasket(context, basket?.productItems ?? [], basket?.bonusDiscountLineItems ?? []),
             storesByStoreIdRawPromise,
         ]);
 
@@ -122,27 +147,58 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
 
     const wishlistProductIdsPromise = fetchWishlistProductIdsForCart(context);
 
-    // CART_MAY_ALSO_LIKE wants products as input — chain off basketDataPromise so we get productsByItemId without
-    // awaiting it inline. If basketDataPromise itself rejects, the surrounding cart UI already shows CartLoadError,
-    // so we silently degrade here.
-    const cartMayAlsoLikePromise = basketDataPromise
-        .then(({ productsByItemId }) =>
-            fetchProductRecommendations(
-                { context, request },
-                {
-                    name: EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE,
-                    products: Object.values(productsByItemId),
-                    ...(currency ? { currency } : {}),
-                }
-            )
-        )
-        .catch((): Recommendation => ({}));
+    // CART_MAY_ALSO_LIKE wants a deduplicated product list as input — chain off basketDataPromise so we get
+    // productsByItemId without awaiting it inline. The dedup runs in this loader closure (server-only); the
+    // resulting array never gets serialized to the client. Dedup matters because two cart lines mapping to
+    // the same parent productId would otherwise be sent to Einstein twice.
+    // If basketDataPromise itself rejects, the surrounding cart UI already shows CartLoadError, so we
+    // silently degrade here.
+    // Recommendations are gated per-vertical via uiConfig.pages.cart.showRecommendations. When a vertical
+    // turns them off (e.g. cosmetic), skip the Einstein fetches entirely — resolve to empty so the
+    // promise shape the component pins stays stable, but no SCAPI recommendation call is made.
+    const cartMayAlsoLikePromise = uiConfig.pages.cart.showRecommendations
+        ? basketDataPromise
+              .then(({ productsByItemId }) => {
+                  const seen = new Set<string>();
+                  const products: ShopperProducts.schemas['Product'][] = [];
+                  for (const p of Object.values(productsByItemId)) {
+                      if (!seen.has(p.id)) {
+                          seen.add(p.id);
+                          products.push(p);
+                      }
+                  }
+                  return fetchProductRecommendations(
+                      { context, request },
+                      {
+                          name: EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE,
+                          products,
+                          ...(currency ? { currency } : {}),
+                      }
+                  );
+              })
+              .catch((): Recommendation => ({}))
+        : Promise.resolve<Recommendation>({});
 
     // CART_RECENTLY_VIEWED is identity-only (cookieId/userId), no product input — fire immediately.
-    const cartRecentlyViewedPromise = fetchProductRecommendations(
-        { context, request },
-        { name: EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED, ...(currency ? { currency } : {}) }
-    );
+    const cartRecentlyViewedPromise = uiConfig.pages.cart.showRecommendations
+        ? fetchProductRecommendations(
+              { context, request },
+              { name: EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED, ...(currency ? { currency } : {}) }
+          )
+        : Promise.resolve<Recommendation>({});
+
+    // Rule-based bonus carousels live below the fold. Defer them so the cart shell paints without waiting on N
+    // parallel productSearch calls. The helper isolates per-promotion failures and never throws, so we don't need a
+    // route-level errorElement here.
+    const ruleBasedBonusProductsPromise = basketDataPromise
+        .then(({ basket }) =>
+            fetchRuleBasedBonusProductsForBasket(
+                context,
+                basket,
+                getConfig(context)?.pages?.cart?.ruleBasedProductLimit ?? 25
+            )
+        )
+        .catch((): Record<string, ShopperSearch.schemas['ProductSearchHit'][]> => ({}));
 
     return {
         basketDataPromise,
@@ -150,6 +206,7 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
         wishlistInitialState: fetchWishlistInitialState(context),
         cartMayAlsoLikePromise,
         cartRecentlyViewedPromise,
+        ruleBasedBonusProductsPromise,
         basketSnapshot: getBasketSnapshot(context),
         pageUrl,
     };
@@ -202,15 +259,16 @@ export default function Cart(): ReactElement {
     // basket itself) are loading. The upper carousel can sit in the initial viewport on small
     // carts (single line item), so a `null` fallback would cause CLS — render the same skeleton
     // shape under the basket-loading skeleton (gate A) and under the rec Suspense fallbacks.
+    // Recommendations gated per-vertical (see loader). When off, both the reserved-space skeleton
+    // and the live slot are undefined so CartContent / CartSkeleton render no recommendation region.
     const mayAlsoLikeTitle = tProduct('recommendations.youMightAlsoLike');
     const recentlyViewedTitle = tProduct('recommendations.recentlyViewed');
-    const recommendationsSkeleton = (
+    const recommendationsSkeleton = uiConfig.pages.cart.showRecommendations ? (
         <div className="mt-16 space-y-16">
             <ProductRecommendationSkeleton title={mayAlsoLikeTitle} className="max-w-none px-0" />
-            <ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />
         </div>
-    );
-    const recommendationsSlot = (
+    ) : undefined;
+    const recommendationsSlot = uiConfig.pages.cart.showRecommendations ? (
         <div className="mt-16 space-y-16">
             <DeferredProductRecommendations
                 recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
@@ -224,10 +282,9 @@ export default function Cart(): ReactElement {
                 recommenderTitle={recentlyViewedTitle}
                 data={pinnedRecentlyViewedPromise}
                 className="max-w-none px-0"
-                fallback={<ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />}
             />
         </div>
-    );
+    ) : undefined;
 
     return (
         <WishlistProvider initialState={pinnedWishlistInitialState}>
@@ -253,6 +310,7 @@ export default function Cart(): ReactElement {
                                     basketData={basketData}
                                     wishlistProductIds={[]}
                                     recommendationsSlot={recommendationsSlot}
+                                    ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                 />
                             }>
                             <Await
@@ -262,6 +320,7 @@ export default function Cart(): ReactElement {
                                         basketData={basketData}
                                         wishlistProductIds={[]}
                                         recommendationsSlot={recommendationsSlot}
+                                        ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                     />
                                 }>
                                 {(wishlistProductIds: string[]) => (
@@ -269,6 +328,7 @@ export default function Cart(): ReactElement {
                                         basketData={basketData}
                                         wishlistProductIds={wishlistProductIds}
                                         recommendationsSlot={recommendationsSlot}
+                                        ruleBasedBonusProductsPromise={pageData.ruleBasedBonusProductsPromise}
                                     />
                                 )}
                             </Await>
@@ -289,10 +349,12 @@ function CartBody({
     basketData,
     wishlistProductIds,
     recommendationsSlot,
+    ruleBasedBonusProductsPromise,
 }: {
     basketData: Awaited<CartPageData['basketDataPromise']>;
     wishlistProductIds: string[];
-    recommendationsSlot: ReactElement;
+    recommendationsSlot?: ReactElement;
+    ruleBasedBonusProductsPromise: CartPageData['ruleBasedBonusProductsPromise'];
 }): ReactElement {
     const content = (
         <CartContent
@@ -302,6 +364,7 @@ function CartBody({
             promotions={basketData.promotions}
             wishlistProductIds={wishlistProductIds}
             recommendationsSlot={recommendationsSlot}
+            ruleBasedBonusProductsPromise={ruleBasedBonusProductsPromise}
         />
     );
 

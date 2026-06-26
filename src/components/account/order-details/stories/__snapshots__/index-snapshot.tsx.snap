@@ -5,7 +5,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -69,7 +69,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-status-positive text-white"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -110,7 +110,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -122,7 +122,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -140,7 +140,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View First Product"
@@ -149,7 +149,8 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                           href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <img
                               alt="First Product"
@@ -212,7 +213,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -233,7 +234,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="tracking-number"
                       data-slot="card"
                     >
@@ -254,7 +255,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                       </div>
                     </div>
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -308,7 +309,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div
@@ -392,7 +393,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -456,7 +457,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -479,7 +480,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -491,7 +492,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -509,7 +510,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View First Product"
@@ -518,7 +519,8 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                           href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <img
                               alt="First Product"
@@ -581,7 +583,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -602,7 +604,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="tracking-number"
                       data-slot="card"
                     >
@@ -623,7 +625,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       </div>
                     </div>
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -677,7 +679,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div
@@ -761,7 +763,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -825,7 +827,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -848,7 +850,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -860,7 +862,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-shipment-id="ship-a"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -878,7 +880,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View Product for Alice"
@@ -887,10 +889,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           href="/RefArchGlobal/en-GB/product/prod-a"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded-none"
+                              class="w-full h-full bg-muted"
                             />
                           </div>
                         </a>
@@ -930,11 +933,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="items-center gap-2"
                           >
                             <span
-                              aria-label="Current price: £0.00"
+                              aria-label="Current price: £10.00"
                               aria-live="polite"
                               class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
                             >
-                              £0.00
+                              £10.00
                             </span>
                             <span
                               aria-atomic="true"
@@ -943,12 +946,12 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             >
                               Product for Alice
                                
-                              Current price: £0.00
+                              Current price: £10.00
                             </span>
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -969,7 +972,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -1005,7 +1008,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-shipment-id="ship-b"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -1023,7 +1026,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View Product for Bob"
@@ -1032,10 +1035,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           href="/RefArchGlobal/en-GB/product/prod-b"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded-none"
+                              class="w-full h-full bg-muted"
                             />
                           </div>
                         </a>
@@ -1075,11 +1079,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="items-center gap-2"
                           >
                             <span
-                              aria-label="Current price: £0.00"
+                              aria-label="Current price: £20.00"
                               aria-live="polite"
                               class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
                             >
-                              £0.00
+                              £20.00
                             </span>
                             <span
                               aria-atomic="true"
@@ -1088,12 +1092,12 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             >
                               Product for Bob
                                
-                              Current price: £0.00
+                              Current price: £20.00
                             </span>
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -1114,7 +1118,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -1157,7 +1161,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div
@@ -1241,7 +1245,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -1305,7 +1309,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-status-positive text-white"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1346,7 +1350,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -1358,7 +1362,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -1376,7 +1380,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View First Product"
@@ -1385,7 +1389,8 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                           href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <img
                               alt="First Product"
@@ -1448,7 +1453,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -1469,7 +1474,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="tracking-number"
                       data-slot="card"
                     >
@@ -1490,7 +1495,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                       </div>
                     </div>
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -1544,7 +1549,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div
@@ -1628,7 +1633,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -1692,7 +1697,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1715,7 +1720,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -1727,7 +1732,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -1745,7 +1750,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View First Product"
@@ -1754,7 +1759,8 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                           href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <img
                               alt="First Product"
@@ -1817,7 +1823,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -1838,7 +1844,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="tracking-number"
                       data-slot="card"
                     >
@@ -1859,7 +1865,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                       </div>
                     </div>
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -1913,7 +1919,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div
@@ -1994,7 +2000,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
               Payment Method
             </p>
             <div
-              class="text-card-foreground flex flex-col gap-6 shadow-sm rounded-none p-0 bg-card border border-border"
+              class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 bg-card"
               data-card="payment-method"
               data-slot="card"
             >
@@ -2024,7 +2030,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
   data-section="order-details"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui"
     data-slot="card"
   >
     <div
@@ -2088,7 +2094,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -2111,7 +2117,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
             Items Ordered
           </h2>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui p-0 overflow-visible"
             data-slot="card"
           >
             <div
@@ -2123,7 +2129,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                  class="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
                     class="text-sm min-w-0 font-medium"
@@ -2131,7 +2137,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                     Shipment 1
                   </p>
                   <span
-                    class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
+                    class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-status-positive text-white"
                     data-slot="badge"
                     data-testid="shipping-status-badge"
                   >
@@ -2148,7 +2154,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
                           aria-label="View First Product"
@@ -2157,7 +2163,8 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                           href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+                            data-slot="product-item-image"
                           >
                             <img
                               alt="First Product"
@@ -2220,7 +2227,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                              
                           </div>
                           <a
-                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-ui font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 rounded-ui gap-1.5 px-3 has-[>svg]:px-2.5 bg-foreground text-background hover:bg-foreground/90 text-xs"
                             data-discover="true"
                             data-size="sm"
                             data-slot="button"
@@ -2241,7 +2248,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="tracking-number"
                       data-slot="card"
                     >
@@ -2262,7 +2269,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                       </div>
                     </div>
                     <div
-                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui min-h-[4rem] p-0 bg-card"
                       data-card="shipping-address"
                       data-slot="card"
                     >
@@ -2316,7 +2323,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
             data-slot="card"
           >
             <div

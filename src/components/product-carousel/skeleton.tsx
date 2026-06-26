@@ -88,10 +88,10 @@ export default function ProductCarouselSkeleton({
 
                     {/* Navigation controls skeleton */}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2">
-                        <Skeleton className="h-9 w-9 rounded-none" />
+                        <Skeleton className="h-9 w-9" />
                     </div>
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2">
-                        <Skeleton className="h-9 w-9 rounded-none" />
+                        <Skeleton className="h-9 w-9" />
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@ export default function ProductCarouselSkeleton({
  */
 function ProductTileSkeleton() {
     return (
-        <Card className="!rounded-none !border-0 !shadow-none overflow-hidden w-full max-w-full flex flex-col h-full gap-0 py-0">
+        <Card className="border-0 overflow-hidden w-full max-w-full flex flex-col h-full gap-0 py-0">
             {/* Image area */}
             <CardHeader className="p-0">
                 <Skeleton className="w-full" style={{ aspectRatio: '0.8 / 1' }} />
@@ -118,8 +118,8 @@ function ProductTileSkeleton() {
             {/* Swatches */}
             <CardContent className="px-4 pt-3 pb-0">
                 <div className="flex items-center gap-1">
-                    <Skeleton className="h-7 w-7 rounded-none" />
-                    <Skeleton className="h-7 w-7 rounded-none" />
+                    <Skeleton className="h-7 w-7" />
+                    <Skeleton className="h-7 w-7" />
                 </div>
             </CardContent>
 

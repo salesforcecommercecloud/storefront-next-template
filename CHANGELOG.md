@@ -7,8 +7,8 @@
 - #1979 `20b9563` Thanks @vcua_sfemu! - Generated projects now ship with Einstein and Active Data analytics adapters disabled by default, with the analytics site identifiers (realm/siteId/einsteinId/etc.) blanked in `config.server.ts`. Reconfigure these with your own credentials to enable the adapters — Einstein-powered recommendation carousels stay offline until then.
 
 - Updated dependencies [`871cf56`]:
- - @salesforce/storefront-next-dev@1.0.1
- - @salesforce/storefront-next-runtime@1.0.1
+    - @salesforce/storefront-next-dev@1.0.1
+    - @salesforce/storefront-next-runtime@1.0.1
 
 ## 2026.6.0 (June 2026)
 
@@ -20,35 +20,35 @@
 
 - #1823 `0a3fcdc` Thanks @arayanavarro_sfemu! - w:
 
- Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
+    Tighten the `@salesforce/storefront-next-runtime/config` public surface for V1 GA.
 
- **Removed from public exports** (followups to #1741):
- - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
- - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
- - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
+    **Removed from public exports** (followups to #1741):
+    - `ConfigContext` — internal React context backing `useConfig()`. Read config via `useConfig()` instead.
+    - `createAppConfig` — one-line `.app` accessor with no semantic value. Use `staticConfig.app` directly.
+    - The `middleware.ts` source file and `createAppConfigMiddleware` factory were also deleted; they had B2C-Commerce-specific validation hardcoded in (`commerce.api.{clientId,organizationId,shortCode}`, `SCAPI_PROXY_HOST`) and the retail template ships its own validating middleware. Future templates write their own.
 
- **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
+    **Added** — `AppConfigShape` interface as a module-augmentation hook for `getConfig()` / `useConfig()` typing. Each template `declare module`s once in its own types file and gets typed access without the per-call `<AppConfig>` generic:
 
- ```ts
- // In your template's src/types/config.ts:
- declare module '@salesforce/storefront-next-runtime/config' {
- interface AppConfigShape extends AppConfig {}
- }
- ```
+    ```ts
+    // In your template's src/types/config.ts:
+    declare module '@salesforce/storefront-next-runtime/config' {
+        interface AppConfigShape extends AppConfig {}
+    }
+    ```
 
- **Other changes**
- - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
- - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
- - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
- - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
- - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
- - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
- - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
- - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
+    **Other changes**
+    - `Locale`, `Site`, `Url` JSDoc reframed as opt-in baseline shapes — `BaseConfig<App>` is generic so future templates can ignore them.
+    - `defineConfig` JSDoc now explicitly notes it reads `process.env` at call time (server-only side effect).
+    - `mergeEnvConfig`'s engagement-specific protected-paths error message is now generic.
+    - Retail-flavored examples in `schema.ts` / `utils.ts` JSDoc neutralized.
+    - Template (`template-retail-rsc-app`): all 110+ `getConfig<AppConfig>()` / `useConfig<AppConfig>()` call sites now use the augmented hook (no per-call generic).
+    - Template `commerce.sites: Site[]` now imports the richer `Site` shape from `@salesforce/storefront-next-runtime/site-context` (reconciles the duplicate `Site` types that existed across both subpaths).
+    - `contact-info.tsx` migrated from `useContext(ConfigContext)` to `useConfig()` (the only production caller of the bypass pattern).
+    - README-CONFIG.md fixed: `loadConfig` subpath was wrong (`/load-config` → `/config/load-config`); `appConfigContext` now documented for custom middleware composition; `AppConfigShape` augmentation pattern documented.
 
- Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
+    Public surface delta: 13 runtime + 5 type exports → 5 + 6 (plus `loadConfig` at the separate `./config/load-config` subpath).
 
- > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
+    > **Semver note for future maintainers:** This entry is a `minor` bump _only because the package is still pre-V1 GA_. Removing public exports is a `major` once V1 ships — do not paste this pattern after lock-in.
 
 - #1803 `9b60bdd` Thanks @alex-vuong_sfemu! - Replace current icons with actual brands logos that adhere to their design guideline
 
@@ -152,19 +152,19 @@
 
 - #1836 `a5f5a3b` Thanks @alex-vuong_sfemu! - Make the SLAS access-token JWT the single source of truth for `userType`, alongside `customerId`, `usid`, and `accessTokenExpiry`. All four fields are now derived from the same JWT decode whenever a token response is written into the session, so they always travel together — there is no path where one drifts from the other.
 
- Fixes an in-request session-state bug where, immediately after a guest signed in (standard email/password, passwordless OTP, or social IDP), `session.customerId` kept the guest `gcid` for the rest of the request even though the registered access token carrying the correct `rcid` had already been persisted. Any in-request consumer that read `session.customerId` (basket merge, wishlist merge, anything pasting `customerId` into a SCAPI URL path) targeted the wrong customer. The bug self-healed on the next request because the auth middleware re-derived state from cookies before any handler ran.
+    Fixes an in-request session-state bug where, immediately after a guest signed in (standard email/password, passwordless OTP, or social IDP), `session.customerId` kept the guest `gcid` for the rest of the request even though the registered access token carrying the correct `rcid` had already been persisted. Any in-request consumer that read `session.customerId` (basket merge, wishlist merge, anything pasting `customerId` into a SCAPI URL path) targeted the wrong customer. The bug self-healed on the next request because the auth middleware re-derived state from cookies before any handler ran.
 
- Internally:
- - `updateAuthStorageDataByTokenResponse` now derives `userType` from the JWT's `isb` claim (registered iff `rcid` is present and non-empty) and uses that value to cap the refresh-token expiry.
- - The four login sites (`standard-login.server.ts`, `_empty.login.tsx` passwordless auto-verify, `action.verify-passwordless-otp.ts`, `social-login.server.ts`) collapse from two `updateAuth(...)` calls to one.
- - The auth middleware's ingest path uses the JWT-derived `userType` whenever a decodable access token is present; cookie names (`cc-nx` / `cc-nx-g`) are now consulted only as a cold-start fallback when no access token has been issued yet, and as the response-side decision for which refresh-cookie to write or delete.
- - `getCustomerIdFromClaims` no longer takes a `userType` argument — it returns `rcid ?? gcid`, which is the right answer for either user type without disambiguation.
+    Internally:
+    - `updateAuthStorageDataByTokenResponse` now derives `userType` from the JWT's `isb` claim (registered iff `rcid` is present and non-empty) and uses that value to cap the refresh-token expiry.
+    - The four login sites (`standard-login.server.ts`, `_empty.login.tsx` passwordless auto-verify, `action.verify-passwordless-otp.ts`, `social-login.server.ts`) collapse from two `updateAuth(...)` calls to one.
+    - The auth middleware's ingest path uses the JWT-derived `userType` whenever a decodable access token is present; cookie names (`cc-nx` / `cc-nx-g`) are now consulted only as a cold-start fallback when no access token has been issued yet, and as the response-side decision for which refresh-cookie to write or delete.
+    - `getCustomerIdFromClaims` no longer takes a `userType` argument — it returns `rcid ?? gcid`, which is the right answer for either user type without disambiguation.
 
 - #1840 `333e485` Thanks @alex-vuong_sfemu! - Restore guest wishlist support on the heart button. A guest clicking the heart now silently adds the item to their guest wishlist via the existing `WishlistProvider` and SCAPI's product-list endpoints (which accept guest gcid tokens). On sign-in, the existing `mergeWishlist` flow transfers the items to the registered account.
 
- The `WishlistButton` previously wrapped its toggle action with `useRequireAuth`, which redirected guests to `/login` before the provider's `add()` ever ran. The wrapper predated the rest of the guest-aware wishlist architecture (server-side hydration via `fetchWishlistInitialState`, action routes that explicitly support gcid tokens, the `/wishlist` guest route with its sign-in banner). Removing it lets the rest of the stack do the right thing for guests with no other changes.
+    The `WishlistButton` previously wrapped its toggle action with `useRequireAuth`, which redirected guests to `/login` before the provider's `add()` ever ran. The wrapper predated the rest of the guest-aware wishlist architecture (server-side hydration via `fetchWishlistInitialState`, action routes that explicitly support gcid tokens, the `/wishlist` guest route with its sign-in banner). Removing it lets the rest of the stack do the right thing for guests with no other changes.
 
- The component also drops the now-dead pending-action plumbing (`useCheckAndExecutePendingAction`, the URL-scrubbing `useEffect`, and the `pendingActionRef`/`wasPendingRef` refs) — those existed solely to support the post-login redirect-and-resume flow that no longer applies.
+    The component also drops the now-dead pending-action plumbing (`useCheckAndExecutePendingAction`, the URL-scrubbing `useEffect`, and the `pendingActionRef`/`wasPendingRef` refs) — those existed solely to support the post-login redirect-and-resume flow that no longer applies.
 
 - #1814 `b4e1db5` Thanks @vmarta_sfemu! - Add `data-testid="address-card"` to the address-card component so E2E tests can target it unambiguously. Previously the e2e harness used `[data-slot="card"]:has([data-slot="card-footer"])`, which also matched the tracking-consent banner and produced sporadic test failures.
 
@@ -174,32 +174,32 @@
 
 - #1779 `8ae7030` Thanks @joel-uong_sfemu! - Stop the data-store middleware from crashing MRT requests on transient DAL failures. `DataStoreServiceError` and `DataStoreUnavailableError` now both honor `onUnavailable`, and the four built-in middlewares (`customSitePreferencesMiddleware`, `customGlobalPreferencesMiddleware`, `gcpPreferencesMiddleware`, `loginPreferencesMiddleware`) default to `'fallback'` so the request continues with the configured fallback value instead of throwing. `SFNEXT_DATA_STORE_UNAVAILABLE_MODE` is preserved as an opt-in escape hatch — set it to `'throw'` to restore fail-fast behavior. `DataStoreNotFoundError` keeps its existing missing-state semantics; errors thrown from `transform` still propagate. `createDataStoreMiddleware`'s factory default for customer-authored middlewares stays at `'throw'` (no change to the public API contract).
 
- Adds `dataStoreLoggerContext`, `getDataStoreLogger`, and the `DataStoreLogger` interface under `@salesforce/storefront-next-runtime/data-store`. Hosts can inject a request-scoped structured logger so SDK warnings emit with `correlationId`, `method`, and `path` bindings instead of bare `console.warn`. The storefront template's `loggingMiddleware` wires this automatically; when unset, falls back to a console-based logger that fail-soft serializes metadata (cyclic / unserializable values won't crash the request).
+    Adds `dataStoreLoggerContext`, `getDataStoreLogger`, and the `DataStoreLogger` interface under `@salesforce/storefront-next-runtime/data-store`. Hosts can inject a request-scoped structured logger so SDK warnings emit with `correlationId`, `method`, and `path` bindings instead of bare `console.warn`. The storefront template's `loggingMiddleware` wires this automatically; when unset, falls back to a console-based logger that fail-soft serializes metadata (cyclic / unserializable values won't crash the request).
 
 - #1846 `6383cc7` Thanks @daniel-diaz_sfemu! - refactor(extensions): remove ProductContentAdapter infrastructure
 
- Remove the client-side ProductContentAdapter layer (provider, store, mock, hooks, types) now that all data previously flowing through it has been migrated to SSR extensions (SFDC_EXT_RATINGS_REVIEWS, SFDC_EXT_SHIPPING_DELIVERY, SFDC_EXT_PRODUCT_CONTENT, SFDC_EXT_BNPL). Migrate shared types to their owning extensions, strip ProductContentProvider wrappers from routes, and rewrite the adapter pattern guide to cover only the remaining engagement adapter (Einstein, Active Data).
+    Remove the client-side ProductContentAdapter layer (provider, store, mock, hooks, types) now that all data previously flowing through it has been migrated to SSR extensions (SFDC_EXT_RATINGS_REVIEWS, SFDC_EXT_SHIPPING_DELIVERY, SFDC_EXT_PRODUCT_CONTENT, SFDC_EXT_BNPL). Migrate shared types to their owning extensions, strip ProductContentProvider wrappers from routes, and rewrite the adapter pattern guide to cover only the remaining engagement adapter (Einstein, Active Data).
 
 - #1813 `5ce3adb` Thanks @daniel-diaz_sfemu! - ext-ratings-reviews: migrate Ratings & Reviews to SSR extension. Move reviews data fetching from the client adapter into the PDP and account-order-detail route loaders as deferred Promises, render the customer reviews section, write-review button, and per-line "Rate & Review" affordance via new `<UITarget>`s, add a server `action.add-review` route with Zod validation, and relocate the components, provider, fixtures, and locale strings into `src/extensions/ratings-reviews/`.
 
 - #1843 `5cc70c1` Thanks @daniel-diaz_sfemu! - feat(extensions): add Shipping & Delivery SSR extension
 
- Add SFDC_EXT_SHIPPING_DELIVERY extension with estimated delivery card and modal on PDP, zip-code-based shipping calculator integrated into the BOPIS delivery options, and a fulfillment & shipping info modal. Data is fetched server-side via route loader as a deferred Promise and rendered through UITargets. Includes extension markers for clean install/uninstall, locale strings, Storybook stories, and unit tests.
+    Add SFDC_EXT_SHIPPING_DELIVERY extension with estimated delivery card and modal on PDP, zip-code-based shipping calculator integrated into the BOPIS delivery options, and a fulfillment & shipping info modal. Data is fetched server-side via route loader as a deferred Promise and rendered through UITargets. Includes extension markers for clean install/uninstall, locale strings, Storybook stories, and unit tests.
 
 - #1924 `7850ace` Thanks @daniel-diaz_sfemu! - Fix account details email section buttons overflowing on mobile by adding flex-wrap so Verify Email and Change Email buttons wrap below the email address on narrow viewports
 
 - #1767 `f94f6fe` Thanks @j-sheth_sfemu! - Fix auth callback URLs (social login, passwordless, password reset, SLAS `redirect_uri`) and SEO canonical/hreflang URLs on hybrid storefronts behind eCDN. These were built from `EXTERNAL_DOMAIN_NAME` (which resolves to the MRT-assigned host on hybrid deployments) instead of the customer's custom domain — social login redirected to the MRT host and 404'd, password-mode signup hit `redirect_uri doesn't match the registered redirects`, magic-link emails carried the wrong origin, and `<link rel="canonical">` / hreflang URLs pointed at the lambda-internal hostname.
 
- A new `requestOriginMiddleware` stashes the in-flight request in router context; `getAppOrigin(context)` lazily parses `x-forwarded-host` / `x-forwarded-proto` (with comma-split, leading-empty handling, and exact-match localhost detection) and memoizes per request. The SDK's host-header middleware already populates `x-forwarded-host` from `EXTERNAL_DOMAIN_NAME` when no upstream value is present, so a single deployment serves any custom domain without per-environment config. `createApiClients`, all auth-flow callbacks, the magic-link emailers, and `buildSeoMetaDescriptors` now resolve origin via context. `schema-url.ts` `getPublicOrigin` delegates to the same parser so JSON-LD URLs share the auth path's correctness fixes.
+    A new `requestOriginMiddleware` stashes the in-flight request in router context; `getAppOrigin(context)` lazily parses `x-forwarded-host` / `x-forwarded-proto` (with comma-split, leading-empty handling, and exact-match localhost detection) and memoizes per request. The SDK's host-header middleware already populates `x-forwarded-host` from `EXTERNAL_DOMAIN_NAME` when no upstream value is present, so a single deployment serves any custom domain without per-environment config. `createApiClients`, all auth-flow callbacks, the magic-link emailers, and `buildSeoMetaDescriptors` now resolve origin via context. `schema-url.ts` `getPublicOrigin` delegates to the same parser so JSON-LD URLs share the auth path's correctness fixes.
 
 - #1806 `4f73f0e` Thanks @daniel-diaz_sfemu! - Fix BNPL target render loop on PDP. The previous implementation combined two deferred loader Promises with `Promise.all([...])` inside render, producing a fresh Promise on every render. React Router's `<Await>` tracks resolution by Promise identity, so each new Promise re-suspended and re-rendered in a microtask-fast loop — starving `useFetcher({ key: 'basket-products' })` of stable commit cycles (mini-cart never opened) and driving express-payments image churn. Each deferred Promise now gets its own `<Suspense>`/`<Await>` boundary so the loader's original Promise references flow through unchanged.
 
 - #1948 `3535909` Thanks @j-sheth_sfemu! - Allow the OOTB Einstein engagement adapter through the default CSP. The adapter fires browser `navigator.sendBeacon` calls to the CQuotient activities API (`https://api.cquotient.com/v3/activities/...`), which is governed by `connect-src`. The default `connect-src` did not list that host, so every Einstein beacon (viewPage, viewProduct, viewCategory, …) was blocked by CSP and reported a console violation on a freshly generated project. Added `https://api.cquotient.com` to the default `connect-src` directive.
 
 - #1939 `d273772` Thanks @arayanavarro_sfemu! - Fix three dev-server console errors in freshly generated projects (`pnpm dev`):
- - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
- - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
- - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
+    - **Invalid hook call / "Cannot read properties of null (reading 'useContext')"**: on first dev load Vite discovered the React-importing runtime SDK entry points (`/config`, `/security/react`, `/site-context`, `/design/react/core`, `/routing/app-wrapper`, `/i18n/client`) lazily at request time, triggering a dep re-optimization + full reload that transiently loaded a second React instance. Also pre-bundles the i18n peer deps the SDK imports internally but the template does not import from its own source (`i18next-browser-languagedetector`, used by `/i18n/client`; and `remix-i18next/middleware`, used by the SDK's `/i18n` barrel) — these are discovered late for the same reason. (`react-i18next` needs no entry: the template imports it directly, so Vite's initial source crawl already finds it.) All are now in the first-pass `optimizeDeps.include`, so a single optimization runs with one shared React and no mid-session reload.
+    - **CSP blocked the Vite HMR websocket** (`ws://localhost:24678`): the security middleware now appends `ws://localhost:*`, `ws://127.0.0.1:*`, and `wss://localhost:*` to `connect-src` only when running locally (`BUNDLE_ID` unset or `local`). Deployed/MRT responses are unchanged.
+    - **Nonce hydration mismatch** on the inline `window.__APP_CONFIG__` script: browsers strip the `nonce` content attribute from the DOM after applying CSP, so the client saw `nonce=""` against the server's real value. Added `suppressHydrationWarning` to that script element; the CSP nonce still applies.
 
 - #1898 `dee3c0a` Thanks @mjuraschik_sfemu! - Fall back to category-level page assignment during manifest resolution when a product-keyed page lookup misses. `resolveDynamicPageId` and `resolvePage` now accept an optional `categoryId` (string or Promise) consulted only after the product lookup misses, and the Page Designer resolution middleware threads the request's categoryId through whenever a productId is also present.
 
@@ -330,8 +330,8 @@
 - #1796 `542bb24` Thanks @s-hussain_sfemu! - `/wishlist` no longer redirects shoppers with expired sessions to `/login`. Guest shoppers (and registered shoppers whose session is no longer usable) now see the guest wishlist with a persistent sign-in banner so they can recover at their own pace.
 
 - Updated dependencies [`46b1ceb`, `b370405`, `f7e9554`, `0a3fcdc`, `ece6a58`, `d355c50`, `26a7f95`, `8ae7030`, `3535909`, `d273772`, `9adf311`, `dee3c0a`, `d39ccce`, `65223d9`, `2fb0e1f`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `ba93c10`, `60c6fbb`, `0d500de`, `af03e94`, `3c9c3e5`, `2241fb2`]:
- - @salesforce/storefront-next-dev@1.0.0
- - @salesforce/storefront-next-runtime@1.0.0
+    - @salesforce/storefront-next-dev@1.0.0
+    - @salesforce/storefront-next-runtime@1.0.0
 
 ## v0.4.0 (May 5, 2026)
 
@@ -346,7 +346,7 @@
 - Move locale chunking from `vite.config.ts` into SDK `i18nPlugin`; remove TODO comment
 - Add login preferences middleware and context for managing email verification preferences (#1453)
 - Remove manual `contentLinkUuid` type extensions in favor of SCAPI types
- - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
+    - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
 - Document the use of dynamic images (#1519)
 - Update Page Designer middleware and `vite.config.ts` to align with upstream `@salesforce/mrt-utilities` conditional export flow (no local Vite alias requirement) (#1533)
 - Standardize behaviors of API errors in Checkout (#1521)

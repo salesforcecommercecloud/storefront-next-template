@@ -28,6 +28,7 @@ import {
     PLAYWRIGHT_HELP_HEADER,
 } from '../constants';
 import { ServerManager, type ServerConfig } from '../services/server-manager';
+import { waitUntilReachable } from './url-reachability';
 import { CodeceptRunner, spawnForeground } from '../services/codecept-runner';
 import { ConfigProvider, type CliOptions } from '../services/config-provider';
 import { ProcessLifecycle } from '../services/process-orchestrator';
@@ -105,12 +106,14 @@ export async function runTestFlow(options: CliOptions): Promise<void> {
     // Display configuration information
     displayConfigInfo(configProvider, options);
 
-    // Pre-flight reachability check for remote mode — fail fast with a clear
-    // message instead of letting tests fail with cryptic connection errors.
-    // Uses a 5-second timeout: longer than the polling interval so a momentarily
-    // busy dev server (HMR rebuild, high load) is not falsely flagged as down.
+    // Pre-flight reachability check for remote mode. Poll rather than probe
+    // once: a freshly deployed MRT bundle can report ACTIVE via the Admin API
+    // before its external edge starts serving, so a single probe races the
+    // deployment and the run fails spuriously (then process.exit(1)) even
+    // though the bundle is fine. Polling absorbs that propagation lag, then
+    // fails with a clear message if the server genuinely never comes up.
     if (config.mode === 'remote' && config.baseUrl) {
-        const reachable = await ServerManager.checkUrl(config.baseUrl, 5_000);
+        const reachable = await waitUntilReachable(config.baseUrl);
         if (!reachable) {
             log.error(`Server at ${config.baseUrl} is not reachable. Make sure your dev server is running.`);
             process.exit(1);

@@ -195,6 +195,7 @@ export default function StoreDetails({
                                         <Typography
                                             variant="muted"
                                             as="div"
+                                            className="whitespace-pre-line"
                                             dangerouslySetInnerHTML={{ __html: String(store.storeHours) }}
                                         />
                                     </>

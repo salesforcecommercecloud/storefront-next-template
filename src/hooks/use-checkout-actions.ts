@@ -57,6 +57,12 @@ type ActionLifecycle = {
     step: CheckoutStep | null;
     /** Current state in the action lifecycle */
     state: ActionState;
+    /**
+     * When true, the basket is updated on success but exitEditMode is not called.
+     * Used for shipping-method price recalculation submissions that should not advance
+     * the checkout step (the shopper still needs to explicitly confirm their choice).
+     */
+    recalculating?: boolean;
 };
 
 /** Options passed when placing order (e.g. from payment form at time of Place Order click) */
@@ -71,6 +77,38 @@ export type PaymentSubmissionRef = MutableRefObject<{
     shouldPlaceOrderAfterPayment: boolean;
     options: { savePaymentToProfile?: boolean; useDifferentBilling?: boolean } | null;
     setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
+    /**
+     * When set, the Place Order click handler delegates the payment-to-order
+     * step to this callback. The storefront wraps the call: it POSTs to
+     * `/action/place-order-prepare` first (basket validation, multiship
+     * resolution, totals refresh), invokes this callback to drive `createOrder`
+     * and any PSP confirm, then POSTs to `/action/place-order-finalize`
+     * (profile saves, basket teardown, navigation). The extension only owns
+     * the payment work between the two storefront actions.
+     *
+     * Resolve with the orderNo on success, or `null` on failure after
+     * surfacing the extension's own error UI.
+     *
+     * Latency: the framework imposes no client-side timeout because it
+     * cannot reliably conclude a reasonable ceiling that applies to all
+     * extensions in all situations - 3DS challenges can legitimately run
+     * 30-90s, wallet flows resolve in seconds, and PSP redirects can run
+     * minutes when the shopper switches to a banking app for OTP. The
+     * extension should decide its own ceiling and act on it (e.g.
+     * `AbortController` on the create-order fetch, PSP-SDK timeout hooks
+     * for 3DS) and resolve `null` after surfacing its own error UI when
+     * its budget elapses. A hung promise that never resolves leaves the
+     * Place Order spinner spinning indefinitely.
+     *
+     * Extension components reach this ref via `usePaymentSubmissionRef()`
+     * from `@/components/checkout/payment-submission-context`. Assign in a
+     * `useEffect`, clear in cleanup so the registration is unwound when the
+     * extension unmounts.
+     *
+     * `beforePlaceOrder` / `afterPlaceOrder` hooks do NOT fire on this path.
+     * The hooks live inside `action.place-order`, which this flow bypasses.
+     */
+    onPlaceOrder: (() => Promise<string | null>) | null;
 }>;
 
 /**
@@ -80,7 +118,7 @@ export type PaymentSubmissionRef = MutableRefObject<{
  * using React Router's useFetcher for handling form submissions without navigation.
  * Each fetcher is keyed to maintain separate state for each checkout step.
  *
- * @param options.paymentSubmissionRef - Ref holding form data getter, place-order-after-payment flag, and options (preferred over placeOrderOptionsRef)
+ * @param options.paymentSubmissionRef - Coordination ref for the payment + place-order flow. See `PaymentSubmissionRef` for fields.
  * @param options.placeOrderOptionsRef - Optional ref for place-order options (legacy; use paymentSubmissionRef for new code)
  * @returns Object containing checkout action functions and fetcher states
  * @returns submitContactInfo - Function to submit contact information
@@ -107,7 +145,7 @@ export function useCheckoutActions(options?: {
     /** When .current is true, do not advance from shipping address step (no valid methods available). */
     noShippingMethodsRef?: NoShippingMethodsRef;
 }) {
-    const { exitEditMode, editingStep } = useCheckoutContext();
+    const { exitEditMode, editingStep, goToStep } = useCheckoutContext();
     const updateBasket = useBasketUpdater();
     const basket = useBasket();
 
@@ -161,9 +199,12 @@ export function useCheckoutActions(options?: {
         }
     }, [basket]);
 
-    // Reset lifecycle when entering a new edit step
+    // Reset lifecycle when entering a different edit step.
+    // Skip reset when editingStep matches the step already tracked in actionRef: this happens
+    // during recalculation submissions where goToStep and actionRef are set in the same call —
+    // the deferred editingStep state update would otherwise wipe the in-flight actionRef state.
     useEffect(() => {
-        if (editingStep !== null) {
+        if (editingStep !== null && actionRef.current.step !== editingStep) {
             actionRef.current = { step: null, state: ActionState.NOT_STARTED };
         }
     }, [editingStep]);
@@ -193,8 +234,8 @@ export function useCheckoutActions(options?: {
             return;
         }
 
-        // Transition: SUBMITTED -> BASKET_UPDATED
-        actionRef.current = { step, state: ActionState.BASKET_UPDATED };
+        // Transition: SUBMITTED -> BASKET_UPDATED (spread preserves recalculating and any future fields)
+        actionRef.current = { ...actionRef.current, state: ActionState.BASKET_UPDATED };
         updateBasket(fetcher.data.basket);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactFetcher.data, shippingAddressFetcher.data, shippingOptionsFetcher.data, paymentFetcher.data]);
@@ -224,11 +265,31 @@ export function useCheckoutActions(options?: {
             return;
         }
 
+        // Recalculating submissions update basket state (so discounted prices render) but keep
+        // the shopper on the shipping options step so they can review and confirm their choice.
+        if (actionRef.current.recalculating) {
+            actionRef.current = { step, state: ActionState.COMPLETED };
+            return;
+        }
+
         // Transition: BASKET_UPDATED -> COMPLETED
         actionRef.current = { step, state: ActionState.COMPLETED };
         exitEditMode();
+
+        // Fetcher .data deps keep this in sync when the server's dedup sends a
+        // cached response (same basket, same fetcher.data — basket dep alone
+        // would not re-run the effect in that case). exitEditMode, fetcherMap,
+        // and options refs are intentionally omitted: they are stable refs or
+        // callbacks whose identity changes don't require re-running this effect.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editingStep, basket]);
+    }, [
+        editingStep,
+        basket,
+        contactFetcher.data,
+        shippingAddressFetcher.data,
+        shippingOptionsFetcher.data,
+        paymentFetcher.data,
+    ]);
 
     /**
      * Submits contact information to the contact info action.
@@ -302,6 +363,35 @@ export function useCheckoutActions(options?: {
         actionRef.current = { step: CHECKOUT_STEPS.SHIPPING_OPTIONS, state: ActionState.SUBMITTED };
 
         // Add intent field
+        formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS);
+
+        void shippingOptionsFetcher.submit(formData, {
+            method: 'post',
+        });
+    };
+
+    /**
+     * Submits a shipping method for basket price recalculation without advancing the checkout step.
+     * Used when the shopper just entered a new address - prices update so they see the correct
+     * promotional amounts, but the step stays at shipping options so they can confirm their choice.
+     *
+     * @param formData - FormData containing the selected shippingMethodId
+     */
+    const submitShippingOptionsForRecalculation = (formData: FormData) => {
+        if (shippingOptionsFetcher.state === 'submitting') {
+            return;
+        }
+
+        // Pin editingStep to SHIPPING_OPTIONS so the checkout context's computedStep update
+        // (which fires when the basket gains a shipping method) cannot advance the step automatically.
+        goToStep(CHECKOUT_STEPS.SHIPPING_OPTIONS);
+
+        actionRef.current = {
+            step: CHECKOUT_STEPS.SHIPPING_OPTIONS,
+            state: ActionState.SUBMITTED,
+            recalculating: true,
+        };
+
         formData.append('intent', CHECKOUT_ACTION_INTENTS.SHIPPING_OPTIONS);
 
         void shippingOptionsFetcher.submit(formData, {
@@ -399,12 +489,12 @@ export function useCheckoutActions(options?: {
     }, []);
 
     /**
-     * Submits the place-order action via fetcher so errors can be shown in-page.
+     * Build the form data the storefront sends to the place-order action and
+     * to the extension-driven `place-order-finalize` route. Both consume the
+     * same shopper-state inputs (registration intent, save-payment, billing
+     * choice, contact phone), so we centralize the construction here.
      */
-    const submitPlaceOrder = () => {
-        if (placeOrderFetcher.state === 'submitting') {
-            return;
-        }
+    const buildPlaceOrderFinalizeFormData = useCallback((): FormData => {
         const formData = new FormData();
         formData.append('shouldCreateAccount', shouldCreateAccount ? 'true' : 'false');
         const registrationFlowActive =
@@ -418,7 +508,7 @@ export function useCheckoutActions(options?: {
         if (typeof placeOrderOpts?.useDifferentBilling === 'boolean') {
             formData.append('useDifferentBilling', String(placeOrderOpts.useDifferentBilling));
         }
-        // Pass the contact phone captured at submission time (session + ref survive basket merge / reload)
+        // Phone may have been captured at submit time (session + ref survive basket merge / reload).
         const storedPhone =
             typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_CHECKOUT_CONTACT_PHONE) : null;
         const contactPhone =
@@ -429,6 +519,17 @@ export function useCheckoutActions(options?: {
         if (contactPhone) {
             formData.append('contactPhone', contactPhone);
         }
+        return formData;
+    }, [shouldCreateAccount, options?.paymentSubmissionRef, options?.placeOrderOptionsRef, basket]);
+
+    /**
+     * Submits the place-order action via fetcher so errors can be shown in-page.
+     */
+    const submitPlaceOrder = () => {
+        if (placeOrderFetcher.state === 'submitting') {
+            return;
+        }
+        const formData = buildPlaceOrderFinalizeFormData();
         void placeOrderFetcher.submit(formData, {
             method: 'post',
             action: resourceRoutes.placeOrder,
@@ -440,8 +541,10 @@ export function useCheckoutActions(options?: {
         submitContactInfo,
         submitShippingAddress,
         submitShippingOptions,
+        submitShippingOptionsForRecalculation,
         submitPayment,
         submitPlaceOrder,
+        buildPlaceOrderFinalizeFormData,
 
         // Fetcher objects
         contactFetcher,

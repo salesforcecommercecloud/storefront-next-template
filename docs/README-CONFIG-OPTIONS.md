@@ -597,6 +597,8 @@ The length of the OTP (One-Time Password) code used for authentication. This val
 
 **Important:** This is a global setting that affects all authentication flows. SLAS enforces a single OTP length for all auth features, so this value should remain consistent across your application.
 
+`otpLength` sets the OTP modal's initial slot count, but it does not control the length SLAS actually delivers — keep it matched to your SLAS client. The modal tolerates a mismatch so a configuration drift never strands the shopper: pasting a code longer than `otpLength` expands the inputs to fit (up to the 8-digit maximum SLAS issues), and the modal accepts any 6-to-8-digit code. Match this value to your SLAS client anyway so the default slot count and the "we sent an N-digit code" copy are correct.
+
 Example:
 ```bash
 PUBLIC__app__auth__otpLength=6

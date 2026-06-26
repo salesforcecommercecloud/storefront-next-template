@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import {
-    type ShouldRevalidateFunctionArgs,
-    useAsyncError,
-    useLocation,
-    useNavigation,
-    useRouteLoaderData,
-} from 'react-router';
+import { useAsyncError, useLocation, useNavigation, useRouteLoaderData } from 'react-router';
 import type { loader as rootLoader } from '@/root';
 import type { Route } from './+types/_app.category.$categoryId';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
@@ -57,11 +51,11 @@ import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import {
     getInitialFiltersOpen,
-    getSearchWithoutClientOnlyParams,
     getSearchWithoutFiltersParam,
     useFiltersPanelState,
 } from '@/hooks/use-filters-panel-state';
 import { getLogger } from '@/lib/logger.server';
+import { uiConfig } from '@/lib/config.ui';
 
 @PageType({
     name: 'Product Listing Page',
@@ -234,18 +228,7 @@ export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> 
     };
 }
 
-export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    const clientOnlyParamsChanged =
-        currentUrl.pathname === nextUrl.pathname &&
-        currentUrl.search !== nextUrl.search &&
-        getSearchWithoutClientOnlyParams(currentUrl.search) === getSearchWithoutClientOnlyParams(nextUrl.search);
-
-    if (clientOnlyParamsChanged) {
-        return false;
-    }
-
-    return defaultShouldRevalidate;
-}
+export { shouldRevalidate } from '@/lib/routes/revalidation/category';
 
 /**
  * Category page component that displays a product category with filtering, sorting, and pagination.
@@ -329,6 +312,16 @@ export default function CategoryPage({
         () => new URLSearchParams(location.search).getAll('refine').length,
         [location.search]
     );
+
+    // QuickFilters "Shop by {label}" header is opt-in per build target via
+    // `uiConfig.pages.category.showCategoryLabel`. When on, derive the label from
+    // the active `cgid` refinement and pass it down; when off, pass nothing so
+    // QuickFilters renders the chips-only baseline. Keeping this in the (shared)
+    // route means QuickFilters stays presentational and no vertical has to fork
+    // either the component or this route. See @/lib/config.ui.
+    const categoryLabel = uiConfig.pages.category.showCategoryLabel
+        ? searchResultCritical.refinements?.find((r) => r.attributeId === 'cgid')?.label
+        : undefined;
     const isProductGridLoading = useMemo(() => {
         if (navigation.state === 'idle' || !navigation.location) {
             return false;
@@ -427,13 +420,13 @@ export default function CategoryPage({
 
                     <div className="flex flex-col lg:flex-row gap-2">
                         {/* Filters toggle button + Quick Filters - mobile only (above panel) */}
-                        <div className="lg:hidden mb-4 flex flex-col items-start gap-2">
+                        <div className="lg:hidden mb-4 flex flex-col items-start gap-2" data-slot="filters-wrapper">
                             <FiltersButton
                                 onClick={toggleFiltersOpen}
                                 isActive={filtersOpen}
                                 selectedFiltersCount={selectedFiltersCount}
                             />
-                            <QuickFilters category={category} />
+                            <QuickFilters category={category} categoryLabel={categoryLabel} />
                         </div>
 
                         {/* Category Refinements - toggles visibility on left side */}
@@ -445,13 +438,13 @@ export default function CategoryPage({
 
                         <div className="flex-grow">
                             {/* Filters toggle button + Quick Filters - desktop only (inside content area) */}
-                            <div className="mb-4 hidden lg:flex lg:items-center lg:gap-4">
+                            <div className="mb-4 hidden lg:flex lg:items-center lg:gap-4" data-slot="filters-wrapper">
                                 <FiltersButton
                                     onClick={toggleFiltersOpen}
                                     isActive={filtersOpen}
                                     selectedFiltersCount={selectedFiltersCount}
                                 />
-                                <QuickFilters category={category} />
+                                <QuickFilters category={category} categoryLabel={categoryLabel} />
                             </div>
 
                             <ActiveFilters result={searchResultCritical} />

@@ -19,9 +19,21 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ShopperProducts } from '@/scapi';
+import { useTranslation } from 'react-i18next';
 
 interface QuickFiltersProps {
     category?: ShopperProducts.schemas['Category'];
+    /**
+     * Optional label for the active category (e.g. the `cgid` refinement label).
+     * When provided, a "Shop by {label}" header with a leading sparkles icon is
+     * rendered before the chips. When omitted, no header is shown.
+     *
+     * The component stays presentational: the caller decides whether to supply a
+     * label (e.g. a vertical gating on `uiConfig.pages.category.showCategoryLabel`
+     * computes it from loader data and passes it). Keeps this component free of
+     * config/loader coupling so it renders the same way given the same props.
+     */
+    categoryLabel?: string;
 }
 
 /**
@@ -31,6 +43,7 @@ interface QuickFiltersProps {
  *
  * Features:
  * - Horizontal chip/button layout
+ * - Optional "Shop by {label}" header (see `categoryLabel`)
  * - Active state for selected filters
  * - Optimistic UI during navigation
  * - Displays direct subcategories from category.categories on category pages
@@ -38,8 +51,10 @@ interface QuickFiltersProps {
  *
  * @param props - Component props
  * @param props.category - Category object with subcategories from SCAPI
+ * @param props.categoryLabel - Optional active-category label; renders a header when set
  */
-export default function QuickFilters({ category }: QuickFiltersProps): ReactElement | null {
+export default function QuickFilters({ category, categoryLabel }: QuickFiltersProps): ReactElement | null {
+    const { t } = useTranslation('common');
     const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
@@ -101,11 +116,45 @@ export default function QuickFilters({ category }: QuickFiltersProps): ReactElem
         return null;
     }
 
+    // Header text shown when a category label is supplied (e.g. "Shop by Dresses").
+    const displayLabel = categoryLabel ? `${t('shopBy', 'Shop by')} ${categoryLabel}` : undefined;
+
     return (
         <div
-            className={`flex flex-wrap gap-2${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}
+            className={cn(
+                'flex flex-wrap gap-2',
+                // items-center only matters once the header sits inline with the chips
+                displayLabel && 'items-center',
+                isPending && 'pointer-events-none opacity-50 transition-opacity'
+            )}
             role="group"
-            aria-label="Quick category filters">
+            aria-label={displayLabel || t('quickCategoryFilters', 'Quick category filters')}
+            data-slot="quick-filters">
+            {displayLabel && (
+                <span
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground pr-2"
+                    data-slot="quick-filters-label">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="size-3.5"
+                        aria-hidden="true">
+                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                        <path d="M20 3v4" />
+                        <path d="M22 5h-4" />
+                        <path d="M4 17v2" />
+                        <path d="M5 18H3" />
+                    </svg>
+                    {displayLabel}
+                </span>
+            )}
             {categories.map((cat) => {
                 const cgidRefinement = `cgid=${cat.value}`;
                 const isActive = activeRefinements.includes(cgidRefinement);
@@ -116,7 +165,7 @@ export default function QuickFilters({ category }: QuickFiltersProps): ReactElem
                         size="sm"
                         onClick={() => handleCategoryClick(cat.value)}
                         className={cn(
-                            'whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px]',
+                            'whitespace-nowrap cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px]',
                             isActive ? 'text-primary-foreground' : 'text-foreground'
                         )}
                         aria-pressed={isActive}>

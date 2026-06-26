@@ -15,83 +15,62 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import ShopperAgent from '../index';
-import { mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
-const validConfig: ShopperAgentConfig = {
-    enabled: 'true',
-    embeddedServiceName: 'EmbeddedService',
-    embeddedServiceEndpoint: 'https://example.salesforce.com/embedded',
-    scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
-    scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
-    salesforceOrgId: '00D000000000000EAA',
-    siteId: mockSiteObject.id,
-};
-
+/**
+ * Docs-only: ShopperAgent renders no visible UI in Storybook. The chat surface is the
+ * Salesforce Embedded Messaging (Agentforce) widget, a third-party script + iframe that does
+ * not load here, so the wrapper renders nothing on the canvas. Behaviour (deferred idle-load,
+ * load-on-demand, config validation, launch + queued-message sequencing) is covered by unit
+ * tests in `index.test.tsx` and `shopper-agent.utils.test.ts`. The single `Docs` story below
+ * only anchors the autodocs page (Storybook needs at least one story export); it is hidden from
+ * the sidebar via the `!dev` tag and renders nothing, so there are no blank story entries.
+ */
 const meta: Meta<typeof ShopperAgent> = {
     title: 'Components/Shopper Agent',
     component: ShopperAgent,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
 Shopper Agent integrates Salesforce Embedded Messaging (Agentforce) for commerce chat.
-When configuration is invalid or disabled, the component renders nothing. In Storybook the embedded script is not loaded, so the chat UI is not visible; the wrapper is still rendered when config is valid.
+When configuration is invalid or disabled, the component renders nothing. In Storybook the embedded
+script is not loaded, so the chat UI is never visible — this page documents the props only. The
+component's behaviour is verified by unit tests (\`index.test.tsx\`, \`shopper-agent.utils.test.ts\`).
                 `,
             },
         },
     },
     argTypes: {
         commerceAgentConfiguration: {
-            description: 'Commerce agent configuration. If invalid, component returns null.',
+            description: 'Commerce agent configuration. If invalid, the component returns null.',
             control: false,
         },
-        locale: { control: 'text' },
-        currency: { control: 'text' },
-        userId: { control: 'text' },
+        locale: { description: 'BCP-47 locale forwarded to Embedded Messaging.', control: 'text' },
+        currency: { description: 'ISO currency forwarded as a prechat field.', control: 'text' },
+        userId: { description: 'Shopper id forwarded as a prechat field.', control: 'text' },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof ShopperAgent>;
 
-export const WithValidConfig: Story = {
-    args: {
-        commerceAgentConfiguration: validConfig,
-        locale: mockAltSiteObject.defaultLocale,
-        currency: mockAltSiteObject.defaultCurrency,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shopper Agent with valid config. Renders the wrapper; embedded chat UI loads in real app only.',
-            },
-        },
-    },
-};
-
-export const InvalidConfig: Story = {
-    args: {
-        commerceAgentConfiguration: undefined,
-        locale: mockAltSiteObject.defaultLocale,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'When configuration is missing or invalid, the component renders nothing (null).',
-            },
-        },
-    },
-};
-
-export const WithLocaleAndCurrency: Story = {
-    args: {
-        commerceAgentConfiguration: validConfig,
-        locale: mockSiteObject.defaultLocale,
-        currency: mockSiteObject.defaultCurrency,
-        userId: 'user-123',
-    },
+/**
+ * Anchors the autodocs page only — Storybook requires at least one story export to generate a
+ * Docs page. Hidden from the sidebar (`!dev`), so no blank story row appears.
+ *
+ * The render is a static placeholder rather than the real component: mounting `<ShopperAgent>`
+ * with a valid config would try to load the (Storybook-absent) Embedded Messaging script, and an
+ * invalid config logs a validation error — neither is useful documentation. The props table on
+ * the Docs page comes from `component` + `argTypes`, so it stays complete without a live render.
+ */
+export const Docs: Story = {
+    tags: ['!dev'],
+    render: () => (
+        <div className="rounded-none border border-border bg-muted p-4 text-sm text-muted-foreground">
+            This component renders the Salesforce chat widget, which isn&rsquo;t visible in Storybook.
+        </div>
+    ),
 };

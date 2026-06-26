@@ -115,8 +115,26 @@ class SignupFlow {
                 }
             }
 
-            // Fill signup form
-            signupPage.fillSignupForm(signupData);
+            // Fill signup form. The server-rendered form can have an input node
+            // detached by React reconciliation during hydration ("Last Name Input"
+            // disappearing between validatePageLoaded and fillField). Re-assert the
+            // fragile fields right before filling, and retry the whole fill once if
+            // a field still went missing mid-fill — re-running validatePageLoaded to
+            // re-anchor on a freshly hydrated form before the second attempt.
+            try {
+                signupPage.assertFormInteractive();
+                signupPage.fillSignupForm(signupData);
+            } catch (fillError) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `Signup form fill failed on first attempt (${
+                        fillError instanceof Error ? fillError.message : String(fillError)
+                    }), retrying once after re-validating the form`
+                );
+                signupPage.validatePageLoaded();
+                signupPage.assertFormInteractive();
+                signupPage.fillSignupForm(signupData);
+            }
 
             signupPage.clickCreateAccount();
 

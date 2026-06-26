@@ -28,7 +28,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+            class="bg-card text-card-foreground border-0 "
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -40,7 +40,8 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    data-slot="product-item-image"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -143,11 +144,11 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             Quantity
                           </label>
                           <div
-                            class="inline-flex items-center border border-input rounded-none"
+                            class="inline-flex items-center border border-input"
                           >
                             <button
                               aria-label="Decrement Quantity for the product"
-                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                               data-testid="quantity-decrement"
                               disabled=""
                             >
@@ -164,7 +165,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             />
                             <button
                               aria-label="Increment Quantity for the product"
-                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                               data-testid="quantity-increment"
                             >
                               +
@@ -188,7 +189,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+            class="bg-card text-card-foreground border-0 "
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -200,7 +201,8 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    data-slot="product-item-image"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -269,9 +271,25 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                               class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                             >
                               <span
-                                aria-label="Current price: £199.98"
+                                aria-label="Current price: £99.99"
                                 aria-live="polite"
                                 class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
+                              >
+                                £99.99
+                              </span>
+                              <span
+                                aria-atomic="true"
+                                aria-live="polite"
+                                class="sr-only"
+                              >
+                                Men's Classic Deer Gloves 2
+                                 
+                                Current price: £99.99
+                              </span>
+                               
+                              <span
+                                aria-label="List price: £199.98"
+                                class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                               >
                                 £199.98
                               </span>
@@ -282,9 +300,8 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                               >
                                 Men's Classic Deer Gloves 2
                                  
-                                Current price: £199.98
+                                List price: £199.98
                               </span>
-                               
                             </div>
                           </div>
                           <div
@@ -294,6 +311,16 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                              
                             each
                           </div>
+                        </div>
+                        <div
+                          class="flex w-full justify-end"
+                        >
+                          <span
+                            class="inline-flex items-center justify-center rounded-full w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+                            data-slot="badge"
+                          >
+                            Saved £99.99
+                          </span>
                         </div>
                       </div>
                       <div
@@ -310,11 +337,11 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             Quantity
                           </label>
                           <div
-                            class="inline-flex items-center border border-input rounded-none"
+                            class="inline-flex items-center border border-input"
                           >
                             <button
                               aria-label="Decrement Quantity for the product"
-                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                               data-testid="quantity-decrement"
                             >
                               −
@@ -330,7 +357,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             />
                             <button
                               aria-label="Increment Quantity for the product"
-                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                               data-testid="quantity-increment"
                             >
                               +

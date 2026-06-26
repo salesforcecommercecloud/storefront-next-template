@@ -21,6 +21,7 @@ import { MemoryRouter } from 'react-router';
 import { ApiError, type ShopperExperience, type ShopperProducts, type ShopperSearch } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
+import { shouldRevalidate as sharedShouldRevalidate } from '@/lib/routes/revalidation/category';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
@@ -113,7 +114,7 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
         typeId: 'plp',
         designMetadata: {
             regionDefinitions: regions.map((region) => ({ id: region.id })),
-        },
+        } as never,
         regions,
     }) as ShopperExperience.schemas['Page'];
 
@@ -1500,35 +1501,9 @@ describe('CategoryPage', () => {
 });
 
 describe('CategoryPage shouldRevalidate', () => {
-    test('returns false when only filters query param changes', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/electronics?filters=closed&refine=cgid:electronics'),
-            nextUrl: new URL('http://localhost/electronics?filters=open&refine=cgid:electronics'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(false);
-    });
-
-    test('uses default behavior when non-filters query params change', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/electronics?filters=closed&sort=best-matches'),
-            nextUrl: new URL('http://localhost/electronics?filters=closed&sort=price-low-to-high'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(true);
+    // The revalidation policy itself is covered by src/lib/routes/revalidation/category.test.ts. Here we
+    // only assert the route wires up that exact function, so the behavior isn't re-tested per route.
+    test('re-exports the shared listing revalidation policy', () => {
+        expect(shouldRevalidate).toBe(sharedShouldRevalidate);
     });
 });

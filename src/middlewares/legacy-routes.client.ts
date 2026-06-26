@@ -17,6 +17,10 @@ import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
+// Pure matching/suffix helpers live in a plain (non-`.client`) module so they're usable during
+// SSR too (the site-aware <Link> calls them). React Router strips `*.client` exports on the
+// server, so they cannot live in this file. See `legacy-routes.ts`.
+import { appendSuffix, findLegacyRoute } from '@/middlewares/legacy-routes';
 
 /**
  * Client-side middleware that intercepts navigation to legacy routes and forces a full page navigation.
@@ -30,19 +34,26 @@ import type { AppConfig } from '@/types/config';
  * Supports exact paths, single-segment named params (`:name`), and multi-segment wildcards
  * (`*`) — the latter two follow React Router-style syntax.
  *
+ * Each entry is either a bare pattern string or `{ pattern, suffix }`. The optional `suffix` is
+ * appended to the stripped pathname when the full-page redirect is built. This handles legacy
+ * SEO URLs that carry a file extension: SFCC appends `.html` to product/category SEO URLs (when
+ * `StorefrontURLsEnabled` is on), while routes like `/cart` resolve as clean paths. Without the
+ * suffix, a redirect to `/product/123` would 404 on the legacy backend that expects
+ * `/product/123.html`.
+ *
  * Example:
  * ```
  * site: {
  *   hybrid: {
  *     enabled: true,
  *     legacyRoutes: [
- *       '/checkout',                          // Exact match
- *       '/account/orders',                    // Exact match
- *       '/product/:id',                       // Single segment: /product/123, /product/abc
- *       '/category/:categoryId/item/:itemId', // Multiple single segments
- *       '/categoryLv1/*',                     // Splat: /categoryLv1/shoes, /categoryLv1/shoes/running
- *       '/category/:cat/*',                   // :param + splat combined
- *       '/files/*-thumb'                      // '*' may appear anywhere, not only trailing
+ *       '/checkout',                                  // Exact match, no suffix
+ *       '/account/orders',                            // Exact match
+ *       { pattern: '/product/:id', suffix: '.html' }, // Single segment, redirect adds .html
+ *       '/category/:categoryId/item/:itemId',         // Multiple single segments
+ *       '/categoryLv1/*',                             // Splat: /categoryLv1/shoes, /categoryLv1/shoes/running
+ *       '/category/:cat/*',                           // :param + splat combined
+ *       '/files/*-thumb'                              // '*' may appear anywhere, not only trailing
  *     ]
  *   }
  * }
@@ -56,54 +67,21 @@ import type { AppConfig } from '@/types/config';
  * 1. User clicks <Link to="/checkout">
  * 2. React Router begins client-side navigation
  * 3. This middleware checks if /checkout matches any pattern in legacyRoutes
- * 4. If yes → adds ?redirected=1 and navigates → server/CDN handles routing
+ * 4. If yes → appends the matched route's suffix (if any) and triggers a full-page navigation →
+ *    server/CDN handles routing
  * 5. If no → continue normal client-side navigation
- */
-
-// Cache compiled regex patterns to avoid recreating them on every navigation
-const regexCache = new Map<string, RegExp>();
-
-/**
- * Converts a route pattern with parameters and/or wildcards into a RegExp.
  *
- * Supports:
- * - React Router style named params: ':id' matches a single path segment ([^/]+)
- * - Splat wildcard: '*' matches any path content, including '/' (.*)
+ * Note: this middleware is a backstop for programmatic `navigate()` to a legacy route. Link
+ * clicks are handled earlier by `@/components/link`, which renders legacy routes with
+ * `reloadDocument` so React Router never starts a client navigation (see that file for why).
  *
- * @param pattern - Route pattern like '/product/:id', '/categoryLv1/*', or '/category/:cat/*'
- * @returns RegExp that matches the pattern
+ * No loop guard is needed. The redirect produces a full-document load, and React Router does NOT
+ * run client middleware on the initial document load / hydration (only on subsequent client-side
+ * navigations) in this SSR app — so a legacy route the CDN fails to route away lands once on the
+ * catch-all 404 rather than re-entering this middleware and looping. (PWA Kit needed a
+ * `redirected=1` guard because its client router re-ran on every load; that leaked the param to
+ * the legacy backend, which 404s on the unexpected query string.)
  */
-function routePatternToRegex(pattern: string): RegExp {
-    // Escape regex specials except '*', which is treated as a wildcard below
-    const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-    const withParams = escaped.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, '([^/]+)');
-    const withWildcards = withParams.replace(/\*/g, '.*');
-    return new RegExp(`^${withWildcards}$`);
-}
-
-/**
- * Checks if a pathname matches a route pattern.
- * Supports exact matches, parameterized routes, and wildcard splats.
- *
- * @param pathname - The pathname to check (e.g., '/product/123')
- * @param pattern - The route pattern (e.g., '/product/:id', '/categoryLv1/*', or '/checkout')
- * @returns true if the pathname matches the pattern
- */
-export function matchesRoutePattern(pathname: string, pattern: string): boolean {
-    // If pattern has no params or wildcards, do a fast exact-string match
-    if (!pattern.includes(':') && !pattern.includes('*')) {
-        return pathname === pattern;
-    }
-
-    // Check the regex cache first to avoid recreating RegExp objects
-    let regex = regexCache.get(pattern);
-    if (!regex) {
-        regex = routePatternToRegex(pattern);
-        regexCache.set(pattern, regex);
-    }
-
-    return regex.test(pathname);
-}
 
 const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>> = async (
     { request, context },
@@ -125,10 +103,25 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
 
     const url = new URL(request.url);
     const pathname = url.pathname;
-    const hasRedirected = url.searchParams.get('redirected') === '1';
 
-    // If already redirected once, let React Router handle it (will show 404 or error boundary)
-    if (hasRedirected) {
+    // Never hand Storefront Next infrastructure paths (data endpoints, static assets) to the legacy
+    // backend. React Router runs client middleware for fetcher/data loads too — not just page
+    // navigations — so this middleware also sees requests like `/resource/basket-products`,
+    // `/action/*`, `*.data`, `/mobify/*`, and `/assets/*`. None are legacy routes.
+    //
+    // This guard is essential because the prefix-stripping below can mis-reduce a two-segment path
+    // to `/`: with `url.prefix = '/:siteId/:localeId'`, both prefix segments are wildcards, so
+    // `stripPathPrefix('/resource/basket-products')` (or `/assets/x.js`) strips the first two
+    // segments and yields `/`. If `/` is a configured legacy route, that fetcher/asset load would be
+    // redirected to the legacy backend (a full-page navigation to `/`), bouncing the user off
+    // Storefront Next. The list covers the union of the dev proxy's own skips (`shouldSkipProxy`)
+    // and the infra patterns the eCDN routing rules keep on Storefront Next — the client middleware
+    // can't query the CDN, so it hard-codes the superset as a failsafe regardless of URL prefix.
+    if (
+        /^\/(resource|action|mobify|assets)(\/|$)/.test(pathname) ||
+        pathname.endsWith('.data') ||
+        /\.(js|jsx|ts|tsx|css|json|map|woff2?|ttf|svg|png|jpe?g|gif|webp|ico|mp4)$/i.test(pathname)
+    ) {
         return next();
     }
 
@@ -149,18 +142,21 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
     //   update — the legacyRoutes list stays untouched.
     const urlPrefix = config?.url?.prefix ?? '';
     const strippedPathname = stripPathPrefix({ pathname, prefix: urlPrefix }) || '/';
-    const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(strippedPathname, legacyRoute));
+    const matchedRoute = findLegacyRoute(strippedPathname, legacyRoutes);
 
-    if (isLegacyRoute) {
+    if (matchedRoute) {
         // Navigate to the stripped pathname so the legacy backend (or local hybrid proxy)
         // can apply its own site/locale prefix without doubling up on storefront-next's.
         // Without this, '/global/en-GB/cart' would be handed to the proxy, which prepends
         // its own SFRA prefix and produces '/s/{siteId}/{locale}/global/en-GB/cart' — a 404.
-        const legacyUrl = new URL(strippedPathname, url.origin);
+        //
+        // Append the matched route's suffix (e.g. '.html') so legacy SEO URLs resolve. The
+        // suffix goes on the path, before the query string and hash, so '/product/123' becomes
+        // '/product/123.html' while '?source=cart' and any '#fragment' are preserved below.
+        const redirectPathname = appendSuffix(strippedPathname, matchedRoute.suffix);
+        const legacyUrl = new URL(redirectPathname, url.origin);
         legacyUrl.search = url.search;
         legacyUrl.hash = url.hash;
-        // Add redirected=1 to prevent infinite loops
-        legacyUrl.searchParams.set('redirected', '1');
 
         // Force a full page navigation to hit the server/CDN
         // The CDN routing rules or server middleware will handle routing to the legacy backend

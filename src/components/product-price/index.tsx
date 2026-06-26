@@ -15,6 +15,7 @@
  */
 
 import { type ComponentProps, type ReactNode, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { ShopperBasketsV2, ShopperOrders, ShopperProducts, ShopperSearch } from '@/scapi';
 import CurrentPrice from './current-price';
@@ -44,6 +45,14 @@ interface ProductPriceProps {
     hidePromo?: boolean;
     /** Show only the current price without "From" prefix, list price, or promo (e.g. in modal/edit mode) */
     currentPriceOnly?: boolean;
+    /**
+     * Render the price normally even when the product has no price for the active currency (a
+     * missing price renders as the coalesced `0`). Use for intentionally-free items priced
+     * elsewhere — e.g. promotional bonus products — so the display matches the purchasability gate
+     * (see {@link useProductActions}'s `allowMissingPrice`). Defaults to false, so catalog surfaces
+     * show "Price unavailable".
+     */
+    allowMissingPrice?: boolean;
 }
 
 /**
@@ -77,9 +86,30 @@ export default function ProductPrice({
     className,
     hidePromo = false,
     currentPriceOnly = false,
+    allowMissingPrice = false,
 }: ProductPriceProps) {
+    const { t } = useTranslation('product');
     const priceData = useMemo(() => getPriceData(product, { quantity }), [product, quantity]);
-    const { listPrice, currentPrice, isASet, isMaster, isOnSale, isRange, maxPrice } = priceData;
+    const { listPrice, currentPrice, isASet, isMaster, isOnSale, isRange, maxPrice, hasPrice } = priceData;
+
+    // No price-book entry for the active currency: SCAPI omits the price, so show "Price unavailable"
+    // rather than a misleading 0/free. Basket and order line items always report hasPrice, so this
+    // only affects catalog surfaces (PLP, PDP, tiles). `allowMissingPrice` opts out (e.g. bonus
+    // products), rendering the coalesced 0 so the display matches the purchasability gate.
+    if (!hasPrice && !allowMissingPrice) {
+        return (
+            <div className={cn('items-center gap-2', className)}>
+                <span className="font-semibold text-muted-foreground" aria-label={t('price.unavailable')}>
+                    {t('price.unavailable')}
+                </span>
+                {labelForA11y ? (
+                    <span className="sr-only">
+                        {labelForA11y} {t('price.unavailable')}
+                    </span>
+                ) : null}
+            </div>
+        );
+    }
 
     // Show strikethrough (list price) only for single price, not when displaying price range (min – max)
     const showPriceRange = isRange && maxPrice != null && maxPrice > currentPrice;

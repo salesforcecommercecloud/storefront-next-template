@@ -24,7 +24,6 @@ import { envValidation } from './vite-plugins/env-validation';
 import { reactRouter } from './vite-plugins/react-router';
 import { uiTargetDevMode } from './vite-plugins/ui-target-dev-mode';
 import { storefrontNext } from './vite-plugins/storefront-next';
-import { codeSplitting } from './vite-plugins/code-splitting';
 import { bundlesize } from './vite-plugins/bundlesize';
 import { bundleVisualizer } from './vite-plugins/bundle-visualizer';
 import { hybridProxy } from './vite-plugins/hybrid-proxy';
@@ -62,7 +61,6 @@ export default defineConfig(({ mode }) => {
             devtoolsJson(),
             uiTargetDevMode(),
             storefrontNext(),
-            codeSplitting(),
             bundlesize(),
             bundleVisualizer(),
             hybridProxy({ mode, env }),

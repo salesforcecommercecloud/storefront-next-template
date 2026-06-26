@@ -15,146 +15,26 @@
  */
 import { redirect } from 'react-router';
 import type { Route } from './+types/action.place-order';
-import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { routes, routeHref } from '@/route-paths';
-import {
-    calculateBasket,
-    getBasketCurrency,
-    addPaymentInstrumentToBasket,
-    updateBillingAddressForBasket,
-} from '@/lib/api/basket.server';
-import {
-    savePaymentMethodToCustomerViaOrder,
-    type PaymentInstrumentForSave,
-    saveShippingAddressToCustomer,
-    saveBillingAddressToCustomer,
-    updateCustomerContactInfo,
-    getCustomerProfileForCheckout,
-} from '@/lib/api/customer.server';
+import { addPaymentInstrumentToBasket, updateBillingAddressForBasket } from '@/lib/api/basket.server';
+import { getCustomerProfileForCheckout } from '@/lib/api/customer.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
+import { getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
 import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
-
-const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
-
-const isSameAddress = (
-    a:
-        | {
-              firstName?: string;
-              lastName?: string;
-              address1?: string;
-              address2?: string;
-              city?: string;
-              stateCode?: string;
-              postalCode?: string;
-              countryCode?: string;
-          }
-        | undefined,
-    b:
-        | {
-              firstName?: string;
-              lastName?: string;
-              address1?: string;
-              address2?: string;
-              city?: string;
-              stateCode?: string;
-              postalCode?: string;
-              countryCode?: string;
-          }
-        | undefined
-) => {
-    if (!a || !b) return false;
-    return (
-        normalizeAddressField(a.firstName) === normalizeAddressField(b.firstName) &&
-        normalizeAddressField(a.lastName) === normalizeAddressField(b.lastName) &&
-        normalizeAddressField(a.address1) === normalizeAddressField(b.address1) &&
-        normalizeAddressField(a.address2) === normalizeAddressField(b.address2) &&
-        normalizeAddressField(a.city) === normalizeAddressField(b.city) &&
-        normalizeAddressField(a.stateCode) === normalizeAddressField(b.stateCode) &&
-        normalizeAddressField(a.postalCode) === normalizeAddressField(b.postalCode) &&
-        normalizeAddressField(a.countryCode) === normalizeAddressField(b.countryCode)
-    );
-};
-
-const normalizePhoneDigits = (phone: string | undefined): string => (phone ?? '').replace(/\D/g, '');
-
-const PROFILE_SAVE_RETRY_DELAY_MS = 500;
-
-/**
- * Retry wrapper for profile save operations that return boolean.
- * Newly registered accounts can have brief SCAPI auth propagation delays
- * causing the first call to fail; a single retry after a short delay resolves most cases.
- */
-async function retryProfileSave(
-    fn: () => Promise<boolean>,
-    label: string,
-    logger: ReturnType<typeof getLogger>
-): Promise<void> {
-    const ok = await fn();
-    if (ok) return;
-    logger.warn(`PlaceOrder: ${label} failed, retrying once`);
-    await new Promise((r) => setTimeout(r, PROFILE_SAVE_RETRY_DELAY_MS));
-    const retried = await fn();
-    if (!retried) {
-        logger.error(`PlaceOrder: ${label} failed after retry`);
-    }
-}
-
-function profilePhoneMatchesContact(customer: CustomerProfile['customer'] | undefined, contactPhone: string): boolean {
-    if (!customer) {
-        return false;
-    }
-    const incoming = normalizePhoneDigits(contactPhone);
-    if (incoming.length < 7) {
-        return false;
-    }
-    return (
-        normalizePhoneDigits(customer.phoneHome) === incoming ||
-        normalizePhoneDigits(customer.phoneMobile) === incoming ||
-        normalizePhoneDigits(customer.phoneBusiness) === incoming
-    );
-}
-
-/** True when order card matches an existing saved wallet entry (last4 + expiry). */
-function orderPaymentMatchesSavedProfile(
-    instrument: PaymentInstrumentForSave,
-    profile: CustomerProfile | undefined
-): boolean {
-    if (!profile?.paymentInstruments?.length) {
-        return false;
-    }
-    const saved = getPaymentMethodsFromCustomer(profile);
-    if (!saved?.length) {
-        return false;
-    }
-    const card = instrument.paymentCard;
-    if (!card) {
-        return false;
-    }
-    let orderLast4 = card.numberLastDigits?.replace(/\D/g, '').slice(-4);
-    if (!orderLast4 && card.maskedNumber) {
-        orderLast4 = card.maskedNumber.replace(/\D/g, '').slice(-4);
-    }
-    if (!orderLast4 || orderLast4.length < 4) {
-        return false;
-    }
-    return saved.some((pm) => {
-        const pmLast4 = pm.maskedNumber?.replace(/\D/g, '').slice(-4) || '';
-        return (
-            pmLast4 === orderLast4 &&
-            pm.expirationMonth === card.expirationMonth &&
-            pm.expirationYear === card.expirationYear
-        );
-    });
-}
+import {
+    validatePlaceOrderPreconditions,
+    calculateBasketForOrder,
+    syncPaymentInstrumentAmount,
+    saveCheckoutDataToProfile,
+    finalizeOrderSuccess,
+} from '@/lib/checkout/place-order-orchestration.server';
 
 /**
  * Server action for placing an order.
@@ -172,84 +52,15 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         // Get current basket
         const basketResource = await getBasket(context);
-        const basket = basketResource.current;
-        logger.debug('PlaceOrder: starting', { basketId: basket?.basketId });
+        const initialBasket = basketResource.current;
+        logger.debug('[Checkout] place-order: starting', { basketId: initialBasket?.basketId });
 
-        if (!basket || !basket.basketId) {
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({
-                        code: ErrorCode.NOT_FOUND,
-                        message: 'No active basket found',
-                    }),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
-        }
-
-        // Validate that basket has all required information
-        if (!basket.customerInfo?.email) {
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({
-                        code: ErrorCode.REQUIRED_FIELD,
-                        message: 'Customer email is required',
-                    }),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
-        }
-
-        // Build a map of shipmentId -> item count for efficient lookups
-        const shipmentItemCounts = new Map<string, number>();
-        if (basket.productItems) {
-            basket.productItems.forEach((item) => {
-                if (item.shipmentId) {
-                    shipmentItemCounts.set(item.shipmentId, (shipmentItemCounts.get(item.shipmentId) || 0) + 1);
-                }
-            });
-        }
-
-        // Filter to get only non-empty shipments (shipments with at least one item assigned)
-        const nonEmptyShipments = (basket.shipments || []).filter((shipment) => {
-            if (!shipment.shipmentId) return false;
-            return (shipmentItemCounts.get(shipment.shipmentId) || 0) > 0;
-        });
-
-        // Check that all non-empty shipments have shipping address and method
-        for (const shipment of nonEmptyShipments) {
-            if (!shipment.shippingAddress) {
-                return Response.json(
-                    {
-                        success: false,
-                        error: createActionError({
-                            code: ErrorCode.REQUIRED_FIELD,
-                            message: 'Shipping address is required',
-                        }),
-                        step: 'placeOrder',
-                    },
-                    { status: 400 }
-                );
-            }
-
-            if (!shipment.shippingMethod) {
-                return Response.json(
-                    {
-                        success: false,
-                        error: createActionError({
-                            code: ErrorCode.REQUIRED_FIELD,
-                            message: 'Shipping method is required',
-                        }),
-                        step: 'placeOrder',
-                    },
-                    { status: 400 }
-                );
-            }
-        }
+        // Validate basket / customerInfo / shipments. Returns a discriminated
+        // union: ok=true narrows the basket to a non-null shape; ok=false
+        // hands back a ready-to-return 400 Response.
+        const precheck = validatePlaceOrderPreconditions(initialBasket);
+        if (!precheck.ok) return precheck.response;
+        const basket = precheck.basket;
 
         if (!basket.paymentInstruments?.[0]) {
             // Check if this is a returning customer with saved payment methods
@@ -292,30 +103,17 @@ export async function action({ request, context }: Route.ActionArgs) {
                             basket.shipments?.[0]?.shippingAddress || customerProfile.preferredBillingAddress;
 
                         if (billingAddress) {
-                            // Apply saved payment method to basket
-                            const updatedBasket = await addPaymentInstrumentToBasket(
-                                context,
-                                basket.basketId,
-                                paymentInfo
-                            );
-                            const finalBasket = await updateBillingAddressForBasket(
+                            // Apply saved payment method + billing address via SCAPI, then refresh the
+                            // local basket resource so the downstream billingAddress check sees the mutation.
+                            // updateBillingAddressForBasket returns the latest full basket including the
+                            // payment instrument added by the previous call.
+                            await addPaymentInstrumentToBasket(context, basket.basketId, paymentInfo);
+                            const withBilling = await updateBillingAddressForBasket(
                                 context,
                                 basket.basketId,
                                 billingAddress
                             );
-
-                            // Update the local basket state
-                            const preservedBasket = {
-                                ...basket,
-                                orderTotal: finalBasket.orderTotal,
-                                productTotal: finalBasket.productTotal,
-                                shippingTotal: finalBasket.shippingTotal,
-                                merchandizeTotalTax: finalBasket.merchandizeTotalTax,
-                                taxTotal: finalBasket.taxTotal,
-                                paymentInstruments: updatedBasket.paymentInstruments || finalBasket.paymentInstruments,
-                                billingAddress: finalBasket.billingAddress,
-                            };
-                            updateBasketResource(context, preservedBasket);
+                            updateBasketResource(context, withBilling);
                         } else {
                             return Response.json(
                                 {
@@ -342,7 +140,8 @@ export async function action({ request, context }: Route.ActionArgs) {
                             { status: 400 }
                         );
                     }
-                } catch {
+                } catch (error) {
+                    logger.error('[Checkout] place-order: failed to apply saved payment method', { error });
                     return Response.json(
                         {
                             success: false,
@@ -370,7 +169,6 @@ export async function action({ request, context }: Route.ActionArgs) {
             }
         }
 
-        // Get the updated basket after potential payment application
         const updatedBasket = (await getBasket(context)).current;
 
         if (!updatedBasket?.billingAddress) {
@@ -390,8 +188,6 @@ export async function action({ request, context }: Route.ActionArgs) {
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
         await resolveEmptyShipments(context, updatedBasket);
 
-        const currency = getBasketCurrency(context, updatedBasket);
-
         if (!updatedBasket?.basketId) {
             return Response.json(
                 {
@@ -403,15 +199,16 @@ export async function action({ request, context }: Route.ActionArgs) {
             );
         }
 
-        const calculatedBasket = await calculateBasket(context, updatedBasket.basketId, currency);
+        const calculatedBasket = await calculateBasketForOrder(context, updatedBasket);
 
-        // Update local basket state with calculated totals
-        updateBasketResource(context, calculatedBasket);
+        // Bring the payment instrument's amount in lockstep with orderTotal before
+        // createOrder.
+        const syncedBasket = await syncPaymentInstrumentAmount(context, calculatedBasket);
 
         // Extension hook: fraud check before placing the order (blocking — unexpected errors fail the action)
         const fraudHookResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_FRAUD_BEFORE_PLACE,
-            context: { data: { basket: calculatedBasket }, actionContext: context },
+            context: { data: { basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
             blocking: true,
@@ -421,7 +218,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         // Extension hook: payment processing before order creation (blocking — e.g. authorization)
         const paymentHookResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER,
-            context: { data: { basket: calculatedBasket }, actionContext: context },
+            context: { data: { basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
             blocking: true,
@@ -436,7 +233,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         });
 
         if (!order || !order.orderNo) {
-            logger.error('PlaceOrder: empty order response', { basketId: calculatedBasket.basketId });
+            logger.error('[Checkout] place-order: empty order response', { basketId: calculatedBasket.basketId });
             return Response.json(
                 {
                     success: false,
@@ -450,24 +247,29 @@ export async function action({ request, context }: Route.ActionArgs) {
             );
         }
 
-        const orderNo = order.orderNo;
-        logger.info('PlaceOrder: order created', { orderNo, basketId: calculatedBasket.basketId });
+        logger.info('[Checkout] place-order: order created', {
+            orderNo: order.orderNo,
+            basketId: calculatedBasket.basketId,
+        });
 
         // Extension hook: post-processing after order creation (e.g. capture, fulfillment triggers).
         // Order is already placed — never abort the action. Log at warn level with order
         // details so post-order failures (e.g. failed capture) are surfaced in monitoring.
         const afterPlaceResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
-            context: { data: { order, basket: calculatedBasket }, actionContext: context },
+            context: { data: { order, basket: syncedBasket }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
         });
         if (afterPlaceResult.errorResponse) {
-            logger.warn('PlaceOrder: afterPlaceOrder hook failed — order already placed, requires manual review', {
-                hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
-                orderNo: order.orderNo,
-                basketId: calculatedBasket.basketId,
-            });
+            logger.warn(
+                '[Checkout] place-order: afterPlaceOrder hook failed - order already placed, requires manual review',
+                {
+                    hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+                    orderNo: order.orderNo,
+                    basketId: calculatedBasket.basketId,
+                }
+            );
         }
 
         // Registration-at-checkout: requires both create-account intent AND active registration session (client flag).
@@ -494,7 +296,6 @@ export async function action({ request, context }: Route.ActionArgs) {
         // Save checkout information to customer profile
         if (auth.customerId) {
             const customerId = auth.customerId;
-            const savePromises: Promise<unknown>[] = [];
 
             let profileSnapshot: CustomerProfile | null = null;
             try {
@@ -509,7 +310,9 @@ export async function action({ request, context }: Route.ActionArgs) {
                     };
                 }
             } catch (error) {
-                logger.error('PlaceOrder: failed to load customer profile for post-order saves', { error });
+                logger.error('[Checkout] place-order: failed to load customer profile for post-order saves', {
+                    error,
+                });
             }
 
             // Detect newly registered shoppers whose profile is still empty (in case they exit checkout without saving)
@@ -520,116 +323,37 @@ export async function action({ request, context }: Route.ActionArgs) {
                     (!profileSnapshot.addresses || profileSnapshot.addresses.length === 0) && !c.phoneHome;
             }
 
-            const shouldSaveCheckoutDataToProfile = registeredViaCheckout || isNewlyRegisteredWithEmptyProfile;
-
-            // For newly registered customers, save all their checkout info to the customer profile.
-            if (shouldSaveCheckoutDataToProfile) {
-                const existingAddresses = getAddressBookFromCustomer(profileSnapshot ?? undefined);
-
-                if (order.paymentInstruments?.[0]) {
-                    const instrument = order.paymentInstruments[0] as PaymentInstrumentForSave;
-                    if (!orderPaymentMatchesSavedProfile(instrument, profileSnapshot ?? undefined)) {
-                        savePromises.push(
-                            retryProfileSave(
-                                () => savePaymentMethodToCustomerViaOrder(context, orderNo, instrument),
-                                'payment method save',
-                                logger
-                            )
-                        );
-                    }
-                }
-
-                // Save shipping address
-                if (order.shipments?.[0]?.shippingAddress) {
-                    const shippingAddress = order.shipments[0].shippingAddress;
-                    const shippingAlreadySaved = existingAddresses.some((address) =>
-                        isSameAddress(address, shippingAddress)
-                    );
-                    if (!shippingAlreadySaved) {
-                        savePromises.push(
-                            retryProfileSave(
-                                () => saveShippingAddressToCustomer(context, customerId, shippingAddress, true),
-                                'shipping address save',
-                                logger
-                            )
-                        );
-                    }
-                }
-
-                // Save billing address only when shopper explicitly selected
-                // "use different billing address" in checkout payment.
-                if (useDifferentBilling && order.billingAddress) {
-                    const orderBillingAddress = order.billingAddress;
-                    const billingAlreadySaved = existingAddresses.some((address) =>
-                        isSameAddress(address, orderBillingAddress)
-                    );
-                    if (!billingAlreadySaved) {
-                        savePromises.push(
-                            retryProfileSave(
-                                () => saveBillingAddressToCustomer(context, customerId, orderBillingAddress),
-                                'billing address save',
-                                logger
-                            )
-                        );
-                    }
-                }
-
-                // Save phone number to customer profile (phoneHome)
-                if (contactPhone && !profilePhoneMatchesContact(profileSnapshot?.customer, contactPhone)) {
-                    savePromises.push(
-                        retryProfileSave(
-                            () => updateCustomerContactInfo(context, customerId, { phone: contactPhone }),
-                            'phone save',
-                            logger
-                        )
-                    );
-                }
-            }
-            // For existing registered customers, only save payment if opted in
-            // Do not automatically save addresses to avoid creating duplicates.
-            else if (savePaymentToProfile && order.paymentInstruments?.[0]) {
-                savePromises.push(
-                    savePaymentMethodToCustomerViaOrder(
-                        context,
-                        orderNo,
-                        order.paymentInstruments[0] as PaymentInstrumentForSave
-                    ).catch((error) => {
-                        logger.error('PlaceOrder: failed to save payment method', { error });
-                    })
-                );
-            }
-
-            // Await profile saves so serverless requests don't terminate before SCAPI calls complete
-            if (savePromises.length > 0) {
-                await Promise.all(savePromises);
+            // Profile saves are best-effort: the order is already created and paid, so a
+            // SCAPI hiccup here must not strand the shopper on a 500. The helpers inside
+            // saveCheckoutDataToProfile already swallow per-call failures; this catch is
+            // defense-in-depth against an unexpected throw bubbling out of Promise.all.
+            try {
+                await saveCheckoutDataToProfile(context, {
+                    customerId,
+                    order,
+                    registeredViaCheckout,
+                    isNewlyRegisteredWithEmptyProfile,
+                    savePaymentToProfile,
+                    useDifferentBilling,
+                    contactPhone,
+                    profileSnapshot,
+                });
+            } catch (error) {
+                logger.error('[Checkout] place-order: profile save failed after order create', {
+                    orderNo: order.orderNo,
+                    error,
+                });
             }
         }
 
-        // Clear the basket from local cache and storage after successful order placement
-        // This follows the PWA Kit pattern - destroy locally, let Commerce Cloud handle server-side lifecycle
-        // The basket is auto-converted to an order, no explicit deletion needed
-        destroyBasket(context);
-
-        // Redirect to order confirmation page on success
-        // Include account creation and auto-login status as query parameters if account was created
-        let orderConfirmationUrl = buildUrlFromContext(
-            routeHref(routes.orderConfirmation, { orderNo: order.orderNo }),
-            context
-        );
-
-        if (registeredViaCheckout && order.customerInfo?.email) {
-            // User registered during checkout - include this in query params for order confirmation
-            const params = new URLSearchParams({
-                accountCreated: 'true',
-                email: order.customerInfo.email,
-                autoLoggedIn: 'true',
-            });
-
-            orderConfirmationUrl += `?${params.toString()}`;
-        }
-
+        const orderConfirmationUrl = finalizeOrderSuccess(context, {
+            orderNo: order.orderNo,
+            registration:
+                registeredViaCheckout && order.customerInfo?.email ? { email: order.customerInfo.email } : undefined,
+        });
         return redirect(orderConfirmationUrl);
     } catch (error) {
+        logger.error('[Checkout] place-order: unexpected error', { error });
         return Response.json(
             {
                 success: false,

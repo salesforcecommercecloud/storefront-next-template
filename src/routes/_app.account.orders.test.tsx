@@ -16,12 +16,15 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import OrderListPage, { loader } from './_app.account.orders._index';
 import { fetchCustomerOrders } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
 import type { Order } from '@/components/account/order-list';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+
+const { t } = getTranslation();
 
 vi.mock('@/lib/api/order.server', () => ({
     fetchCustomerOrders: vi.fn(),
@@ -136,7 +139,7 @@ describe('AccountOrders Page', () => {
             });
         } else {
             await waitFor(() => {
-                expect(screen.getByText(/haven't placed an order/)).toBeInTheDocument();
+                expect(screen.getByText(t('account:orders.empty'))).toBeInTheDocument();
             });
         }
 
@@ -185,12 +188,12 @@ describe('AccountOrders Page', () => {
     describe('Page Content', () => {
         test('renders Order History title', async () => {
             await renderAccountOrders();
-            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('Order History');
+            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent(t('account:navigation.orderHistory'));
         });
 
         test('renders subtitle', async () => {
             await renderAccountOrders();
-            expect(screen.getByText('View and track your orders')).toBeInTheDocument();
+            expect(screen.getByText(t('account:orders.subtitle'))).toBeInTheDocument();
         });
 
         test('renders orders from API', async () => {
@@ -213,11 +216,7 @@ describe('AccountOrders Page', () => {
 
         test('renders empty state when no orders', async () => {
             await renderAccountOrders([]);
-            expect(
-                screen.getByText(
-                    "You haven't placed an order yet. Once you place an order the details will show up here."
-                )
-            ).toBeInTheDocument();
+            expect(screen.getByText(t('account:orders.empty'))).toBeInTheDocument();
         });
     });
 
@@ -319,9 +318,7 @@ describe('AccountOrders Page', () => {
             );
 
             await waitFor(() => {
-                expect(
-                    screen.getByText('We encountered an error loading your order history. Please try again later.')
-                ).toBeInTheDocument();
+                expect(screen.getByText(t('account:orders.errorDescription'))).toBeInTheDocument();
             });
         });
     });

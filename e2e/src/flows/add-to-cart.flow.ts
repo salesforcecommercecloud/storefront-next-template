@@ -49,7 +49,7 @@ class AddToCartFlow {
                 } else {
                     await checkoutPage.navigateWithRetry();
                 }
-                await this.waitForCheckoutReady(30);
+                await this.waitForCheckoutReady();
             } catch {
                 continue;
             }
@@ -76,7 +76,7 @@ class AddToCartFlow {
             const productInfo = await this.execute(categoryUrl, { preferPromotedProduct: true });
             try {
                 await checkoutPage.navigateWithRetry();
-                await this.waitForCheckoutReady(30);
+                await this.waitForCheckoutReady();
             } catch {
                 continue;
             }
@@ -91,7 +91,7 @@ class AddToCartFlow {
         );
     }
 
-    private async waitForCheckoutReady(timeoutSeconds: number = 30): Promise<void> {
+    private async waitForCheckoutReady(timeoutSeconds: number = 45): Promise<void> {
         await (I.usePlaywrightTo('wait for checkout content', async ({ page }) => {
             const content = page.locator(
                 '[data-testid="sf-toggle-card-contact-info-content"], :text-matches("No items in cart")'
@@ -145,7 +145,10 @@ class AddToCartFlow {
                     continue;
                 }
 
-                const enabled = await productDetailPage.isAddToCartEnabled();
+                // Variant selection navigates (the options are links), so the button enables a
+                // beat after selectAllVariants. Wait for that rather than reading it once, or a
+                // still-resolving variant looks out of stock and the product is skipped.
+                const enabled = await productDetailPage.waitForAddToCartReady();
                 if (!enabled) {
                     await this.navigateToPLP(categoryUrl, options?.sitePrefix);
                     continue;
@@ -153,9 +156,8 @@ class AddToCartFlow {
 
                 const productTitle = await productDetailPage.getProductTitle();
                 const quantity = await productDetailPage.getQuantity();
-                productDetailPage.addToCart();
 
-                const outcome = await productDetailPage.waitForAddToCartOutcome(15);
+                const outcome = await productDetailPage.addToCartAndWaitForOutcome(15);
                 if (outcome === 'error') {
                     await this.navigateToPLP(categoryUrl, options?.sitePrefix);
                     continue;

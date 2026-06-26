@@ -15,6 +15,9 @@
  */
 
 const { I } = inject();
+import type { RegisteredTokens } from './scapi-helper';
+import { buildRegisteredSessionCookieOps } from './api-login-utils';
+import { buildSitePath } from './url-utils';
 
 /**
  * Storefront base URL (origin) for cookie domain scoping.
@@ -56,4 +59,37 @@ export async function getStorefrontScopedCookies(): Promise<Map<string, string>>
         }
     }
     return map;
+}
+
+/**
+ * Transition the Playwright browser context into an active registered-shopper
+ * session from SLAS tokens: clear the guest refresh cookie, add the registered
+ * session cookies (via `buildRegisteredSessionCookieOps`), then load a
+ * storefront page and wait for those cookies to settle.
+ *
+ * Shared by every API-based flow that registers/logs in via SCAPI and skips the
+ * UI — `apiSignupFlow`, `registeredShopperSetupFlow` (and any future sibling) —
+ * so cookie handling lives in one place. `apiLoginFlow` injects cookies but does
+ * not navigate/wait, so it builds the ops directly rather than using this.
+ *
+ * `storefrontPage` is injected lazily (not at module top) because it imports
+ * this module — deferring the `inject()` to call time avoids a registration
+ * load-order dependency.
+ */
+export async function injectAndActivateRegisteredSession(siteId: string, tokens: RegisteredTokens): Promise<void> {
+    const { storefrontPage } = inject();
+    const ops = buildRegisteredSessionCookieOps(siteId, tokens, getStorefrontOrigin());
+
+    await (I.usePlaywrightTo('inject registered session cookies', async ({ page }) => {
+        for (const name of ops.clear) {
+            await page.context().clearCookies({ name });
+        }
+        await page.context().addCookies(ops.add);
+    }) as unknown as Promise<void>);
+
+    // Land on the site root so the registered session activates. `buildSitePath`
+    // applies the SITE_ALIAS/LOCALE prefix from env (the project convention),
+    // returning bare `/` when neither is set — no hardcoded locale fallback.
+    I.amOnPage(buildSitePath('/'));
+    await storefrontPage.waitForSessionCookies('registered', siteId, 15);
 }

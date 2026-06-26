@@ -182,7 +182,7 @@ export function AddPaymentMethodDialog({
                 )}
 
                 <div className="space-y-5">
-                    <div className="border border-primary rounded-none bg-background">
+                    <div className="border border-primary bg-background">
                         <label className="flex items-center gap-3 p-4 cursor-pointer">
                             <input
                                 type="radio"

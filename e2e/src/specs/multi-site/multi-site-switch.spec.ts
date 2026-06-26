@@ -33,6 +33,9 @@ Feature('Multi-Site Switching').tag('@multi-site').tag('@multi-site-switch');
 const { storefrontPage, productListPage, addToCartFlow, cartPage, checkoutPage, loginFlow } = inject();
 import { expect } from 'chai';
 import { TEST_SHIPPING_ADDRESS, TEST_PAYMENT, generateTestEmail } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 // Only run site-switching tests for the prefix-site-locale config
 const isPrefixSiteLocale = process.env.SITE_ALIAS === 'global' && process.env.LOCALE === 'en-GB';
@@ -119,7 +122,9 @@ scenarioFn('Guest checkout on RefArch (US) site completes successfully', async (
     });
 
     expect(orderNumber, 'Should receive a valid order number on RefArch site').to.match(/^\d+$/);
-}).tag('@checkout-us');
+})
+    .tag('@checkout-us')
+    .tag('@smoke');
 
 scenarioFn('Registered shopper checkout on RefArch (US) site completes successfully', async () => {
     // Login on default site — session cookies are shared across sites
@@ -140,6 +145,8 @@ scenarioFn('Registered shopper checkout on RefArch (US) site completes successfu
     });
 
     expect(orderNumber, 'Registered shopper should receive a valid order number on RefArch site').to.match(/^\d+$/);
-}).tag('@checkout-us-registered');
+})
+    .tag('@checkout-us-registered')
+    .tag('@smoke');
 
 export {};

@@ -137,7 +137,7 @@ export default function AddressSuggestionDropdown({
                     positionClasses[position],
                     'top-full left-0 right-0 z-[1000] mt-1 gap-0 py-4',
                     className,
-                    'rounded-none shadow-none'
+                    ''
                 )}>
                 <CardContent className="flex items-center justify-center gap-2 p-4">
                     <Spinner size="sm" />
@@ -157,7 +157,7 @@ export default function AddressSuggestionDropdown({
                 positionClasses[position],
                 'top-full left-0 right-0 z-[1000] mt-1 gap-0 py-0',
                 className,
-                'rounded-none shadow-none'
+                ''
             )}>
             {/* Header - aligned with suggestion items */}
             <div className="flex flex-row items-center justify-between pl-4 pr-2 py-2">
@@ -185,7 +185,7 @@ export default function AddressSuggestionDropdown({
                         <Button
                             key={suggestion.place_id || index}
                             variant="ghost"
-                            className="w-full justify-start !px-4 py-3 h-auto rounded-none hover:bg-accent"
+                            className="w-full justify-start !px-4 py-3 h-auto hover:bg-accent"
                             onClick={() => onSelectSuggestion(suggestion)}>
                             <MapPin className="size-4 shrink-0 text-foreground" />
                             <Typography variant="small" as="span" className="truncate font-normal">

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import CheckoutFooter from './checkout-footer';
-import MainFooter from './main-footer';
+import CheckoutFooter from '@/components/footer/checkout-footer';
+import MainFooter from '@/components/footer/main-footer';
 
 interface FooterProps {
     variant?: 'full' | 'checkout';

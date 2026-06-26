@@ -73,11 +73,7 @@ export function ToggleCard({
     return (
         <ToggleCardContext.Provider value={contextValue}>
             <Card
-                className={cn(
-                    'relative rounded-none py-4 shadow-none',
-                    showHeaderContentGap ? 'gap-4' : 'gap-0',
-                    className
-                )}
+                className={cn('relative py-4 ', showHeaderContentGap ? 'gap-4' : 'gap-0', className)}
                 data-testid={id ? `sf-toggle-card-${id}` : undefined}
                 aria-disabled={disabled && !editing ? true : undefined}
                 {...props}>
@@ -107,7 +103,7 @@ export function ToggleCard({
                                 size="sm"
                                 className={cn(
                                     editVariant === 'outline' &&
-                                        'rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
+                                        ' bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
                                     editVariant === 'link' && 'font-bold'
                                 )}
                                 onClick={() => {

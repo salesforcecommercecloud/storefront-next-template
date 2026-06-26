@@ -70,7 +70,6 @@ afterEach(() => {
     console.error = originalError;
 });
 
-
 vi.mock('@/components/link', () => ({
     Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
         const { to, children, ...rest } = props ?? {};

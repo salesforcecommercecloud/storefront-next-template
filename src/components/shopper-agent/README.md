@@ -31,7 +31,7 @@ Set one environment variable with the full config as a JSON string.
   `openShopperAgentAndSendMessage(text)` — launches the window and sends `text` (e.g. header search text or a PDP FAQ question), or queues it until Embedded Messaging fires `onEmbeddedMessagingFirstBotMessageSent`, then sends.
 
 - **PDP “Ask assistant” FAQ**  
-  When the shopper agent is enabled, config validates, and `isShopperAgentContextUiEnabled()` is true (see `src/lib/shopper-agent-context-ui.ts`), each FAQ question row opens the agent and sends that question as the first shopper message. Until product-context support is ready, `SHOPPER_AGENT_CONTEXT_UI_ENABLED` stays `false` so the FAQ block stays hidden while header/search assistant remain available. Storybook swaps that module for `.storybook/shims/shopper-agent-context-ui.ts` via a Vite alias so FAQ stories still render — see `.storybook/README-STORYBOOK.md`.
+  When the shopper agent is enabled, config validates, and `isShopperAgentContextUiEnabled()` is true (see `src/lib/shopper-agent-context-ui.ts`), each FAQ question row opens the agent and sends that question as the first shopper message. Until product-context support is ready, `SHOPPER_AGENT_CONTEXT_UI_ENABLED` stays `false` so the FAQ block stays hidden while header/search assistant remain available. Storybook swaps that module for `.storybook/shims/shopper-agent-context-ui.ts` via a Vite alias so FAQ stories still render — see `docs/README-STORYBOOK.md`.
 
 - **Account overview — Need Help**  
   The card (title, Contact info, Browse FAQ) always renders. **Ask a question** appears only when config validates **and** `isShopperAgentContextUiEnabled()` is true — same gate as PDP FAQ; it stays hidden when config is invalid or the constant is still `false`.

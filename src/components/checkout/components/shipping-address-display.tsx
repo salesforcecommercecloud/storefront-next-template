@@ -57,9 +57,7 @@ export function ShippingAddressDisplay({
                             {nameLine}
                         </Typography>
                         {address.preferred && (
-                            <Badge
-                                variant="secondary"
-                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                            <Badge variant="secondary" className="text-xs font-normal bg-primary/10 text-primary">
                                 {t('shippingAddress.defaultBadge')}
                             </Badge>
                         )}

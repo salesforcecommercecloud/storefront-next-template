@@ -253,7 +253,7 @@ export default function ShippingMultiOptions({
             <ToggleCardEdit>
                 <form method="post" className="space-y-8" onSubmit={handleSubmit}>
                     {shipmentsData.length === 0 ? (
-                        <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-none">
+                        <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted">
                             <div className="text-center space-y-2">
                                 <Typography variant="p" className="text-muted-foreground">
                                     {tMultiship('checkout.noShipmentsAvailable')}
@@ -309,7 +309,7 @@ export default function ShippingMultiOptions({
                                             {data.availableShippingMethods.map((method) => (
                                                 <div
                                                     key={method.id}
-                                                    className="group flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
+                                                    className="group flex items-center space-x-4 p-4 border-2 transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
                                                     <RadioGroupItem
                                                         value={method.id}
                                                         id={`${shipmentId}-${method.id}`}
@@ -352,7 +352,7 @@ export default function ShippingMultiOptions({
                                             ))}
                                         </RadioGroup>
                                     ) : (
-                                        <div className="flex items-center justify-center p-6 border-2 border-dashed border-muted rounded-none">
+                                        <div className="flex items-center justify-center p-6 border-2 border-dashed border-muted">
                                             <div className="text-center space-y-1">
                                                 <Typography variant="small" className="text-muted-foreground">
                                                     {t('shippingOptions.noMethodsAvailable')}

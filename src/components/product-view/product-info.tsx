@@ -271,12 +271,12 @@ export default function ProductInfo({
                         }}
                         surface="pdp"
                         size="sm"
-                        className="!static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+                        className="!static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
                     />
                     <ShareButton
                         product={product}
                         size="sm"
-                        className="!static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+                        className="!static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
                     />
                 </div>
             )}
@@ -337,6 +337,9 @@ export default function ProductInfo({
                     product={productForPrice}
                     quantity={quantity}
                     currency={currency}
+                    // Match the purchasability gate: bonus/promo products (allowMissingPrice) render
+                    // their price instead of "Price unavailable".
+                    allowMissingPrice={productView?.allowMissingPrice}
                     labelForA11y={product?.name}
                     currentPriceProps={{
                         className: 'text-2xl font-bold text-card-foreground leading-[120%] tracking-[-0.6px]',
@@ -390,7 +393,8 @@ export default function ProductInfo({
                     const content = image ? (
                         <>
                             <span
-                                className="rounded-none bg-cover bg-center bg-no-repeat"
+                                data-slot="swatch-dot"
+                                className="bg-cover bg-center bg-no-repeat"
                                 style={{
                                     width: 'var(--swatch-color-dot, 100%)',
                                     height: 'var(--swatch-color-dot, 100%)',
@@ -401,6 +405,7 @@ export default function ProductInfo({
                                 aria-label={image.alt || valueName}
                             />
                             <span
+                                data-slot="swatch-text"
                                 className="text-xs font-medium capitalize ml-1"
                                 style={{ display: 'var(--swatch-color-label)' }}>
                                 {valueName}
@@ -471,7 +476,7 @@ export default function ProductInfo({
 
             {/* Product Bundle/Set Notice */}
             {(isProductASet || isProductABundle) && (
-                <div className="bg-primary/10 border border-primary rounded-none p-4">
+                <div className="bg-primary/10 border border-primary p-4">
                     <p className="text-sm text-primary">
                         {isProductASet ? t('productSetNotice') : t('productBundleNotice')}
                     </p>

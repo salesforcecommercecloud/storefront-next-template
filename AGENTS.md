@@ -211,6 +211,27 @@ import { Link } from '@/components/link';
 
 Overlay components hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-PERFORMANCE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern, anti-patterns, and rationale.
 
+### Multi-vertical (canonical + per-vertical overlays)
+
+This package is a single canonical template with per-vertical overlays under `src/verticals/${VERTICAL}/`. Four rules keep the canonical/overlay split working — see [docs/README-MULTI-VERTICAL.md](./docs/README-MULTI-VERTICAL.md) for the index, with detailed sub-docs in [docs/multi-vertical/](./docs/multi-vertical/) covering authoring rules, shape tokens, vite resolver, mirror process, CI diagnostics, adding a vertical, and sync from main.
+
+The short version:
+
+1. **Canonical code must NEVER import from a specific vertical.** No `@/verticals/<name>/...` from `src/components/`, `src/routes/`, `src/lib/`, etc. Boundary lint blocks it; mirror typecheck breaks if it slips through.
+2. **Don't change canonical to fix a vertical.** Tweaks to `src/components/header/index.tsx` ship to fashion *and* cosmetic. If a change is brand-specific, move it into `src/verticals/${VERTICAL}/components/...`.
+3. **Vertical-overridable consumers must import via `@/...`, not relative.** The Vite resolver (`vite-plugins/vertical-resolvers.ts`) checks `src/verticals/${VERTICAL}/<spec>` first, then canonical. Sibling-relative imports (`./legal-links`) bypass the resolver and pin canonical even when `VERTICAL=cosmetic`. Routes are unaffected (the SDK walks `src/verticals/${VERTICAL}/routes/` directly).
+4. **Don't widen `tsconfig.json`'s `exclude` to silence a vertical.** That cascades into ESLint `projectService` parse errors. For non-default vertical typecheck issues, run `pnpm typecheck:cosmetic` (uses auto-generated `tsconfig.cosmetic.json`).
+
+```typescript
+// Correct — vertical override resolves in dev mode
+import LegalLinks from '@/components/footer/legal-links';
+
+// Wrong — bypasses the alias chain, dev mode always uses canonical
+import LegalLinks from './legal-links';
+```
+
+Before pushing a vertical-touching PR, use `/mvt-pre-pr-check`. Other MVT skills: `/mvt-add-overlay` (create a component override), `/mvt-add-vertical` (scaffold new vertical), `/mvt-shape-audit` (check for token anti-patterns), `/mvt-sync-from-main` (pull main changes), `/mvt-mirror-diff` (preview mirror output), `/mvt-visual-regression` (pixel-diff comparison).
+
 ### Styling
 
 - Use Tailwind utility classes
@@ -219,6 +240,61 @@ Overlay components hidden on initial render **must** use `React.lazy()` with def
 - Responsive breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
 
 See [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) for the full guide.
+
+### Shape Tokens (Critical — read before touching Card, Button, Input, or any shadcn primitive)
+
+Shape is token-driven. `rounded-ui` and `shadow-ui` apply to 19 primitives (Card, Button, Input, Dialog, Checkbox, etc.). `border-ui` applies to **Card only** — other primitives use Tailwind's built-in `border` (1px).
+
+**Always override the SOURCE tokens (`--ui-radius`, `--ui-shadow`, `--ui-border-width`), never the bridge variables (`--radius-ui`, `--shadow-ui`).**
+
+The bridge variables are inlined at compile time by Tailwind's `@theme inline { --radius-ui: var(--ui-radius); }`, so `.rounded-ui` actually compiles to `border-radius: var(--ui-radius)` directly. Writing to `--radius-ui` at runtime has no effect — the bridge name doesn't survive into the served CSS. Only `--ui-radius` / `--ui-shadow` / `--ui-border-width` are real runtime variables. See [docs/multi-vertical/README-SHAPE-TOKENS.md](./docs/multi-vertical/README-SHAPE-TOKENS.md) for the full mechanism.
+
+**Never** add explicit shape classes to components that already use these token utilities.
+
+**Rules:**
+
+1. **Never add `rounded-none`, `shadow-none`, or `border-0` to neutralize shape** — change the token value in `core.css` instead. These classes are redundant when the token is already 0/none.
+2. **Never add `rounded-xl`, `rounded-lg`, etc. directly to shadcn primitives** — use `[--ui-radius:var(--radius-xl)]` to override the source token for that instance.
+3. **Never hardcode `border-radius: 0.75rem` in CSS** — use `var(--radius-xl)` or set `--ui-radius` via scoped override.
+4. **Use `[--ui-border-width:1px]` to opt a Card into visible borders** — not `border` or `border-1` (those don't override `border-ui`'s variable). This only applies to Card; Input/Dialog/etc. use plain `border`.
+5. **Use `:where()` for section-scoped overrides** — preserves per-card className overridability.
+6. **`border-primary`, `border-transparent` override color only** — they work alongside `border-ui` on Card (which controls width). Never use `border-2` to override `border-ui` width; use `[--ui-border-width:2px]`.
+
+```tsx
+// ✅ Correct — source-token overrides
+<Card className="[--ui-border-width:2px] border-primary">
+<Card className="[--ui-radius:var(--radius-2xl)]">
+<Card className="[--ui-shadow:none]">
+
+// ❌ Wrong — bridge-token writes do nothing at runtime (Tailwind inlines them at compile time)
+<Card className="[--radius-ui:var(--radius-2xl)]">
+<Card className="[--shadow-ui:none]">
+
+// ❌ Wrong — redundant, fights the token system
+<Card className="rounded-none shadow-none">
+<Card className="rounded-xl">
+<Card className="border border-border">  // border sets width:1px but border-ui overrides it
+```
+
+```css
+/* ✅ Correct — source-token scoped override in base.css */
+.product-card[data-slot="card"] {
+    --ui-radius: var(--radius-2xl);
+    --ui-shadow: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+
+/* ❌ Wrong — bridge-token writes do nothing (compile-time inlined) */
+.product-card[data-slot="card"] {
+    --radius-ui: var(--radius-2xl);
+    --shadow-ui: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+
+/* ❌ Wrong — hardcoded values, not token-driven */
+.product-card[data-slot="card"] {
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+```
 
 ## Testing
 
@@ -233,7 +309,9 @@ Three strategies — see [docs/README-TESTS.md](./docs/README-TESTS.md) for patt
 The docs below are where architectural detail lives — consult them for tasks in the relevant area.
 
 **Architecture & patterns:**
+- [docs/README-MULTI-VERTICAL.md](./docs/README-MULTI-VERTICAL.md) — Multi-vertical index (links to sub-docs: authoring rules, shape tokens, vite resolver, mirror process, CI diagnostics, adding a vertical, sync from main)
 - [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
+- [docs/README-REVALIDATION.md](./docs/README-REVALIDATION.md) — Revalidation control: when loaders re-run after actions, the scale cost of the default, and gating with `shouldRevalidate`
 - [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) — Loading states and Suspense patterns
 - [docs/README-STATE.md](./docs/README-STATE.md) — State management: server state, URL state, optimistic UI
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter pattern for data fetching (Einstein, Active Data, custom)
@@ -241,6 +319,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system (including `PUBLIC__` prefix behavior)
 - [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
+- [docs/README-COOKIE-DOMAIN.md](./docs/README-COOKIE-DOMAIN.md) — Configurable cookie domains: storefront config (`app.cookies.domain` + per-site), the matching Business Manager setting, verification, rollout
 - [docs/README-EMAIL-VERIFICATION.md](./docs/README-EMAIL-VERIFICATION.md) — Email verification: OTP flows, passwordless registration/login, account details badge, Change Email
 - [docs/README-TURNSTILE.md](./docs/README-TURNSTILE.md) — Cloudflare Turnstile bot protection (BFF verification, three-tier health, fail-open)
 - [docs/README-SECURITY-HEADERS.md](./docs/README-SECURITY-HEADERS.md) — Default security response headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
@@ -259,7 +338,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns
 - [docs/README-ESLINT.md](./docs/README-ESLINT.md) — ESLint configuration
 - [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) — Story coverage enforcement
-- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) — Storybook setup
+- [docs/README-STORYBOOK.md](./docs/README-STORYBOOK.md) — Storybook setup
 
 **Development:**
 - [docs/README-HYBRID-PROXY.md](./docs/README-HYBRID-PROXY.md) — Hybrid proxy for local development

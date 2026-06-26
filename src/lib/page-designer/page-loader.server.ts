@@ -16,13 +16,13 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { fetchPage, type PageDesignerPageModeParams, type PageDesignerPageParams } from '@/lib/api/page.server';
 import { ApiError, type ShopperExperience } from '@/scapi';
-import { registry } from '@/lib/page-designer/registry';
 import {
     isDesignModeActive,
     isPreviewModeActive,
     type PageDesignerMode,
 } from '@salesforce/storefront-next-runtime/design/mode';
 import { getLogger } from '@/lib/logger.server';
+import { collectFromRegions } from './collect-component-data.server';
 
 export type Page = ShopperExperience.schemas['Page'];
 
@@ -42,7 +42,7 @@ export async function fetchPageFromLoader(
     }
 
     const pageDesignerParams: Partial<PageDesignerPageParams & PageDesignerPageModeParams> = {
-        mode: (url.searchParams.get('mode') as PageDesignerMode) || undefined,
+        mode: (url.searchParams.get('mode') as PageDesignerMode | null) || undefined,
         pdToken: url.searchParams.get('pdToken') || undefined,
         pageId: url.searchParams.get('pageId') || undefined,
     };
@@ -52,41 +52,6 @@ export async function fetchPageFromLoader(
     );
 
     return fetchPage(context, { ...params, ...cleanParams });
-}
-
-/**
- * Recursively collect component data promises from regions
- */
-function collectFromRegions(
-    ctx: LoaderFunctionArgs,
-    regions: ShopperExperience.schemas['Region'][] | undefined,
-    map: Record<string, Promise<unknown>>
-): void {
-    if (!regions) return;
-
-    for (const region of regions) {
-        for (const comp of region.components || []) {
-            // Check if component has a loader before calling it
-            const hasLoaders = registry.hasLoaders(comp.typeId);
-
-            if (hasLoaders) {
-                map[comp.id] = registry.callLoader(
-                    comp.typeId,
-                    {
-                        componentData: comp,
-                        context: ctx.context,
-                        request: ctx.request,
-                    },
-                    'loader'
-                );
-            }
-
-            // Recursively process nested regions (components can have their own regions)
-            if (comp.regions && comp.regions.length > 0) {
-                collectFromRegions(ctx, comp.regions, map);
-            }
-        }
-    }
 }
 
 /**

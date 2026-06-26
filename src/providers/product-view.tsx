@@ -22,6 +22,14 @@ import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 interface ProductViewContextValue extends ReturnType<typeof useProductActions> {
     product: ShopperProducts.schemas['Product'];
     mode: 'add' | 'edit';
+    /**
+     * Mirrors the same conditions the hook uses to bypass the price gate, so price display
+     * (ProductInfo → ProductPrice) matches the add/update gate. True when either the explicit
+     * `allowMissingPrice` prop is set OR the surface is editing an in-basket line (`itemId`),
+     * which the hook already treats as price-gate-bypassed (an in-basket line must remain
+     * editable even if its catalog price is currently missing for the active currency).
+     */
+    allowMissingPrice: boolean;
 }
 
 const ProductViewContext = createContext<ProductViewContextValue | null>(null);
@@ -34,6 +42,11 @@ interface ProductViewProviderProps {
     itemId?: string;
     /** Optional: Pass a currentVariant directly (e.g., from controlled modal state) instead of deriving from URL */
     currentVariant?: ShopperProducts.schemas['Variant'];
+    /**
+     * Allow adding to cart even when the product has no price for the active currency. Use for
+     * intentionally-free items priced elsewhere (e.g. promotional bonus products). Defaults to false.
+     */
+    allowMissingPrice?: boolean;
 }
 
 /**
@@ -64,6 +77,7 @@ const ProductViewProvider = ({
     maxQuantity,
     itemId,
     currentVariant: providedCurrentVariant,
+    allowMissingPrice = false,
 }: PropsWithChildren<ProductViewProviderProps>) => {
     // Use provided variant if available (e.g., from controlled modal state),
     // otherwise derive from URL for PDP use case
@@ -76,10 +90,18 @@ const ProductViewProvider = ({
         initialQuantity,
         maxQuantity,
         itemId,
+        allowMissingPrice,
     });
 
     return (
-        <ProductViewContext.Provider value={{ product, mode, ...productActionsData }}>
+        <ProductViewContext.Provider
+            value={{
+                product,
+                mode,
+                // Mirror the hook's price-gate bypass conditions so display tracks gate.
+                allowMissingPrice: allowMissingPrice || Boolean(itemId),
+                ...productActionsData,
+            }}>
             {children}
         </ProductViewContext.Provider>
     );

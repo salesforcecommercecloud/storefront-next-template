@@ -62,9 +62,7 @@ export default function PreferencesTarget(): ReactElement | null {
 function InterestsPreferencesSectionError(): ReactElement {
     const { t } = useTranslation('extCustomerPreferences');
     return (
-        <Card
-            data-testid="interests-preferences-section-error"
-            className="bg-card border-border rounded-none shadow-none">
+        <Card data-testid="interests-preferences-section-error" className="bg-card border-border">
             <CardHeader className="border-b border-border pb-4">
                 <CardTitle className="text-base font-semibold">{t('interestsPreferences.title')}</CardTitle>
             </CardHeader>

@@ -74,7 +74,7 @@ export function PostOrderRegistration({
 
     if (registrationSuccess) {
         return (
-            <Card className="border border-border/70 rounded-none shadow-none">
+            <Card className="border border-border/70">
                 <CardHeader>
                     <CardTitle>{t('confirmation.postOrderRegistration.title')}</CardTitle>
                 </CardHeader>
@@ -94,14 +94,14 @@ export function PostOrderRegistration({
     }
 
     return (
-        <Card className="border border-border/70 rounded-none shadow-none">
+        <Card className="border border-border/70">
             <CardHeader>
                 <CardTitle>{t('confirmation.postOrderRegistration.title')}</CardTitle>
                 <p className="text-sm text-muted-foreground">{t('confirmation.postOrderRegistration.subtitle')}</p>
             </CardHeader>
             <CardContent>
                 {error && (
-                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none">
+                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20">
                         <p className="text-sm text-destructive">{error}</p>
                     </div>
                 )}

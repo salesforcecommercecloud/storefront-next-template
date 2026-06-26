@@ -27,7 +27,7 @@ function CartEmptySkeleton(): ReactElement {
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty-skeleton">
             <div className="section-container py-8 lg:py-14">
-                <div className="bg-background rounded-none p-8 md:p-16 text-center">
+                <div className="bg-background p-8 md:p-16 text-center">
                     {/* Empty Cart Icon (real svg is w-24 h-24 with mb-6) */}
                     <Skeleton className="w-24 h-24 mx-auto mb-6 rounded-full" />
 
@@ -69,7 +69,7 @@ export default function CartSkeleton({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
+                        <div className="md:p-8 p-3 border border-muted-foreground/10 mb-3">
                             {/* CartTitle: Truck icon + delivery heading + optional address */}
                             <div className="flex items-center gap-2 mb-6">
                                 <Skeleton className="size-[1.125rem] shrink-0 rounded-sm" />
@@ -90,7 +90,7 @@ export default function CartSkeleton({
                                     <div className="px-3 py-4 md:px-6 md:py-7">
                                         <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
                                             <div className="flex-shrink-0 flex items-start justify-center">
-                                                <Skeleton className="aspect-square md:w-32 w-16 rounded-none" />
+                                                <Skeleton className="aspect-square md:w-32 w-16" />
                                             </div>
                                             <div className="flex-1 space-y-3 min-w-0">
                                                 <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0">
@@ -134,7 +134,7 @@ export default function CartSkeleton({
 
                     {/* Order Summary — desktop only, mirrors OrderSummary Card */}
                     <div className="hidden md:block md:order-1 lg:order-2">
-                        <Card className="!py-4 rounded-none shadow-none">
+                        <Card className="!py-4">
                             <CardContent className="px-[var(--cart-summary-px)]">
                                 <div className="space-y-4">
                                     <Skeleton className="h-7 w-28" />

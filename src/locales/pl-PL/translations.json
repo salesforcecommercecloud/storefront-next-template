@@ -1580,6 +1580,7 @@
         "failedToAddProductToCartError": "Nie udało się dodać produktu do koszyka:",
         "failedToAddProductToWishlistError": "Nie udało się dodać produktu do listy życzeń:",
         "price": {
+            "unavailable": "Cena niedostępna",
             "currentPriceFrom": "Bieżąca cena od {{price}}",
             "currentPrice": "Bieżąca cena: {{price}}",
             "from": "Od {{price}}",

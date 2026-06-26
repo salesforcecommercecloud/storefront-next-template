@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { extendTailwindMerge } from 'tailwind-merge';
 import type { Json } from '+types/lang';
 import { ApiError } from '@/scapi';
 
@@ -50,10 +50,6 @@ export function getBasePath(): string {
 
     // Fallback: no base path
     return '';
-}
-
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
 }
 
 export const stringToBase64 =
@@ -98,6 +94,9 @@ export const extractResponseError = async (
         const json = (await (error.response as Response).json()) ?? {};
         const { type, status_code, ...rest } = json;
 
+        // TODO: This sort of anticipation of how the user might want the API response to be interpreted
+        //  as error message, isn't necessarily a good idea. It's better to pass all properties to the user
+        //  let the user decide how to format the error.
         // Extract error message from various possible fields in the API response
         // Salesforce Commerce Cloud API can return error details in different fields
         const responseMessage = (json.message || json.detail || json.title || error.message) as string;
@@ -159,6 +158,8 @@ export function extractStatusCode(error: unknown): string | undefined {
 }
 
 /**
+
+ * TODO: This method replaces the extractResponseError for the new scapi client. We may want to rename this once we remove extractResponseError
  * Extracts error message from different error types
  * @param error - The error to extract message from
  * @returns A user-friendly error message
@@ -186,6 +187,30 @@ export function getErrorMessage(error: unknown): string {
 
     return 'An error occurred';
 }
+
+/**
+ * Returns the application's origin.
+ *
+ * This function is isomorphic, it can be used on the client and server.
+ *
+ * On the server, it will return the origin derived from the EXTERNAL_DOMAIN_NAME (from process.env).
+ *
+ * On the client, it will return the window.location.origin
+ */
+export const getAppOrigin = () => {
+    if (typeof window !== 'undefined') {
+        return window.location.origin;
+    }
+
+    const EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME || 'localhost:5173';
+    if (!EXTERNAL_DOMAIN_NAME) {
+        throw new Error('Environment variable: "EXTERNAL_DOMAIN_NAME" is not set.');
+    }
+
+    const isLocalhost = EXTERNAL_DOMAIN_NAME?.includes('localhost');
+    const protocol = isLocalhost ? 'http' : 'https';
+    return `${protocol}://${EXTERNAL_DOMAIN_NAME}`;
+};
 
 /**
  * Get the SCAPI base URL for server-side requests.
@@ -356,3 +381,16 @@ export const resolveAssetUrl = (url: string): string => {
 
     return `${bundlePath}${normalizedUrl}`;
 };
+
+const twMerge = extendTailwindMerge<'border-ui'>({
+    extend: {
+        classGroups: {
+            'border-ui': ['border-ui'],
+        },
+        conflictingClassGroups: {},
+    },
+});
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}

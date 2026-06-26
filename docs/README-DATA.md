@@ -761,57 +761,6 @@ For details on how cookies and sessions fit into the broader state model alongsi
 
 ## Revalidation Control
 
-By default, React Router automatically revalidates (re-executes) loaders after navigation events, form submissions, and actions to ensure data stays fresh. While this default behavior guarantees data consistency, it can lead to unnecessary network requests and degraded performance in scenarios where data hasn't actually changed.
+By default, React Router re-runs the loaders for every active route after a navigation or mutation. That keeps data fresh, but at scale it re-fetches data the change never touched. A route-level `shouldRevalidate` function is the opt-out.
 
-A `shouldRevalidate` function exported at the route level gives you fine-grained control over when a route's loader should re-execute, enabling you to optimize performance by preventing redundant data fetching while maintaining data freshness where it matters.
-
-#### Example: Product List with Filtering
-
-This example shows a product listing page where query parameters control filters. The example uses the category, price range, and sort order query parameters. Because the loader already uses these query parameters to fetch filtered results, we don't need to revalidate when only the URL search parameters change. The loader naturally fetches the correct data on the next navigation.
-
-```typescript
-// src/routes/products.tsx
-import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from "react-router";
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const category = url.searchParams.get("category") || "all";
-  const minPrice = url.searchParams.get("minPrice") || "0";
-  const maxPrice = url.searchParams.get("maxPrice") || "1000";
-  const sort = url.searchParams.get("sort") || "relevance";
-
-  // Loader naturally handles query params - no revalidation needed
-  const products = await fetch(
-    `https://api.example.com/products?category=${category}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sort}`,
-  ).then((r) => r.json());
-
-  return { products, filters: { category, minPrice, maxPrice, sort } };
-}
-
-export function shouldRevalidate({
-  currentUrl,
-  nextUrl,
-  actionStatus,
-  actionResult,
-}: ShouldRevalidateFunctionArgs): boolean {
-  const currentPath = new URL(currentUrl).pathname;
-  const nextPath = new URL(nextUrl).pathname;
-
-  // Revalidate if navigating to a different route
-  if (currentPath !== nextPath) {
-    return true;
-  }
-
-  // Revalidate if an action modified product data (e.g., inventory update)
-  if (actionStatus === 200 && actionResult?.productsModified) {
-    return true;
-  }
-
-  // Don't revalidate for query param changes - loader handles them naturally
-  // This prevents redundant fetches when filters change
-  return false;
-}
-```
-
-> [!TIP]
-> When your loader consumes URL search parameters to fetch data, returning `false` for query parameter changes prevents double-fetching. The loader executes with the new parameters on the next navigation anyway.
+See [Revalidation Control](README-REVALIDATION.md) for when revalidation fires, why the default over-fetches at scale, and how to gate it with `shouldRevalidate`.

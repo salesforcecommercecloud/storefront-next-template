@@ -120,12 +120,12 @@ async function abortable<T>(promise: Promise<T>, signal: AbortSignal | null | un
 }
 
 /**
- * Render a URL for logging: pathname + sorted query parameter keys with values masked. Preserves enough
- * structure to diagnose cache behavior (which endpoint, which params were sent) without leaking values that
- * may include access tokens, basket IDs, customer IDs, or other PII/secrets.
+ * Render a URL for logging: pathname + sorted query parameter keys with values masked. Preserves enough structure to
+ * diagnose cache behavior (which endpoint, which params were sent) without leaking values that may include access
+ * tokens, basket IDs, customer IDs, or other PII/secrets.
  *
- * Values for keys in `UNMASKED_QUERY_KEYS` (`locale`, `siteId`) are kept verbatim — they are global SCAPI
- * routing parameters, never sensitive, and useful for diagnostics.
+ * Values for keys in `UNMASKED_QUERY_KEYS` (`locale`, `siteId`) are kept verbatim — they are global SCAPI routing
+ * parameters, never sensitive, and useful for diagnostics.
  *
  * @example
  * `/baskets/abc?token=xyz&siteId=site&locale=en-US` → `/baskets/abc?locale=en-US&siteId=site&token=*`
@@ -382,6 +382,76 @@ export function createTimeoutFetch(
 }
 
 /**
+ * Wrap a base `fetch` to observe SCAPI health signals and emit one concrete log line per occurrence. Every line shares
+ * the `SCAPI health` token after `${LOGGER_PREFIX}` so all categories can be pulled from logs with a single search.
+ *
+ * # Categories
+ *
+ * - **Load shedding** (resolve path). SCAPI advertises capacity pressure via response headers, documented at
+ *   https://developer.salesforce.com/docs/commerce/commerce-api/guide/throttle-rates.html:
+ *   - `sfdc_load` — system capacity in use, integer 0–100 (percent). Present only on origin-backed responses.
+ *   - `sfdc_load_status` — `WARN` at 80% capacity, `THROTTLE` at 90%. Present on both the advertised (still-served)
+ *     responses and the synthetic 503 the edge worker returns when it actually sheds a request.
+ *
+ *   The log **level is driven by HTTP status, not the header value**: a load signal on a served response (non-503)
+ *   logs at `warn` (the request still succeeded); the shed `503` logs at `error`. On the shed 503 `sfdc_load` is
+ *   absent (the worker generates the 503 itself and has no origin load value to copy through), so `load` is `null`.
+ *
+ *   Load shedding is **per-realm** and is **not applied** to checkout (Shopper Baskets/Orders) or OCI. `shopper/auth`
+ *   (SLAS) does participate in edge load shedding and can emit `WARN`/`THROTTLE`; SLAS additionally has its own
+ *   per-tenant token rate limits with no advance signal.
+ *
+ * - **Rate limiting** (resolve path). An HTTP `429` logs at `warn`, with the raw `Retry-After` header value recorded
+ *   verbatim (`retryAfter`, or `null` when the header is absent).
+ *
+ * # Composition order
+ *
+ * Designed to sit *innermost* (closest to `globalThis.fetch`) so every real network response is observed once. Cache
+ * hits served from `createDedupedFetch` do **not** re-emit a log — observation happens once per actual fetch.
+ *
+ * # Logging
+ *
+ *     [ApiClients] SCAPI health load GET /products/abc?...   {status: 'warn', load: '82'}
+ *     [ApiClients] SCAPI health load GET /products/abc?...   {status: 'throttle', load: null}   (503 → error)
+ *     [ApiClients] SCAPI health rate GET /products/abc?...   {retryAfter: '30'}
+ */
+export function createHealthObserverFetch(context: ContextLike, baseFetch: typeof fetch): typeof fetch {
+    const getMethod = (input: URL | RequestInfo, init?: RequestInit) =>
+        (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
+    const getUrl = (input: URL | RequestInfo) =>
+        typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+
+    return async (input, init) => {
+        const response = await baseFetch(input, init);
+        const loadStatus = response.headers.get('sfdc_load_status')?.trim();
+        if (loadStatus) {
+            const method = getMethod(input, init);
+            const url = getUrl(input);
+            const load = response.headers.get('sfdc_load');
+            const message = `${LOGGER_PREFIX} SCAPI health load ${method} ${maskUrl(url)}`;
+            const meta = { status: loadStatus.toLowerCase(), load: load ?? null };
+            const logger = getLogger(context);
+            // Level is driven by status, not header value: a served response (non-503) is a warning; the shed 503 is an
+            // error. A request that succeeded despite advertised pressure didn't actually fail.
+            if (response.status === 503) {
+                logger.error(message, meta);
+            } else {
+                logger.warn(message, meta);
+            }
+        } else if (response.status === 429) {
+            const method = getMethod(input, init);
+            const url = getUrl(input);
+            const retryAfter = response.headers.get('Retry-After');
+            getLogger(context).error(`${LOGGER_PREFIX} SCAPI health rate ${method} ${maskUrl(url)}`, {
+                retryAfter: retryAfter ?? null,
+            });
+        }
+
+        return response;
+    };
+}
+
+/**
  * Get the SLAS client secret from environment variable.
  * Only returns the secret on the server - client secrets must never reach client code.
  */
@@ -478,12 +548,18 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     };
 
     // Wrap the base fetch so every SCAPI request participates in request-scoped GET/HEAD deduplication and
-    // mutation invalidation. The timeout layer sits *under* the dedupe layer so that one timer governs EACH
-    // real network call (not each deduped caller). The deadline comes from the MRT-provided
-    // `MRT_REQUEST_TIMEOUT` env var. See `createTimeoutFetch` and `createDedupedFetch`.
+    // mutation invalidation. Layer order is `dedupe(timeout(healthObserver(globalThis.fetch)))`:
+    //   - SCAPI health observer innermost: every real network response is inspected so we log SCAPI's
+    //     `sfdc_load_status` capacity pressure and HTTP 429 rate limiting once per actual fetch (not once per
+    //     deduped caller). Detection/logging only — no retry.
+    //   - timeout in the middle: one timer governs EACH real network call — the deadline comes from the
+    //     MRT-provided `MRT_REQUEST_TIMEOUT` env var.
+    //   - dedupe outermost: identical concurrent reads collapse to one underlying fetch and one timer, then
+    //     receive cloned copies of the resolved response.
+    // See `createHealthObserverFetch`, `createTimeoutFetch`, and `createDedupedFetch`.
     const dedupedFetch = createDedupedFetch(
         context,
-        createTimeoutFetch(context, globalThis.fetch, getMrtRequestTimeoutMs())
+        createTimeoutFetch(context, createHealthObserverFetch(context, globalThis.fetch), getMrtRequestTimeoutMs())
     );
 
     // Note: Currency is NOT passed as a global parameter because not all Shopper* APIs support it.

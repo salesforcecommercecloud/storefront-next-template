@@ -503,10 +503,12 @@ describe('OrderSummary', () => {
                 {
                     couponItemId: 'coupon1',
                     code: 'SAVE10',
+                    statusCode: 'applied' as const,
                 },
                 {
                     couponItemId: 'coupon2',
                     code: 'FREESHIP',
+                    statusCode: 'applied' as const,
                 },
             ],
         };
@@ -526,6 +528,7 @@ describe('OrderSummary', () => {
                 {
                     couponItemId: 'coupon1',
                     code: 'SAVE10',
+                    statusCode: 'applied' as const,
                 },
             ],
         };

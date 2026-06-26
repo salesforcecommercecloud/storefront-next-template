@@ -52,24 +52,19 @@ export const AUTH_TOKEN_INVALID_ERROR = 'AUTH_TOKEN_INVALID';
 
 /**
  * Check if tracking consent feature is enabled in the app configuration.
- * Reads config from context (server-side) or uses getConfig() (client-side).
+ * Server-only — reads `engagement.analytics.trackingConsent.enabled` from the
+ * router-context-resolved config. The client equivalent is the
+ * `useTrackingConsent` hook, which exposes the same flag against `useConfig()`.
  *
- * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @param context - Router context from a server loader, action, or middleware.
  * @returns true if tracking consent is enabled, false otherwise
  *
  * @example
- * // Server-side with context
  * if (isTrackingConsentEnabled(context)) {
  *   // Handle tracking consent logic
  * }
- *
- * @example
- * // Client-side without context
- * if (isTrackingConsentEnabled()) {
- *   // Handle tracking consent logic
- * }
  */
-export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
+export function isTrackingConsentEnabled(context: Readonly<RouterContextProvider>): boolean {
     const appConfig = getConfig(context);
     return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
 }

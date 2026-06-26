@@ -32,7 +32,10 @@ vi.mock('react-router', async (importOriginal) => {
             data: null,
             submit: vi.fn(),
             load: vi.fn(),
-            Form: ({ children, ...props }: React.FormHTMLAttributes<HTMLFormElement> & { children: React.ReactNode }) => (
+            Form: ({
+                children,
+                ...props
+            }: React.FormHTMLAttributes<HTMLFormElement> & { children: React.ReactNode }) => (
                 <form {...props}>{children}</form>
             ),
         }),

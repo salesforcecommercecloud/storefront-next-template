@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useMemo, useRef } from 'react';
-import { useFetcher, type FetcherWithComponents, type FetcherSubmitOptions, type SubmitTarget } from 'react-router';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { type FetcherSubmitOptions, type FetcherWithComponents, type SubmitTarget, useFetcher } from 'react-router';
+import { createFetcherRegistration } from '@/lib/scapi/fetcher-registry';
 import type {
+    ApiResponse,
     CommerceSdkKeyMap,
     CommerceSdkMethodName,
-    HelperNamespaceKeyMap,
     HelperMethodName,
     HelperMethodParameters,
-    ApiResponse,
+    HelperNamespaceKeyMap,
 } from '@/lib/scapi/types';
 import { encodeResource, RESOURCE_API_ROUTE } from '@/lib/scapi/resource-encoding';
 import type {
@@ -205,6 +206,10 @@ export function useScapiFetcher(
 
     const fetcher = useFetcher<ApiResponse<unknown>>({ key: resource });
 
+    // Fetcher registration
+    const registration = useMemo(() => createFetcherRegistration(resource), [resource]);
+    useEffect(() => registration.unregister, [registration]);
+
     /**
      * Load method for handling GET requests using loader/clientLoader functions.
      * This method invokes the fetcher's load method which triggers the loader/clientLoader functions on the server.
@@ -213,9 +218,16 @@ export function useScapiFetcher(
      * @returns Promise that resolves when the request completes
      */
     const load = useCallback((): Promise<void> => {
+        // Register this fetcher's `load` under its resource key so the resource route's own `shouldRevalidate` can
+        // selectively reload it after a mutation. This is the only place where the fetcher's identity (`resource`) and its
+        // `load` are both in scope. That `shouldRevalidate` is consulted without the evaluated fetcher's identity, so it
+        // resolves each candidate through this registry instead.
+        const href = `${RESOURCE_API_ROUTE}/${resource}`;
+        registration.register(fetcher.load, href);
+
         // Invoke fetcher load method for loaders with the resource URL
-        return fetcher.load(`${RESOURCE_API_ROUTE}/${resource}`);
-    }, [fetcher, resource]);
+        return fetcher.load(href);
+    }, [registration, fetcher, resource]);
 
     /**
      * Submit method for handling non-GET requests (PUT, POST, DELETE, etc.) using action/clientAction functions.
@@ -245,12 +257,14 @@ export function useScapiFetcher(
                 (typeof URLSearchParams !== 'undefined' && payload instanceof URLSearchParams);
             const encType = _opts?.encType ?? (isFormPayload ? undefined : 'application/json');
 
-            return fetcher.submit((payload ?? {}) as SubmitTarget, {
+            const target = (payload ?? {}) as SubmitTarget;
+            const submitOptions: FetcherSubmitOptions = {
                 ..._opts,
                 method: 'POST',
                 action: `${RESOURCE_API_ROUTE}/${resource}`,
                 ...(encType ? { encType } : {}),
-            });
+            };
+            return fetcher.submit(target, submitOptions);
         },
         [fetcher, resource]
     );

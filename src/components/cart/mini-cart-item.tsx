@@ -157,7 +157,7 @@ export default function MiniCartItem({
     return (
         <div className="flex gap-4" data-testid="mini-cart-item">
             {/* Product Image */}
-            <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted rounded-none overflow-hidden transition-all duration-500">
+            <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted overflow-hidden transition-all duration-500">
                 {image ? (
                     productUrl ? (
                         <Link to={productUrl} className="block w-full h-full">
@@ -175,7 +175,7 @@ export default function MiniCartItem({
                         />
                     )
                 ) : (
-                    <div className="w-full h-full bg-muted rounded-none flex items-center justify-center text-muted-foreground text-xs">
+                    <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
                         {tMiniCart('noImage')}
                     </div>
                 )}

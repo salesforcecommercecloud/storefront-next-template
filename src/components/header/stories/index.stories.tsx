@@ -17,7 +17,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { type ReactElement } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import Header from '../index';
+// Vertical resolver requires the @/ alias (cosmetic overrides header) — keep over '../index'.
+import Header from '@/components/header';
+import AnnouncementBanner from '@/components/announcement-banner';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
@@ -56,7 +58,7 @@ function CheckoutHeaderHarness(): ReactElement {
 
 const meta: Meta<HeaderStoryArgs> = {
     title: 'LAYOUT/Header',
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         layout: 'fullscreen',
         docs: {
@@ -89,13 +91,6 @@ export default meta;
 type Story = StoryObj<HeaderStoryArgs>;
 
 export const Default: Story = {
-    parameters: {
-        // Skip vitest snapshot — `<ResponsiveNavigationMenu>` mounts a Suspense/Await
-        // boundary that the snapshot harness's `vi.mock('react-router')` doesn't pass
-        // through, causing the renderer to suspend and crash. Interaction + a11y
-        // suites cover this story end-to-end via the dev server.
-        snapshot: false,
-    },
     play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -123,8 +118,6 @@ const mobileViewport = {
  */
 export const CheckoutVariant: Story = {
     parameters: {
-        // Same Suspense/Await snapshot caveat as Default.
-        snapshot: false,
         docs: {
             description: {
                 story: 'Checkout header — logo + cart only. No search, user actions, wishlist, or navigation menu.',
@@ -166,8 +159,6 @@ export const MobileView: Story = {
         </div>
     ),
     parameters: {
-        // See Default — same Suspense/Await crash in the snapshot harness.
-        snapshot: false,
         viewport: { options: { iphone: mobileViewport }, value: 'iphone', isRotated: false },
         docs: { description: { story: 'Header at mobile breakpoint — collapsed actions and hamburger.' } },
     },
@@ -184,5 +175,40 @@ export const MobileView: Story = {
         await waitFor(() => {
             expect(canvas.getByRole('navigation', { name: /mobile navigation menu/i })).toBeInTheDocument();
         });
+    },
+};
+
+export const WithAnnouncementBanner: Story = {
+    render: (args) => (
+        <AuthProvider value={guestSession}>
+            <div data-skip-action-logger>
+                <AnnouncementBanner message="FREE WORLDWIDE SHIPPING from $90" />
+            </div>
+            <HeaderHarness {...args} />
+        </AuthProvider>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Header with an announcement banner stacked on top.',
+            },
+        },
+    },
+    globals: {
+        viewport: 'desktop',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const banner = canvas.queryByRole('status');
+        if (banner) {
+            await expect(banner).toBeInTheDocument();
+            await expect(banner).toHaveTextContent('FREE WORLDWIDE SHIPPING from $90');
+        }
+        const logo = canvas.queryByTestId('header-logo');
+        if (logo) {
+            await expect(logo).toBeInTheDocument();
+        }
     },
 };

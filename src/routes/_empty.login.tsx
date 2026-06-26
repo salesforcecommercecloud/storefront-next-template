@@ -452,9 +452,11 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     // Show passwordless success state
     if (passwordlessSent && email) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
+            <div
+                data-section="auth"
+                className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
-                    <Card className="p-8 rounded-none shadow-none">
+                    <Card className="p-8">
                         <div className="text-center space-y-4">
                             <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
                             <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
@@ -501,7 +503,9 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 })}
                 openGraph={{ type: 'website', url: pageUrl }}
             />
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
+            <div
+                data-section="auth"
+                className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
                     <div>
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
@@ -510,7 +514,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
 
                     <LoginGuestWishlistBanner count={guestWishlistCount} />
 
-                    <Card className="p-8 rounded-none shadow-none">
+                    <Card className="p-8">
                         {renderForm()}
                         {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
                     </Card>

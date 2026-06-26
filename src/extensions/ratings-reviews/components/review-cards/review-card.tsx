@@ -176,7 +176,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                                             lightboxTriggerRef.current = e.currentTarget;
                                             setLightboxPhoto({ src: photoSrc, alt: imageAlt });
                                         }}
-                                        className="block size-20 shrink-0 overflow-hidden rounded-none border border-border bg-muted cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                                        className="block size-20 shrink-0 overflow-hidden border border-border bg-muted cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                                         <img
                                             src={photoSrc}
                                             alt={imageAlt}

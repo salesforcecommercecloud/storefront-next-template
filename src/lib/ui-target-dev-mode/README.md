@@ -19,12 +19,14 @@ All UITargets will have visual markers showing their ID and type.
 ## Features
 
 ### Visual Markers
+
 - 🎯 **Badge** showing targetId
 - **Type indicator**: `wrap` (wrapper) or `ins` (insertion)
 - **Click to expand** for details (file location, usage code snippet, copy ID)
 - **Dashed border** around wrapped content
 
 ### Floating Control Panel
+
 - Shows live UITarget count for the current page
 - Draggable — move it out of your way
 - Collapse with the ▲/▼ button
@@ -36,12 +38,16 @@ All UITargets will have visual markers showing their ID and type.
 ### Zero Production Overhead
 
 **Production Build:**
+
 ```typescript
 // UITarget is a pure passthrough (40 bytes)
-function UITarget({ children }) { return children }
+function UITarget({ children }) {
+    return children;
+}
 ```
 
 **Development Build (VITE_UI_TARGET_DEV_MODE=true):**
+
 - Vite plugin transforms `<UITarget>` → `<UITargetDevMarker>` at compile time
 - Marker components lazy-loaded only when enabled
 - Control overlay imported on-demand and mounted outside the React tree
@@ -84,13 +90,15 @@ function UITarget({ children }) { return children }
 ### Adding a New UITarget
 
 1. Add the target in your component:
+
 ```tsx
 <UITarget targetId="pdp.loyalty.badge">
-  <LoyaltyWidget />
+    <LoyaltyWidget />
 </UITarget>
 ```
 
 2. Start dev mode:
+
 ```bash
 npm run dev:ui-targets
 ```
@@ -98,10 +106,10 @@ npm run dev:ui-targets
 3. Navigate to the page — you'll see the marker appear.
 
 4. Click the marker to see details:
-   - Target type (wrapper vs insertion)
-   - File location
-   - Code example
-   - Copy ID button
+    - Target type (wrapper vs insertion)
+    - File location
+    - Code example
+    - Copy ID button
 
 ### Smoke Test Mode
 
@@ -141,6 +149,7 @@ Only targets whose `targetId` starts with `pdp.` will show markers.
 ### Markers not appearing?
 
 1. Check the env var is set:
+
 ```bash
 echo $VITE_UI_TARGET_DEV_MODE  # Should print "true"
 ```
@@ -148,6 +157,7 @@ echo $VITE_UI_TARGET_DEV_MODE  # Should print "true"
 2. Use `npm run dev:ui-targets` which sets it automatically.
 
 3. Check the console for the initialization message:
+
 ```
 UITarget Dev Mode initialized
 ```
@@ -173,9 +183,9 @@ If dev code appears in production, file a bug report.
 
 ### Environment variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `VITE_UI_TARGET_DEV_MODE` | `false` | Enable visual markers |
+| Variable                      | Default  | Description                                     |
+| ----------------------------- | -------- | ----------------------------------------------- |
+| `VITE_UI_TARGET_DEV_MODE`     | `false`  | Enable visual markers                           |
 | `VITE_TARGET_FILTER_CATEGORY` | _(none)_ | Only show targets with this prefix (e.g. `pdp`) |
 
 ---
@@ -215,9 +225,11 @@ A: No — the transform happens once during compilation, not on every render.
 
 **Q: Can I use this in production?**
 A: The system is designed to be dev-only. If you really need it:
+
 ```bash
 VITE_UI_TARGET_DEV_MODE=true npm run build
 ```
+
 ⚠️ Not recommended — adds ~5KB to bundle.
 
 ---

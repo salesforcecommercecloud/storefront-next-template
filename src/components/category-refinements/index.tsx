@@ -152,7 +152,7 @@ export default function CategoryRefinements({
     // No refinements available
     if (refinements.length === 0) {
         return (
-            <div className="border rounded-none p-4">
+            <div className="border p-4">
                 <p className="text-muted-foreground text-sm">{t('categoryRefinements:noFilterOptionsAvailable')}</p>
             </div>
         );
@@ -211,9 +211,9 @@ function FilterSection({
 
     return (
         <section>
-            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border rounded-none mb-4">
+            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border mb-4">
                 <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left px-1 py-1 -mx-1 cursor-pointer">
                         <Typography variant="small" as="span" className="font-medium">
                             {label}
                         </Typography>

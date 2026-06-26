@@ -34,7 +34,7 @@ export default function DefaultRefinement({
                     <label
                         key={`${attributeId}:${value.value}`}
                         htmlFor={id}
-                        className="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer">
+                        className="flex items-center p-2 hover:bg-muted/30 cursor-pointer">
                         <Checkbox
                             id={id}
                             checked={isSelected}

@@ -17,8 +17,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperStores } from '@/scapi';
 import PreferredStore from '..';
+
+const { t } = getTranslation();
 
 const meta: Meta<typeof PreferredStore> = {
     title: 'Components/Store Preferences/Preferred Store',
@@ -93,7 +96,7 @@ export const NoStoreSelected: Story = {
 
         await expect(canvas.getByText('Preferred Store for Pickup')).toBeInTheDocument();
         await expect(
-            canvas.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
+            canvas.getByText(t('account:storePreferences.preferredStore.noStoreSelected'))
         ).toBeInTheDocument();
     },
 };
@@ -182,7 +185,7 @@ export const WithError: Story = {
 
         await expect(canvas.getByText('Preferred Store for Pickup')).toBeInTheDocument();
         await expect(
-            canvas.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
+            canvas.getByText(t('account:storePreferences.preferredStore.noStoreSelected'))
         ).toBeInTheDocument();
     },
 };

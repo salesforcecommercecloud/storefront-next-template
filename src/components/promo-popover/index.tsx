@@ -48,7 +48,7 @@ const PromoPopover = ({ header, children, className, ...props }: PromoPopoverPro
                 </TooltipTrigger>
                 <TooltipContent
                     side="top"
-                    className="max-w-sm p-0 bg-popover text-popover-foreground border border-border rounded-none shadow-lg [&>span>svg]:bg-popover [&>span>svg]:fill-popover"
+                    className="max-w-sm p-0 bg-popover text-popover-foreground border border-border shadow-lg [&>span>svg]:bg-popover [&>span>svg]:fill-popover"
                     sideOffset={8}>
                     <div className="p-4">
                         {header && (

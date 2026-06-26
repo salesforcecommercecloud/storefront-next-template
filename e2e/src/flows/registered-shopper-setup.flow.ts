@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-const { I, signupFlow, storefrontPage, accountAddressesPage, accountDetailsPage, accountPaymentMethodsPage } = inject();
+const { I, signupFlow, accountAddressesPage, accountDetailsPage, accountPaymentMethodsPage } = inject();
 import type { SignupData } from '../types/auth.types';
 import { TEST_PAYMENT } from '../test-data/checkout.data';
 import { credentialStore } from '../utils/credential-store';
-import { getScapiConfig, createRegisteredShopperViaApi, type RegisteredShopperApiResult } from '../utils/scapi-helper';
-import { buildRegisteredSessionCookieOps } from '../utils/api-login-utils';
-import { getStorefrontOrigin } from '../utils/cookie-utils';
+import { getScapiConfig, createRegisteredShopperViaApi } from '../utils/scapi-helper';
+import { injectAndActivateRegisteredSession } from '../utils/cookie-utils';
 
 interface RegisteredShopperSetupResult {
     signupData: SignupData;
@@ -85,7 +84,7 @@ class RegisteredShopperSetupFlow {
     ): Promise<RegisteredShopperSetupResult> {
         const result = await createRegisteredShopperViaApi(config);
 
-        await this.injectRegisteredSessionCookies(config.siteId, result);
+        await injectAndActivateRegisteredSession(config.siteId, result.tokens);
 
         credentialStore.store({
             email: result.signupData.email,
@@ -110,22 +109,6 @@ class RegisteredShopperSetupFlow {
                 postalCode: result.addressData.postalCode,
             },
         };
-    }
-
-    private async injectRegisteredSessionCookies(siteId: string, result: RegisteredShopperApiResult): Promise<void> {
-        const ops = buildRegisteredSessionCookieOps(siteId, result.tokens, getStorefrontOrigin());
-
-        await (I.usePlaywrightTo('inject registered session cookies', async ({ page }) => {
-            for (const name of ops.clear) {
-                await page.context().clearCookies({ name });
-            }
-            await page.context().addCookies(ops.add);
-        }) as unknown as Promise<void>);
-
-        const siteAlias = process.env.SITE_ALIAS || 'us';
-        const locale = process.env.LOCALE || 'en-US';
-        I.amOnPage(`/${siteAlias}/${locale}/`);
-        await storefrontPage.waitForSessionCookies('registered', siteId, 15);
     }
 
     private async executeViaUi(): Promise<RegisteredShopperSetupResult> {

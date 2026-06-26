@@ -109,20 +109,18 @@ try {
     const removed = [];
 
     // Build updated config: preserve existing, add new, drop removed
-    const components = [...foundIds]
-        .sort()
-        .map((targetId) => {
-            if (existing.has(targetId)) {
-                return existing.get(targetId);
-            }
-            added.push(targetId);
-            return {
-                targetId,
-                path: SMOKE_TEST_PATH,
-                hint: deriveHint(targetId),
-                order: 999,
-            };
-        });
+    const components = [...foundIds].sort().map((targetId) => {
+        if (existing.has(targetId)) {
+            return existing.get(targetId);
+        }
+        added.push(targetId);
+        return {
+            targetId,
+            path: SMOKE_TEST_PATH,
+            hint: deriveHint(targetId),
+            order: 999,
+        };
+    });
 
     for (const [targetId] of existing) {
         if (!foundIds.has(targetId)) {

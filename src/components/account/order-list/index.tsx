@@ -87,7 +87,7 @@ function OrderListEmpty({ message }: { message?: string }): ReactElement {
     const { t } = useTranslation('account');
 
     return (
-        <Card className="border-border m-0 rounded-none shadow-none border-b-0">
+        <Card className="border-border m-0 border-b-0">
             <CardContent className="p-0">
                 <div className="py-4 space-y-4 flex flex-col items-center justify-center">
                     <Typography variant="h4" className="text-muted-foreground w-fit">
@@ -302,7 +302,7 @@ export function OrderListSkeleton(): ReactElement {
         <>
             <div className="space-y-4 m-0 border-x border-t border-border">
                 {Array.from({ length: 3 }, (_, i) => (
-                    <Card key={i} className="py-0 rounded-none border-0 border-border shadow-none">
+                    <Card key={i} className="py-0 border-0 border-border">
                         <CardContent className="p-6 space-y-4 border-b border-border animate-pulse">
                             <div className="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
                                 <div className="flex flex-wrap gap-x-8 gap-y-2">

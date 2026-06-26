@@ -16,8 +16,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import SearchSuggestionsSection from './suggestions-section';
+
+const { t } = getTranslation();
 
 // Mock child components
 vi.mock('./suggestions-list', () => ({
@@ -846,7 +849,7 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.getAllByText('Popular Searches')).toHaveLength(2);
+            expect(screen.getAllByText(t('search:suggestions.popularSearches'))).toHaveLength(2);
             expect(screen.getAllByText('Popular 1')).toHaveLength(2); // Mobile + Desktop
             expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
         });
@@ -859,7 +862,7 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.getAllByText('Popular Searches')).toHaveLength(2);
+            expect(screen.getAllByText(t('search:suggestions.popularSearches'))).toHaveLength(2);
             expect(screen.getAllByText('Popular 1')).toHaveLength(2); // Mobile + Desktop
             expect(screen.getAllByText('Popular 2')).toHaveLength(2); // Mobile + Desktop
         });
@@ -938,8 +941,8 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.queryByText('Popular Searches')).not.toBeInTheDocument();
-            expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
+            expect(screen.queryByText(t('search:suggestions.popularSearches'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('search:suggestions.recentSearches'))).not.toBeInTheDocument();
         });
 
         it('should not render Einstein sections when suggestions arrays are empty', () => {
@@ -956,8 +959,8 @@ describe('SearchSuggestionsSection Component', () => {
                 />
             );
 
-            expect(screen.queryByText('Popular Searches')).not.toBeInTheDocument();
-            expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
+            expect(screen.queryByText(t('search:suggestions.popularSearches'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('search:suggestions.recentSearches'))).not.toBeInTheDocument();
         });
     });
 });

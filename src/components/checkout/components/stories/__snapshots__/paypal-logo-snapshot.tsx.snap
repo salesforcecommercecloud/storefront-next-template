@@ -5,9 +5,9 @@ exports[`PayPalLogo stories snapshot > Decorative story renders and matches snap
   alt=""
   aria-hidden="true"
   class=" h-4 w-auto object-contain"
-  height="16"
+  height="18"
   src="__ASSET_MOCK__"
-  width="48"
+  width="74"
 />
 `;
 
@@ -15,9 +15,9 @@ exports[`PayPalLogo stories snapshot > Default story renders and matches snapsho
 <img
   alt="PayPal"
   class=" h-4 w-auto object-contain"
-  height="16"
+  height="18"
   src="__ASSET_MOCK__"
-  width="48"
+  width="74"
 />
 `;
 
@@ -25,8 +25,8 @@ exports[`PayPalLogo stories snapshot > WithCustomClassName story renders and mat
 <img
   alt="PayPal"
   class="custom-class h-4 w-auto object-contain"
-  height="16"
+  height="18"
   src="__ASSET_MOCK__"
-  width="48"
+  width="74"
 />
 `;

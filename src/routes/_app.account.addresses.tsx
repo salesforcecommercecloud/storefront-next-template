@@ -202,7 +202,7 @@ function AccountAddressesContent({
     return (
         <div className="space-y-5">
             {/* Page Header */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
                     <div className="flex items-start justify-between">
                         <div>
@@ -211,7 +211,7 @@ function AccountAddressesContent({
                             </h1>
                             <p className="text-sm text-muted-foreground">{t('addresses.subtitle')}</p>
                         </div>
-                        <Button onClick={handleAdd} className="rounded-none">
+                        <Button onClick={handleAdd} className="">
                             <Plus className="w-4 h-4" />
                             {t('addresses.addNewAddress')}
                         </Button>
@@ -221,7 +221,7 @@ function AccountAddressesContent({
 
             {/* Empty State */}
             {!hasAddresses && (
-                <Card className="p-8 text-center rounded-none shadow-none">
+                <Card className="p-8 text-center">
                     <div className="flex flex-col items-center gap-4">
                         <div className="text-muted-foreground">
                             <p className="text-sm font-medium">{t('addresses.noSavedAddresses')}</p>

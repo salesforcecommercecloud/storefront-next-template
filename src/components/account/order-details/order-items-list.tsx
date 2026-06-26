@@ -85,7 +85,7 @@ export function OrderItemsList({
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
-                        <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
+                        <div className="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
                             <Link
                                 to={routeHref(routes.product, { productId: item.productId ?? '' })}
                                 className="flex-shrink-0 block"
@@ -94,10 +94,7 @@ export function OrderItemsList({
                                         ? tProduct('viewProductAriaLabel', { productName })
                                         : t('orders.productImageLinkFallback')
                                 }>
-                                <ProductItemVariantImage
-                                    productItem={enrichedItem}
-                                    className="h-24 w-24 rounded-none"
-                                />
+                                <ProductItemVariantImage productItem={enrichedItem} className="h-24 w-24" />
                             </Link>
                             <div className="min-w-0 flex-1 space-y-1">
                                 <ProductItemVariantName productItem={enrichedItem} />
@@ -133,7 +130,7 @@ export function OrderItemsList({
                                         asChild
                                         variant="default"
                                         size="sm"
-                                        className="rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs">
+                                        className="bg-foreground text-background hover:bg-foreground/90 text-xs">
                                         <Link to={routeHref(routes.product, { productId: item.productId })}>
                                             {t('orders.buyAgain')}
                                         </Link>

@@ -22,9 +22,14 @@
  *   --type=snapshot|interaction|a11y
  *
  * Optional:
- *   --update     # snapshot only — regenerate snapshot fixtures
- *   --coverage   # snapshot only — auto-runs generate-story-tests then vitest --coverage
- *   --static     # interaction|a11y — build storybook & serve static instead of dev
+ *   --update          # snapshot only — regenerate snapshot fixtures
+ *   --coverage        # snapshot only — auto-runs generate-story-tests then vitest --coverage
+ *   --static          # interaction|a11y — build storybook & serve static instead of dev
+ *   --stories=<name>  # snapshot only — narrow the vitest run to story files whose
+ *                     #   path contains <name> (may be a nested subpath, e.g.
+ *                     #   account/order-details). Ignored for interaction|a11y: the
+ *                     #   test-runner runs in --index-json mode, which only filters
+ *                     #   by tag, not by file path or name.
  *
  * Snapshot tests use vitest. Interaction/a11y tests orchestrate a server
  * (storybook dev or `npx serve` of the static build) plus `test-storybook`,
@@ -43,6 +48,18 @@ for (const raw of process.argv.slice(2)) {
 const type = flags.type;
 if (!['snapshot', 'interaction', 'a11y'].includes(type)) {
     console.error('Error: --type=snapshot|interaction|a11y is required');
+    process.exit(2);
+}
+
+// `--stories` with no usable value can't filter anything: the space form
+// `--stories <name>` parses to boolean `true`, and the empty form `--stories=`
+// parses to `''`. The first would silently run the full suite; the second would
+// push an empty positional to vitest and crash. Fail loud for both so a
+// no-value form can't masquerade as a filtered run. Scoped to snapshot — the
+// only type that honors `--stories`; interaction/a11y ignore it entirely, so
+// erroring there would demand a value that does nothing for those types.
+if (type === 'snapshot' && (flags.stories === true || flags.stories === '')) {
+    console.error('Error: --stories needs a value — use --stories=<name>');
     process.exit(2);
 }
 
@@ -69,6 +86,9 @@ if (type === 'snapshot') {
         args.push('--coverage');
     }
     args.push('--config', './.storybook/vite.config.ts');
+    // vitest treats trailing positionals as filename filters — narrow to story
+    // files whose path contains <name>.
+    if (typeof flags.stories === 'string') args.push(flags.stories);
     process.exit(await run('vitest', args));
 }
 

@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order/status';
 import { routes, routeHref } from '@/route-paths';
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 w-fit';
 const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';
 const ORDER_HEADER_LABEL_CLASS = 'text-xs font-medium text-muted-foreground';
 
@@ -134,7 +134,7 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
 function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
     return (
         <div className="relative">
-            <div className="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border">
+            <div className="w-16 h-16 overflow-hidden bg-muted border border-border">
                 {item.imageUrl ? (
                     <img
                         src={item.imageUrl}
@@ -148,7 +148,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
             </div>
             {item.quantity > 1 && (
                 <span
-                    className="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                    className="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
                     aria-label={`Quantity: ${item.quantity}`}>
                     {item.quantity}
                 </span>
@@ -162,7 +162,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
  */
 function OverflowIndicator({ count }: { count: number }): ReactElement {
     return (
-        <div className="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center">
+        <div className="w-16 h-16 bg-muted border border-border flex items-center justify-center">
             <Typography variant="small" as="span" className="text-muted-foreground">
                 +{count}
             </Typography>
@@ -178,7 +178,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-muted border-border p-0 rounded-none shadow-none">
+        <Card className="bg-muted border-border p-0 ">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-muted-foreground" aria-hidden />
@@ -267,7 +267,7 @@ export function OrderListItem({
             to={orderDetailsUrl}
             className={cn('block transition-opacity hover:opacity-95 m-0', className)}
             onClick={() => onViewDetails?.(order.orderNo)}>
-            <Card className="py-0 rounded-none border-0 border-border shadow-none border-b border-separator hover:bg-transparent">
+            <Card className="order-list-item-card py-0 border-0 border-border border-b border-separator hover:bg-transparent">
                 <CardContent className="p-6 space-y-4 border-b border-separator">
                     {/* Header: Order ID, Date, Total, Items + Status */}
                     <div className="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted">

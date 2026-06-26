@@ -39,7 +39,7 @@ This component renders a generic Google Pay logo used inside the placeholder \`E
 
 **Current Implementation:**
 - Local SVG from \`public/images/google-pay-logo.svg\`
-- Renders the colored logo by default; accepts an \`inverted\` prop that applies a \`brightness(0) invert(1)\` filter for use on dark backgrounds
+- Renders a logo with colored Google "G" and white "Pay" text, designed for use on dark backgrounds
 
 **Production Replacement:**
 When integrating real Google Pay, replace this placeholder with the **official Google Pay button** provided through the Google Pay Web API. Google has strict brand guidelines that mandate using their supplied button components (with correct logo usage, colors, sizes, and padding). See:
@@ -74,15 +74,6 @@ When integrating real Google Pay, replace this placeholder with the **official G
                 defaultValue: { summary: 'false' },
             },
         },
-        inverted: {
-            control: 'boolean',
-            description:
-                'When `true`, applies a `brightness(0) invert(1)` CSS filter so the logo renders in white. Use when placing the logo on a dark background.',
-            table: {
-                type: { summary: 'boolean' },
-                defaultValue: { summary: 'false' },
-            },
-        },
     },
 };
 
@@ -109,14 +100,12 @@ export const WithCustomClassName: Story = {
     },
 };
 
-export const Inverted: Story = {
-    args: {
-        inverted: true,
-    },
+export const OnDarkBackground: Story = {
+    args: {},
     parameters: {
         docs: {
             description: {
-                story: 'Inverted mode applies a `brightness(0) invert(1)` filter to render the logo in white. Rendered on a dark background so the effect is visible.',
+                story: 'The logo has a colored Google "G" with white "Pay" text, designed for dark backgrounds.',
             },
         },
     },

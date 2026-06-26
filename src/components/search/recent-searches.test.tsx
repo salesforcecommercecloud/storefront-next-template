@@ -16,7 +16,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import RecentSearches from './recent-searches';
+
+const { t } = getTranslation();
 
 const renderWithRouter = (ui: React.ReactElement) => {
     return render(<BrowserRouter>{ui}</BrowserRouter>);
@@ -40,8 +43,8 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
-        expect(screen.queryByText('Clear recent searches')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('search:suggestions.recentSearches'))).not.toBeInTheDocument();
+        expect(screen.queryByText(t('search:suggestions.clearRecentSearches'))).not.toBeInTheDocument();
     });
 
     it('should render empty wrapper when recentSearches is undefined', () => {
@@ -53,8 +56,8 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
-        expect(screen.queryByText('Clear recent searches')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('search:suggestions.recentSearches'))).not.toBeInTheDocument();
+        expect(screen.queryByText(t('search:suggestions.clearRecentSearches'))).not.toBeInTheDocument();
     });
 
     it('should render recent searches when provided', () => {
@@ -68,7 +71,7 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        expect(screen.getByText('Recent Searches')).toBeInTheDocument();
+        expect(screen.getByText(t('search:suggestions.recentSearches'))).toBeInTheDocument();
         expect(screen.getByText('shoes')).toBeInTheDocument();
         expect(screen.getByText('boots')).toBeInTheDocument();
         expect(screen.getByText('sneakers')).toBeInTheDocument();
@@ -102,7 +105,7 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        const clearButton = screen.getByText('Clear recent searches');
+        const clearButton = screen.getByText(t('search:suggestions.clearRecentSearches'));
         fireEvent.mouseDown(clearButton);
 
         expect(mockClearRecentSearches).toHaveBeenCalled();
@@ -123,7 +126,7 @@ describe('RecentSearches Component', () => {
             expect(screen.getByText(search)).toBeInTheDocument();
         });
 
-        expect(screen.getByText('Clear recent searches')).toBeInTheDocument();
+        expect(screen.getByText(t('search:suggestions.clearRecentSearches'))).toBeInTheDocument();
     });
 
     it('should render search items as interactive buttons', () => {

@@ -217,7 +217,7 @@ function SummaryBodyContent({
                         ...(basket.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
                     ].map((adjustment) => (
                         <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center gap-2">
-                            <span className="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                            <span className="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
                                 {adjustment.itemText}
                             </span>
                             <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
@@ -436,7 +436,7 @@ export default function OrderSummary({
     );
 
     return (
-        <Card className={cn('!py-4', className, 'rounded-none shadow-none')}>
+        <Card className={cn('!py-4', className, '')}>
             <CardContent className="px-[var(--cart-summary-px)]">
                 <div className="space-y-4" data-testid="sf-order-summary">
                     {showHeading && (

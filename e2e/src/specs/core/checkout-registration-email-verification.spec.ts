@@ -16,12 +16,6 @@
 
 Feature('Checkout Registration with Email Verification').tag('@core').tag('@checkout').tag('@email-verification');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, apiCartSetupFlow, storefrontPage } = inject();
 import { expect } from 'chai';
 import {
@@ -30,6 +24,9 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+installLoginPrefsStubHooks();
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -38,7 +35,7 @@ After(async (test: unknown) => {
     }
 });
 
-scenarioFn('Guest should create account during checkout with email verification', async () => {
+Scenario('Guest should create account during checkout with email verification', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.equal(undefined);
 
@@ -76,9 +73,10 @@ scenarioFn('Guest should create account during checkout with email verification'
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@otp-modal');
+    .tag('@otp-modal')
+    .tag('@smoke');
 
-scenarioFn('Guest should be able to resend OTP code during checkout registration', async () => {
+Scenario('Guest should be able to resend OTP code during checkout registration', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.equal(undefined);
 
@@ -111,9 +109,10 @@ scenarioFn('Guest should be able to resend OTP code during checkout registration
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@otp-resend');
+    .tag('@otp-resend')
+    .tag('@smoke');
 
-scenarioFn('Guest should be able to cancel account registration and checkout as guest', async () => {
+Scenario('Guest should be able to cancel account registration and checkout as guest', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.equal(undefined);
 
@@ -148,9 +147,10 @@ scenarioFn('Guest should be able to cancel account registration and checkout as 
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@cancel-registration');
+    .tag('@cancel-registration')
+    .tag('@smoke');
 
-scenarioFn('Guest should see error message if registration initiation fails', async () => {
+Scenario('Guest should see error message if registration initiation fails', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.equal(undefined);
 
@@ -179,9 +179,10 @@ scenarioFn('Guest should see error message if registration initiation fails', as
 })
     .tag('@guest-checkout')
     .tag('@checkout-registration')
-    .tag('@error-handling');
+    .tag('@error-handling')
+    .tag('@smoke');
 
-scenarioFn('Save payment checkbox is not visible for guest shoppers during checkout', async () => {
+Scenario('Save payment checkbox is not visible for guest shoppers during checkout', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.equal(undefined);
 
@@ -210,9 +211,10 @@ scenarioFn('Save payment checkbox is not visible for guest shoppers during check
     .tag('@guest-checkout')
     .tag('@checkout-registration')
     .tag('@save-payment-checkbox')
-    .tag('@hide-save-payment');
+    .tag('@hide-save-payment')
+    .tag('@smoke');
 
-scenarioFn('Save payment checkbox remains hidden when guest declines account creation', async () => {
+Scenario('Save payment checkbox remains hidden when guest declines account creation', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.equal(undefined);
 
@@ -251,4 +253,5 @@ scenarioFn('Save payment checkbox remains hidden when guest declines account cre
     .tag('@guest-checkout')
     .tag('@checkout-registration')
     .tag('@save-payment-checkbox')
-    .tag('@keep-save-payment');
+    .tag('@keep-save-payment')
+    .tag('@smoke');

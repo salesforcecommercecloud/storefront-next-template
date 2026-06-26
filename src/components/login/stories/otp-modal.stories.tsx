@@ -28,7 +28,7 @@ const meta: Meta<typeof OtpModal> = {
         docs: {
             description: {
                 component:
-                    'OTP verification modal shown after a passwordless login request. Auto-advances focus between digit inputs, auto-submits when the full code is entered, and supports a resend-with-cooldown affordance plus an optional "Checkout as Guest" escape hatch.',
+                    'OTP verification modal shown after a passwordless login request. Auto-advances focus between digit inputs, expands to fit a pasted code longer than the configured length (up to 8 digits), and auto-submits as soon as the visible slots are completely filled (6–8 digits, typed or pasted). Supports a resend-with-cooldown affordance plus an optional "Checkout as Guest" escape hatch.',
             },
         },
     },

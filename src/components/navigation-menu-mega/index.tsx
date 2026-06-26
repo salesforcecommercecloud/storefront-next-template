@@ -336,7 +336,7 @@ export default function ResponsiveNavigationMenu({
                                 delayDuration={0}
                                 propsViewport={() => ({
                                     className:
-                                        'rounded-none border-0 shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
+                                        ' border-0 shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
                                     // Anchor the fixed panel to both viewport edges via `left: 0` + `right: 0`
                                     // so its width matches the layout viewport, *excluding* the scrollbar gutter.
                                     // Using `width: 100vw` instead would include the scrollbar and overshoot

@@ -25,7 +25,7 @@ const rootCategories = mockMegaMenuRootCategory.categories || [];
 const meta: Meta<typeof CategoryNavigationMenu> = {
     title: 'LAYOUT/Navigation Menu',
     component: CategoryNavigationMenu,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         layout: 'padded',
         docs: {

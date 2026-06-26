@@ -1323,6 +1323,44 @@ class CheckoutPage {
         I.click(this.locators.promoCodeApplyButton);
     }
 
+    /**
+     * Returns true when the shipping options form is visible (radio inputs rendered in edit mode).
+     */
+    async isShippingOptionsFormVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.shippingMethodOption);
+        return count > 0;
+    }
+
+    /**
+     * Returns true when the payment form submit button is visible (payment step is in edit mode).
+     */
+    async isPaymentFormOpen(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(
+            '[data-testid="sf-toggle-card-payment"] button[type="submit"]'
+        );
+        return count > 0;
+    }
+
+    /**
+     * Wait for the shipping options "Continue to Payment" button to become enabled (price
+     * recalculation complete), then click it using Playwright force-click so viewport clipping
+     * from the fixed mobile bar does not block the action.
+     *
+     * @param timeoutSeconds - How long to wait for the button to become enabled
+     */
+    async waitForShippingRecalcAndContinue(timeoutSeconds: number = 30): Promise<void> {
+        I.waitForElement(
+            '[data-testid="sf-toggle-card-shipping-options"] button[type="submit"]:not([disabled])',
+            timeoutSeconds
+        );
+        await (I.usePlaywrightTo('click Continue to Payment', async ({ page }) => {
+            const btn = page.locator('[data-testid="sf-toggle-card-shipping-options"] button[type="submit"]').first();
+            await btn.scrollIntoViewIfNeeded();
+            await btn.click({ force: true });
+        }) as unknown as Promise<void>);
+        I.waitForElement('form[data-checkout-mobile-bar]', 30);
+    }
+
     async getPromoCodeError(): Promise<string> {
         const count = await I.grabNumberOfVisibleElements(this.locators.promoCodeError);
         if (count === 0) return '';
@@ -1943,28 +1981,6 @@ class CheckoutPage {
     // =========================================================================
 
     /**
-     * Mock the passwordless authorization API to return success.
-     * This simulates the backend detecting a registered email and sending an OTP.
-     *
-     * React Router v7 fetchers POST to the `.data` endpoint which returns turbo-stream
-     * (`text/x-script`) format. We intercept that specific endpoint.
-     */
-    async mockPasswordlessAuthorizationSuccess(email: string): Promise<void> {
-        await (I.usePlaywrightTo('mock passwordless API', async ({ browserContext }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
-                // Turbo-stream format: flattened index-referenced JSON
-                const body = JSON.stringify([{ _1: 2 }, 'data', { _3: 4, _5: 6 }, 'success', true, 'email', email]);
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'text/x-script; charset=utf-8',
-                    body,
-                });
-            });
-        }) as unknown as Promise<void>);
-    }
-
-    /**
      * Mock the registration API to return unavailable (SLAS "Email not verified" 400).
      * The component should silently uncheck the checkbox with no toast or error.
      */
@@ -2002,58 +2018,6 @@ class CheckoutPage {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
         return false;
-    }
-
-    /**
-     * Mock the passwordless authorization API to return the guest path: success=false
-     * with no requiresLogin and no error. Simulates SLAS 403 (not authorized for
-     * passwordless on this site) or 404 (email not registered) - both of which are
-     * mapped server-side to a "let the shopper proceed as guest" response. The OTP
-     * modal must not open and the standard login modal must not open either.
-     */
-    async mockPasswordlessAuthorizationGuestPath(email: string): Promise<void> {
-        await (I.usePlaywrightTo('mock passwordless API with guest path', async ({ browserContext }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
-                // Turbo-stream format: flattened index-referenced JSON.
-                // Shape: { success: false, email }. No `requiresLogin` field.
-                const body = JSON.stringify([{ _1: 2 }, 'data', { _3: 4, _5: 6 }, 'success', false, 'email', email]);
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'text/x-script; charset=utf-8',
-                    body,
-                });
-            });
-        }) as unknown as Promise<void>);
-    }
-
-    /**
-     * Mock the passwordless authorization API to return requiresLogin (400 scenario).
-     * Simulates SLAS responding with 400 when passwordless is not available for the email.
-     */
-    async mockPasswordlessAuthorizationRequiresLogin(email: string): Promise<void> {
-        await (I.usePlaywrightTo('mock passwordless API with requiresLogin', async ({ browserContext }) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
-                // Turbo-stream format: flattened index-referenced JSON
-                const body = JSON.stringify([
-                    { _1: 2 },
-                    'data',
-                    { _3: 4, _5: 6, _7: 8 },
-                    'success',
-                    false,
-                    'requiresLogin',
-                    true,
-                    'email',
-                    email,
-                ]);
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'text/x-script; charset=utf-8',
-                    body,
-                });
-            });
-        }) as unknown as Promise<void>);
     }
 
     /**

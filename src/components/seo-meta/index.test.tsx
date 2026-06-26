@@ -15,8 +15,9 @@
  */
 
 import { render } from '@testing-library/react';
+import i18next from 'i18next';
 import { describe, test, expect } from 'vitest';
-import { SeoMeta } from '.';
+import { SeoMeta, DEFAULT_SITE_NAME_KEY } from '.';
 
 function getMeta(name: string) {
     return document.head.querySelector(`meta[name="${name}"]`);
@@ -26,11 +27,18 @@ function getMetaProperty(property: string) {
     return document.head.querySelector(`meta[property="${property}"]`);
 }
 
+// Site name is vertical-driven (derived from the active i18n bundle), so tests
+// resolve it the same way SeoMeta does instead of hardcoding the canonical
+// "Market Street" value. Verticals like cosmetic override common.defaultSiteName.
+// Resolved lazily inside each test — i18n is initialized by vitest setup, which
+// hasn't run by the time module-level top-level code evaluates.
+const siteName = () => i18next.t(DEFAULT_SITE_NAME_KEY, { ns: 'common' });
+
 describe('SeoMeta', () => {
     describe('title', () => {
         test('renders title with site name suffix', () => {
             render(<SeoMeta title="Classic Jacket" />);
-            expect(document.title).toBe('Classic Jacket | Storefront Next: Market Street');
+            expect(document.title).toBe(`Classic Jacket | ${siteName()}`);
         });
 
         test('renders raw title without suffix when rawTitle is set', () => {
@@ -40,7 +48,7 @@ describe('SeoMeta', () => {
 
         test('renders site name as fallback when no title is provided', () => {
             render(<SeoMeta />);
-            expect(document.title).toBe('Storefront Next: Market Street');
+            expect(document.title).toBe(siteName());
         });
     });
 
@@ -139,7 +147,7 @@ describe('SeoMeta', () => {
             expect(getMetaProperty('og:type')).toHaveAttribute('content', 'product');
             expect(getMetaProperty('og:url')).toHaveAttribute('content', 'https://store.com/product/jacket');
             expect(getMetaProperty('og:image')).toHaveAttribute('content', 'https://img.example.com/jacket.jpg');
-            expect(getMetaProperty('og:site_name')).toHaveAttribute('content', 'Storefront Next: Market Street');
+            expect(getMetaProperty('og:site_name')).toHaveAttribute('content', siteName());
         });
 
         test('defaults og:type to website when not specified', () => {
@@ -164,7 +172,7 @@ describe('SeoMeta', () => {
 
         test('uses site name as og:title fallback when title is not provided', () => {
             render(<SeoMeta openGraph={{}} />);
-            expect(getMetaProperty('og:title')).toHaveAttribute('content', 'Storefront Next: Market Street');
+            expect(getMetaProperty('og:title')).toHaveAttribute('content', siteName());
         });
 
         test('uses custom site name for og:site_name', () => {

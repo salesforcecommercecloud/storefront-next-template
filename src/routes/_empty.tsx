@@ -25,8 +25,10 @@ import { Outlet } from 'react-router';
  * For routes with the standard header/footer, use the `_app.` prefix instead.
  */
 export default function EmptyLayout() {
+    // `data-layout="empty"` marks this headerless layout so vertical themes can
+    // opt its <main> out of header-height top padding (no header is rendered here).
     return (
-        <main>
+        <main data-layout="empty">
             <Outlet />
         </main>
     );

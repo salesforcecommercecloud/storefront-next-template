@@ -17,9 +17,12 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { loader } from './_app.account.store-preferences';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+
+const { t } = getTranslation();
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -88,7 +91,7 @@ describe('Store Preferences page', () => {
             expect(screen.getByTestId('store-preferences')).toBeInTheDocument();
 
             const seoMeta = screen.getByTestId('seo-meta');
-            expect(seoMeta).toHaveAttribute('data-title', 'Store Preferences');
+            expect(seoMeta).toHaveAttribute('data-title', t('account:meta.storePreferencesTitle'));
             expect(seoMeta).toHaveAttribute('data-no-index', 'true');
         });
     });

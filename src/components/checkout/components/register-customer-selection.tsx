@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
@@ -22,9 +22,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperLogin } from '@/scapi';
-import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 import type {
     action as initiateRegistrationAction,
     InitiateRegistrationResponse,
@@ -69,42 +66,12 @@ export default function RegisterCustomerSelection({
     const registrationFetcher = useFetcher<typeof initiateRegistrationAction>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
 
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-    const turnstileResetRef = useRef<(() => void) | null>(null);
-    // The widget is always rendered when Turnstile is enabled. The server's `cc-tv`
-    // httpOnly cookie is the single source of truth for "this client passed Turnstile
-    // recently"; if it's present the server skips re-verification regardless of whether
-    // the client also sends a token, so the cost of mounting the widget here is just an
-    // extra silent siteverify roundtrip in the rare interactive-required case.
-    // Mirroring the cookie via client-side state (e.g. sessionStorage) would just
-    // duplicate state for no benefit — the server cookie already covers the skip path.
-    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) : false;
-    const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
-    const turnstileSiteKey = useMemo(() => {
-        if (!config || !turnstileEnabled) return null;
-        if (typeof window !== 'undefined') {
-            const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            return getTurnstileSiteKey(config as AppConfig, baseUrl);
-        }
-        return null;
-    }, [config, turnstileEnabled]);
-
-    const resetTurnstile = useCallback(() => {
-        setTurnstileToken(null);
-        turnstileResetRef.current?.();
-    }, []);
-
-    const handleTurnstileSuccess = useCallback((token: string) => {
-        setTurnstileToken(token);
-    }, []);
-
-    const handleTurnstileError = useCallback(() => {
-        setTurnstileToken(null);
-    }, []);
-
-    const handleTurnstileExpire = useCallback(() => {
-        setTurnstileToken(null);
-    }, []);
+    // No client-side Turnstile widget is rendered here. The shopper has already passed
+    // Turnstile at the contact-info step, which sets the httpOnly cc-tv cookie; the
+    // server-side enforceTurnstile check on /action/initiate-checkout-registration
+    // sees that cookie and skips re-verification. Mounting a second widget here would
+    // re-challenge the shopper because Cloudflare's challenge state is per-widget, not
+    // per-session.
 
     const handleCheckboxChange = (checked: boolean) => {
         setShouldCreateAccount(checked);
@@ -131,15 +98,11 @@ export default function RegisterCustomerSelection({
 
             const formData = new FormData();
             formData.append('email', email);
-            if (turnstileToken) {
-                formData.append('turnstileToken', turnstileToken);
-            }
 
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: resourceRoutes.initiateCheckoutRegistration,
             });
-            if (turnstileEnabled) resetTurnstile();
         } else {
             if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.removeItem('registeredViaCheckout');
@@ -198,16 +161,12 @@ export default function RegisterCustomerSelection({
     const handleResendCode = async () => {
         const formData = new FormData();
         formData.append('email', registrationEmail);
-        if (turnstileToken) {
-            formData.append('turnstileToken', turnstileToken);
-        }
 
         return new Promise<void>((resolve, _reject) => {
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: resourceRoutes.initiateCheckoutRegistration,
             });
-            if (turnstileEnabled) resetTurnstile();
 
             setTimeout(() => resolve(), 1000);
         });
@@ -233,7 +192,7 @@ export default function RegisterCustomerSelection({
                         {t('registration.accountCreatedDescription')}
                     </p>
                 </div>
-                <Badge variant="success" className="rounded-none">
+                <Badge variant="success" className="">
                     {t('registration.verified')}
                 </Badge>
             </section>
@@ -270,17 +229,6 @@ export default function RegisterCustomerSelection({
                         )}
                 </div>
             </label>
-            {turnstileEnabled && turnstileSiteKey && (
-                <TurnstileWidget
-                    siteKey={turnstileSiteKey}
-                    onSuccess={handleTurnstileSuccess}
-                    onError={handleTurnstileError}
-                    onExpire={handleTurnstileExpire}
-                    enabled={turnstileEnabled}
-                    mode={turnstileMode}
-                    resetRef={turnstileResetRef}
-                />
-            )}
 
             {isOtpModalOpen && (
                 <Suspense fallback={null}>

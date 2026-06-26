@@ -1556,6 +1556,7 @@
         "failedToAddProductToCartError": "No se pudo agregar el producto al carrito:",
         "failedToAddProductToWishlistError": "Error al agregar el producto a la lista de deseos:",
         "price": {
+            "unavailable": "Precio no disponible",
             "currentPriceFrom": "Precio actual desde {{price}}",
             "currentPrice": "Precio actual: {{price}}",
             "from": "De {{price}}",

@@ -28,7 +28,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
     class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -117,7 +117,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -145,7 +145,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 1"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -167,7 +167,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId"
           >
             Product 1
@@ -307,7 +307,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -382,7 +382,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -410,7 +410,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 2"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -448,7 +448,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId?pid=750518703077M"
           >
             Product 2
@@ -588,7 +588,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -663,7 +663,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -691,7 +691,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 3"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -748,7 +748,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId?pid=701642823919M"
           >
             Product 3
@@ -897,7 +897,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -972,7 +972,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -1000,7 +1000,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 4"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -1058,7 +1058,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId?pid=750518894461M"
           >
             Product 4
@@ -1192,7 +1192,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -1267,7 +1267,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -1295,7 +1295,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 5"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -1317,7 +1317,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId"
           >
             Product 5
@@ -1441,7 +1441,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -1530,7 +1530,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -1558,7 +1558,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 6"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -1580,7 +1580,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId"
           >
             Product 6
@@ -1720,7 +1720,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -1795,7 +1795,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -1823,7 +1823,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 7"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -1861,7 +1861,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId?pid=750518703077M"
           >
             Product 7
@@ -2001,7 +2001,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
       data-slot="card"
     >
       <div
@@ -2076,7 +2076,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             >
               <button
                 aria-label="Add to Wishlist"
-                class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                 tabindex="-1"
               >
                 <svg
@@ -2104,7 +2104,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           >
             <button
               aria-label="Quick Add Product 8"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -2161,7 +2161,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
         >
           <a
-            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+            class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             href="/product/:productId?pid=701642823919M"
           >
             Product 8
@@ -2328,22 +2328,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2352,22 +2352,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2376,22 +2376,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2400,22 +2400,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2424,22 +2424,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2448,22 +2448,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2472,22 +2472,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>
@@ -2496,22 +2496,22 @@ exports[`ProductGrid stories snapshot > Loading story renders and matches snapsh
         class="space-y-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md aspect-square w-full"
+          class="bg-accent animate-pulse rounded-ui aspect-square w-full"
           data-slot="skeleton"
         />
         <div
           class="space-y-2"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-2/3"
+            class="bg-accent animate-pulse rounded-ui h-4 w-2/3"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-20"
+            class="bg-accent animate-pulse rounded-ui h-5 w-20"
             data-slot="skeleton"
           />
         </div>

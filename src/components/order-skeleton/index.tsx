@@ -46,7 +46,7 @@ export default function OrderSkeleton() {
                 </div>
 
                 {/* Order Summary Card Skeleton */}
-                <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-none border py-6 mb-8">
+                <div className="bg-card text-card-foreground flex flex-col gap-6 border py-6 mb-8">
                     <div className="px-6">
                         <Skeleton className="h-6 w-32 mb-6" />
                     </div>
@@ -69,7 +69,7 @@ export default function OrderSkeleton() {
                 </div>
 
                 {/* Shipping Details Card Skeleton */}
-                <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-none border py-6 mb-8">
+                <div className="bg-card text-card-foreground flex flex-col gap-6 border py-6 mb-8">
                     <div className="px-6">
                         <Skeleton className="h-6 w-36 mb-6" />
                     </div>
@@ -94,7 +94,7 @@ export default function OrderSkeleton() {
                 </div>
 
                 {/* Payment Details Card Skeleton */}
-                <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-none border py-6 mb-8">
+                <div className="bg-card text-card-foreground flex flex-col gap-6 border py-6 mb-8">
                     <div className="px-6">
                         <Skeleton className="h-6 w-32 mb-6" />
                     </div>

@@ -33,7 +33,6 @@ import { useTranslation } from 'react-i18next';
 import { useDeferredRenderSequence } from '@/hooks/use-deferred-render';
 import { cn } from '@/lib/utils';
 import type { DynamicImageDimensions } from '@/lib/images/dynamic-image';
-import type { AppConfig } from '@/types/config';
 import { UITarget } from '@/targets/ui-target';
 
 export interface GalleryImage {
@@ -145,7 +144,7 @@ export default function ImageGallery({
 }: ImageGalleryProps): ReactElement {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const thumbStripRef = useRef<HTMLDivElement>(null);
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const mainWidths = widths?.main ?? DEFAULT_WIDTHS_MAIN;
     const thumbnailWidths = widths?.thumbnail ?? DEFAULT_WIDTHS_THUMBNAIL_GRID;
 
@@ -226,7 +225,7 @@ export default function ImageGallery({
 
     if (!images || images.length === 0) {
         return (
-            <div className="aspect-square bg-muted rounded-none flex items-center justify-center">
+            <div className="aspect-square bg-muted flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                     <div className="text-4xl mb-2">📷</div>
                     <p>{tCommon('noImageAvailable')}</p>
@@ -241,7 +240,7 @@ export default function ImageGallery({
         <UITarget targetId="sfcc.pdp.products.gallery">
             <div className="space-y-4">
                 {/* Main Image */}
-                <div className="relative aspect-square overflow-hidden rounded-none bg-muted">
+                <div className="relative aspect-square overflow-hidden bg-muted" data-gallery-hero>
                     <DynamicImage
                         src={selectedImage.src}
                         alt={selectedImage.alt || imageAltFallback}
@@ -261,7 +260,7 @@ export default function ImageGallery({
 
                 {/* Thumbnail Navigation */}
                 {images.length > 1 && !horizontalThumbnails && (
-                    <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                    <div className="grid grid-cols-4 gap-2 sm:gap-3" data-gallery-thumbs>
                         {images.map((image, index) => (
                             <button
                                 key={image.src + (image.thumbSrc || '')}
@@ -270,7 +269,7 @@ export default function ImageGallery({
                                 onFocus={handleThumbnailIntent}
                                 data-index={index}
                                 className={`
-                                aspect-square overflow-hidden rounded-none bg-muted
+                                aspect-square overflow-hidden bg-muted
                                 border-2 transition-colors cursor-pointer
                                 ${
                                     selectedImageIndex === index
@@ -299,7 +298,7 @@ export default function ImageGallery({
                                 type="button"
                                 onClick={handleScrollThumbnailsLeft}
                                 className={cn(
-                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-none border border-border bg-background shadow-md',
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center border border-border bg-background shadow-md',
                                     'hover:bg-muted transition-colors',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                                 )}
@@ -318,7 +317,7 @@ export default function ImageGallery({
                                     onFocus={handleThumbnailIntent}
                                     data-index={index}
                                     className={cn(
-                                        'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-none bg-muted',
+                                        'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden bg-muted',
                                         'border-2 transition-colors cursor-pointer',
                                         selectedImageIndex === index
                                             ? 'border-primary'
@@ -340,7 +339,7 @@ export default function ImageGallery({
                                 type="button"
                                 onClick={handleScrollThumbnailsRight}
                                 className={cn(
-                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-none border border-border bg-background shadow-md',
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center border border-border bg-background shadow-md',
                                     'hover:bg-muted transition-colors',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                                 )}

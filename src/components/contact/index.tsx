@@ -59,7 +59,7 @@ export default function Contact(): ReactElement {
     );
 
     return (
-        <Card className="max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12 rounded-none shadow-none">
+        <Card className="max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12">
             <div className="flex-1 p-6">
                 <div className="flex flex-col gap-1.5">
                     <Typography variant="h3" className="tracking-tight text-card-foreground">

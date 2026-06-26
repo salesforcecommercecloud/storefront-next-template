@@ -38,7 +38,7 @@ export default function EmptyCart(): ReactElement {
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty">
             <div className="section-container py-8 lg:py-14">
-                <div className="bg-background rounded-none p-8 md:p-16 text-center">
+                <div className="bg-background p-8 md:p-16 text-center">
                     {/* Empty Cart Icon */}
                     <svg
                         className="w-24 h-24 text-muted-foreground/30 mx-auto mb-6"

@@ -27,7 +27,7 @@ export function AccountAddressesSkeleton() {
     return (
         <div className="space-y-5">
             {/* Page Header Skeleton */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
                     <div className="flex items-start justify-between">
                         <div>
@@ -44,11 +44,11 @@ export function AccountAddressesSkeleton() {
             {/* Address Cards Vertical Stack Skeleton */}
             <div className="flex flex-col gap-4">
                 {Array.from({ length: 2 }, (_, i) => i).map((index) => (
-                    <Card key={index} className="border-border gap-0 py-4 rounded-none shadow-none">
+                    <Card key={index} className="border-border gap-0 py-4">
                         <CardHeader className="px-6 pb-2">
                             <CardTitle className="flex items-center gap-2">
                                 <Skeleton className="h-5 w-32" />
-                                {index === 0 && <Skeleton className="h-5 w-14 rounded-none" />}
+                                {index === 0 && <Skeleton className="h-5 w-14" />}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 py-2">

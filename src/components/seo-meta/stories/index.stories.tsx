@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SeoMeta } from '../index';
 
 const meta: Meta<typeof SeoMeta> = {
-    title: 'Components/SEO Meta',
+    title: 'SEO/Seo Meta',
     component: SeoMeta,
     tags: ['autodocs'],
     parameters: {
@@ -26,17 +26,29 @@ const meta: Meta<typeof SeoMeta> = {
         docs: {
             description: {
                 component:
-                    'Renders SEO `<title>` and `<meta>` tags using React 19 document metadata hoisting. Tags are automatically hoisted to `<head>` and work with streaming/Suspense. Note: Meta tags are not visible in the Storybook canvas but are present in the document head.',
+                    'Renders SEO `<title>`, `<meta>`, Open Graph, and X (Twitter) Card tags using React 19 document metadata hoisting. Tags are automatically hoisted to `<head>` and deduplicated, and work with streaming/Suspense. Non-visual: nothing renders in the canvas — inspect the document `<head>` (or read the autodocs) to see the emitted tags. Behavior is exhaustively covered by `index.test.tsx` (28 unit tests).',
             },
         },
     },
     argTypes: {
-        title: { control: 'text' },
-        rawTitle: { control: 'boolean' },
-        description: { control: 'text' },
-        noIndex: { control: 'boolean' },
-        siteName: { control: 'text' },
-        twitter: { control: 'object' },
+        title: { control: 'text', description: 'Page title. Gets ` | {siteName}` appended unless `rawTitle` is set.' },
+        rawTitle: { control: 'boolean', description: 'Render `title` verbatim, without the site-name suffix.' },
+        description: { control: 'text', description: 'Meta description.' },
+        noIndex: { control: 'boolean', description: 'Emit `<meta name="robots" content="noindex">`.' },
+        siteName: {
+            control: 'text',
+            description: 'Override the title-suffix site name (defaults to the localized site name).',
+        },
+        twitter: {
+            control: 'object',
+            description:
+                'X (Twitter) Card metadata `{ cardType, image }`. Omit to skip Card tags (unless `openGraph` is set, which auto-derives them).',
+        },
+        openGraph: {
+            control: 'object',
+            description:
+                'Open Graph metadata `{ type, url, image }` for social sharing. When set without `twitter`, X Card tags are auto-derived from these values.',
+        },
     },
     decorators: [
         (Story) => (
@@ -85,6 +97,23 @@ export const WithTwitterCard: Story = {
         description: 'Check out our latest collection.',
         twitter: {
             cardType: 'summary_large_image',
+            image: 'https://via.placeholder.com/1200x630',
+        },
+    },
+};
+
+/**
+ * Open Graph metadata for a product page. With `openGraph` set and no explicit `twitter` prop,
+ * the X (Twitter) Card tags are auto-derived (`summary_large_image` because an image is present).
+ * Documents the social-sharing path — inspect the document head for `og:*` and `twitter:*` tags.
+ */
+export const WithOpenGraph: Story = {
+    args: {
+        title: 'Classic Leather Jacket',
+        description: 'Premium leather jacket with a tailored fit.',
+        openGraph: {
+            type: 'product',
+            url: 'https://store.example.com/product/classic-leather-jacket',
             image: 'https://via.placeholder.com/1200x630',
         },
     },

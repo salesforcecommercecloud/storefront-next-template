@@ -70,7 +70,7 @@ const RadioCard = forwardRef<HTMLLabelElement, RadioCardProps>(
                 ref={ref}
                 htmlFor={`radio-${value}`}
                 className={cn(
-                    'relative cursor-pointer border rounded-none p-4 transition-all duration-200 block',
+                    'relative cursor-pointer border p-4 transition-all duration-200 block',
                     'hover:border-border focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
                     'border-border bg-card overflow-hidden',
                     isChecked && 'border-primary bg-accent shadow-md',

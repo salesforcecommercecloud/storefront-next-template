@@ -18,6 +18,7 @@ import { useFetcher } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
+import { resourceRoutes, routes, routeHref } from '@/route-paths';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
@@ -27,10 +28,14 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/sca
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { useSite, buildUrl } from '@salesforce/storefront-next-runtime/site-context';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
+import { PaymentSubmissionRefProvider } from './payment-submission-context';
+import { clearCheckoutCorrelationId, getOrCreateCheckoutCorrelationId } from '@/lib/checkout/correlation';
 import { Spinner } from '@/components/spinner';
 import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
@@ -57,7 +62,7 @@ const Payment = lazy(() => import('./components/payment'));
 const RegisterCustomerSelection = lazy(() => import('./components/register-customer-selection'));
 const OrderSummary = lazy(() => import('@/components/order-summary'));
 const MyCart = lazy(() => import('@/components/my-cart'));
-/** @feature-stub Express checkout buttons — remove this import and its JSX below to strip the stub */
+/** @feature-stub Express checkout buttons - remove this import and its JSX below to strip the stub */
 const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 // Import skeleton components for accurate loading states
@@ -86,7 +91,7 @@ function doesPaymentSelectionDiffer(
     const basketInstrument = basket?.paymentInstruments?.[0];
     if (!basketInstrument) return false;
 
-    // User chose "enter a new card" — the basket's existing instrument (from a prior saved-card
+    // User chose "enter a new card" - the basket's existing instrument (from a prior saved-card
     // auto-apply or a previous payment submit) is stale and must be replaced.
     if (!paymentData.useSavedPaymentMethod) {
         return true;
@@ -95,7 +100,7 @@ function doesPaymentSelectionDiffer(
     // User chose a saved card. The basket instrument doesn't store the customerPaymentInstrumentId
     // (v2 basket API limitation), so we can't reliably detect whether the user picked a different
     // saved card than what's already on the basket. Always re-submit to guarantee the correct card
-    // is applied — the server action is idempotent (removes old instrument, adds the selected one).
+    // is applied - the server action is idempotent (removes old instrument, adds the selected one).
     if (paymentData.useSavedPaymentMethod && paymentData.selectedSavedPaymentMethod) {
         return true;
     }
@@ -204,6 +209,8 @@ export default function CheckoutFormPage({
     const { t: tErrors } = useTranslation('errors');
     const tAny = t as (key: string) => string;
     const { currency } = useSite();
+    const config = useConfig();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     const cart = useBasket();
     const basketHydrated = useBasketHydrated();
@@ -218,6 +225,7 @@ export default function CheckoutFormPage({
         shouldPlaceOrderAfterPayment: false,
         options: null,
         setFormErrors: null,
+        onPlaceOrder: null,
     });
     const otpFlowActiveRef = useRef(false);
     const noShippingMethodsRef = useRef(false);
@@ -229,8 +237,10 @@ export default function CheckoutFormPage({
         submitContactInfo,
         submitShippingAddress,
         submitShippingOptions,
+        submitShippingOptionsForRecalculation,
         submitPayment,
         submitPlaceOrder,
+        buildPlaceOrderFinalizeFormData,
         contactFetcher,
         shippingAddressFetcher,
         shippingOptionsFetcher,
@@ -243,7 +253,7 @@ export default function CheckoutFormPage({
 
     // Stale `registeredViaCheckout` / `shouldCreateAccount` session from a prior visit can leave
     // `shouldCreateAccount` true and hide the "Save payment" checkbox (see hidePaymentSaveCheckbox).
-    // Established returning shoppers already have wallet data — clear those flags so the checkbox shows.
+    // Established returning shoppers already have wallet data - clear those flags so the checkbox shows.
     // Uses a ref guard so the cleanup runs at most once per mount, avoiding mid-checkout resets when
     // customerProfile loads asynchronously or paymentInstruments array changes during basket updates.
     const sessionCleanupDoneRef = useRef(false);
@@ -262,7 +272,7 @@ export default function CheckoutFormPage({
     }, [isRegisteredUser, customerProfile?.paymentInstruments?.length, handleCreateAccountPreferenceChange]);
 
     /**
-     * Shopper closed passwordless OTP via "Checkout as guest" — do not verify OTP / sign in.
+     * Shopper closed passwordless OTP via "Checkout as guest" - do not verify OTP / sign in.
      * Unblock contact step and hide place-order create-account checkbox for this checkout session.
      */
     const handleRegisteredUserChoseGuest = useCallback(() => {
@@ -353,6 +363,12 @@ export default function CheckoutFormPage({
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
     const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
+    // Synchronous in-flight guard. `isPlaceOrderPending` is React state, so two clicks
+    // within the same paint both see the old `false` value and both run the handler.
+    // Basket-consumption semantics in SCAPI usually short-circuit the second createOrder,
+    // but relying on that is fragile (race window, future extensions that don't follow
+    // the basket-bound pattern). Cheaper to bail synchronously here.
+    const placeOrderInFlightRef = useRef(false);
     const [shippingMethodValidationError, setShippingMethodValidationError] = useState<string | null>(null);
 
     // Form submission handlers - delegated to checkout actions hook
@@ -367,6 +383,13 @@ export default function CheckoutFormPage({
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Synchronous double-submit guard: the React-state pending flag updates on the
+        // next render, so two clicks in the same paint would both pass it. The ref bails
+        // the second click before any work starts.
+        if (placeOrderInFlightRef.current) {
+            return;
+        }
+
         // Block submission while a non-payment section is being edited. The Place Order button
         // is hidden via the render condition, but this guard handles edge cases (e.g. mobile
         // fixed bar overlap, stale UI state, or buttons without explicit type="button").
@@ -375,7 +398,7 @@ export default function CheckoutFormPage({
         }
 
         // Validate that all non-empty shipments have a shipping method selected.
-        // Without this, the request goes through payment sync → server place-order round-trip
+        // Without this, the request goes through payment sync -> server place-order round-trip
         // before the user sees the error, making the UI appear stuck.
         if (cart?.shipments && cart?.productItems) {
             const shipmentItemCounts = new Map<string, number>();
@@ -395,6 +418,136 @@ export default function CheckoutFormPage({
                 goToStep(STEPS.SHIPPING_OPTIONS);
                 return;
             }
+        }
+
+        // Payment-extension delegation. The storefront owns the surrounding
+        // sequence (prepare -> extension's onPlaceOrder -> finalize) so the
+        // extension only does payment work. See `PaymentSubmissionRef.onPlaceOrder`.
+        const onPlaceOrder = paymentSubmissionRef.current.onPlaceOrder;
+        if (onPlaceOrder) {
+            placeOrderInFlightRef.current = true;
+            setIsPlaceOrderPending(true);
+            // Checkout correlation id - shared across the cart-to-confirmation journey so log
+            // lines from any checkout-flow request can be stitched together. Sent on the
+            // standard `x-correlation-id` header that the storefront's correlationMiddleware
+            // already consumes, so the logger picks it up automatically with no per-route
+            // plumbing. Extensions can echo the same header on their own routes.
+            const correlationId = getOrCreateCheckoutCorrelationId();
+            const correlationHeaders = { 'x-correlation-id': correlationId };
+            void (async () => {
+                let orderNo: string | null = null;
+                try {
+                    // 1. Prepare: validate basket, resolve multiship shipments, recalculate.
+                    const prepareResponse = await fetch(resourceRoutes.placeOrderPrepare, {
+                        method: 'POST',
+                        headers: correlationHeaders,
+                    });
+                    if (!prepareResponse.ok) {
+                        const prepareBody = await prepareResponse.json().catch(() => ({}));
+                        // eslint-disable-next-line no-console
+                        console.error('[Checkout] place-order-prepare rejected the basket', {
+                            correlationId,
+                            status: prepareResponse.status,
+                            body: prepareBody,
+                        });
+                        placeOrderInFlightRef.current = false;
+                        setIsPlaceOrderPending(false);
+                        showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                        return;
+                    }
+
+                    // 2. Extension owns createOrder + PSP confirm. Resolves to orderNo or null.
+                    // The extension also owns its own latency bound; see PaymentSubmissionRef.onPlaceOrder.
+                    const onPlaceOrderResult = await onPlaceOrder();
+                    if (!onPlaceOrderResult) {
+                        // Extension surfaced its own error UI before resolving null.
+                        placeOrderInFlightRef.current = false;
+                        setIsPlaceOrderPending(false);
+                        return;
+                    }
+                    if (typeof onPlaceOrderResult !== 'string' || !onPlaceOrderResult.trim()) {
+                        // Extension contract is `Promise<string | null>`, matching SCAPI's
+                        // OrderNo type.
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            '[Checkout] onPlaceOrder returned a non-string value; extension contract expects Promise<string | null>',
+                            { correlationId, returned: onPlaceOrderResult }
+                        );
+                        placeOrderInFlightRef.current = false;
+                        setIsPlaceOrderPending(false);
+                        showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                        return;
+                    }
+                    orderNo = onPlaceOrderResult;
+
+                    // 3. Finalize: profile saves + basket teardown + confirmation URL.
+                    const finalizeFormData = buildPlaceOrderFinalizeFormData();
+                    finalizeFormData.set('orderNo', orderNo);
+                    const finalizeResponse = await fetch(resourceRoutes.placeOrderFinalize, {
+                        method: 'POST',
+                        headers: correlationHeaders,
+                        body: finalizeFormData,
+                    });
+                    const rawBody = await finalizeResponse.text();
+                    let body: { success?: boolean; redirectUrl?: string } = {};
+                    let parseError: unknown;
+                    try {
+                        body = rawBody ? JSON.parse(rawBody) : {};
+                    } catch (error) {
+                        parseError = error;
+                    }
+                    if (body.redirectUrl) {
+                        // The server returned a redirect URL. Two sub-cases:
+                        //   - Success: navigate to confirmation as normal.
+                        //   - !success: the server tore the basket down (e.g. getOrder
+                        //     failed after retry, but the order itself was already created
+                        //     by onPlaceOrder). Still navigate, since the order is real -
+                        //     out-of-band reconciliation handles any missed profile saves.
+                        // Intentionally leave placeOrderInFlightRef set: navigation is in
+                        // progress; clearing it would re-enable the button mid-redirect.
+                        if (!finalizeResponse.ok || !body.success) {
+                            // eslint-disable-next-line no-console
+                            console.error(
+                                '[Checkout] place-order-finalize failed with order created; navigating to confirmation for reconciliation',
+                                { correlationId, orderNo, status: finalizeResponse.status, rawBody, parseError }
+                            );
+                        }
+                        clearCheckoutCorrelationId();
+                        window.location.href = body.redirectUrl;
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            '[Checkout] place-order-finalize returned non-success; order may need manual reconciliation',
+                            { correlationId, orderNo, status: finalizeResponse.status, rawBody, parseError }
+                        );
+                        placeOrderInFlightRef.current = false;
+                        setIsPlaceOrderPending(false);
+                        showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                    }
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error('[Checkout] place-order delegation failed', { correlationId, orderNo, error });
+                    if (orderNo) {
+                        // Network drop / browser timeout on the finalize fetch, but
+                        // onPlaceOrder already created the order. Build a site-prefixed
+                        // confirmation URL on the client and hard-navigate; the
+                        // confirmation loader's idempotent destroyBasket clears the
+                        // cookie. Out-of-band reconciliation handles missed profile saves.
+                        const confirmationUrl = buildUrl({
+                            to: routeHref(routes.orderConfirmation, { orderNo }),
+                            urlConfig: config.url,
+                            params: { siteId: siteRef, localeId: localeRef },
+                        });
+                        clearCheckoutCorrelationId();
+                        window.location.href = confirmationUrl;
+                        return;
+                    }
+                    placeOrderInFlightRef.current = false;
+                    setIsPlaceOrderPending(false);
+                    showToast?.(tErrors('checkout.placeOrderFailed'), 'error');
+                }
+            })();
+            return;
         }
 
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
@@ -429,6 +582,7 @@ export default function CheckoutFormPage({
                 }
             }
 
+            placeOrderInFlightRef.current = true;
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
             paymentSubmissionRef.current.options = {
@@ -437,6 +591,7 @@ export default function CheckoutFormPage({
             };
             submitPayment(paymentData);
         } else {
+            placeOrderInFlightRef.current = true;
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             paymentSubmissionRef.current.options = paymentData
@@ -493,6 +648,7 @@ export default function CheckoutFormPage({
             !placeOrderFetcher.data.success &&
             placeOrderFetcher.data.error
         ) {
+            placeOrderInFlightRef.current = false;
             setIsPlaceOrderPending(false);
             const error = getCheckoutDisplayError(placeOrderFetcher.data, undefined, tAny);
             if (error) showToast?.(error, 'error');
@@ -541,6 +697,7 @@ export default function CheckoutFormPage({
             submitPlaceOrder();
         } else {
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
+            placeOrderInFlightRef.current = false;
             setIsPlaceOrderPending(false);
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
@@ -600,7 +757,7 @@ export default function CheckoutFormPage({
     if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md rounded-none shadow-none">
+                <Card className="w-full max-w-md">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('common.emptyCart')}
@@ -624,13 +781,16 @@ export default function CheckoutFormPage({
         />
     );
     const defaultShipmentId = cart?.shipments?.[0]?.shipmentId ?? 'me';
+    const shippingAddressSubmittedThisSession = shippingAddressFetcher.data?.success === true;
     let shippingOptionsComponent = (
         <ShippingOptions
             onSubmit={handleShippingOptionsSubmit}
+            onAutoSubmit={submitShippingOptionsForRecalculation}
             isLoading={isSubmitting('shipping-options')}
             actionData={shippingOptionsFetcher.data}
             shippingMethods={shippingMethodsMap[defaultShipmentId]}
             validationError={shippingMethodValidationError}
+            justEnteredAddress={shippingAddressSubmittedThisSession}
             {...shippingOptionsState}
         />
     );
@@ -670,7 +830,7 @@ export default function CheckoutFormPage({
     const isEstimate = cart ? isOrderTotalEstimated(cart) : true;
 
     return (
-        <div className="bg-background">
+        <div data-section="checkout" className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
             <div className="section-container pt-8 pb-6">
                 <Typography variant="h2" as="h1" className="mb-8">
@@ -694,7 +854,7 @@ export default function CheckoutFormPage({
                                 isEstimate={isEstimate}
                                 showTotal={false}
                                 showCheckoutAction={false}
-                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                                className="border-none !py-0 [--cart-summary-px:1rem]"
                             />
                         </OrderSummaryMobileAccordion>
                     </Suspense>
@@ -716,7 +876,7 @@ export default function CheckoutFormPage({
                         <UITarget targetId="sfcc.checkout.sidebar.before" />
                         <div className="space-y-6">
                             {/* Order Summary + Cart Items */}
-                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
+                            <Card className="[--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
                                 <CardHeader className="border-b-[1px] border-border pb-2">
                                     <CardTitle>
                                         <span className="text-2xl font-bold tracking-tight text-card-foreground">
@@ -735,7 +895,7 @@ export default function CheckoutFormPage({
                                                 showPromoCodeForm={true}
                                                 productsByItemId={{}}
                                                 isEstimate={isEstimate}
-                                                className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
+                                                className="border-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
                                             />
                                         </Suspense>
                                     </UITarget>
@@ -836,24 +996,26 @@ export default function CheckoutFormPage({
                             </>
                         )}
 
-                        <UITarget targetId="sfcc.checkout.payment.header.before" />
-                        <Suspense fallback={<PaymentSkeleton />}>
-                            <UITarget targetId="sfcc.checkout.payment.before" />
-                            <UITarget targetId="sfcc.checkout.payment">
-                                <Payment
-                                    onSubmit={handlePaymentSubmit}
-                                    isLoading={isSubmitting('payment')}
-                                    actionData={paymentFetcher.data}
-                                    showUseDifferentBilling={showAddressAndOptions}
-                                    paymentSubmissionRef={paymentSubmissionRef}
-                                    hidePaymentSaveCheckbox={shouldCreateAccount}
-                                    {...paymentState}
-                                />
-                            </UITarget>
-                            <UITarget targetId="sfcc.checkout.payment.after" />
-                        </Suspense>
+                        <PaymentSubmissionRefProvider refValue={paymentSubmissionRef}>
+                            <UITarget targetId="sfcc.checkout.payment.header.before" />
+                            <Suspense fallback={<PaymentSkeleton />}>
+                                <UITarget targetId="sfcc.checkout.payment.before" />
+                                <UITarget targetId="sfcc.checkout.payment">
+                                    <Payment
+                                        onSubmit={handlePaymentSubmit}
+                                        isLoading={isSubmitting('payment')}
+                                        actionData={paymentFetcher.data}
+                                        showUseDifferentBilling={showAddressAndOptions}
+                                        paymentSubmissionRef={paymentSubmissionRef}
+                                        hidePaymentSaveCheckbox={shouldCreateAccount}
+                                        {...paymentState}
+                                    />
+                                </UITarget>
+                                <UITarget targetId="sfcc.checkout.payment.after" />
+                            </Suspense>
+                        </PaymentSubmissionRefProvider>
 
-                        {/* Place Order Section — hide when editing any step except Payment
+                        {/* Place Order Section - hide when editing any step except Payment
                            (Payment has no separate Save button; Place Order acts as its submit) */}
                         {showPlaceOrderSection && (
                             <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">

@@ -17,15 +17,23 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { useLoaderData, useNavigation } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperStores } from '@/scapi';
 import PreferredStore from '.';
 
-// Mock react-router
-vi.mock('react-router', () => ({
-    href: (path: string) => path,
-    useLoaderData: vi.fn(),
-    useNavigation: vi.fn(() => ({ state: 'idle' })),
-}));
+const { t } = getTranslation();
+
+// Mock react-router (preserve real exports so getTranslation's middleware
+// dependency on createContext keeps working under VERTICAL=cosmetic).
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        href: (path: string) => path,
+        useLoaderData: vi.fn(),
+        useNavigation: vi.fn(() => ({ state: 'idle' })),
+    };
+});
 
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 // Mock ChangeStoreButton to avoid client component issues in tests
@@ -138,9 +146,7 @@ describe('PreferredStore', () => {
 
         test('renders empty state message', () => {
             render(<PreferredStore />);
-            expect(
-                screen.getByText('No store selected. Use the store locator to choose your preferred store for pickup.')
-            ).toBeInTheDocument();
+            expect(screen.getByText(t('account:storePreferences.preferredStore.noStoreSelected'))).toBeInTheDocument();
         });
 
         // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR

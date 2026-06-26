@@ -28,7 +28,7 @@ import { UITarget } from '@/targets/ui-target';
 
 export type { ProductDataById };
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 w-fit';
 
 export type OrderDetailsProps = {
     order: ShopperOrders.schemas['Order'];
@@ -151,7 +151,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
     return (
         <div data-section="order-details">
             {/* Single bordered container for the whole order details component */}
-            <Card className="rounded-none">
+            <Card className="">
                 <CardContent className="px-6 pt-0 pb-6 space-y-6">
                     {/* Order Details header */}
                     <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
@@ -188,7 +188,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 space-y-4">
                             <h2 className="text-lg font-semibold">{t('orders.itemsOrdered')}</h2>
-                            <Card className="rounded-none p-0 overflow-visible">
+                            <Card className="p-0 overflow-visible">
                                 <CardContent className="p-0">
                                     {shipments.map((shipment, idx) => {
                                         const sid = shipment.shipmentId ?? `ship-${idx}`;
@@ -198,7 +198,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                 key={sid}
                                                 data-shipment-id={sid}
                                                 className={idx > 0 ? 'border-t border-muted-foreground/20' : ''}>
-                                                <div className="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2">
+                                                <div className="px-3 py-2 bg-muted flex flex-nowrap items-center justify-between gap-2">
                                                     <p className="text-sm min-w-0 font-medium">
                                                         {t('orders.shipmentNumber', {
                                                             n: String(idx + 1),
@@ -225,7 +225,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         {shipment.trackingNumber != null && (
                                                             <Card
-                                                                className="rounded-none min-h-[4rem] p-0 bg-card"
+                                                                className=" min-h-[4rem] p-0 bg-card"
                                                                 data-card="tracking-number">
                                                                 <CardContent className="p-3">
                                                                     <p className="text-xs font-semibold text-foreground">
@@ -239,7 +239,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                         )}
                                                         {shipment.shippingAddress && (
                                                             <Card
-                                                                className="rounded-none min-h-[4rem] p-0 bg-card"
+                                                                className=" min-h-[4rem] p-0 bg-card"
                                                                 data-card="shipping-address">
                                                                 <CardContent className="p-3">
                                                                     <p className="text-xs font-semibold text-foreground">
@@ -278,9 +278,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                             {paymentMethodDisplays.length > 0 && (
                                 <div className="space-y-1.5">
                                     <p className="text-xs font-semibold text-foreground">{t('orders.paymentMethod')}</p>
-                                    <Card
-                                        className="rounded-none p-0 bg-card border border-border"
-                                        data-card="payment-method">
+                                    <Card className="p-0 bg-card" data-card="payment-method">
                                         <CardContent className="p-3 py-2">
                                             <ul className="text-sm font-medium text-muted-foreground space-y-1 list-none">
                                                 {paymentMethodDisplays.map(({ id, label }) => (

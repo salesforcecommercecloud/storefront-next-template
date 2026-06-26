@@ -62,7 +62,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     const firstName = customer?.firstName || t('overview.defaultName');
 
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <h1 className="text-2xl font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
@@ -78,7 +78,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
  */
 export function WelcomeSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <Skeleton className="h-6 w-64 mb-1" />
                 <Skeleton className="h-4 w-96 max-w-full" />
@@ -117,7 +117,7 @@ export function QuickLinksSection(): ReactElement {
     ];
 
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">{t('overview.quickLinks.title')}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -125,7 +125,7 @@ export function QuickLinksSection(): ReactElement {
                         const Icon = link.icon;
                         return (
                             <Link key={link.path} to={link.path} className="group">
-                                <div className="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary">
+                                <div className="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary">
                                     <Icon className="h-4 w-4 text-foreground group-hover:text-primary transition-colors" />
                                     <h3 className="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors">
                                         {link.label}
@@ -145,14 +145,12 @@ export function QuickLinksSection(): ReactElement {
  */
 export function QuickLinksSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-32 mb-4" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
-                        <div
-                            key={i}
-                            className="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border">
+                        <div key={i} className="h-full flex flex-col items-center justify-center gap-3 p-6 border">
                             <Skeleton className="w-4 h-4" />
                             <Skeleton className="h-5 w-24" />
                         </div>
@@ -242,16 +240,16 @@ export function RecentOrdersSectionSkeleton(): ReactElement {
                 </Card>
                 <OrderListSkeleton />
             </div>
-            <Card className="py-0 rounded-none shadow-none">
+            <Card className="py-0">
                 <CardContent className="p-6 space-y-4">
                     <Skeleton className="h-7 w-72 max-w-full" />
                     <Skeleton className="h-4 w-full max-w-lg" />
-                    <div className="rounded-none border border-border p-4 sm:p-5">
+                    <div className="border border-border p-4 sm:p-5">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                             <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                                 <div className="flex shrink-0 gap-2">
-                                    <Skeleton className="h-16 w-16 shrink-0 rounded-none" />
-                                    <Skeleton className="h-16 w-16 shrink-0 rounded-none" />
+                                    <Skeleton className="h-16 w-16 shrink-0" />
+                                    <Skeleton className="h-16 w-16 shrink-0" />
                                 </div>
                                 <div className="min-w-0 flex-1 space-y-2">
                                     <Skeleton className="h-4 w-full" />
@@ -298,7 +296,7 @@ export function AccountOverview({ customer, ordersPromise, recommendationsSlot }
  */
 export function AppDownloadSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div className="flex-1">
@@ -310,7 +308,7 @@ export function AppDownloadSectionSkeleton(): ReactElement {
                         </div>
                     </div>
                     <div className="flex flex-col items-center gap-2 lg:flex-shrink-0">
-                        <Skeleton className="w-40 h-40 rounded-none" />
+                        <Skeleton className="w-40 h-40" />
                         <Skeleton className="h-4 w-16" />
                     </div>
                 </div>
@@ -324,7 +322,7 @@ export function AppDownloadSectionSkeleton(): ReactElement {
  */
 export function AccountHelpSkeleton(): ReactElement {
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-48 mb-2" />
                 <Skeleton className="h-4 w-full max-w-xl mb-4" />

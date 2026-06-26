@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { Await, redirect } from 'react-router';
 import type { Route } from './+types/_app.wishlist';
 import { loadWishlistPageData, type WishlistPageData } from '@/lib/api/wishlist.server';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
@@ -28,7 +28,9 @@ import { hasUsableShopperSession } from '@/middlewares/auth.utils';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
-import { resourceRoutes, routes } from '@/route-paths';
+import { routes } from '@/route-paths';
+
+export { shouldRevalidate } from '@/lib/routes/revalidation/wishlist';
 
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are
@@ -50,18 +52,6 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
     }
 
     return loadWishlistPageData(context);
-}
-
-/**
- * Prevent automatic revalidation after wishlist remove actions.
- * Mirrors the registered route — disabled-item state is managed client-side
- * to avoid unnecessary refetches.
- */
-export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    if (formAction === resourceRoutes.wishlistRemove) {
-        return false;
-    }
-    return defaultShouldRevalidate;
 }
 
 /**
@@ -96,7 +86,9 @@ export default function GuestWishlist({
                 </AlertDescription>
             </Alert>
             <Suspense fallback={<WishlistSkeleton />}>
-                <Await resolve={loaderData.productsByProductId}>
+                <Await
+                    resolve={loaderData.productsByProductId}
+                    errorElement={<WishlistLoadError retryHref="/wishlist" />}>
                     {(productsByProductId) => (
                         <WishlistPageContent items={loaderData.items} productsByProductId={productsByProductId} />
                     )}

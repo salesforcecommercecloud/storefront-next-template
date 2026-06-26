@@ -6,7 +6,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
   href="/account/orders/ORD-2024-001"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
@@ -77,7 +77,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-muted text-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-muted text-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -91,7 +91,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Classic White Shirt"
@@ -105,7 +105,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Blue Dress Pants"
@@ -116,7 +116,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -159,7 +159,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
   href="/account/orders/ORD-2024-001"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
@@ -230,7 +230,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-muted text-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-muted text-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -244,7 +244,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Classic White Shirt"
@@ -258,7 +258,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Blue Dress Pants"
@@ -269,14 +269,14 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
         </div>
       </div>
       <div
-        class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
+        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
         data-slot="card"
       >
         <div
@@ -381,7 +381,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
   href="/account/orders/ORD-2024-001"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
@@ -452,7 +452,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-muted text-foreground"
+          class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-muted text-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -466,7 +466,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 1"
@@ -477,7 +477,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -486,7 +486,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 2"
@@ -500,7 +500,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 3"
@@ -514,7 +514,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 4"
@@ -525,7 +525,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -534,7 +534,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 5"
@@ -548,7 +548,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 6"
@@ -562,7 +562,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 7"
@@ -573,7 +573,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -582,7 +582,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 8"
@@ -596,7 +596,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 9"
@@ -610,7 +610,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 10"
@@ -621,7 +621,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
           <span
             aria-label="Quantity: 2"
-            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -630,7 +630,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 11"
@@ -644,7 +644,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden bg-muted border border-border"
           >
             <img
               alt="Product 12"
@@ -655,7 +655,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
         </div>
         <div
-          class="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center"
+          class="w-16 h-16 bg-muted border border-border flex items-center justify-center"
         >
           <span
             class="text-sm font-medium leading-none text-left text-muted-foreground"

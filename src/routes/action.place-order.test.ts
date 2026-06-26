@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.place-order';
-import { getBasket } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
@@ -28,7 +28,13 @@ import {
     updateCustomerContactInfo,
     getCustomerProfileForCheckout,
 } from '@/lib/api/customer.server';
-import { getBasketCurrency, calculateBasket } from '@/lib/api/basket.server';
+import {
+    getBasketCurrency,
+    calculateBasket,
+    addPaymentInstrumentToBasket,
+    updatePaymentInstrumentInBasket,
+    updateBillingAddressForBasket,
+} from '@/lib/api/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 
@@ -81,6 +87,11 @@ describe('action.place-order action', () => {
         });
         vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({} as any);
         vi.mocked(getAddressBookFromCustomer).mockReturnValue([]);
+        // syncPaymentInstrumentAmount calls this; default to passthrough so tests
+        // that don't care about the sync don't have to set up a return value.
+        vi.mocked(updatePaymentInstrumentInBasket).mockImplementation((_ctx, basketId, _piId, instrument) =>
+            Promise.resolve({ basketId, paymentInstruments: [instrument] } as any)
+        );
     });
 
     test('returns noActiveBasket when basket is missing', async () => {
@@ -266,6 +277,53 @@ describe('action.place-order action', () => {
                 }),
             })
         );
+    });
+
+    test('returns 500 and does NOT call createOrder when payment-amount sync fails', async () => {
+        const basketWithPayment = {
+            basketId: 'b1',
+            customerInfo: { email: 'test@example.com' },
+            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
+            shipments: [
+                {
+                    shipmentId: 's1',
+                    shippingAddress: {
+                        address1: '123 Main St',
+                        city: 'Austin',
+                        postalCode: '78701',
+                        countryCode: 'US',
+                    },
+                    shippingMethod: { id: 'ground', name: 'Ground' },
+                },
+            ],
+            paymentInstruments: [{ paymentInstrumentId: 'pi1' }],
+            billingAddress: { address1: '123 Main St', city: 'Austin', postalCode: '78701', countryCode: 'US' },
+            orderTotal: 99.99,
+        };
+
+        vi.mocked(getBasket).mockResolvedValue({ current: basketWithPayment } as any);
+        vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-1' } as any);
+        vi.mocked(getBasketCurrency).mockReturnValue('USD');
+        vi.mocked(calculateBasket).mockResolvedValue({ ...basketWithPayment, basketId: 'b1' } as any);
+        // Override the passthrough default: simulate SCAPI failure on amount sync.
+        vi.mocked(updatePaymentInstrumentInBasket).mockRejectedValue(new Error('SCAPI down'));
+        const createOrderMock = vi.fn();
+        vi.mocked(createApiClients).mockReturnValue({
+            shopperOrders: { createOrder: createOrderMock },
+        } as any);
+
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: resourceRoutes.placeOrder,
+        } as ActionFunctionArgs);
+
+        expect(response.status).toBe(500);
+        // The whole point: createOrder must not run when the basket and instrument
+        // are out of sync, otherwise OMS will reject the resulting order.
+        expect(createOrderMock).not.toHaveBeenCalled();
     });
 
     test('saves payment method and addresses for checkout-registration even without savePaymentToProfile', async () => {
@@ -748,6 +806,26 @@ describe('action.place-order action', () => {
             expect(response.status).toBe(302);
         });
 
+        test('completes order when a profile save throws (e.g. validateAddress) instead of returning false', async () => {
+            setupCheckoutRegistrationMocks();
+            // Simulate an unexpected throw bubbling out of the per-save helper - exercises
+            // the route-level catch that prevents a 500 after the order is already created.
+            vi.mocked(saveShippingAddressToCustomer).mockRejectedValue(new Error('validateAddress: city required'));
+
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {
+                shouldCreateAccount: 'true',
+                checkoutRegistrationIntent: 'true',
+            });
+            const response = await action({
+                request,
+                context: mockContext,
+                params: {},
+                unstable_pattern: resourceRoutes.placeOrder,
+            } as ActionFunctionArgs);
+
+            expect(response.status).toBe(302);
+        });
+
         test('does not retry when first attempt succeeds', async () => {
             setupCheckoutRegistrationMocks({
                 saveShippingResult: true,
@@ -1072,6 +1150,90 @@ describe('action.place-order action', () => {
             expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'phone-cust', {
                 phone: '+1 8885551234',
             });
+        });
+    });
+
+    describe('saved-payment-method auto-apply', () => {
+        // Regression: getBasket() short-circuits when basketResource.current is already
+        // populated. After addPaymentInstrumentToBasket + updateBillingAddressForBasket
+        // mutate the basket on SCAPI, the local resource must be refreshed via
+        // updateBasketResource. Without this, the downstream billingAddress check sees
+        // the stale basket and returns a spurious 'Billing address is required' 400.
+        test('refreshes the local basket resource after applying saved payment + billing address', async () => {
+            const shippingAddress = {
+                firstName: 'Saved',
+                lastName: 'Card',
+                address1: '500 Wallet Ln',
+                city: 'Austin',
+                postalCode: '78701',
+                countryCode: 'US',
+                stateCode: 'TX',
+            };
+            const basketBeforeMutation = {
+                basketId: 'b-saved',
+                customerInfo: { email: 'saved@example.com' },
+                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
+                shipments: [{ shipmentId: 's1', shippingAddress, shippingMethod: { id: 'ground', name: 'Ground' } }],
+                paymentInstruments: undefined,
+                billingAddress: undefined,
+                orderTotal: 0,
+            };
+            const basketAfterBilling = {
+                ...basketBeforeMutation,
+                billingAddress: shippingAddress,
+                orderTotal: 50.0,
+                paymentInstruments: [{ paymentInstrumentId: 'pi-saved', paymentMethodId: 'CREDIT_CARD' }],
+            };
+
+            // Simulate updateBasketResource side-effect: getBasket reflects updates after the
+            // first call (the route reads via getBasket again after mutating the resource).
+            const basketRef = { current: basketBeforeMutation as any };
+            vi.mocked(getBasket).mockImplementation(() => Promise.resolve(basketRef as any));
+            vi.mocked(updateBasketResource).mockImplementation((_context, merged) => {
+                basketRef.current = merged;
+            });
+            vi.mocked(getAuth).mockReturnValue({ userType: 'registered', customerId: 'saved-cust' } as any);
+            vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({
+                customer: { customerId: 'saved-cust' },
+                preferredBillingAddress: shippingAddress,
+                paymentInstruments: [{ id: 'wallet-pi-1', preferred: true }],
+            } as any);
+            vi.mocked(getPaymentMethodsFromCustomer).mockReturnValue([{ id: 'wallet-pi-1', preferred: true } as any]);
+            vi.mocked(addPaymentInstrumentToBasket).mockResolvedValue({
+                ...basketBeforeMutation,
+                paymentInstruments: basketAfterBilling.paymentInstruments,
+            } as any);
+            vi.mocked(updateBillingAddressForBasket).mockResolvedValue(basketAfterBilling as any);
+            vi.mocked(getBasketCurrency).mockReturnValue('USD');
+            vi.mocked(calculateBasket).mockResolvedValue(basketAfterBilling as any);
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperOrders: {
+                    createOrder: vi
+                        .fn()
+                        .mockResolvedValue({ data: { orderNo: 'O-saved', shipments: [{ shippingAddress }] } }),
+                },
+            } as any);
+
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.placeOrder}`, 'POST', {});
+            const response = await action({
+                request,
+                context: mockContext,
+                params: {},
+                unstable_pattern: resourceRoutes.placeOrder,
+            } as ActionFunctionArgs);
+
+            // Should reach createOrder, not 400 with 'Billing address is required'.
+            expect(response.status).toBe(302);
+            expect(vi.mocked(addPaymentInstrumentToBasket)).toHaveBeenCalledOnce();
+            expect(vi.mocked(updateBillingAddressForBasket)).toHaveBeenCalledOnce();
+            expect(vi.mocked(updateBasketResource)).toHaveBeenCalled();
+            // The merged basket passed to updateBasketResource should carry the SCAPI mutations.
+            const mergedBasket = vi.mocked(updateBasketResource).mock.calls[0][1] as {
+                billingAddress: unknown;
+                paymentInstruments: unknown;
+            };
+            expect(mergedBasket.billingAddress).toEqual(shippingAddress);
+            expect(mergedBasket.paymentInstruments).toEqual(basketAfterBilling.paymentInstruments);
         });
     });
 });

@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { encodeBase64Url } from '@/lib/url';
+import { decodeBase64Url, encodeBase64Url } from '@/lib/url';
 
 /** Base path of the SCAPI resource client route. Shared by `useScapiFetcher`, `useScapiFetchClient`, and `useScapiFetchHelper`. */
 export const RESOURCE_API_ROUTE = '/resource/api/client';
+
+/**
+ * The decoded form of an encoded resource string: the `[client, method, options]` tuple as a named object.
+ * `client` is either a SCAPI client key (e.g. `shopperProducts`) or the literal `'helpers'`; for helpers, `method`
+ * is the namespace and the helper name lives in `options.helperName`.
+ */
+export type DecodedResource = {
+    client: string;
+    method: string;
+    options: unknown;
+};
 
 /**
  * Encode a SCAPI resource tuple as a base64-url string for the
@@ -37,4 +48,30 @@ export const RESOURCE_API_ROUTE = '/resource/api/client';
  */
 export function encodeResource(client: string, method: string, options: unknown): string {
     return encodeBase64Url(JSON.stringify([client, method, options]));
+}
+
+/**
+ * Decode a base64-url string produced by {@link encodeResource} back into its {@link DecodedResource}. The inverse of
+ * `encodeResource`.
+ *
+ * Returns `null` when the input is not a valid encoded `[client, method, options]` tuple — callers treat `null` as
+ * "not decodable, ignore it".
+ *
+ * @param encoded - The base64-url encoded resource string (also used as the `useFetcher` key).
+ */
+export function decodeResource(encoded: string): DecodedResource | null {
+    try {
+        const tuple = JSON.parse(decodeBase64Url(encoded)) as unknown;
+        if (
+            Array.isArray(tuple) &&
+            tuple.length === 3 &&
+            typeof tuple[0] === 'string' &&
+            typeof tuple[1] === 'string'
+        ) {
+            return { client: tuple[0], method: tuple[1], options: tuple[2] };
+        }
+    } catch {
+        // Malformed base64url or JSON — fall through to null.
+    }
+    return null;
 }

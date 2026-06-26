@@ -323,7 +323,8 @@ export default function CategoryNavigationMenu({
                                         <NavigationMenuTrigger
                                             {...(propsFor(propsElement, itemCtx) as ComponentProps<
                                                 typeof NavigationMenuTrigger
-                                            >)}>
+                                            >)}
+                                            data-has-submenu="true">
                                             {renderSlot(renderElement ?? category.name, itemCtx)}
                                         </NavigationMenuTrigger>
                                         <NavigationMenuContent {...propsFor(propsContentContainer, itemCtx)}>

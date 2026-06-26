@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router';
+import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { OrderItemsList } from '../order-items-list';
 import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
@@ -35,8 +35,9 @@ const meta: Meta<typeof OrderItemsList> = {
     },
     tags: ['autodocs'],
     decorators: [
-        (Story) => (
-            <MemoryRouter>
+        (Story) => {
+            const inRouter = useInRouterContext();
+            const content = (
                 <ConfigWrapper>
                     <SiteProvider
                         site={mockSite}
@@ -46,8 +47,18 @@ const meta: Meta<typeof OrderItemsList> = {
                         <Story />
                     </SiteProvider>
                 </ConfigWrapper>
-            </MemoryRouter>
-        ),
+            );
+
+            if (inRouter) {
+                return content;
+            }
+
+            const router = createMemoryRouter([{ path: '*', element: content }], {
+                initialEntries: ['/'],
+            });
+
+            return <RouterProvider router={router} />;
+        },
     ],
     argTypes: {
         items: { control: false },

@@ -1563,6 +1563,7 @@
         "failedToAddProductToCartError": "Échec de l’ajout du produit au panier :",
         "failedToAddProductToWishlistError": "Échec de l’ajout du produit à la liste de souhaits :",
         "price": {
+            "unavailable": "Prix indisponible",
             "currentPriceFrom": "Prix actuel à partir de {{price}}",
             "currentPrice": "Prix actuel : {{price}}",
             "from": "À partir de {{price}}",

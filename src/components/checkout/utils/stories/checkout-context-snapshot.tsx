@@ -15,14 +15,20 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
-// Mock basket provider — keep the real BasketProvider component but mock useBasket
+// Mock basket provider — render children directly so story decorators that pass a static
+// basket fixture (e.g. CustomerProfileCheckoutWithDelivery) don't trigger BasketProvider's
+// internal useFetcher, which requires a data router context that the snapshot test runner
+// doesn't provide for nested decorators.
 vi.mock('@/providers/basket', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/providers/basket')>();
     return {
         ...actual,
+        default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
         useBasket: vi.fn(() => undefined),
     };
 });
+
+import type React from 'react';
 
 // BasketProvider calls useScapiFetcher → useFetcher during render. Without a data router in the
 // test tree, useFetcher throws "must be used within a data router". Stub useFetcher to return an
