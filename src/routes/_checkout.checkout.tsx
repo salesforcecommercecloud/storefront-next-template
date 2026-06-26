@@ -41,7 +41,7 @@ import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 
 export { loader };
-export { shouldRevalidate, FRAMEWORK_SKIP_REVALIDATION } from '@/lib/revalidation/routes/checkout';
+export { shouldRevalidate } from '@/lib/revalidation/routes/checkout';
 
 export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);

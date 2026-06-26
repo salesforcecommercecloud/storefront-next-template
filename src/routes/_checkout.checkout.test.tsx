@@ -703,63 +703,46 @@ describe('Checkout Route Components', () => {
             ).toBe(false);
         });
 
-        // Payment-extension server actions that own createOrder return
-        // 200 + JSON whose body consumes the basket but does not redirect. Without
-        // this flag the checkout loader would revalidate against the post-consumption
-        // basket and unmount the extension's in-flight UI mid-flow.
-        it('skips revalidation when actionResult.framework_skipRevalidation is true', async () => {
+        it('revalidates when action emits a matching tag (checkout.update)', async () => {
             const { shouldRevalidate } = await import('./_checkout.checkout');
             const result = shouldRevalidate({
                 ...baseArgs,
                 actionStatus: 200,
-                actionResult: { success: true, framework_skipRevalidation: true },
-                defaultShouldRevalidate: true,
+                actionResult: { success: true, revalidateTags: ['checkout.update'] },
+                defaultShouldRevalidate: false,
+            });
+            expect(result).toBe(true);
+        });
+
+        it('skips revalidation when action emits a non-matching tag', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: 200,
+                actionResult: { success: true, revalidateTags: ['checkout.payment.complete'] },
+                defaultShouldRevalidate: false,
             });
             expect(result).toBe(false);
         });
 
-        it('does not skip revalidation when framework_skipRevalidation is false', async () => {
+        it('defers to defaultShouldRevalidate when action result has no revalidateTags field', async () => {
             const { shouldRevalidate } = await import('./_checkout.checkout');
-            const result = shouldRevalidate({
-                ...baseArgs,
-                actionStatus: 200,
-                actionResult: { success: true, framework_skipRevalidation: false },
-                defaultShouldRevalidate: true,
-            });
-            expect(result).toBe(true);
-        });
-
-        it('does not skip revalidation when framework_skipRevalidation is absent (opt-in only)', async () => {
-            const { shouldRevalidate } = await import('./_checkout.checkout');
-            const result = shouldRevalidate({
-                ...baseArgs,
-                actionStatus: 200,
-                actionResult: { success: true },
-                defaultShouldRevalidate: true,
-            });
-            expect(result).toBe(true);
-        });
-
-        it('ignores framework_skipRevalidation when actionResult is null, non-object, or array', async () => {
-            const { shouldRevalidate } = await import('./_checkout.checkout');
-            for (const actionResult of [
-                null,
-                undefined,
-                'string',
-                42,
-                true,
-                [],
-                [{ framework_skipRevalidation: true }],
-            ]) {
-                expect(
-                    shouldRevalidate({
-                        ...baseArgs,
-                        actionStatus: 200,
-                        actionResult,
-                        defaultShouldRevalidate: true,
-                    })
-                ).toBe(true);
-            }
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: 200,
+                    actionResult: { success: true },
+                    defaultShouldRevalidate: true,
+                })
+            ).toBe(true);
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: 200,
+                    actionResult: { success: true },
+                    defaultShouldRevalidate: false,
+                })
+            ).toBe(false);
         });
     });
 });

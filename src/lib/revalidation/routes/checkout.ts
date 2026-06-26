@@ -15,49 +15,61 @@
  */
 import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
+import { shouldRevalidateForTags, normalizeTags } from '../tags';
 
 /**
- * Opt-in flag on a 200 + JSON action response body that suppresses checkout-loader revalidation. Used by extension
- * actions that consume the basket via `createOrder` but do not redirect; without it the loader would re-run against
- * the empty basket and unmount the extension's in-flight UI. Stable framework API: renaming is a breaking change.
+ * Broad subscription: any mutation that touches checkout state emits this tag.
+ * No instance ID here: a static route declaration subscribes broadly, matching
+ * any emitted `checkout.update` regardless of which action produced it.
  */
-export const FRAMEWORK_SKIP_REVALIDATION = 'framework_skipRevalidation' as const;
+export const CHECKOUT_REVALIDATE_TAGS = ['checkout.update'] as const;
 
 // Derived from CHECKOUT_ACTION_INTENTS so a new step intent automatically participates in the skip.
-const CHECKOUT_REVALIDATE_SKIP_INTENTS = new Set<string>(Object.values(CHECKOUT_ACTION_INTENTS));
+const CHECKOUT_STEP_INTENTS = new Set<string>(Object.values(CHECKOUT_ACTION_INTENTS));
+
+// Base tag-driven revalidation decision. Ambient is on (factory default) so this
+// auto-participates when an ambient vocabulary is configured later.
+const revalidateByTags = shouldRevalidateForTags([...CHECKOUT_REVALIDATE_TAGS]);
 
 /**
- * Skip checkout-loader revalidation when:
- *   1. The action returned a 3xx redirect (place-order destroys the basket then 302s to confirmation).
- *   2. The action returned 200 + JSON with `[FRAMEWORK_SKIP_REVALIDATION]: true` (extension opt-in).
- *   3. The submitting form's `intent` is a checkout step intent. Step actions return the updated basket in their
- *      response and the form page applies it directly, so the loader re-run is redundant.
+ * `shouldRevalidate` policy for the checkout route.
  *
- * Denylist, not allowlist: the checkout loader carries shopper-scoped state that genuinely changes during checkout,
- * so a forgotten skip only wastes a payload but a wrong skip would render against stale data.
+ * Decision order:
+ *   1. 3xx redirect: a structural invariant that wins over everything. The place-order
+ *      action destroys the basket then redirects to order confirmation; revalidating
+ *      into the now-empty basket would unmount payment-extension UI mid-flow. A redirect
+ *      carries no JSON body, so it reports no tags anyway.
+ *   2. Published tag: authoritative for a non-redirect action. When an action reports
+ *      `revalidateTags`, the tag intersection alone decides, so an action that explicitly
+ *      publishes `checkout.update` revalidates and is never muted by the step-intent guard.
+ *   3. Step intent: the checkout step actions (contact info, shipping, payment) return the
+ *      updated basket in their response and the form applies it directly, so a loader
+ *      re-run is a redundant round-trip. They report no tags today, so this guard supplies
+ *      the skip; a step that later publishes a tag is decided by the intersection in (2).
  *
  * @see https://reactrouter.com/start/framework/route-module#shouldrevalidate
  */
-export function shouldRevalidate({
-    actionStatus,
-    actionResult,
-    formData,
-    defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs): boolean {
+export function shouldRevalidate(args: ShouldRevalidateFunctionArgs): boolean {
+    const { actionStatus, actionResult, formData } = args;
+
     if (actionStatus !== undefined && actionStatus >= 300 && actionStatus < 400) {
         return false;
     }
-    if (
-        actionResult &&
-        typeof actionResult === 'object' &&
-        !Array.isArray(actionResult) &&
-        (actionResult as Record<string, unknown>)[FRAMEWORK_SKIP_REVALIDATION] === true
-    ) {
-        return false;
+
+    // A published tag is authoritative; let the intersection decide and never mute it.
+    const reportedTags = normalizeTags(
+        actionResult && typeof actionResult === 'object' && !Array.isArray(actionResult)
+            ? (actionResult as Record<string, unknown>).revalidateTags
+            : undefined
+    );
+    if (reportedTags.length > 0) {
+        return revalidateByTags(args);
     }
+
     const intent = formData?.get('intent');
-    if (typeof intent === 'string' && CHECKOUT_REVALIDATE_SKIP_INTENTS.has(intent)) {
+    if (typeof intent === 'string' && CHECKOUT_STEP_INTENTS.has(intent)) {
         return false;
     }
-    return defaultShouldRevalidate;
+
+    return revalidateByTags(args);
 }

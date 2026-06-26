@@ -90,6 +90,10 @@ const baseConfig = defineConfig([
         '**/src/scapi/custom-clients.ts',
         '**/src/components/ui/**',
         '**/src/dashboard/components/ui/**',
+        // Pristine upstream shadcn snapshots used by the sync-shadcn skill as merge
+        // baselines. Verbatim upstream source (vanilla @/ imports, no copyright header) —
+        // not Salesforce code and never imported, so it is excluded from linting.
+        '**/.shadcn-baseline/**',
         '**/src/lib/page-designer/static-registry.ts',
         '.claude/**',
         '**/lighthouserc.cjs',
