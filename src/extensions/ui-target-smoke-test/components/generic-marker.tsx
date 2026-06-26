@@ -43,7 +43,7 @@ export default function GenericSmokeMarker({
 
     return (
         <div
-            className="my-2 rounded-none px-3 py-2"
+            className="my-2 px-3 py-2"
             data-ui-target-hint={hint}
             style={{
                 fontFamily: 'monospace',

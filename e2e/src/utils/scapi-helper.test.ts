@@ -80,7 +80,8 @@ describe('getScapiConfig', () => {
 
 describe('isRateLimitError', () => {
     // Mirrors isAuthError's anchoring: match only our error-formatter prefixes
-    // (`Status: 409` / `failed (409)`), never a bare 409 echoed in a body id.
+    // (`Status: <code>` / `failed (<code>)`) for 409/429, never a bare 409/429
+    // echoed in a body id.
 
     it('matches the SLAS "Status: 409" formatter shape', () => {
         expect(
@@ -99,6 +100,26 @@ describe('isRateLimitError', () => {
 
     it('matches "Status: 409" with extra whitespace and trailing punctuation', () => {
         expect(isRateLimitError(new Error('Failure. Status:  409. Retry?'))).toBe(true);
+    });
+
+    it('matches the SLAS "Status: 429" formatter shape (Too Many Requests)', () => {
+        expect(
+            isRateLimitError(
+                new Error('SLAS guest login (PKCE authorize) failed — no Location header. Status: 429. Body: {}')
+            )
+        ).toBe(true);
+    });
+
+    it('matches the SLAS "failed (429):" formatter shape', () => {
+        expect(
+            isRateLimitError(new Error('SLAS guest login (client_credentials) failed (429): Too Many Requests'))
+        ).toBe(true);
+    });
+
+    it('does NOT match a 5xx whose body echoes "429" in a request id', () => {
+        expect(isRateLimitError(new Error('SLAS token exchange failed (502): {"request_id":"req_429abc"}'))).toBe(
+            false
+        );
     });
 
     it('does NOT match a 401/403 (auth error, handled separately)', () => {

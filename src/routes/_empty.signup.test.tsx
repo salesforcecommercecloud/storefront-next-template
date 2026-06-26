@@ -1180,7 +1180,6 @@ describe('signup route', () => {
                     action: async ({ request }) =>
                         action({
                             request,
-                            url: new URL(request.url),
                             params: { siteId: 'test-site', localeId: 'en-US' },
                             context: mockContext,
                         } as any),
@@ -1221,7 +1220,6 @@ describe('signup route', () => {
                     action: async ({ request }) =>
                         action({
                             request,
-                            url: new URL(request.url),
                             params: { siteId: 'test-site', localeId: 'en-US' },
                             context: mockContext,
                         } as any),

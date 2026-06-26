@@ -111,11 +111,11 @@ import { buildSeoMetaDescriptors } from '@/utils/seo';
 import favicon from '/favicon.ico';
 
 // Fonts
-import sen from '/fonts/sen-variable.woff2';
+import { primaryFont } from '@/lib/fonts';
 
 // Styles
 import { PageDesignerInit } from '@/page-designer-init';
-import appStylesHref from './theme/index.css?url';
+import appStylesHref from '@/theme/index.css?url';
 
 // Extensions
 import { UITargetProviders } from '@/targets/ui-target-providers';
@@ -124,13 +124,15 @@ import StoreLocatorProvider from '@/extensions/store-locator/providers/store-loc
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
-// Layout Components - logo for error page
-import logo from '/images/logo.svg';
+// Layout Components - logo for error page. Imported via `@/...` so the Vite
+// vertical resolver swaps in the active vertical's logo override (e.g. cosmetic's
+// inline-SVG wordmark) instead of the canonical raster asset.
+import Logo from '@/components/logo';
 
 export const links: Route.LinksFunction = () => {
     return [
         // Preload critical fonts
-        { rel: 'preload', href: sen, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+        { rel: 'preload', href: primaryFont, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
         { rel: 'preload', href: appStylesHref, as: 'style' },
         { rel: 'stylesheet', href: appStylesHref },
     ];
@@ -410,11 +412,7 @@ function ErrorPageContent({
                 <div className="section-container">
                     <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
                         <a href={homepageUrl} className="flex-shrink-0 flex items-center">
-                            <img
-                                src={logo}
-                                alt="Logo"
-                                className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
-                            />
+                            <Logo className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]" />
                         </a>
                     </div>
                 </div>
@@ -448,14 +446,14 @@ function ErrorPageContent({
                         <div>
                             <a
                                 href={homepageUrl}
-                                className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                                className="inline-block bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
                                 {goToHomepageLabel}
                             </a>
                         </div>
 
                         {/* Stack trace (only in dev mode with stack) */}
                         {stack && (
-                            <div className="mt-16 border border-border rounded-none bg-muted/30 text-left">
+                            <div className="mt-16 border border-border bg-muted/30 text-left">
                                 <div className="flex items-center px-4 py-3 border-b border-border">
                                     <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
                                 </div>

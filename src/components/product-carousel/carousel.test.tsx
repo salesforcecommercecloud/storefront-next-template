@@ -272,7 +272,6 @@ describe('ProductCarousel', () => {
             expect(screen.getByTestId('carousel')).toBeInTheDocument();
             expect(screen.getByTestId('region-component-product-tile-a')).toBeInTheDocument();
             expect(screen.getByTestId('region-component-product-tile-b')).toBeInTheDocument();
-            expect(screen.queryByText('No products found')).not.toBeInTheDocument();
         });
     });
 

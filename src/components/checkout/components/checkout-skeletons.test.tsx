@@ -44,7 +44,7 @@ describe('Checkout Skeleton Components', () => {
         it('should render without crashing', () => {
             const { container } = render(<ContactInfoSkeleton />);
             expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
+                container.querySelector('[data-testid="card"]') || container.querySelector('.border-ui')
             ).toBeInTheDocument();
         });
 
@@ -60,7 +60,7 @@ describe('Checkout Skeleton Components', () => {
         it('should render without crashing', () => {
             const { container } = render(<ShippingAddressSkeleton />);
             expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
+                container.querySelector('[data-testid="card"]') || container.querySelector('.border-ui')
             ).toBeInTheDocument();
         });
 
@@ -76,7 +76,7 @@ describe('Checkout Skeleton Components', () => {
         it('should render without crashing', () => {
             const { container } = render(<ShippingOptionsSkeleton />);
             expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
+                container.querySelector('[data-testid="card"]') || container.querySelector('.border-ui')
             ).toBeInTheDocument();
         });
 
@@ -92,7 +92,7 @@ describe('Checkout Skeleton Components', () => {
         it('should render without crashing', () => {
             const { container } = render(<PaymentSkeleton />);
             expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
+                container.querySelector('[data-testid="card"]') || container.querySelector('.border-ui')
             ).toBeInTheDocument();
         });
 
@@ -108,7 +108,7 @@ describe('Checkout Skeleton Components', () => {
         it('should render without crashing', () => {
             const { container } = render(<PickupSkeleton />);
             expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
+                container.querySelector('[data-testid="card"]') || container.querySelector('.border-ui')
             ).toBeInTheDocument();
         });
     });

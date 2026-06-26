@@ -63,6 +63,21 @@ describe('CategoryNavigationMenu Component', () => {
             expect(element3.getAttribute('href')).toBe('/global/en-GB/category/cat-3');
         });
 
+        it('should add data-has-submenu attribute to triggers with submenus', () => {
+            const { getByRole } = renderComponent({ categories: testData.basic });
+
+            const triggerWithSubmenu1 = getByRole('button', { name: testData.basic[0].name });
+            const triggerWithSubmenu2 = getByRole('button', { name: testData.basic[1].name });
+            const leafLink = getByRole('link', { name: testData.basic[2].name });
+
+            // Triggers with submenus should have data-has-submenu
+            expect(triggerWithSubmenu1).toHaveAttribute('data-has-submenu', 'true');
+            expect(triggerWithSubmenu2).toHaveAttribute('data-has-submenu', 'true');
+
+            // Leaf links should not have data-has-submenu
+            expect(leafLink).not.toHaveAttribute('data-has-submenu');
+        });
+
         it('should render nested structure correctly', async () => {
             const { container, getByRole, getByText } = renderComponent({
                 categories: testData.deepNesting,

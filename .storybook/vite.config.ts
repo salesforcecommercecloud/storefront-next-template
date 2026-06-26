@@ -43,7 +43,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            // PDP FAQ + Account “Ask a question” — production uses src/lib; Storybook uses shim (no globalThis).
+            // PDP FAQ + Account "Ask a question" — production uses src/lib; Storybook uses shim (no globalThis).
             '@/lib/shopper-context/agent-ui': path.resolve(__dirname, './shims/shopper-agent-context-ui.ts'),
             '@': path.resolve(__dirname, '../src'), // Proper path resolution for Storybook
             '@storybook/test-utils': path.resolve(__dirname, './test-utils'), // Storybook test utilities

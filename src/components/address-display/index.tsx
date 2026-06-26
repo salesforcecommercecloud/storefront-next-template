@@ -60,9 +60,7 @@ export default function AddressDisplay({ address, showName = true, isPreferred =
                         {fullName}
                     </Typography>
                     {isPreferred && (
-                        <Badge
-                            variant="secondary"
-                            className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                        <Badge variant="secondary" className="text-xs font-normal bg-primary/10 text-primary">
                             {t('addresses.default')}
                         </Badge>
                     )}

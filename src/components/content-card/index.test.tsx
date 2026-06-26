@@ -92,7 +92,6 @@ describe('ContentCard', () => {
         result = renderWithRouter(<ContentCard {...defaultProps} showBorder={false} />);
         card = result.container.querySelector('[data-slot="card"]');
         expect(card?.className).toContain('border-0');
-        expect(card?.className).toContain('shadow-none');
     });
 
     test('applies custom className and h-full for grid layouts', () => {

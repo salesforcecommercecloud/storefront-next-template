@@ -298,7 +298,7 @@ exports[`ProductImage stories snapshot > WithNavigationArrows story renders and 
     </a>
     <button
       aria-label="Previous image"
-      class="absolute top-1/2 -translate-y-1/2 rounded-none cursor-pointer bg-background/90 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 left-2 p-1.5 shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity"
+      class="absolute top-1/2 -translate-y-1/2 cursor-pointer bg-background/90 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 left-2 p-1.5 shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity"
       type="button"
     >
       <svg
@@ -321,7 +321,7 @@ exports[`ProductImage stories snapshot > WithNavigationArrows story renders and 
     </button>
     <button
       aria-label="Next image"
-      class="absolute top-1/2 -translate-y-1/2 rounded-none cursor-pointer bg-background/90 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 right-2 p-1.5 shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity"
+      class="absolute top-1/2 -translate-y-1/2 cursor-pointer bg-background/90 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 right-2 p-1.5 shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity"
       type="button"
     >
       <svg

@@ -772,7 +772,7 @@ export default function CheckoutFormPage({
     if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md rounded-none shadow-none">
+                <Card className="w-full max-w-md">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('common.emptyCart')}
@@ -845,7 +845,7 @@ export default function CheckoutFormPage({
     const isEstimate = cart ? isOrderTotalEstimated(cart) : true;
 
     return (
-        <div className="bg-background">
+        <div data-section="checkout" className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
             <div className="section-container pt-8 pb-6">
                 <Typography variant="h2" as="h1" className="mb-8">
@@ -869,7 +869,7 @@ export default function CheckoutFormPage({
                                 isEstimate={isEstimate}
                                 showTotal={false}
                                 showCheckoutAction={false}
-                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                                className="border-none !py-0 [--cart-summary-px:1rem]"
                             />
                         </OrderSummaryMobileAccordion>
                     </Suspense>
@@ -891,7 +891,7 @@ export default function CheckoutFormPage({
                         <UITarget targetId="sfcc.checkout.sidebar.before" />
                         <div className="space-y-6">
                             {/* Order Summary + Cart Items */}
-                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
+                            <Card className="[--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
                                 <CardHeader className="border-b-[1px] border-border pb-2">
                                     <CardTitle>
                                         <span className="text-2xl font-bold tracking-tight text-card-foreground">
@@ -910,7 +910,7 @@ export default function CheckoutFormPage({
                                                 showPromoCodeForm={true}
                                                 productsByItemId={{}}
                                                 isEstimate={isEstimate}
-                                                className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
+                                                className="border-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
                                             />
                                         </Suspense>
                                     </UITarget>

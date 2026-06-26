@@ -50,7 +50,7 @@ import {
     type EnrichedProductItem,
 } from '@/lib/product/product-utils';
 import { useCartInventoryValidation } from '@/lib/cart/inventory-validation';
-import { getBonusDiscountSlotsForPromotion } from '@/lib/cart/bonus-product-utils';
+import { getBonusDiscountSlotsForPromotion, getPromotionCalloutTextFromProduct } from '@/lib/cart/bonus-product-utils';
 import { CartInventoryErrorBanner } from './cart-inventory-error-banner';
 import { routes } from '@/route-paths';
 
@@ -233,7 +233,7 @@ export default function CartContent({
                     <Button
                         type="button"
                         variant="ghost"
-                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 p-0 h-auto shadow-none">
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 p-0 h-auto">
                         {t('lineItem.giftLearnMore')}
                     </Button>
                 </div>
@@ -259,7 +259,7 @@ export default function CartContent({
 
                 {/* Mobile Order Summary - visible only on mobile */}
                 <div className="md:hidden mb-3">
-                    <div className="bg-background border-t border-border shadow-none fixed bottom-0 left-0 right-0 z-50">
+                    <div className="bg-background border-t border-border fixed bottom-0 left-0 right-0 z-50">
                         <OrderSummaryMobileAccordion basket={basket} defaultExpanded={false}>
                             <OrderSummary
                                 basket={basket}
@@ -269,7 +269,7 @@ export default function CartContent({
                                 productsByItemId={productsByItemId}
                                 showPromoCodeForm={true}
                                 showCheckoutAction={false}
-                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                                className="border-none !py-0 [--cart-summary-px:1rem]"
                             />
                         </OrderSummaryMobileAccordion>
                         <div className="px-[var(--cart-summary-px)] py-4">
@@ -306,7 +306,7 @@ export default function CartContent({
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                         {/* Group store info cards with their product items */}
                         {pickupItems.length > 0 && store && (
-                            <div key={store.id} className="md:p-8 p-3 border border-border rounded-none mb-3">
+                            <div key={store.id} className="md:p-8 p-3 border border-border mb-3">
                                 <CartPickup
                                     store={store}
                                     pickupCount={pickupItems.length}
@@ -329,7 +329,9 @@ export default function CartContent({
                         {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                         {/* Show delivery items if any exist */}
                         {deliveryItems.length > 0 && (
-                            <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
+                            <div
+                                data-slot="cart-delivery-group"
+                                className="md:p-8 p-3 border border-muted-foreground/10 mb-3">
                                 <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
                                 <ProductItemsList
                                     promotions={promotions}
@@ -343,7 +345,7 @@ export default function CartContent({
                             </div>
                         )}
                     </div>
-                    <div className="hidden md:block md:order-1 lg:order-2">
+                    <div data-slot="order-summary" className="hidden md:block md:order-1 lg:order-2">
                         <OrderSummary
                             basket={basket}
                             showCartItems={false}
@@ -363,16 +365,43 @@ export default function CartContent({
                     if (!isRuleBased && (!bonusItem.bonusProducts || bonusItem.bonusProducts.length === 0)) {
                         return null;
                     }
-                    const promotion = bonusItem.promotionId ? promotions?.[bonusItem.promotionId] : undefined;
-                    const promotionName = promotion?.calloutMsg || promotion?.name;
+                    const promotionId = bonusItem.promotionId;
+                    const mappedPromotion = promotionId ? promotions?.[promotionId] : undefined;
+
+                    // `name` only ever comes from the promotions map (the trigger product's productPromotions
+                    // carry no name). Keep it distinct — never backfilled from callout or the id.
+                    const name = mappedPromotion?.name;
+
+                    // `calloutMsg` prefers the promotions map; pre-selection (and at max) the promo is absent
+                    // from that map, so fall back to the trigger product's productPromotions callout. The
+                    // trigger product is whichever cart product advertises this promotionId in its
+                    // productPromotions[]. N is cart-line small, so a linear scan with early break is fine —
+                    // don't "optimize" into a prebuilt map.
+                    let calloutMsg = mappedPromotion?.calloutMsg ?? undefined;
+                    if (!calloutMsg && promotionId) {
+                        for (const candidate of Object.values(productsByItemId)) {
+                            const callout = getPromotionCalloutTextFromProduct(candidate, promotionId);
+                            if (callout) {
+                                calloutMsg = callout;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Distinct fields for vertical consumers (cosmetic uses calloutMsg for the title; name is
+                    // the BM/admin label). Canonical/fashion title shape is unchanged: callout preferred, then
+                    // name — now also populated pre-selection instead of falling back to the generic title.
+                    const promotion = name !== undefined || calloutMsg !== undefined ? { name, calloutMsg } : undefined;
+                    const promotionName = calloutMsg || name;
                     return (
-                        <div key={bonusItem.id || index} className="mt-6">
+                        <div key={bonusItem.id || index} data-slot="bonus-products-rail" className="mt-6">
                             <Suspense fallback={null}>
                                 <LazyBonusProductSelection
                                     bonusDiscountLineItem={bonusItem}
                                     bonusProductsById={bonusProductsById}
                                     basket={basket}
                                     promotionName={promotionName}
+                                    promotion={promotion}
                                     ruleBasedBonusProductsPromise={
                                         isRuleBased ? ruleBasedBonusProductsPromise : undefined
                                     }

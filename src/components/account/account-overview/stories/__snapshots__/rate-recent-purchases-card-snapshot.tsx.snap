@@ -5,7 +5,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
   class="max-w-3xl"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -28,7 +28,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
           </p>
         </div>
         <div
-          class="rounded-none border border-border p-4 sm:p-5"
+          class="border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -45,7 +45,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
                   href="/RefArchGlobal/en-GB/product/701643108633M"
                 >
                   <div
-                    class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
+                    class="h-16 w-16 overflow-hidden border border-border bg-muted"
                   >
                     <div
                       class="flex h-full w-full items-center justify-center text-xs text-muted-foreground"
@@ -60,7 +60,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
                   href="/RefArchGlobal/en-GB/product/701643108634M"
                 >
                   <div
-                    class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
+                    class="h-16 w-16 overflow-hidden border border-border bg-muted"
                   >
                     <div
                       class="flex h-full w-full items-center justify-center text-xs text-muted-foreground"
@@ -89,7 +89,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
               class="flex w-full shrink-0 justify-end sm:w-auto sm:self-center"
             >
               <a
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] rounded-none bg-foreground text-background hover:bg-foreground/90"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] bg-foreground text-background hover:bg-foreground/90"
                 data-discover="true"
                 data-size="default"
                 data-slot="button"
@@ -112,7 +112,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
   class="max-w-3xl"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -135,7 +135,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
           </p>
         </div>
         <div
-          class="rounded-none border border-border p-4 sm:p-5"
+          class="border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -152,7 +152,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
                   href="/RefArchGlobal/en-GB/product/SKU-1"
                 >
                   <div
-                    class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
+                    class="h-16 w-16 overflow-hidden border border-border bg-muted"
                   >
                     <div
                       class="flex h-full w-full items-center justify-center text-xs text-muted-foreground"
@@ -181,7 +181,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
               class="flex w-full shrink-0 justify-end sm:w-auto sm:self-center"
             >
               <a
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] rounded-none bg-foreground text-background hover:bg-foreground/90"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] bg-foreground text-background hover:bg-foreground/90"
                 data-discover="true"
                 data-size="default"
                 data-slot="button"

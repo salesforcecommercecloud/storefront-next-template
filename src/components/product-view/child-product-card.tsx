@@ -261,7 +261,7 @@ export default function ChildProductCard({
     }, [canAddChildToCart, product.id, onOrderabilityChange, t]);
 
     return (
-        <Card className="h-full rounded-none shadow-none" data-testid="child-product">
+        <Card className="h-full" data-testid="child-product">
             <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold text-card-foreground tracking-tight">{product?.name}</CardTitle>
                 <ProductPrice
@@ -303,7 +303,8 @@ export default function ChildProductCard({
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
                         const content = image ? (
                             <div
-                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
+                                data-slot="swatch-dot"
+                                className="w-full h-full bg-cover bg-center bg-no-repeat"
                                 style={{ backgroundImage: `url(${image.link})` }}
                                 aria-label={image.alt || valueName}
                             />

@@ -70,7 +70,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="given-name"
                                     placeholder={t('profile.firstNamePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -93,7 +93,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="family-name"
                                     placeholder={t('profile.lastNamePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -119,7 +119,7 @@ export function CustomerProfileFields({
                                     type="tel"
                                     autoComplete="tel"
                                     placeholder={t('profile.phonePlaceholder')}
-                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -137,7 +137,7 @@ export function CustomerProfileFields({
                             <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
                             <FormControl>
                                 <NativeSelect
-                                    className="w-full rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="w-full border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     value={field.value || ''}
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
@@ -172,7 +172,7 @@ export function CustomerProfileFields({
                                 <Input
                                     type="date"
                                     autoComplete="bday"
-                                    className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     aria-label={t('profile.dateOfBirth')}
                                     {...field}
                                 />
@@ -186,7 +186,7 @@ export function CustomerProfileFields({
             {/* Action Buttons (omit when hideActions for header placement) */}
             {!hideActions && (
                 <div className="flex gap-2 pt-2">
-                    <Button type="submit" disabled={isSubmitting} className="rounded-none">
+                    <Button type="submit" disabled={isSubmitting} className="">
                         {isSubmitting ? t('profile.savingButton') : t('profile.saveButton')}
                     </Button>
                     {onCancel && (
@@ -195,7 +195,7 @@ export function CustomerProfileFields({
                             variant="outline"
                             onClick={onCancel}
                             disabled={isSubmitting}
-                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('profile.cancelButton')}
                         </Button>
                     )}

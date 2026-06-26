@@ -10,10 +10,11 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
     >
       <div
         class="flex items-center gap-2"
+        data-slot="inventory-message"
       >
         <span
           aria-hidden="true"
-          class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
+          class="h-2 w-2 shrink-0 bg-current text-status-positive"
         />
         <p
           class="text-sm font-medium text-status-positive"
@@ -23,10 +24,11 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
       </div>
       <div
         class="flex items-center gap-2"
+        data-slot="inventory-message"
       >
         <span
           aria-hidden="true"
-          class="h-2 w-2 shrink-0 rounded-none bg-current text-status-info"
+          class="h-2 w-2 shrink-0 bg-current text-status-info"
         />
         <p
           class="text-sm font-medium text-status-info"
@@ -36,10 +38,11 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
       </div>
       <div
         class="flex items-center gap-2"
+        data-slot="inventory-message"
       >
         <span
           aria-hidden="true"
-          class="h-2 w-2 shrink-0 rounded-none bg-current text-status-warning"
+          class="h-2 w-2 shrink-0 bg-current text-status-warning"
         />
         <p
           class="text-sm font-medium text-status-warning"
@@ -49,10 +52,11 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
       </div>
       <div
         class="flex items-center gap-2"
+        data-slot="inventory-message"
       >
         <span
           aria-hidden="true"
-          class="h-2 w-2 shrink-0 rounded-none bg-current text-status-critical"
+          class="h-2 w-2 shrink-0 bg-current text-status-critical"
         />
         <p
           class="text-sm font-medium text-status-critical"
@@ -62,10 +66,11 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
       </div>
       <div
         class="flex items-center gap-2"
+        data-slot="inventory-message"
       >
         <span
           aria-hidden="true"
-          class="h-2 w-2 shrink-0 rounded-none bg-current text-muted-foreground"
+          class="h-2 w-2 shrink-0 bg-current text-muted-foreground"
         />
         <p
           class="text-sm font-medium text-muted-foreground"
@@ -85,10 +90,11 @@ exports[`InventoryMessage stories snapshot > Perpetual story renders and matches
   >
     <div
       class="flex items-center gap-2"
+      data-slot="inventory-message"
     >
       <span
         aria-hidden="true"
-        class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
+        class="h-2 w-2 shrink-0 bg-current text-status-positive"
       />
       <p
         class="text-sm font-medium text-status-positive"

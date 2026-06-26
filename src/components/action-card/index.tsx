@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { type ComponentProps, type ReactNode, type Ref, useState } from 'react';
-import { Card, CardContent, CardFooter } from '../ui/card';
-import { Button } from '../ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/spinner';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +65,7 @@ const ActionCard = ({
     return (
         <Card className={cn('relative', className)} {...props}>
             {showLoading && (
-                <div className="absolute inset-0 z-10 rounded-none bg-background/60" data-testid="loading-spinner">
+                <div className="absolute inset-0 z-10 bg-background/60" data-testid="loading-spinner">
                     <div className="flex h-full w-full items-center justify-center">
                         <Spinner size="md" />
                     </div>

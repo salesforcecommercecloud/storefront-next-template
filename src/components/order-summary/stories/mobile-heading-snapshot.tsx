@@ -58,7 +58,6 @@ vi.mock('react-router', () => ({
     },
 }));
 
-
 vi.mock('@/hooks/use-promo-code-actions', () => ({
     usePromoCodeActions: () => ({
         removePromoCode: vi.fn(),
@@ -73,7 +72,9 @@ vi.mock('@/components/toast', () => ({
 
 const composed = composeStories(MobileHeadingStories);
 
-const wrapper = ({ children }: { children: ReactNode }) => <ConfigProvider config={mockConfig}>{children}</ConfigProvider>;
+const wrapper = ({ children }: { children: ReactNode }) => (
+    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+);
 
 afterEach(() => {
     cleanup();
@@ -96,4 +97,3 @@ describe('OrderSummary mobile-heading stories snapshot', () => {
         });
     }
 });
-

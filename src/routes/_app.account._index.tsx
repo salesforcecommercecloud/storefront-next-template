@@ -640,7 +640,7 @@ function AccountDetailsContent({
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
                     <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('title')}
@@ -650,7 +650,7 @@ function AccountDetailsContent({
             </Card>
 
             {/* Personal Information – same layout as Interests & Preferences (header actions top right) */}
-            <Card data-testid="profile-card" className="bg-card border-border rounded-none shadow-none">
+            <Card data-testid="profile-card" className="bg-card border-border">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
                         <CardTitle className="text-base font-semibold">{t('profile.title')}</CardTitle>
@@ -663,7 +663,7 @@ function AccountDetailsContent({
                                 form="customer-profile-form"
                                 size="sm"
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-none">
+                                className="">
                                 {updateProfileFetcher.state === FETCHER_STATES.SUBMITTING
                                     ? t('common.saving')
                                     : t('common.save')}
@@ -674,7 +674,7 @@ function AccountDetailsContent({
                                 size="sm"
                                 onClick={handleCustomerProfileCancel}
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -684,7 +684,7 @@ function AccountDetailsContent({
                             size="sm"
                             onClick={handleProfileEdit}
                             disabled={!canSubmitCustomerUpdates}
-                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -858,7 +858,7 @@ function AccountDetailsContent({
                             size="sm"
                             disabled={!canSubmitCustomerUpdates}
                             onClick={hasPassword ? handlePasswordEdit : handlePasswordReset}
-                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {hasPassword ? t('password.changePassword') : t('password.resetPassword')}
                         </Button>
                     </div>

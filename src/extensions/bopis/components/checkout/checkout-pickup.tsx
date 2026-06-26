@@ -160,7 +160,7 @@ export default function CheckoutPickup({
             <CardContent className="pt-0 pb-0">
                 {isEditing ? (
                     <>
-                        <Card className="border border-border bg-background rounded-none shadow-none">
+                        <Card className="border border-border bg-background">
                             <div className="px-6 pt-0 pb-0 flex items-center justify-between">
                                 <Typography
                                     variant="h5"

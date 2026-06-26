@@ -5,7 +5,16 @@
     --font-mono: 'Sen', 'Courier New', monospace;
 
     /* Error page tokens */
-    --text-error-status: 12rem;  /* Large status code display for error pages */
+    --text-error-status: 12rem; /* Large status code display for error pages */
+
+    /* -- shape tokens -- shadcn primitives use rounded-ui / shadow-ui so
+       the corner radius and drop shadow re-skin per vertical without
+       touching the primitive class strings. The --ui-* source tokens are
+       defined in tokens/core.css (per vertical); these lines bridge them
+       into Tailwind's utility namespaces. border-ui is defined via @utility
+       below (no automatic namespace for border-width in Tailwind v4). */
+    --radius-ui: var(--ui-radius);
+    --shadow-ui: var(--ui-shadow);
 
     /* -- core colors -- */
     --color-background: var(--background);
@@ -139,4 +148,9 @@
     --color-brand-gray-700: var(--brand-gray-700);
     --color-brand-gray-800: var(--brand-gray-800);
     --color-brand-gray-900: var(--brand-gray-900);
+}
+
+@utility border-ui {
+    border-style: solid;
+    border-width: var(--ui-border-width);
 }

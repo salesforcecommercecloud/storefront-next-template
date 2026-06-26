@@ -46,12 +46,12 @@ export const Default: Story = {
 
 export const WithBrandColor: Story = {
     args: {
-        style: { color: 'var(--brand-blue-600)' },
+        style: { color: 'var(--primary)' },
     },
     parameters: {
         docs: {
             description: {
-                story: 'Sparkles icon with brand blue color, e.g. for header chat button.',
+                story: 'Sparkles icon with brand primary color, e.g. for header chat button.',
             },
         },
     },

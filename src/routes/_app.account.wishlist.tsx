@@ -60,7 +60,9 @@ export default function AccountWishlist({
             <WishlistPageAnalytics />
             <SeoMeta title={t('meta.wishlistTitle', { defaultValue: 'Wishlist' })} noIndex />
             <Suspense fallback={<WishlistSkeleton />}>
-                <Await resolve={loaderData.productsByProductId}>
+                <Await
+                    resolve={loaderData.productsByProductId}
+                    errorElement={<WishlistLoadError retryHref="/account/wishlist" />}>
                     {(productsByProductId) => (
                         <WishlistPageContent items={loaderData.items} productsByProductId={productsByProductId} />
                     )}

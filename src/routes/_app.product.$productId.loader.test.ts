@@ -144,9 +144,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -186,9 +186,9 @@ describe('Product Route Loaders', () => {
 
             const error = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             }).then(
                 () => {
@@ -213,9 +213,9 @@ describe('Product Route Loaders', () => {
 
             const error = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             }).then(
                 () => {
@@ -237,9 +237,9 @@ describe('Product Route Loaders', () => {
 
             const error = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             }).then(
                 () => {
@@ -263,9 +263,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -302,9 +302,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -326,9 +326,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -355,9 +355,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -382,9 +382,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -408,9 +408,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -433,9 +433,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -453,9 +453,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -473,9 +473,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -507,9 +507,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -534,9 +534,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -572,9 +572,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -595,9 +595,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -613,9 +613,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -641,9 +641,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -667,9 +667,9 @@ describe('Product Route Loaders', () => {
 
             await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -706,9 +706,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 
@@ -756,9 +756,9 @@ describe('Product Route Loaders', () => {
 
             const result = await loader({
                 request,
-                url: new URL(request.url),
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
+                url: new URL(request.url),
                 pattern: '/product/:productId',
             });
 

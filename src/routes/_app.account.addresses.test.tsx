@@ -18,8 +18,11 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import type { ShopperCustomers } from '@/scapi';
+
+const { t } = getTranslation();
 
 type CustomerAddress = ShopperCustomers.schemas['CustomerAddress'];
 type Customer = ShopperCustomers.schemas['Customer'];
@@ -186,7 +189,7 @@ describe('Addresses page', () => {
             await renderRoute(Promise.resolve(mockCustomer));
 
             const seoMeta = screen.getByTestId('seo-meta');
-            expect(seoMeta).toHaveAttribute('data-title', 'Addresses');
+            expect(seoMeta).toHaveAttribute('data-title', t('account:meta.addressesTitle'));
             expect(seoMeta).toHaveAttribute('data-no-index', 'true');
         });
 
@@ -197,8 +200,8 @@ describe('Addresses page', () => {
                 expect(screen.getByTestId('address-card-home')).toBeInTheDocument();
             });
 
-            expect(screen.getByText('Addresses')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /add new address/i })).toBeInTheDocument();
+            expect(screen.getByText(t('account:navigation.addresses'))).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('account:addresses.addNewAddress') })).toBeInTheDocument();
         });
 
         test('displays a card for each saved address', async () => {
@@ -244,7 +247,7 @@ describe('Addresses page', () => {
             await renderRoute(Promise.resolve(customerWithoutAddresses));
 
             await waitFor(() => {
-                expect(screen.getByText(/no saved addresses/i)).toBeInTheDocument();
+                expect(screen.getByText(t('account:addresses.noSavedAddresses'))).toBeInTheDocument();
             });
             expect(screen.queryByTestId('address-card-home')).not.toBeInTheDocument();
         });
@@ -253,7 +256,7 @@ describe('Addresses page', () => {
             await renderRoute(Promise.resolve(null));
 
             await waitFor(() => {
-                expect(screen.getByText(/no saved addresses/i)).toBeInTheDocument();
+                expect(screen.getByText(t('account:addresses.noSavedAddresses'))).toBeInTheDocument();
             });
         });
     });
@@ -267,7 +270,7 @@ describe('Addresses page', () => {
                 expect(screen.getByTestId('address-card-home')).toBeInTheDocument();
             });
 
-            await user.click(screen.getByRole('button', { name: /add new address/i }));
+            await user.click(screen.getByRole('button', { name: t('account:addresses.addNewAddress') }));
 
             await waitFor(() => {
                 expect(screen.getByTestId('customer-address-form')).toBeInTheDocument();
@@ -282,7 +285,7 @@ describe('Addresses page', () => {
                 expect(screen.getByTestId('address-card-home')).toBeInTheDocument();
             });
 
-            await user.click(screen.getByRole('button', { name: /add new address/i }));
+            await user.click(screen.getByRole('button', { name: t('account:addresses.addNewAddress') }));
 
             await waitFor(() => {
                 expect(screen.getByTestId('customer-address-form')).toBeInTheDocument();
@@ -304,10 +307,10 @@ describe('Addresses page', () => {
             await renderRoute(Promise.resolve(customerWithoutAddresses));
 
             await waitFor(() => {
-                expect(screen.getByText(/no saved addresses/i)).toBeInTheDocument();
+                expect(screen.getByText(t('account:addresses.noSavedAddresses'))).toBeInTheDocument();
             });
 
-            await user.click(screen.getByRole('button', { name: /add new address/i }));
+            await user.click(screen.getByRole('button', { name: t('account:addresses.addNewAddress') }));
 
             await waitFor(() => {
                 expect(screen.getByTestId('customer-address-form')).toBeInTheDocument();
@@ -324,7 +327,7 @@ describe('Addresses page', () => {
                 expect(screen.getByTestId('address-card-home')).toBeInTheDocument();
             });
 
-            await user.click(screen.getByRole('button', { name: /add new address/i }));
+            await user.click(screen.getByRole('button', { name: t('account:addresses.addNewAddress') }));
 
             await waitFor(() => {
                 expect(screen.getByTestId('customer-address-form')).toBeInTheDocument();
@@ -380,7 +383,7 @@ describe('Addresses page', () => {
             await user.click(editButton as HTMLElement);
 
             await waitFor(() => {
-                expect(screen.getByText('Edit Address')).toBeInTheDocument();
+                expect(screen.getByText(t('account:addresses.editAddress'))).toBeInTheDocument();
             });
         });
     });

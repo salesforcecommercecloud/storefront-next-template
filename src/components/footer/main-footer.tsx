@@ -20,7 +20,7 @@ import { Link } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import logo from '/images/logo.svg';
-import LegalLinks from './legal-links';
+import LegalLinks from '@/components/footer/legal-links';
 import NewsletterSection from './newsletter-section';
 import PolicyLinks from './policy-links';
 import SocialIcons from './social-icons';

@@ -176,6 +176,80 @@ describe('_app.tsx - Default Layout Route', () => {
                 const main = screen.getByRole('main');
                 expect(main).toBeInTheDocument();
                 expect(main).toHaveClass('grow', 'pt-8');
+                // With no `handle.ui`, both padding data-attributes are emitted
+                // as "false" (deterministic SSR output, no missing attribute).
+                expect(main).toHaveAttribute('data-has-top-padding', 'false');
+                expect(main).toHaveAttribute('data-hero-bleed', 'false');
+            });
+        });
+
+        it('reflects handle.ui.main.hasTopPadding onto <main> at render (SSR, no post-hydration shift)', async () => {
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: DefaultLayout,
+                    loader: () => ({
+                        root: Promise.resolve(mockCategory),
+                        subs: Promise.resolve(mockSubCategories),
+                    }),
+                    children: [
+                        {
+                            index: true,
+                            // The leaf route declares the padding config; the
+                            // shell must reflect it onto <main> during render so
+                            // the padding ships in the SSR'd HTML rather than
+                            // being added by a client effect (which caused CLS).
+                            handle: { ui: { main: { hasTopPadding: true } } },
+                            Component: () => <div>Content</div>,
+                        },
+                    ],
+                },
+            ]);
+
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/']} />
+                </AllProvidersWrapper>
+            );
+
+            await waitFor(() => {
+                const main = screen.getByRole('main');
+                expect(main).toHaveAttribute('data-has-top-padding', 'true');
+                expect(main).toHaveAttribute('data-hero-bleed', 'false');
+            });
+        });
+
+        it('reflects handle.ui.header.transparentOnLoad onto <main> as data-hero-bleed at render', async () => {
+            const Stub = createRoutesStub([
+                {
+                    id: 'root',
+                    path: '/',
+                    Component: DefaultLayout,
+                    loader: () => ({
+                        root: Promise.resolve(mockCategory),
+                        subs: Promise.resolve(mockSubCategories),
+                    }),
+                    children: [
+                        {
+                            index: true,
+                            handle: { ui: { header: { transparentOnLoad: true } } },
+                            Component: () => <div>Content</div>,
+                        },
+                    ],
+                },
+            ]);
+
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/']} />
+                </AllProvidersWrapper>
+            );
+
+            await waitFor(() => {
+                const main = screen.getByRole('main');
+                expect(main).toHaveAttribute('data-hero-bleed', 'true');
+                expect(main).toHaveAttribute('data-has-top-padding', 'false');
             });
         });
 

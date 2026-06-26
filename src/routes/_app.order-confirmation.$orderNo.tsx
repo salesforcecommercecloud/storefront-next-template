@@ -187,9 +187,9 @@ export function ErrorBoundary() {
     const showOrderNo = !isNotFound && Boolean(orderNo);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div data-section="order-confirmation" className="min-h-screen bg-background">
             <div className="max-w-4xl mx-auto section-container py-8">
-                <Card className="rounded-none shadow-none">
+                <Card>
                     <CardHeader>
                         <CardTitle className="text-center">{title}</CardTitle>
                     </CardHeader>
@@ -298,10 +298,13 @@ function OrderConfirmationContent({
     }, [resetBasket]);
 
     return (
-        <div data-testid="order-confirmation-container" className="min-h-screen bg-muted/30">
+        <div
+            data-section="order-confirmation"
+            data-testid="order-confirmation-container"
+            className="min-h-screen bg-muted/30">
             <div className="max-w-5xl mx-auto section-container py-10 space-y-6">
                 {/* Thank You and Order Confirmation section */}
-                <Card className="border border-border/70 rounded-none shadow-none">
+                <Card className="border border-border/70">
                     <CardContent className="p-8 space-y-6">
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                             <div className="space-y-2">
@@ -360,7 +363,7 @@ function OrderConfirmationContent({
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
                 {store && (
-                    <Card className="mb-8 rounded-none shadow-none">
+                    <Card className="mb-8">
                         <CardHeader>
                             <CardTitle>{tBopis('storePickup.title')}</CardTitle>
                         </CardHeader>
@@ -389,9 +392,7 @@ function OrderConfirmationContent({
                             shipment.shippingMethod?.description ||
                             t('confirmation.summaryLabels.estimatedDatePlaceholder');
                         return (
-                            <Card
-                                key={shipment.shipmentId}
-                                className="border border-border/70 rounded-none shadow-none">
+                            <Card key={shipment.shipmentId} className="border border-border/70">
                                 <CardContent className="grid gap-6 p-6 md:grid-cols-3">
                                     <div>
                                         <p className="text-base font-semibold tracking-wide text-foreground">
@@ -431,7 +432,7 @@ function OrderConfirmationContent({
                 </UITarget>
 
                 {/* Product Items Summary section */}
-                <Card className="border border-border/70 rounded-none shadow-none">
+                <Card className="border border-border/70">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-2xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
@@ -469,9 +470,9 @@ function OrderConfirmationContent({
                                     return (
                                         <div
                                             key={productKey}
-                                            className="rounded-none border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                            className="border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
                                             <div className="flex items-center justify-center">
-                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-sm font-semibold">
+                                                <div className="h-24 w-24 bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-sm font-semibold">
                                                     {imageSrc ? (
                                                         <ProductImage
                                                             src={toImageUrl({ src: imageSrc, config }) ?? imageSrc}
@@ -557,7 +558,7 @@ function OrderConfirmationContent({
 
                 {/* Payment Details section — only shown when card details are available */}
                 {paymentInstrument?.paymentCard?.cardType && (
-                    <Card className="border border-border/70 rounded-none shadow-none">
+                    <Card className="border border-border/70">
                         <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
                             <div className="flex items-center gap-4">
                                 <span className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -575,7 +576,7 @@ function OrderConfirmationContent({
                 )}
 
                 {/* Newsletter subscription section */}
-                <Card className="border border-border/70 rounded-none shadow-none">
+                <Card className="border border-border/70">
                     <CardContent className="space-y-4 p-6">
                         <div>
                             <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>

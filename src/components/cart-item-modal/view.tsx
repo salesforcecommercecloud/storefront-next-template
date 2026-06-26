@@ -101,7 +101,7 @@ export function CartItemModalView({
     return (
         <Dialog open={open} onOpenChange={handleDialogOpenChange}>
             <DialogContent
-                className="top-[calc(var(--header-height,0px)+0.75rem)] bottom-3 sm:bottom-4 translate-y-0 overflow-y-auto p-4 sm:p-5 md:p-6 sm:max-w-4xl"
+                className="max-h-[calc(100dvh-var(--header-height,0px)-1.5rem)] overflow-y-auto p-4 sm:p-5 md:p-6 sm:max-w-4xl"
                 showCloseButton>
                 <DialogHeader className="sr-only">
                     <DialogTitle>{dialogTitle}</DialogTitle>

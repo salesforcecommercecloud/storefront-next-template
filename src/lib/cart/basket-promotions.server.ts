@@ -18,7 +18,12 @@ import type { ShopperBasketsV2, ShopperPromotions } from '@/scapi';
 import { fetchPromotionsByIds } from '@/lib/api/promotions.server';
 
 /**
- * Fetches promotion details for promotion IDs found across basket items' priceAdjustments.
+ * Fetches promotion details for promotion IDs found across a basket's product-item
+ * `priceAdjustments` and its `bonusDiscountLineItems`.
+ *
+ * Bonus promotions surface as `bonusDiscountLineItems` (not as a `priceAdjustment` on the
+ * purchased item), so their IDs must be collected separately — otherwise the bonus-product
+ * rail in the cart has no promotion to resolve and falls back to a generic title.
  *
  * Composes `fetchPromotionsByIds` (which throws `NormalizedApiError` on failure) — does not
  * itself wrap or catch errors. Failures propagate to the caller.
@@ -27,7 +32,8 @@ import { fetchPromotionsByIds } from '@/lib/api/promotions.server';
  */
 export async function fetchPromotionsForBasket(
     context: LoaderFunctionArgs['context'],
-    productItems: ShopperBasketsV2.schemas['ProductItem'][]
+    productItems: ShopperBasketsV2.schemas['ProductItem'][],
+    bonusDiscountLineItems: ShopperBasketsV2.schemas['BonusDiscountLineItem'][] = []
 ): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const promotionIds = new Set<string>();
     productItems.forEach((productItem) => {
@@ -36,6 +42,11 @@ export async function fetchPromotionsForBasket(
                 promotionIds.add(adjustment.promotionId);
             }
         });
+    });
+    bonusDiscountLineItems.forEach((bonusItem) => {
+        if (bonusItem.promotionId) {
+            promotionIds.add(bonusItem.promotionId);
+        }
     });
 
     if (promotionIds.size === 0) {

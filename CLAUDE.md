@@ -1,1 +1,1 @@
-AGENTS.md
+/home/runner/work/storefront-next/storefront-next/packages/template/AGENTS.md

@@ -182,7 +182,7 @@ export default function Payment({
                                                                         {method.preferred && (
                                                                             <Badge
                                                                                 variant="secondary"
-                                                                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                                                                                className="text-xs font-normal bg-primary/10 text-primary">
                                                                                 {t('payment.defaultBadge')}
                                                                             </Badge>
                                                                         )}
@@ -375,7 +375,7 @@ export default function Payment({
                                                             align="start"
                                                             sideOffset={4}
                                                             aria-label={t('payment.selectAnAddress')}
-                                                            className="w-[var(--radix-popover-trigger-width)] rounded-none border border-input bg-card p-0 shadow-md">
+                                                            className="w-[var(--radix-popover-trigger-width)] border border-input bg-card p-0 shadow-md">
                                                             <div className="max-h-[108px] overflow-y-auto">
                                                                 {[...billingAddressOptions]
                                                                     .sort((a, b) => {

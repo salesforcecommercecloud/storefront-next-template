@@ -102,7 +102,7 @@ export default function PickupOrDelivery({
                 <Label
                     htmlFor={deliveryId}
                     className={cn(
-                        'flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer',
+                        'flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer',
                         value === DELIVERY_OPTIONS.DELIVERY
                             ? 'border-primary'
                             : 'border-muted-foreground/20 hover:border-primary/50',
@@ -117,10 +117,10 @@ export default function PickupOrDelivery({
                     <div className="mt-0.5 shrink-0">
                         <div
                             className={cn(
-                                'w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors',
+                                'w-4 h-4 border-2 flex items-center justify-center transition-colors',
                                 value === DELIVERY_OPTIONS.DELIVERY ? 'border-primary' : 'border-muted-foreground/20'
                             )}>
-                            {value === DELIVERY_OPTIONS.DELIVERY && <div className="w-2 h-2 rounded-none bg-primary" />}
+                            {value === DELIVERY_OPTIONS.DELIVERY && <div className="w-2 h-2 bg-primary" />}
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ export default function PickupOrDelivery({
                         }
                     }}
                     className={cn(
-                        'flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer',
+                        'flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer',
                         value === DELIVERY_OPTIONS.PICKUP
                             ? 'border-primary'
                             : 'border-muted-foreground/20 hover:border-primary/50',
@@ -167,10 +167,10 @@ export default function PickupOrDelivery({
                     <div className="mt-0.5 shrink-0">
                         <div
                             className={cn(
-                                'w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors',
+                                'w-4 h-4 border-2 flex items-center justify-center transition-colors',
                                 value === DELIVERY_OPTIONS.PICKUP ? 'border-primary' : 'border-muted-foreground/20'
                             )}>
-                            {value === DELIVERY_OPTIONS.PICKUP && <div className="w-2 h-2 rounded-none bg-primary" />}
+                            {value === DELIVERY_OPTIONS.PICKUP && <div className="w-2 h-2 bg-primary" />}
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">

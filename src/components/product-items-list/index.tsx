@@ -21,7 +21,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/sca
 // Components
 import ProductItem from '@/components/product-item';
 import SelectBonusProductsCard from '@/components/cart/select-bonus-products-card';
-import { Card } from '../ui/card';
+import { Card } from '@/components/ui/card';
 
 // Utils
 import {

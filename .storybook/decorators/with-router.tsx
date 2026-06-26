@@ -121,7 +121,7 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
         routeLoaderData && Object.keys(routeLoaderData).length > 0
             ? Object.entries(routeLoaderData).reduceRight<RouteObject>(
                   (child, [id, data], i) => ({
-                      ...(i === 0 ? { path: '/', action: defaultStoryAction } : {}),
+                      ...(i === 0 ? { path: '/', action: defaultStoryAction, HydrateFallback: () => null } : {}),
                       id,
                       loader: () => data,
                       element: <Outlet />,
@@ -129,7 +129,7 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
                   }),
                   { index: true, element: WrappedStory }
               )
-            : { path: '/', element: WrappedStory, action: defaultStoryAction };
+            : { path: '/', element: WrappedStory, action: defaultStoryAction, HydrateFallback: () => null };
 
     // Create a memory router for components that use React Router hooks (e.g., useFetcher).
     // This provides the data router context needed for useFetcher and other React Router hooks.
@@ -182,7 +182,6 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
  * - `parameters.mockRoutes` — append story-specific routes.
  * - `parameters.initialEntries` — seed the router with a non-root URL on first paint.
  */
-export const withRouter = (Wrapper: ComponentType<{ children: ReactNode }>): Decorator =>
-    (Story, context) => (
-        <RouterWrapper Story={Story} context={context} Wrapper={Wrapper} />
-    );
+export const withRouter =
+    (Wrapper: ComponentType<{ children: ReactNode }>): Decorator =>
+    (Story, context) => <RouterWrapper Story={Story} context={context} Wrapper={Wrapper} />;

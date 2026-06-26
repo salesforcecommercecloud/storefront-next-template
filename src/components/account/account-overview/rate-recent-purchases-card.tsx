@@ -47,7 +47,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
     const orderDetailsUrl = routeHref(routes.accountOrderDetail, { orderNo: order.orderNo });
 
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <div className="space-y-4">
                     <div>
@@ -59,7 +59,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
                         </p>
                     </div>
                     {/* Inner region: thumbnails + copy + CTA — matches Recent Orders thumbnail treatment */}
-                    <div className="rounded-none border border-border p-4 sm:p-5">
+                    <div className="border border-border p-4 sm:p-5">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                             <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                                 {thumbs.length > 0 ? (
@@ -69,7 +69,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
                                                 key={item.productId}
                                                 to={routeHref(routes.product, { productId: item.productId })}
                                                 className="relative block">
-                                                <div className="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted">
+                                                <div className="h-16 w-16 overflow-hidden border border-border bg-muted">
                                                     {item.imageUrl ? (
                                                         <img
                                                             src={item.imageUrl}
@@ -106,7 +106,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
                                     asChild
                                     variant="default"
                                     size="default"
-                                    className="min-w-[10.5rem] rounded-none bg-foreground text-background hover:bg-foreground/90">
+                                    className="min-w-[10.5rem] bg-foreground text-background hover:bg-foreground/90">
                                     <Link to={orderDetailsUrl}>{t('overview.rateRecentPurchases.cta')}</Link>
                                 </Button>
                             </div>

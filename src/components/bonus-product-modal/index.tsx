@@ -296,7 +296,7 @@ export function BonusProductModal({
                                 </div>
                                 <div className="lg:order-2">
                                     <div
-                                        className="lg:border lg:border-gray-200 lg:rounded-none lg:p-6 lg:overflow-y-auto"
+                                        className="lg:border lg:border-gray-200 lg:p-6 lg:overflow-y-auto"
                                         style={{ maxHeight: `${BONUS_MODAL_CONTENT_MAX_HEIGHT}px` }}>
                                         <ProductInfo
                                             product={currentProduct}

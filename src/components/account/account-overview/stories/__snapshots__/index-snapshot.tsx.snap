@@ -5,7 +5,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
   class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -31,7 +31,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       class="space-y-0"
     >
       <div
-        class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border rounded-b-none border-b-0"
+        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui bg-card border-border rounded-b-none border-b-0"
         data-slot="card"
       >
         <div
@@ -57,7 +57,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
               </p>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 shrink-0 bg-secondary shadow-2xs"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 shrink-0 bg-secondary shadow-2xs"
               data-discover="true"
               data-size="default"
               data-slot="button"
@@ -78,7 +78,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/orders/INV001"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
             data-slot="card"
           >
             <div
@@ -149,7 +149,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   </div>
                 </div>
                 <span
-                  class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-muted text-foreground"
+                  class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-muted text-foreground"
                   data-slot="badge"
                   data-testid="order-status-badge"
                 >
@@ -163,7 +163,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
                   >
                     <img
                       alt="Classic White Shirt"
@@ -177,7 +177,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
                   >
                     <img
                       alt="Blue Dress Pants"
@@ -191,7 +191,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
                   >
                     <img
                       alt="Silk Scarf"
@@ -205,7 +205,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
                   >
                     <img
                       alt="Leather Handbag"
@@ -217,7 +217,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                 </div>
               </div>
               <div
-                class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
+                class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
                 data-slot="card"
               >
                 <div
@@ -320,7 +320,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/orders/INV002"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
             data-slot="card"
           >
             <div
@@ -391,7 +391,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   </div>
                 </div>
                 <span
-                  class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
+                  class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-status-positive text-white"
                   data-slot="badge"
                   data-testid="order-status-badge"
                 >
@@ -423,7 +423,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
                   >
                     <img
                       alt="Running Shoes"
@@ -476,7 +476,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
       data-slot="card"
     >
       <div
@@ -499,7 +499,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
             </p>
           </div>
           <div
-            class="rounded-none border border-border p-4 sm:p-5"
+            class="border border-border p-4 sm:p-5"
           >
             <div
               class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -516,7 +516,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                     href="/global/en-GB/product/prod-1"
                   >
                     <div
-                      class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
+                      class="h-16 w-16 overflow-hidden border border-border bg-muted"
                     >
                       <img
                         alt="Classic White Shirt"
@@ -532,7 +532,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                     href="/global/en-GB/product/prod-2"
                   >
                     <div
-                      class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
+                      class="h-16 w-16 overflow-hidden border border-border bg-muted"
                     >
                       <img
                         alt="Blue Dress Pants"
@@ -557,7 +557,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                 class="flex w-full shrink-0 justify-end sm:w-auto sm:self-center"
               >
                 <a
-                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] rounded-none bg-foreground text-background hover:bg-foreground/90"
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 min-w-[10.5rem] bg-foreground text-background hover:bg-foreground/90"
                   data-discover="true"
                   data-size="default"
                   data-slot="button"
@@ -574,7 +574,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -595,7 +595,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
         class="flex flex-wrap gap-3"
       >
         <button
-          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          class="justify-center whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
           data-size="default"
           data-slot="button"
           data-variant="outline"
@@ -603,7 +603,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           Contact info
         </button>
         <button
-          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          class="justify-center whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
           data-size="default"
           data-slot="button"
           data-variant="outline"
@@ -614,7 +614,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -658,7 +658,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border"
+            class="w-32 h-32 bg-muted flex items-center justify-center border-2 border-dashed border-border"
           >
             <svg
               class="w-16 h-16 text-muted-foreground"
@@ -684,7 +684,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -705,7 +705,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -742,7 +742,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -779,7 +779,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -821,7 +821,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -864,7 +864,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
   class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -890,7 +890,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
       class="space-y-0"
     >
       <div
-        class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border rounded-b-none border-b-0"
+        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui bg-card border-border rounded-b-none border-b-0"
         data-slot="card"
       >
         <div
@@ -916,7 +916,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
               </p>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 shrink-0 bg-secondary shadow-2xs"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 shrink-0 bg-secondary shadow-2xs"
               data-discover="true"
               data-size="default"
               data-slot="button"
@@ -929,7 +929,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 border-border m-0 rounded-none shadow-none border-b-0"
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui border-border m-0 border-b-0"
         data-slot="card"
       >
         <div
@@ -945,7 +945,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
               You haven't placed an order yet. Once you place an order the details will show up here.
             </h4>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
               data-discover="true"
               data-size="default"
               data-slot="button"
@@ -970,7 +970,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -991,7 +991,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
         class="flex flex-wrap gap-3"
       >
         <button
-          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          class="justify-center whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
           data-size="default"
           data-slot="button"
           data-variant="outline"
@@ -999,7 +999,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           Contact info
         </button>
         <button
-          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          class="justify-center whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
           data-size="default"
           data-slot="button"
           data-variant="outline"
@@ -1010,7 +1010,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1054,7 +1054,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border"
+            class="w-32 h-32 bg-muted flex items-center justify-center border-2 border-dashed border-border"
           >
             <svg
               class="w-16 h-16 text-muted-foreground"
@@ -1080,7 +1080,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1101,7 +1101,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1138,7 +1138,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1175,7 +1175,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1217,7 +1217,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1260,7 +1260,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
   class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1268,11 +1268,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="bg-accent animate-pulse rounded-md h-6 w-64 mb-1"
+        class="bg-accent animate-pulse rounded-ui h-6 w-64 mb-1"
         data-slot="skeleton"
       />
       <div
-        class="bg-accent animate-pulse rounded-md h-4 w-96 max-w-full"
+        class="bg-accent animate-pulse rounded-ui h-4 w-96 max-w-full"
         data-slot="skeleton"
       />
     </div>
@@ -1284,7 +1284,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       class="space-y-0"
     >
       <div
-        class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border rounded-b-none border-b-0"
+        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui bg-card border-border rounded-b-none border-b-0"
         data-slot="card"
       >
         <div
@@ -1292,11 +1292,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           data-slot="card-content"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-7 w-40 mb-1.5"
+            class="bg-accent animate-pulse rounded-ui h-7 w-40 mb-1.5"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-56"
+            class="bg-accent animate-pulse rounded-ui h-4 w-56"
             data-slot="skeleton"
           />
         </div>
@@ -1305,7 +1305,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         class="space-y-4 m-0 border-x border-t border-border"
       >
         <div
-          class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-border shadow-none"
+          class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui py-0 border-0 border-border"
           data-slot="card"
         >
           <div
@@ -1345,7 +1345,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           </div>
         </div>
         <div
-          class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-border shadow-none"
+          class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui py-0 border-0 border-border"
           data-slot="card"
         >
           <div
@@ -1385,7 +1385,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           </div>
         </div>
         <div
-          class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-border shadow-none"
+          class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui py-0 border-0 border-border"
           data-slot="card"
         >
           <div
@@ -1434,7 +1434,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
       data-slot="card"
     >
       <div
@@ -1442,15 +1442,15 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         data-slot="card-content"
       >
         <div
-          class="bg-accent animate-pulse rounded-md h-7 w-72 max-w-full"
+          class="bg-accent animate-pulse rounded-ui h-7 w-72 max-w-full"
           data-slot="skeleton"
         />
         <div
-          class="bg-accent animate-pulse rounded-md h-4 w-full max-w-lg"
+          class="bg-accent animate-pulse rounded-ui h-4 w-full max-w-lg"
           data-slot="skeleton"
         />
         <div
-          class="rounded-none border border-border p-4 sm:p-5"
+          class="border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -1462,11 +1462,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
                 class="flex shrink-0 gap-2"
               >
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
+                  class="bg-accent animate-pulse rounded-ui h-16 w-16 shrink-0"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
+                  class="bg-accent animate-pulse rounded-ui h-16 w-16 shrink-0"
                   data-slot="skeleton"
                 />
               </div>
@@ -1474,11 +1474,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
                 class="min-w-0 flex-1 space-y-2"
               >
                 <div
-                  class="bg-accent animate-pulse rounded-md h-4 w-full"
+                  class="bg-accent animate-pulse rounded-ui h-4 w-full"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse rounded-md h-3 w-40"
+                  class="bg-accent animate-pulse rounded-ui h-3 w-40"
                   data-slot="skeleton"
                 />
               </div>
@@ -1487,7 +1487,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
               class="flex w-full justify-end sm:w-auto sm:self-center"
             >
               <div
-                class="bg-accent animate-pulse rounded-md h-10 w-full max-w-none sm:h-10 sm:w-40"
+                class="bg-accent animate-pulse rounded-ui h-10 w-full max-w-none sm:h-10 sm:w-40"
                 data-slot="skeleton"
               />
             </div>
@@ -1497,7 +1497,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1505,33 +1505,33 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+        class="bg-accent animate-pulse rounded-ui h-7 w-48 mb-2"
         data-slot="skeleton"
       />
       <div
-        class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-4"
+        class="bg-accent animate-pulse rounded-ui h-4 w-full max-w-xl mb-4"
         data-slot="skeleton"
       />
       <div
         class="flex flex-wrap gap-3"
       >
         <div
-          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          class="bg-accent animate-pulse rounded-ui h-10 w-32"
           data-slot="skeleton"
         />
         <div
-          class="bg-accent animate-pulse rounded-md h-10 w-36"
+          class="bg-accent animate-pulse rounded-ui h-10 w-36"
           data-slot="skeleton"
         />
         <div
-          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          class="bg-accent animate-pulse rounded-ui h-10 w-32"
           data-slot="skeleton"
         />
       </div>
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1545,22 +1545,22 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           class="flex-1"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+            class="bg-accent animate-pulse rounded-ui h-7 w-48 mb-2"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-6"
+            class="bg-accent animate-pulse rounded-ui h-4 w-full max-w-xl mb-6"
             data-slot="skeleton"
           />
           <div
             class="flex flex-wrap gap-3"
           >
             <div
-              class="bg-accent animate-pulse rounded-md h-12 w-32"
+              class="bg-accent animate-pulse rounded-ui h-12 w-32"
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse rounded-md h-12 w-36"
+              class="bg-accent animate-pulse rounded-ui h-12 w-36"
               data-slot="skeleton"
             />
           </div>
@@ -1569,11 +1569,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="bg-accent animate-pulse w-40 h-40 rounded-none"
+            class="bg-accent animate-pulse rounded-ui w-40 h-40"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-16"
+            class="bg-accent animate-pulse rounded-ui h-4 w-16"
             data-slot="skeleton"
           />
         </div>
@@ -1581,7 +1581,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border shadow-ui py-0"
     data-slot="card"
   >
     <div
@@ -1589,57 +1589,57 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="bg-accent animate-pulse rounded-md h-7 w-32 mb-4"
+        class="bg-accent animate-pulse rounded-ui h-7 w-32 mb-4"
         data-slot="skeleton"
       />
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
         >
           <div
-            class="bg-accent animate-pulse rounded-md w-4 h-4"
+            class="bg-accent animate-pulse rounded-ui w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            class="bg-accent animate-pulse rounded-ui h-5 w-24"
             data-slot="skeleton"
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
         >
           <div
-            class="bg-accent animate-pulse rounded-md w-4 h-4"
+            class="bg-accent animate-pulse rounded-ui w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            class="bg-accent animate-pulse rounded-ui h-5 w-24"
             data-slot="skeleton"
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
         >
           <div
-            class="bg-accent animate-pulse rounded-md w-4 h-4"
+            class="bg-accent animate-pulse rounded-ui w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            class="bg-accent animate-pulse rounded-ui h-5 w-24"
             data-slot="skeleton"
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
         >
           <div
-            class="bg-accent animate-pulse rounded-md w-4 h-4"
+            class="bg-accent animate-pulse rounded-ui w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            class="bg-accent animate-pulse rounded-ui h-5 w-24"
             data-slot="skeleton"
           />
         </div>

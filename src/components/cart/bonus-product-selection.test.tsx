@@ -287,9 +287,13 @@ describe('BonusProductSelection', () => {
 
             renderWithRouter(<BonusProductSelection {...props} />);
 
-            // Check title with count (mocked as 1 of 3)
+            // Check title with count (mocked as 1 of 3). Derive the suffix from the resolved
+            // translation rather than hardcoding the canonical wording — verticals (e.g. cosmetic)
+            // override `selectionCount` to a compact "1/3" form via their locale overlay.
+            const { t } = getTranslation();
+            const countText = t('cart:bonusProducts.selectionCount', { selected: 1, max: 3 }).trim();
             expect(screen.getByText('Summer Sale Bonus')).toBeInTheDocument();
-            expect(screen.getByText(/\(1 of 3 selected\)/)).toBeInTheDocument();
+            expect(screen.getByText((content) => content.includes(countText))).toBeInTheDocument();
         });
 
         test('displays fallback title when promotionName is not provided', () => {

@@ -48,6 +48,12 @@ vi.mock('@/lib/product/recommendations.server', () => ({
     fetchProductRecommendations: vi.fn(),
 }));
 
+// Per-page UI flags. Default to the canonical value (recommendations on); the
+// gating test flips it to assert the loader skips the Einstein fetches.
+vi.mock('@/lib/config.ui', () => ({
+    uiConfig: { pages: { cart: { showRecommendations: true } } },
+}));
+
 vi.mock('@/lib/cart/rule-based-bonus.server', () => ({
     fetchRuleBasedBonusProductsForBasket: vi.fn(),
 }));
@@ -64,6 +70,7 @@ import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
 import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
 import { fetchRuleBasedBonusProductsForBasket } from '@/lib/cart/rule-based-bonus.server';
+import { uiConfig } from '@/lib/config.ui';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -79,12 +86,14 @@ describe('Cart route loader', () => {
         params: { siteId: 'test-site', localeId: 'en-US' },
         context: createTestContext({ currency: 'USD' }),
         request: new Request('http://localhost/cart'),
-        pattern: ROUTE_PATTERN,
         url: new URL('http://localhost/cart'),
+        pattern: ROUTE_PATTERN,
     });
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Reset to canonical default — the gating test mutates this.
+        uiConfig.pages.cart.showRecommendations = true;
         vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
         vi.mocked(getBasketSnapshot).mockReturnValue({
             basketId: 'basket-123',
@@ -117,6 +126,29 @@ describe('Cart route loader', () => {
             currency: 'USD',
         });
         expect(result.pageUrl).toContain('/cart');
+    });
+
+    test('skips the Einstein recommendation fetches when the vertical disables recommendations', async () => {
+        // Cosmetic sets showRecommendations: false. The loader must not issue either
+        // recommendation call, and the rec promises must still resolve to an empty
+        // Recommendation so the shape the component pins stays stable.
+        uiConfig.pages.cart.showRecommendations = false;
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.cartMayAlsoLikePromise).resolves.toEqual({});
+        await expect(result.cartRecentlyViewedPromise).resolves.toEqual({});
+        expect(fetchProductRecommendations).not.toHaveBeenCalled();
+    });
+
+    test('issues the Einstein recommendation fetches when recommendations are enabled', async () => {
+        // Canonical/fashion default. CART_RECENTLY_VIEWED fires immediately; CART_MAY_ALSO_LIKE
+        // chains off the basket — awaiting it forces both calls through.
+        const result = loader(createLoaderArgs()) as any;
+        await result.cartMayAlsoLikePromise;
+        await result.cartRecentlyViewedPromise;
+
+        expect(fetchProductRecommendations).toHaveBeenCalled();
     });
 
     test('basketDataPromise resolves to basket, products, promotions, and stores (no wishlist)', async () => {

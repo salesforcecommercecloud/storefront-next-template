@@ -78,7 +78,7 @@ export function RemovePaymentMethodDialog({
                 <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.removeConfirmation')}</p>
 
-                    <Card className="rounded-none border-border bg-muted/60 py-0">
+                    <Card className="border-border bg-muted/60 py-0">
                         <div className="p-4">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">{t('paymentMethods.paymentMethod')}</span>
@@ -103,7 +103,7 @@ export function RemovePaymentMethodDialog({
                     </Card>
 
                     {paymentMethod.isDefault && (
-                        <div className="mt-4 flex gap-3 p-3 rounded-none bg-warning-bg border border-warning-border">
+                        <div className="mt-4 flex gap-3 p-3 bg-warning-bg border border-warning-border">
                             <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" aria-hidden />
                             <p className="text-xs text-warning-foreground">
                                 {t('paymentMethods.defaultRemovalWarning')}

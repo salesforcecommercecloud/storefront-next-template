@@ -132,9 +132,9 @@ describe('action.wishlist-add', () => {
             });
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -149,9 +149,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest();
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -193,9 +193,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -239,9 +239,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -291,9 +291,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -357,9 +357,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -420,9 +420,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -478,9 +478,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -524,9 +524,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -561,9 +561,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -613,9 +613,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -647,9 +647,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -682,9 +682,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -746,9 +746,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 
@@ -801,9 +801,9 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
-                url: new URL(request.url),
                 context: mockContext,
                 params: {},
+                url: new URL(request.url),
                 pattern: 'action/wishlist-add',
             };
 

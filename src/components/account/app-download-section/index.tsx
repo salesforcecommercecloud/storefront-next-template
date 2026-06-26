@@ -35,7 +35,7 @@ export function AppDownloadSection(): ReactElement {
     const { t } = useTranslation('account');
 
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     {/* Left side: Text and buttons */}
@@ -65,7 +65,7 @@ export function AppDownloadSection(): ReactElement {
 
                     {/* Right side: QR code */}
                     <div className="flex flex-col items-center gap-2 lg:flex-shrink-0">
-                        <div className="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border">
+                        <div className="w-32 h-32 bg-muted flex items-center justify-center border-2 border-dashed border-border">
                             <svg
                                 className="w-16 h-16 text-muted-foreground"
                                 fill="none"

@@ -9,7 +9,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -21,7 +21,8 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -47,7 +48,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                 >
                   <span
                     aria-label="This item is a free bonus product"
-                    class="inline-flex items-center justify-center border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-none"
+                    class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90"
                     data-slot="badge"
                     role="status"
                   >
@@ -116,11 +117,11 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -138,7 +139,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                         disabled=""
                       >
@@ -166,7 +167,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
     data-testid="sf-product-item-choice-bonus-product-1"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -178,7 +179,8 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -204,7 +206,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                 >
                   <span
                     aria-label="This item is a free bonus product"
-                    class="inline-flex items-center justify-center border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-none"
+                    class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90"
                     data-slot="badge"
                     role="status"
                   >
@@ -282,11 +284,11 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -303,7 +305,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -343,7 +345,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -355,7 +357,8 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -458,11 +461,11 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -479,7 +482,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -506,7 +509,7 @@ exports[`ProductItem stories snapshot > DiscountedPrice story renders and matche
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -518,7 +521,8 @@ exports[`ProductItem stories snapshot > DiscountedPrice story renders and matche
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -625,7 +629,7 @@ exports[`ProductItem stories snapshot > DiscountedPrice story renders and matche
                     class="flex w-full justify-end"
                   >
                     <span
-                      class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+                      class="inline-flex items-center justify-center rounded-full w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                       data-slot="badge"
                     >
                       Saved £20.00
@@ -646,11 +650,11 @@ exports[`ProductItem stories snapshot > DiscountedPrice story renders and matche
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -667,7 +671,7 @@ exports[`ProductItem stories snapshot > DiscountedPrice story renders and matche
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -694,7 +698,7 @@ exports[`ProductItem stories snapshot > LongProductName story renders and matche
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -706,7 +710,8 @@ exports[`ProductItem stories snapshot > LongProductName story renders and matche
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -809,11 +814,11 @@ exports[`ProductItem stories snapshot > LongProductName story renders and matche
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -830,7 +835,7 @@ exports[`ProductItem stories snapshot > LongProductName story renders and matche
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -857,7 +862,7 @@ exports[`ProductItem stories snapshot > MissingImages story renders and matches 
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -869,10 +874,11 @@ exports[`ProductItem stories snapshot > MissingImages story renders and matches 
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <div
-                class="w-full h-full bg-muted rounded-none"
+                class="w-full h-full bg-muted"
               />
             </div>
           </div>
@@ -970,11 +976,11 @@ exports[`ProductItem stories snapshot > MissingImages story renders and matches 
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -991,7 +997,7 @@ exports[`ProductItem stories snapshot > MissingImages story renders and matches 
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -1018,7 +1024,7 @@ exports[`ProductItem stories snapshot > MultipleQuantity story renders and match
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -1030,7 +1036,8 @@ exports[`ProductItem stories snapshot > MultipleQuantity story renders and match
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -1140,11 +1147,11 @@ exports[`ProductItem stories snapshot > MultipleQuantity story renders and match
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                       >
                         −
@@ -1160,7 +1167,7 @@ exports[`ProductItem stories snapshot > MultipleQuantity story renders and match
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -1202,7 +1209,8 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
       class="flex items-center justify-center"
     >
       <div
-        class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+        class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+        data-slot="product-item-image"
       >
         <img
           alt="Men's Classic Deer Gloves, , small"
@@ -1283,7 +1291,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -1295,7 +1303,8 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -1407,11 +1416,11 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -1428,7 +1437,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -1468,7 +1477,7 @@ exports[`ProductItem stories snapshot > WithInventoryMessage story renders and m
     data-testid="sf-product-item-061492183589M"
   >
     <div
-      class="bg-card text-card-foreground border-0 shadow-none rounded-none"
+      class="bg-card text-card-foreground border-0 "
     >
       <div
         class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
@@ -1480,7 +1489,8 @@ exports[`ProductItem stories snapshot > WithInventoryMessage story renders and m
             class="flex-shrink-0 flex items-start justify-center"
           >
             <div
-              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+              data-slot="product-item-image"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -1583,11 +1593,11 @@ exports[`ProductItem stories snapshot > WithInventoryMessage story renders and m
                       Quantity
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="inline-flex items-center border border-input"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -1604,7 +1614,7 @@ exports[`ProductItem stories snapshot > WithInventoryMessage story renders and m
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +

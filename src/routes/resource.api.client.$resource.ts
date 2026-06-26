@@ -149,7 +149,7 @@ export async function loader<
         const methodName = resource[1] as string;
 
         if (!client || typeof client[methodName] !== 'function' || RESERVED_PROXY_MEMBERS.has(methodName)) {
-            throw new TypeError(`Method not found: "${resource[0]}.${methodName}"`);
+            throw new TypeError(`Method not found: "${String(resource[0])}.${methodName}"`);
         }
 
         // Parameters are already in the new format: { params: { path: {...}, query: {...} }, body: {...} }
@@ -296,7 +296,7 @@ export async function action<
         const methodName = resource[1] as string;
 
         if (!client || typeof client[methodName] !== 'function' || RESERVED_PROXY_MEMBERS.has(methodName)) {
-            throw new TypeError(`Method not found: "${resource[0]}.${methodName}"`);
+            throw new TypeError(`Method not found: "${String(resource[0])}.${methodName}"`);
         }
 
         // Call the method - new API returns { data, response }

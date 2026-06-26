@@ -238,9 +238,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
 
     return (
         <>
-            <Card
-                data-testid="interests-preferences-section"
-                className="bg-card border-border rounded-none shadow-none">
+            <Card data-testid="interests-preferences-section" className="bg-card border-border">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
                         <CardTitle className="text-base font-semibold">{t('interestsPreferences.title')}</CardTitle>
@@ -254,8 +252,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                 data-testid="interests-preferences-save-button"
                                 size="sm"
                                 onClick={handleSave}
-                                disabled={isSaving}
-                                className="rounded-none">
+                                disabled={isSaving}>
                                 {isSaving ? t('common.saving') : t('common.save')}
                             </Button>
                             <Button
@@ -264,7 +261,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                 size="sm"
                                 onClick={handleCancel}
                                 disabled={isSaving}
-                                className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -274,7 +271,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                             variant="outline"
                             size="sm"
                             onClick={handleEdit}
-                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -294,7 +291,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                         <span
                                             key={interest.id}
                                             data-testid={`interest-badge-${interest.id}`}
-                                            className={`inline-flex items-center gap-1.5 rounded-none px-3 py-1.5 text-sm font-medium ${
+                                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
                                                 isEditing
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'bg-primary/10 text-primary'
@@ -348,7 +345,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                             <span
                                                                 key={val}
                                                                 data-testid={`pref-badge-${pref.id}-${val}`}
-                                                                className={`inline-flex items-center gap-1.5 rounded-none px-3 py-1.5 text-sm font-medium ${
+                                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
                                                                     isEditing
                                                                         ? 'bg-primary text-primary-foreground'
                                                                         : 'bg-primary/10 text-primary'
@@ -405,7 +402,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                             }
                                                             disabled={!isEditing}
                                                             className={cn(
-                                                                'rounded-none px-4 py-2.5 text-sm font-medium transition-colors',
+                                                                'px-4 py-2.5 text-sm font-medium transition-colors',
                                                                 isSelected
                                                                     ? 'bg-foreground text-background'
                                                                     : isEditing
@@ -597,7 +594,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                         <label
                                             key={interest.id}
                                             htmlFor={`dialog-interest-${interest.id}`}
-                                            className="flex items-center justify-between rounded-none border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
+                                            className="flex items-center justify-between border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
                                             <span className="text-sm font-normal">{interest.name}</span>
                                             <Checkbox
                                                 id={`dialog-interest-${interest.id}`}
@@ -649,7 +646,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                     <label
                                         key={option.value}
                                         htmlFor={`dialog-pref-${option.value}`}
-                                        className="flex items-center justify-between rounded-none border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
+                                        className="flex items-center justify-between border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
                                         <span className="text-sm font-normal">{option.label}</span>
                                         <Checkbox
                                             id={`dialog-pref-${option.value}`}

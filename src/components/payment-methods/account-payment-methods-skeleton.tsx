@@ -25,7 +25,7 @@ export function AccountPaymentMethodsSkeleton(): ReactElement {
     return (
         <div className="space-y-5">
             {/* Page Header Skeleton */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
                     <div>
                         <Skeleton className="h-6 w-48 mb-1" />
@@ -35,7 +35,7 @@ export function AccountPaymentMethodsSkeleton(): ReactElement {
             </Card>
 
             {/* Payment Methods Section Skeleton */}
-            <Card className="p-6 rounded-none shadow-none">
+            <Card className="p-6">
                 <div className="flex items-center justify-between pb-6 border-b">
                     <div>
                         <Skeleton className="h-5 w-40 mb-1" />
@@ -47,7 +47,7 @@ export function AccountPaymentMethodsSkeleton(): ReactElement {
                 <div className="pt-2 space-y-6">
                     {/* Payment Method Card Skeletons */}
                     {[1, 2].map((i) => (
-                        <Card key={i} className="p-6 rounded-none shadow-none">
+                        <Card key={i} className="p-6">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 pr-4">
                                     <Skeleton className="h-5 w-48 mb-2" />

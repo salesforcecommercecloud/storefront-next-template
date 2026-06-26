@@ -192,7 +192,7 @@ export default function RegisterCustomerSelection({
                         {t('registration.accountCreatedDescription')}
                     </p>
                 </div>
-                <Badge variant="success" className="rounded-none">
+                <Badge variant="success" className="">
                     {t('registration.verified')}
                 </Badge>
             </section>

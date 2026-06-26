@@ -31,7 +31,7 @@ interface PriceInputProps {
 
 function PriceInput({ placeholder, value, onChange, onKeyDown, hasError, currencySymbol }: PriceInputProps) {
     return (
-        <div className="rounded-none border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs">
+        <div className="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs">
             <span
                 className="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
                 aria-hidden="true">

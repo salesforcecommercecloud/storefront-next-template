@@ -102,29 +102,33 @@ function getBaseUrl(config: ScapiConfig): string {
 }
 
 /**
- * Returns true for HTTP 409 rate-limit errors produced by the SLAS helpers.
+ * Returns true for HTTP 409/429 rate-limit errors produced by the SLAS helpers.
  *
- * SLAS throttles logins to ~1 per second per tenant and answers an over-the-gate
- * login with a 409 ("Tenant has already performed login in last 1 second").
- * Back-to-back `@core` scenarios — each clearing cookies and re-authenticating —
- * trip this easily, and the storefront's own post-signup auto-login adds to the
- * pressure.
+ * Two distinct SLAS throttles are both retryable here:
+ * - **409** — the ~1/sec per-tenant login gate ("Tenant has already performed
+ *   login in last 1 second"). Back-to-back `@core` scenarios — each clearing
+ *   cookies and re-authenticating — trip this easily, and the storefront's own
+ *   post-signup auto-login adds to the pressure.
+ * - **429** — SLAS "Too Many Requests" when several runners hammer the same
+ *   tenant concurrently (the burst seen in CI when multiple e2e jobs share a
+ *   backend). Fatal-on-429 was the dominant cause of the flaky guest-login
+ *   failures, since `loginGuest` had no retry around it.
  *
- * Anchored on the helpers' two error-formatter prefixes — `Status: 409` or
- * `failed (409)` — mirroring `isAuthError` in `token-cache.ts`, so we don't
+ * Anchored on the helpers' two error-formatter prefixes — `Status: <code>` or
+ * `failed (<code>)` — mirroring `isAuthError` in `token-cache.ts`, so we don't
  * false-positive on a 5xx whose body echoes those digits in a request/correlation
- * id. Note `isAuthError` deliberately matches only 401/403; the 1/sec gate is a
- * distinct, retryable condition handled here, not an eviction trigger there.
+ * id. Note `isAuthError` deliberately matches only 401/403; the rate-limit gates
+ * are distinct, retryable conditions handled here, not eviction triggers there.
  *
  * Exported for direct unit testing.
  */
 export function isRateLimitError(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error);
-    return /(?:Status:\s*409\b|failed\s*\(409\))/.test(message);
+    return /(?:Status:\s*(?:409|429)\b|failed\s*\((?:409|429)\))/.test(message);
 }
 
 /**
- * Run `fn`, retrying only when it rejects with a SLAS 409 rate-limit error
+ * Run `fn`, retrying only when it rejects with a SLAS 409/429 rate-limit error
  * (`isRateLimitError`). Any other rejection propagates immediately.
  *
  * The backoff sits at or above the ~1s SLAS gate so the retry lands after the
@@ -172,9 +176,15 @@ export async function withSlasRetry<T>(
  *   GET `/oauth2/authorize` with `hint=guest` to get a 303 redirect carrying a
  *   code, then POST `/oauth2/token` with `grant_type=authorization_code_pkce`.
  *   No basic auth, no secret needed.
+ *
+ * Wrapped in `withSlasRetry` so the guest login — the entry point for every
+ * `createCartViaApi` and `createRegisteredShopperViaApi` setup — survives the
+ * SLAS 409/429 rate-limit the same way `loginRegistered` does. Each retry re-runs
+ * the whole grant (a fresh PKCE verifier/challenge for the public path), so a
+ * stale code is never reused.
  */
 export async function loginGuest(config: ScapiConfig): Promise<GuestTokens> {
-    return config.slasSecret ? loginGuestClientCredentials(config) : loginGuestPublic(config);
+    return withSlasRetry(() => (config.slasSecret ? loginGuestClientCredentials(config) : loginGuestPublic(config)));
 }
 
 async function loginGuestClientCredentials(config: ScapiConfig): Promise<GuestTokens> {

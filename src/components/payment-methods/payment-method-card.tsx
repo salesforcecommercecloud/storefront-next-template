@@ -53,7 +53,7 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
     const CardIcon = getCardIcon(displayName);
 
     return (
-        <Card className={`p-6 ${paymentMethod.isDefault ? 'border-primary' : ''} rounded-none shadow-none`}>
+        <Card className={`p-6 ${paymentMethod.isDefault ? 'border-primary' : ''}`}>
             <div className="flex items-start justify-between">
                 <div className="flex-1 pr-4">
                     {/* Card Title */}
@@ -62,9 +62,7 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
                             {displayName} **** {paymentMethod.last4}
                         </span>
                         {paymentMethod.isDefault && (
-                            <Badge
-                                variant="secondary"
-                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                            <Badge variant="secondary" className="text-xs font-normal bg-primary/10 text-primary">
                                 {t('paymentMethods.default')}
                             </Badge>
                         )}

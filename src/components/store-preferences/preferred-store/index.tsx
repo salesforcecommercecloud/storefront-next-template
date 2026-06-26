@@ -57,7 +57,7 @@ export default function PreferredStore(): ReactElement {
     }, [error, addToast]);
 
     return (
-        <Card className="rounded-none shadow-none">
+        <Card className="">
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <CardTitle className="text-lg">{t('storePreferences.preferredStore.heading')}</CardTitle>
@@ -73,7 +73,7 @@ export default function PreferredStore(): ReactElement {
             </CardHeader>
             <CardContent>
                 {isRevalidating ? (
-                    <Card className="bg-muted/40 border border-border shadow-none gap-0 py-0">
+                    <Card className="bg-muted/40 border border-border gap-0 py-0">
                         <CardContent className="px-4 py-3">
                             <Skeleton className="h-6 w-3/4" data-testid="skeleton" />
                             <Skeleton className="h-4 w-full mt-2" data-testid="skeleton" />
@@ -81,7 +81,7 @@ export default function PreferredStore(): ReactElement {
                         </CardContent>
                     </Card>
                 ) : preferredStore ? (
-                    <Card className="bg-muted/40 border border-border shadow-none gap-0 py-0">
+                    <Card className="bg-muted/40 border border-border gap-0 py-0">
                         <CardContent className="px-4 py-3">
                             <Typography variant="large" as="p">
                                 {preferredStore.name}

@@ -154,7 +154,7 @@ export default function ExpressPayments({
         <div className="space-y-6" data-testid="express-payments">
             {separatorPosition === 'top' && separator}
 
-            <Card className="flex flex-col items-center gap-3 p-6 shadow-none">
+            <Card className="flex flex-col items-center gap-3 p-6">
                 <p className="text-sm font-normal text-card-foreground">{t('expressPayments.title')}</p>
                 <div className={`${gridClasses} w-full`}>
                     {/* Google Pay Button */}

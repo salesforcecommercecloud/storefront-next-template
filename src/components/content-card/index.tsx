@@ -129,13 +129,13 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
                 className={cn(
                     'relative h-full overflow-hidden',
                     showBackground ? 'ring-secondary/40 bg-muted/50' : 'bg-transparent',
-                    !showBorder && 'border-0 shadow-none',
+                    !showBorder && 'border-0 ',
                     className
                 )}
                 {...props}>
                 {imageSrc && (
                     <CardContent className="p-0">
-                        <div className="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-secondary/20">
                             <img
                                 src={resolveAssetUrl(imageSrc)}
                                 alt={imageAlt || title || ''}

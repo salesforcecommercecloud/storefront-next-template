@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 import * as ProductCartActionsStories from './product-cart-actions.stories';
@@ -74,6 +75,16 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
         })),
     };
 });
+
+// Mock useWishlistActions and useIsInWishlist
+vi.mock('@/providers/wishlist', () => ({
+    WishlistProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useWishlistActions: () => ({
+        addItem: vi.fn(),
+        removeItem: vi.fn(),
+    }),
+    useIsInWishlist: () => false,
+}));
 
 const composed = composeStories(ProductCartActionsStories);
 

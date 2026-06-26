@@ -17,7 +17,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import StorePreferences from '..';
+
+const { t } = getTranslation();
 
 const meta: Meta<typeof StorePreferences> = {
     title: 'ROUTES/Account/Store Preferences',
@@ -59,9 +62,7 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByRole('heading', { level: 1, name: 'Store Preferences' })).toBeInTheDocument();
-        await expect(
-            canvas.getByText('Manage your preferred store locations and pickup preferences')
-        ).toBeInTheDocument();
+        await expect(canvas.getByText(t('account:storePreferences.subtitle'))).toBeInTheDocument();
 
         // Conditional assertions for store-locator extension content
         const preferredStoreHeading = canvas.queryByText('Preferred Store for Pickup');

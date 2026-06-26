@@ -56,15 +56,15 @@ function ImageGallerySkeleton() {
     return (
         <div className="space-y-4" data-testid="image-gallery-skeleton">
             {/* Main product image */}
-            <Skeleton className="aspect-square w-full rounded-none" data-testid="main-image-skeleton" />
+            <Skeleton className="aspect-square w-full" data-testid="main-image-skeleton" />
 
             {/* Thumbnail images */}
             <div className="flex space-x-2 overflow-x-auto" data-testid="thumbnails-skeleton">
-                <Skeleton className="h-16 w-16 flex-shrink-0 rounded-none" />
-                <Skeleton className="h-16 w-16 flex-shrink-0 rounded-none" />
-                <Skeleton className="h-16 w-16 flex-shrink-0 rounded-none" />
-                <Skeleton className="h-16 w-16 flex-shrink-0 rounded-none" />
-                <Skeleton className="h-16 w-16 flex-shrink-0 rounded-none" />
+                <Skeleton className="h-16 w-16 flex-shrink-0" />
+                <Skeleton className="h-16 w-16 flex-shrink-0" />
+                <Skeleton className="h-16 w-16 flex-shrink-0" />
+                <Skeleton className="h-16 w-16 flex-shrink-0" />
+                <Skeleton className="h-16 w-16 flex-shrink-0" />
             </div>
         </div>
     );
@@ -116,9 +116,9 @@ function ProductInfoSkeleton() {
                 <div>
                     <Skeleton className="h-5 w-16 mb-2" />
                     <div className="flex space-x-2">
-                        <Skeleton className="h-10 w-14 rounded-none" />
-                        <Skeleton className="h-10 w-14 rounded-none" />
-                        <Skeleton className="h-10 w-14 rounded-none" />
+                        <Skeleton className="h-10 w-14" />
+                        <Skeleton className="h-10 w-14" />
+                        <Skeleton className="h-10 w-14" />
                     </div>
                 </div>
             </div>
@@ -126,15 +126,15 @@ function ProductInfoSkeleton() {
             {/* Quantity selector */}
             <div data-testid="quantity-skeleton">
                 <Skeleton className="h-5 w-20 mb-2" />
-                <Skeleton className="h-10 w-24 rounded-none" />
+                <Skeleton className="h-10 w-24" />
             </div>
 
             {/* Delivery Options (BOPIS) */}
             <div className="mt-6" data-testid="delivery-options-skeleton">
                 <Skeleton className="h-5 w-32 mb-3" />
                 <div className="space-y-2">
-                    <Skeleton className="h-12 w-full rounded-none" />
-                    <Skeleton className="h-12 w-full rounded-none" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
                 </div>
             </div>
 
@@ -149,12 +149,12 @@ function ProductInfoSkeleton() {
             <div className="mt-6" data-testid="cart-actions-skeleton">
                 {/* Add to cart button */}
                 <div className="flex flex-col gap-3">
-                    <Skeleton className="h-12 w-full rounded-none" data-testid="add-to-cart-skeleton" />
+                    <Skeleton className="h-12 w-full" data-testid="add-to-cart-skeleton" />
 
                     {/* Wishlist + Share buttons (2-column grid) */}
                     <div className="grid grid-cols-2 gap-3">
-                        <Skeleton className="h-12 w-full rounded-none" data-testid="wishlist-skeleton" />
-                        <Skeleton className="h-12 w-full rounded-none" data-testid="share-skeleton" />
+                        <Skeleton className="h-12 w-full" data-testid="wishlist-skeleton" />
+                        <Skeleton className="h-12 w-full" data-testid="share-skeleton" />
                     </div>
                 </div>
             </div>

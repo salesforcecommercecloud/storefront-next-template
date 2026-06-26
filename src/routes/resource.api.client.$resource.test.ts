@@ -144,8 +144,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            pattern: 'resource/api/client/:resource',
             url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         describe('successful requests', () => {
@@ -283,8 +283,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: null as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
-                    pattern: 'resource/api/client/:resource',
                     url: new URL('http://localhost/test'),
+                    pattern: 'resource/api/client/:resource',
                 });
 
                 const result = await loader(createLoaderArgsWithNullResource());
@@ -299,8 +299,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: undefined as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
-                    pattern: 'resource/api/client/:resource',
                     url: new URL('http://localhost/test'),
+                    pattern: 'resource/api/client/:resource',
                 });
 
                 const result = await loader(createLoaderArgsWithUndefinedResource());
@@ -364,8 +364,8 @@ describe('Commerce SDK resource', () => {
                 params: { resource },
                 context: mockContextProvider,
                 request,
-                pattern: 'resource/api/client/:resource',
                 url: new URL(request.url),
+                pattern: 'resource/api/client/:resource',
             };
         };
 
@@ -530,8 +530,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource },
                     context: mockContextProvider,
                     request,
-                    pattern: 'resource/api/client/:resource',
                     url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 } as never);
 
                 expect(result).toEqual({
@@ -564,8 +564,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource },
                     context: mockContextProvider,
                     request,
-                    pattern: 'resource/api/client/:resource',
                     url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 } as never);
 
                 expect(result).toEqual({
@@ -685,8 +685,8 @@ describe('Commerce SDK resource', () => {
                         params: { resource: null as any },
                         context: mockContextProvider,
                         request,
-                        pattern: 'resource/api/client/:resource',
                         url: new URL(request.url),
+                        pattern: 'resource/api/client/:resource',
                     };
                 };
 
@@ -709,8 +709,8 @@ describe('Commerce SDK resource', () => {
                         params: { resource: undefined as any },
                         context: mockContextProvider,
                         request,
-                        pattern: 'resource/api/client/:resource',
                         url: new URL(request.url),
+                        pattern: 'resource/api/client/:resource',
                     };
                 };
 
@@ -801,8 +801,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            pattern: 'resource/api/client/:resource',
             url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         it('should handle empty form data in action', async () => {
@@ -831,8 +831,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: encodedValidActionResource },
                     context: mockContextProvider,
                     request,
-                    pattern: 'resource/api/client/:resource',
                     url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 };
             };
 
@@ -965,8 +965,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            pattern: 'resource/api/client/:resource',
             url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         const createActionArgs = (resource: string, formData?: Record<string, string>) => {
@@ -980,8 +980,8 @@ describe('Commerce SDK resource', () => {
                 params: { resource },
                 context: mockContextProvider,
                 request,
-                pattern: 'resource/api/client/:resource',
                 url: new URL(request.url),
+                pattern: 'resource/api/client/:resource',
             };
         };
 

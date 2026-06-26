@@ -5,7 +5,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50 card-override-sentinel"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50 card-override-sentinel"
     data-slot="card"
   >
     <div
@@ -13,7 +13,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Custom class names"
@@ -46,7 +46,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground button-override-sentinel"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground button-override-sentinel"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -67,7 +67,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
@@ -75,7 +75,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Featured Product"
@@ -108,7 +108,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -129,7 +129,7 @@ exports[`ContentCard stories snapshot > LongCopy story renders and matches snaps
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
@@ -137,7 +137,7 @@ exports[`ContentCard stories snapshot > LongCopy story renders and matches snaps
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Long-copy editorial card"
@@ -170,7 +170,7 @@ exports[`ContentCard stories snapshot > LongCopy story renders and matches snaps
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -191,7 +191,7 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl py-6 relative h-full overflow-hidden bg-transparent border-0 shadow-none"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden bg-transparent border-0"
     data-slot="card"
   >
     <div
@@ -199,7 +199,7 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Transparent card"
@@ -232,7 +232,7 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -253,7 +253,7 @@ exports[`ContentCard stories snapshot > Playground story renders and matches sna
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
@@ -261,7 +261,7 @@ exports[`ContentCard stories snapshot > Playground story renders and matches sna
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Featured Product"
@@ -294,7 +294,7 @@ exports[`ContentCard stories snapshot > Playground story renders and matches sna
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -315,7 +315,7 @@ exports[`ContentCard stories snapshot > WithoutButton story renders and matches 
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
@@ -323,7 +323,7 @@ exports[`ContentCard stories snapshot > WithoutButton story renders and matches 
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden bg-secondary/20"
       >
         <img
           alt="Text only card"
@@ -368,7 +368,7 @@ exports[`ContentCard stories snapshot > WithoutImage story renders and matches s
   style="width: 400px;"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   />
 </div>

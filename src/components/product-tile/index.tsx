@@ -395,7 +395,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                 <Card
                     ref={ref}
                     className={cn(
-                        'product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
+                        'product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0',
                         pageDesignerStyles,
                         className
                     )}
@@ -409,7 +409,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
+                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0',
                     pageDesignerStyles,
                     className
                 )}
@@ -473,7 +473,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                     surface="plp"
                                     size="sm"
                                     tabIndex={-1}
-                                    className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                                    className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                                 />
                             </div>
                         </div>
@@ -528,7 +528,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     <h3 className="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2">
                         <Link
                             to={productUrl}
-                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                             onClick={handleClick}>
                             {productName}
                         </Link>

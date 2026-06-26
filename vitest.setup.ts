@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeAll, vi } from 'vitest';
+
+// Lift the default `waitFor` / `findBy*` timeout from 1s to 10s. Windows CI runners
+// resolve lazy chunks and Suspense boundaries noticeably slower than macOS/Linux,
+// and the 1s ceiling causes intermittent flakes (e.g. account orders, cart
+// recommendations) without making the underlying tests any wronger.
+configure({ asyncUtilTimeout: 10000 });
 import { mockConfig } from '@/test-utils/config';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';

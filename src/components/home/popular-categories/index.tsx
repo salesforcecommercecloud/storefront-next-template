@@ -107,7 +107,7 @@ function CategoryCardsSkeleton() {
             <div className="flex -ml-4 overflow-hidden py-6">
                 {Array.from({ length: 4 }, (_, i) => (
                     <div key={i} className={cn(itemClassName, 'shrink-0 grow-0')}>
-                        <Skeleton className="aspect-square w-full rounded-none" />
+                        <Skeleton className="aspect-square w-full" />
                     </div>
                 ))}
             </div>

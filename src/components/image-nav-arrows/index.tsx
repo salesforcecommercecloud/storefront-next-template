@@ -40,7 +40,7 @@ export default function ImageNavArrows({ imageCount, onIndexChange, size = 'sm',
                 type="button"
                 onClick={goPrev}
                 className={cn(
-                    'absolute top-1/2 -translate-y-1/2 rounded-none cursor-pointer',
+                    'absolute top-1/2 -translate-y-1/2 cursor-pointer',
                     'bg-background/90 hover:bg-background transition-all',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     isLarge ? 'left-4 p-3 shadow-lg' : 'left-2 p-1.5 shadow-md',
@@ -53,7 +53,7 @@ export default function ImageNavArrows({ imageCount, onIndexChange, size = 'sm',
                 type="button"
                 onClick={goNext}
                 className={cn(
-                    'absolute top-1/2 -translate-y-1/2 rounded-none cursor-pointer',
+                    'absolute top-1/2 -translate-y-1/2 cursor-pointer',
                     'bg-background/90 hover:bg-background transition-all',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     isLarge ? 'right-4 p-3 shadow-lg' : 'right-2 p-1.5 shadow-md',

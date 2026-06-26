@@ -5,7 +5,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
   class="space-y-5"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border rounded-b-none border-b-0"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui bg-card border-border rounded-b-none border-b-0"
     data-slot="card"
   >
     <div
@@ -33,7 +33,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
       href="/account/orders/INV001"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
         data-slot="card"
       >
         <div
@@ -104,7 +104,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
             </div>
             <span
-              class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+              class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
               data-slot="badge"
               data-testid="order-status-badge"
             >
@@ -118,7 +118,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden bg-muted border border-border"
               >
                 <img
                   alt="Classic Shirt"
@@ -132,7 +132,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden bg-muted border border-border"
               >
                 <img
                   alt="Dress Pants"
@@ -143,14 +143,14 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
               <span
                 aria-label="Quantity: 2"
-                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
               >
                 2
               </span>
             </div>
           </div>
           <div
-            class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
+            class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
             data-slot="card"
           >
             <div
@@ -252,7 +252,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
       href="/account/orders/INV002"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
         data-slot="card"
       >
         <div
@@ -323,7 +323,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
             </div>
             <span
-              class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
+              class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-info text-info-foreground"
               data-slot="badge"
               data-testid="order-status-badge"
             >
@@ -337,7 +337,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden bg-muted border border-border"
               >
                 <img
                   alt="Summer Dress"
@@ -348,7 +348,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
               <span
                 aria-label="Quantity: 2"
-                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
               >
                 2
               </span>
@@ -388,7 +388,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
       href="/account/orders/INV003"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
+        class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui order-list-item-card py-0 border-0 border-b border-separator hover:bg-transparent"
         data-slot="card"
       >
         <div
@@ -459,7 +459,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
             </div>
             <span
-              class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
+              class="inline-flex items-center justify-center rounded-full px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
               data-slot="badge"
               data-testid="order-status-badge"
             >
@@ -494,7 +494,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden bg-muted border border-border"
               >
                 <img
                   alt="Cancelled Item 1"
@@ -505,7 +505,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
               <span
                 aria-label="Quantity: 2"
-                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
               >
                 2
               </span>
@@ -514,7 +514,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden bg-muted border border-border"
               >
                 <img
                   alt="Cancelled Item 2"
@@ -525,7 +525,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
               <span
                 aria-label="Quantity: 3"
-                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
               >
                 3
               </span>
@@ -579,7 +579,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
   class="space-y-5"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border rounded-b-none border-b-0"
+    class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui bg-card border-border rounded-b-none border-b-0"
     data-slot="card"
   >
     <div
@@ -600,7 +600,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 border-border m-0 rounded-none shadow-none border-b-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui py-6 shadow-ui border-border m-0 border-b-0"
     data-slot="card"
   >
     <div
@@ -616,7 +616,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
           You haven't placed an order yet. Once you place an order the details will show up here.
         </h4>
         <a
-          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
           data-size="default"
           data-slot="button"
           data-variant="default"

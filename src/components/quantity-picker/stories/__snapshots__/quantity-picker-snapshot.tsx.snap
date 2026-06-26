@@ -2,11 +2,11 @@
 
 exports[`QuantityPicker stories snapshot > AtMaximum story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input rounded-none"
+  class="inline-flex items-center border border-input"
 >
   <button
     aria-label="Decrement Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-decrement"
   >
     −
@@ -22,7 +22,7 @@ exports[`QuantityPicker stories snapshot > AtMaximum story renders and matches s
   />
   <button
     aria-label="Increment Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-increment"
     disabled=""
   >
@@ -33,11 +33,11 @@ exports[`QuantityPicker stories snapshot > AtMaximum story renders and matches s
 
 exports[`QuantityPicker stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input rounded-none"
+  class="inline-flex items-center border border-input"
 >
   <button
     aria-label="Decrement Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-decrement"
     disabled=""
   >
@@ -53,7 +53,7 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
   />
   <button
     aria-label="Increment Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-increment"
   >
     +
@@ -63,11 +63,11 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
 
 exports[`QuantityPicker stories snapshot > Disabled story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input rounded-none"
+  class="inline-flex items-center border border-input"
 >
   <button
     aria-label="Decrement Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-decrement"
     disabled=""
   >
@@ -84,7 +84,7 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
   />
   <button
     aria-label="Increment Quantity for the product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-increment"
     disabled=""
   >
@@ -95,11 +95,11 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
 
 exports[`QuantityPicker stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input rounded-none"
+  class="inline-flex items-center border border-input"
 >
   <button
     aria-label="Decrement Quantity for Test Product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-decrement"
   >
     −
@@ -114,7 +114,7 @@ exports[`QuantityPicker stories snapshot > Interactive story renders and matches
   />
   <button
     aria-label="Increment Quantity for Test Product"
-    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
     data-testid="quantity-increment"
   >
     +

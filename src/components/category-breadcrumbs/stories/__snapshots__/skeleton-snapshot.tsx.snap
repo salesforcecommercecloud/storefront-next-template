@@ -10,23 +10,23 @@ exports[`CategoryBreadcrumbsSkeleton stories snapshot > Default story renders an
     class="flex flex-wrap items-center text-sm"
   >
     <div
-      class="bg-accent animate-pulse rounded-md h-5 w-20"
+      class="bg-accent animate-pulse rounded-ui h-5 w-20"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md mx-1 h-3 w-3"
+      class="bg-accent animate-pulse rounded-ui mx-1 h-3 w-3"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md h-5 w-24"
+      class="bg-accent animate-pulse rounded-ui h-5 w-24"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md mx-1 h-3 w-3"
+      class="bg-accent animate-pulse rounded-ui mx-1 h-3 w-3"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md h-5 w-32"
+      class="bg-accent animate-pulse rounded-ui h-5 w-32"
       data-slot="skeleton"
     />
   </div>

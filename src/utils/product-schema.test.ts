@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-// eslint-disable-next-line no-restricted-imports
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
+import type { ShopperProducts } from '@/scapi';
 import { generateProductSchema, deepMerge, parseJsonLdMetaTags, mergeJsonLdSchema } from './product-schema';
 
 describe('generateProductSchema', () => {

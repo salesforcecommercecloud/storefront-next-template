@@ -1005,6 +1005,14 @@ export function useProductActions({
         maxQuantity,
 
         // Validation and inventory
+        /**
+         * The resolved variant this hook validated against (the controlled variant
+         * passed to ProductViewProvider, or the URL-derived one). Exposed so
+         * consumers gate "select all options" messaging on the SAME variant that
+         * drives `canAddToCart` — otherwise a separately-derived variant can
+         * disagree with the button's enabled state (e.g. in the Quick Add modal).
+         */
+        currentVariant,
         /** Determines if the product can be added to cart based on validation criteria */
         canAddToCart,
         /** Indicates if the product is currently in stock */

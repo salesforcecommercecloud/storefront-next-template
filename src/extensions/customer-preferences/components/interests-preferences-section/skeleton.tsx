@@ -19,7 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function InterestsPreferencesSectionSkeleton() {
     return (
-        <Card className="rounded-none shadow-none">
+        <Card>
             <CardHeader className="flex flex-row items-start justify-between border-b border-muted-foreground/20 pb-4">
                 <div className="space-y-1">
                     <Skeleton className="h-6 w-48" />
@@ -32,16 +32,16 @@ export function InterestsPreferencesSectionSkeleton() {
                     <div className="space-y-3">
                         <Skeleton className="h-4 w-24" />
                         <div className="flex flex-wrap gap-2">
-                            <Skeleton className="h-8 w-24 rounded-none" />
-                            <Skeleton className="h-8 w-20 rounded-none" />
+                            <Skeleton className="h-8 w-24" />
+                            <Skeleton className="h-8 w-20" />
                         </div>
                     </div>
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="space-y-2">
                             <Skeleton className="h-4 w-32" />
                             <div className="flex gap-2">
-                                <Skeleton className="h-8 w-24 rounded-none" />
-                                <Skeleton className="h-8 w-20 rounded-none" />
+                                <Skeleton className="h-8 w-24" />
+                                <Skeleton className="h-8 w-20" />
                             </div>
                         </div>
                     ))}

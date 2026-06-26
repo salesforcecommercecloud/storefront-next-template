@@ -30,7 +30,8 @@
         "nextImage": "Next image",
         "productGrid": {
             "loadFailed": "Unable to load additional products."
-        }
+        },
+        "quickCategoryFilters": "Quick category filters"
     },
     "search": {
         "results": "Search Results for",
@@ -136,6 +137,7 @@
         "otpModalTitle": "Enter Verification Code",
         "otpModalDescription": "We've sent a {{otpLength}}-digit code to {{email}}",
         "verifying": "Verifying...",
+        "verify": "Verify",
         "checkoutAsGuest": "Checkout as Guest",
         "resendCode": "Resend Code",
         "resendCodeTimer": "Resend in {{timer}}s",
@@ -752,6 +754,14 @@
         "title": "Account Details",
         "subtitle": "Manage your personal information",
         "myAccount": "My Account",
+        "meta": {
+            "wishlistTitle": "Wishlist",
+            "paymentMethodsTitle": "Payment Methods",
+            "addressesTitle": "Addresses",
+            "orderHistoryTitle": "Order History",
+            "orderDetailsTitle": "Order Details",
+            "storePreferencesTitle": "Store Preferences"
+        },
         "navigation": {
             "overview": "Overview",
             "accountDetails": "Account Details",

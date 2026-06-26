@@ -175,14 +175,14 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
     );
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background" data-testid="account-layout">
             <div className="w-full section-container py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 w-full">
                     {/* Nav column: mobile accordion + desktop sidebar (one cell so sidebar stays left of content) */}
                     <div className="w-full lg:w-fit">
                         {/* Mobile Navigation Accordion */}
                         <div className="lg:hidden">
-                            <Card className="bg-muted/30 rounded-none shadow-none">
+                            <Card className="bg-muted/30">
                                 <CardContent className="p-4">
                                     <h2 className="text-sm font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                     <nav className="space-y-1">

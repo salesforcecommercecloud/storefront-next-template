@@ -5,7 +5,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+    class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
     data-slot="card"
   >
     <div
@@ -82,7 +82,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           >
             <button
               aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
               tabindex="-1"
             >
               <svg
@@ -110,7 +110,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
             data-size="default"
             data-slot="button"
             data-variant="outline"
@@ -170,7 +170,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
@@ -312,7 +312,7 @@ exports[`ProductTile stories snapshot > NoProduct story renders and matches snap
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+    class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0"
     data-slot="card"
   >
     <div
@@ -329,7 +329,7 @@ exports[`ProductTile stories snapshot > OutOfStock story renders and matches sna
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+    class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
     data-slot="card"
   >
     <div
@@ -406,7 +406,7 @@ exports[`ProductTile stories snapshot > OutOfStock story renders and matches sna
           >
             <button
               aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
               tabindex="-1"
             >
               <svg
@@ -434,7 +434,7 @@ exports[`ProductTile stories snapshot > OutOfStock story renders and matches sna
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
             data-size="default"
             data-slot="button"
             data-variant="outline"
@@ -494,7 +494,7 @@ exports[`ProductTile stories snapshot > OutOfStock story renders and matches sna
         class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
@@ -636,7 +636,7 @@ exports[`ProductTile stories snapshot > Playground story renders and matches sna
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+    class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
     data-slot="card"
   >
     <div
@@ -756,7 +756,7 @@ exports[`ProductTile stories snapshot > Playground story renders and matches sna
           >
             <button
               aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
               tabindex="-1"
             >
               <svg
@@ -784,7 +784,7 @@ exports[`ProductTile stories snapshot > Playground story renders and matches sna
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
             data-size="default"
             data-slot="button"
             data-variant="outline"
@@ -848,7 +848,7 @@ exports[`ProductTile stories snapshot > Playground story renders and matches sna
         class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
           to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         >
@@ -1005,7 +1005,7 @@ exports[`ProductTile stories snapshot > ProductSetWithPriceRange story renders a
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
+    class="bg-card text-card-foreground flex flex-col rounded-ui border-ui border-border shadow-ui product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0"
     data-slot="card"
   >
     <div
@@ -1082,7 +1082,7 @@ exports[`ProductTile stories snapshot > ProductSetWithPriceRange story renders a
           >
             <button
               aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
               tabindex="-1"
             >
               <svg
@@ -1110,7 +1110,7 @@ exports[`ProductTile stories snapshot > ProductSetWithPriceRange story renders a
         >
           <button
             aria-label="Quick Add Winter Look"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ui text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-ui hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
             data-size="default"
             data-slot="button"
             data-variant="outline"
@@ -1132,7 +1132,7 @@ exports[`ProductTile stories snapshot > ProductSetWithPriceRange story renders a
         class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           href="/RefArchGlobal/en-GB/product/winter-lookM"
           to="/RefArchGlobal/en-GB/product/winter-lookM"
         >

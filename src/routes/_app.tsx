@@ -16,6 +16,7 @@
 import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import type { Route } from './+types/_app';
+import { usePageUIConfig, mainPaddingDataAttributes } from '@/lib/routes/page-ui-config';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { type ShopperProducts } from '@/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
@@ -123,6 +124,14 @@ export default function DefaultLayout({ loaderData: { root, subs, headerComponen
         refHeaderComponent.current = headerComponent;
     }
 
+    // Reflect the route's `handle.ui` config onto <main> as data-* attributes
+    // during render, so the correct top padding is present in the SSR'd HTML.
+    // A vertical's CSS (e.g. cosmetic) keys <main> padding off these; emitting
+    // them at render (not in a post-hydration effect) avoids a layout shift
+    // (CLS) when the padding would otherwise be added after first paint.
+    // Inert for verticals with no matching CSS (fashion/canonical).
+    const mainPaddingAttrs = mainPaddingDataAttributes(usePageUIConfig());
+
     // <WishlistMergeToast> stays at the app shell — it reads URL params and a one-time
     // cookie set by the post-login redirect target, not wishlist state. Routes that need
     // wishlist hooks mount their own <DeferredWishlistProvider> so the SCAPI call only
@@ -136,7 +145,7 @@ export default function DefaultLayout({ loaderData: { root, subs, headerComponen
                 }>
                 <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
-            <main className="grow pt-8">
+            <main className="grow pt-8" {...mainPaddingAttrs}>
                 <Outlet />
             </main>
             <Footer />
