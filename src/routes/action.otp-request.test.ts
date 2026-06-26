@@ -48,7 +48,7 @@ describe('action.otp-request', () => {
             request: new Request('http://localhost/action/otp-request', requestInit),
             params: {},
             context: mockContext,
-            unstable_pattern: '/action/otp-request',
+            pattern: '/action/otp-request',
         } as ActionFunctionArgs;
     };
 

@@ -689,9 +689,24 @@ export default function CheckoutFormPage({
         if (error) showToast?.(error, 'error');
     }, [paymentFetcher.state, paymentFetcher.data, showToast, tAny]);
 
-    // Place the order once payment succeeds; reset ref on failure so we never place order without valid payment
+    // Place the order once the payment fetcher we kicked off resolves; reset on failure so we
+    // never place an order without valid payment.
+    //
+    // A fetcher reads `idle` both before its submission starts and after it completes, so the
+    // raw `state === 'idle'` check cannot tell "payment not submitted yet" from "payment done".
+    // We must only react to the transition INTO idle (the fetcher was in flight and just
+    // finished). Acting on the pre-submission idle tick — which now occurs because React Router
+    // defers fetcher state updates, letting an unrelated render run while the fetcher is still
+    // idle — would misread "not started" as "payment failed" and silently cancel place order.
+    const previousPaymentFetcherStateRef = useRef(paymentFetcher.state);
     useEffect(() => {
-        if (!paymentSubmissionRef.current.shouldPlaceOrderAfterPayment || paymentFetcher.state !== 'idle') return;
+        const previousState = previousPaymentFetcherStateRef.current;
+        previousPaymentFetcherStateRef.current = paymentFetcher.state;
+
+        if (!paymentSubmissionRef.current.shouldPlaceOrderAfterPayment) return;
+        const paymentJustResolved = paymentFetcher.state === 'idle' && previousState !== 'idle';
+        if (!paymentJustResolved) return;
+
         if (paymentFetcher.data?.success) {
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             submitPlaceOrder();

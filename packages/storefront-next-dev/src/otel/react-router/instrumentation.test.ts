@@ -48,7 +48,7 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 });
 
 import { platformInstrumentation } from './instrumentation';
-import type { unstable_ServerInstrumentation } from 'react-router';
+import type { ServerInstrumentation } from 'react-router';
 
 describe('platformInstrumentation', () => {
     const GET = 'GET';
@@ -58,7 +58,7 @@ describe('platformInstrumentation', () => {
     type InstrumentCallbacks = Record<string, (...args: unknown[]) => Promise<void>>;
 
     // Call platformInstrumentation.handler() and return the captured instrument callbacks.
-    function getHandlerCallbacks(platformInstr: unstable_ServerInstrumentation): InstrumentCallbacks {
+    function getHandlerCallbacks(platformInstr: ServerInstrumentation): InstrumentCallbacks {
         let callbacks: InstrumentCallbacks | undefined;
         const mockHandler = {
             instrument: vi.fn((cbs: InstrumentCallbacks) => {
@@ -72,10 +72,7 @@ describe('platformInstrumentation', () => {
     }
 
     // Call platformInstrumentation.route() and return the captured instrument callbacks.
-    function getRouteCallbacks(
-        platformInstr: unstable_ServerInstrumentation,
-        routeId = 'routes/products'
-    ): InstrumentCallbacks {
+    function getRouteCallbacks(platformInstr: ServerInstrumentation, routeId = 'routes/products'): InstrumentCallbacks {
         let callbacks: InstrumentCallbacks | undefined;
         const mockRoute = {
             id: routeId,
@@ -141,7 +138,7 @@ describe('platformInstrumentation', () => {
 
             await loader(vi.fn().mockResolvedValue({ status: 'ok' }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
@@ -161,7 +158,7 @@ describe('platformInstrumentation', () => {
 
             await loader(vi.fn().mockResolvedValue({ status: 'ok' }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockSpan.end).toHaveBeenCalledOnce();
@@ -174,7 +171,7 @@ describe('platformInstrumentation', () => {
 
             await loader(vi.fn().mockResolvedValue({ status: 'error', error }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockSpan.setStatus).toHaveBeenCalledWith({ code: 2, message: 'loader failed' });
@@ -194,7 +191,7 @@ describe('platformInstrumentation', () => {
 
             await action(vi.fn().mockResolvedValue({ status: 'ok' }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
@@ -215,7 +212,7 @@ describe('platformInstrumentation', () => {
 
             await action(vi.fn().mockResolvedValue({ status: 'error', error }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockSpan.setStatus).toHaveBeenCalledWith({ code: 2, message: 'action failed' });
@@ -235,7 +232,7 @@ describe('platformInstrumentation', () => {
 
             await middleware(vi.fn().mockResolvedValue({ status: 'ok' }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
@@ -256,7 +253,7 @@ describe('platformInstrumentation', () => {
 
             await middleware(vi.fn().mockResolvedValue({ status: 'error', error }), {
                 request: testRequest,
-                unstable_pattern: pattern,
+                pattern,
             });
 
             expect(mockSpan.setStatus).toHaveBeenCalledWith({ code: 2, message: 'middleware failed' });
@@ -304,7 +301,7 @@ describe('platformInstrumentation', () => {
                 const handleLoader = vi.fn().mockResolvedValue({ status: 'ok' });
                 await routeCallbacks.loader(handleLoader, {
                     request: testRequest,
-                    unstable_pattern: '/test',
+                    pattern: '/test',
                 });
                 expect(handleLoader).toHaveBeenCalledOnce();
 

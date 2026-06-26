@@ -20,7 +20,7 @@ import OrderListPage, { loader } from './_app.account.orders._index';
 import { fetchCustomerOrders } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
 import type { Order } from '@/components/account/order-list';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/lib/api/order.server', () => ({
@@ -157,7 +157,8 @@ describe('AccountOrders Page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
+                url: new URL('http://localhost'),
             });
 
             expect(fetchCustomerOrders).toHaveBeenCalledWith(context, 'customer-123', {
@@ -176,7 +177,8 @@ describe('AccountOrders Page', () => {
                     context,
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     request: new Request('http://localhost'),
-                    unstable_pattern: UNSTABLE_PATTERN,
+                    pattern: ROUTE_PATTERN,
+                    url: new URL('http://localhost'),
                 })
             ).toThrow();
         });

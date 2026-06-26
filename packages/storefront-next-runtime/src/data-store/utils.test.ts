@@ -68,7 +68,13 @@ describe('createDataStoreMiddleware', () => {
             context: sitePreferencesContext,
         });
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -92,7 +98,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -120,7 +132,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -146,7 +164,13 @@ describe('createDataStoreMiddleware', () => {
 
         await expect(
             middleware(
-                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                {
+                    request: new Request('https://example.com'),
+                    context,
+                    params: {},
+                    pattern: '',
+                    url: new URL(new Request('https://example.com').url),
+                },
                 next as MiddlewareNext
             )
         ).rejects.toThrow(
@@ -176,7 +200,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -199,7 +229,13 @@ describe('createDataStoreMiddleware', () => {
 
         await expect(
             middleware(
-                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                {
+                    request: new Request('https://example.com'),
+                    context,
+                    params: {},
+                    pattern: '',
+                    url: new URL(new Request('https://example.com').url),
+                },
                 next as MiddlewareNext
             )
         ).rejects.toThrow(`Data store request failed for 'site-preferences'.`);
@@ -220,7 +256,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -247,7 +289,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -281,7 +329,13 @@ describe('createDataStoreMiddleware', () => {
 
         await expect(
             middleware(
-                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                {
+                    request: new Request('https://example.com'),
+                    context,
+                    params: {},
+                    pattern: '',
+                    url: new URL(new Request('https://example.com').url),
+                },
                 next as MiddlewareNext
             )
         ).rejects.toThrow('something else broke');
@@ -310,7 +364,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -340,7 +400,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -376,7 +442,13 @@ describe('createDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -430,7 +502,13 @@ describe('createLazyDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -454,7 +532,13 @@ describe('createLazyDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -478,7 +562,13 @@ describe('createLazyDataStoreMiddleware', () => {
         });
 
         await middleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -584,7 +674,13 @@ describe('built-in data-store middlewares', () => {
         const context = await buildFreshContext('icelandfoodsuk');
 
         await customSitePreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -606,7 +702,13 @@ describe('built-in data-store middlewares', () => {
 
         await expect(
             customSitePreferencesMiddleware(
-                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                {
+                    request: new Request('https://example.com'),
+                    context,
+                    params: {},
+                    pattern: '',
+                    url: new URL(new Request('https://example.com').url),
+                },
                 next as MiddlewareNext
             )
         ).rejects.toThrow(`Data store request failed for 'icelandfoodsuk-custom-site-preferences'.`);

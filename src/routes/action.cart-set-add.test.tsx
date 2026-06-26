@@ -93,9 +93,7 @@ describe('action.cart-set-add', () => {
             ]),
         });
 
-        const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
-        );
+        const result = await action(createActionArgs(request, {} as any, { pattern: resourceRoutes.cartSetAdd }));
 
         expect(result.data.success).toBe(true);
         expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledTimes(1);
@@ -117,9 +115,7 @@ describe('action.cart-set-add', () => {
             ]),
         });
 
-        const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
-        );
+        const result = await action(createActionArgs(request, {} as any, { pattern: resourceRoutes.cartSetAdd }));
 
         expectStatus(result, 409);
         expect(result.data.success).toBe(false);
@@ -143,9 +139,7 @@ describe('action.cart-set-add', () => {
             ]),
         });
 
-        const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
-        );
+        const result = await action(createActionArgs(request, {} as any, { pattern: resourceRoutes.cartSetAdd }));
 
         expect(result.data.success).toBe(true);
         expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledTimes(1);

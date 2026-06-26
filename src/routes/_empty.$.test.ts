@@ -95,7 +95,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing?token=test'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await loader(args);
 
@@ -113,7 +113,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/reset-password-landing?token=test&email=test@example.com'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await loader(args);
 
@@ -131,7 +131,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/social-callback?code=auth_code_123&usid=user_session_id'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await loader(args);
 
@@ -141,7 +141,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
 
         it('should throw 404 for unmatched paths', async () => {
             const args = createLoaderArgs<Route.LoaderArgs>(new Request('http://localhost/unknown-path'), mockContext, {
-                unstable_pattern: '*',
+                pattern: '*',
             });
 
             try {
@@ -163,7 +163,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/passwordless-login-callback', { method: 'POST' }),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await action(args);
 
@@ -178,7 +178,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/reset-password-callback', { method: 'POST' }),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await action(args);
 
@@ -190,7 +190,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/unknown-path', { method: 'POST' }),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
 
             try {
@@ -210,7 +210,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const loaderArgs = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
 
             mockPasswordlessLanding.mockResolvedValue(new Response(null, { status: 302 }));
@@ -224,7 +224,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
                 new Request('http://localhost/some-random-path'),
                 mockContext,
                 {
-                    unstable_pattern: '*',
+                    pattern: '*',
                 }
             );
 
@@ -270,7 +270,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/social-callback?code=auth_code_123'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await loader(args);
 
@@ -307,7 +307,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing?token=test'),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await loader(args);
 
@@ -341,7 +341,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/reset-password-callback', { method: 'POST' }),
                 mockContext,
-                { unstable_pattern: '*' }
+                { pattern: '*' }
             );
             const result = await action(args);
 

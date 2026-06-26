@@ -76,7 +76,7 @@ describe('basket.server middleware', () => {
     let mockContext: ReturnType<typeof createTestContext>;
     let mockNext: Parameters<MiddlewareFunction<Response>>[1];
     const createArgs = (request: Request, context: Readonly<RouterContextProvider>) =>
-        createLoaderArgs(request, context, { unstable_pattern: '' });
+        createLoaderArgs(request, context, { pattern: '' });
 
     beforeEach(() => {
         vi.clearAllMocks();

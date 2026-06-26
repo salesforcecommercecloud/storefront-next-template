@@ -202,9 +202,10 @@ describe('passwordless-login', () => {
 
                 const result = await handlePasswordlessCallback({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     context: mockContext,
                     params: {},
-                    unstable_pattern: {} as any,
+                    pattern: {} as any,
                 });
 
                 expect(result).toEqual({
@@ -270,9 +271,10 @@ describe('passwordless-login', () => {
 
                 const result = await handlePasswordlessCallback({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     context: mockContext,
                     params: {},
-                    unstable_pattern: {} as any,
+                    pattern: {} as any,
                 });
 
                 expect(result.success).toBe(true);
@@ -300,9 +302,10 @@ describe('passwordless-login', () => {
 
                 const result = await handlePasswordlessCallback({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     context: mockContext,
                     params: {},
-                    unstable_pattern: {} as any,
+                    pattern: {} as any,
                 });
 
                 expect(result).toEqual({
@@ -330,9 +333,10 @@ describe('passwordless-login', () => {
 
                 const result = await handlePasswordlessCallback({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     context: mockContext,
                     params: {},
-                    unstable_pattern: {} as any,
+                    pattern: {} as any,
                 });
 
                 expect(result).toEqual({
@@ -359,9 +363,10 @@ describe('passwordless-login', () => {
 
                 const result = await handlePasswordlessCallback({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     context: mockContext,
                     params: {},
-                    unstable_pattern: {} as any,
+                    pattern: {} as any,
                 });
 
                 expect(result.success).toBe(false);
@@ -380,9 +385,10 @@ describe('passwordless-login', () => {
 
             const result = handlePasswordlessLanding({
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: {} as any,
+                pattern: {} as any,
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/login?token=valid-token&email=user%40example.com');
@@ -398,9 +404,10 @@ describe('passwordless-login', () => {
 
             const result = handlePasswordlessLanding({
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: {} as any,
+                pattern: {} as any,
             });
 
             expect(mockRedirect).toHaveBeenCalledWith(
@@ -418,9 +425,10 @@ describe('passwordless-login', () => {
 
             const result = handlePasswordlessLanding({
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: {} as any,
+                pattern: {} as any,
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/login?token=&email=');

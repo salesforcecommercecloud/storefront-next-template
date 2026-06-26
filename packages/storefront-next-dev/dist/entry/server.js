@@ -189,7 +189,7 @@ async function traced(spanName, attributes, handle) {
 * HTTP attributes common to all spans.
 * url.path only — url.full would expose query params which may contain auth
 * tokens or PII. http.response.status_code is not available from
-* unstable_InstrumentationHandlerResult.
+* InstrumentationHandlerResult.
 */
 function httpAttributes(request) {
 	const attrs = { [ATTR_HTTP_REQUEST_METHOD]: request.method };
@@ -205,21 +205,21 @@ const platformInstrumentation = {
 		} });
 	},
 	route(route) {
-		function routeAttributes(unstable_pattern) {
+		function routeAttributes(pattern) {
 			return {
 				"rr.route.id": route.id,
-				"rr.route.pattern": unstable_pattern
+				"rr.route.pattern": pattern
 			};
 		}
 		route.instrument({
-			async loader(handleLoader, { unstable_pattern }) {
-				await traced(`loader (${route.id})`, routeAttributes(unstable_pattern), handleLoader);
+			async loader(handleLoader, { pattern }) {
+				await traced(`loader (${route.id})`, routeAttributes(pattern), handleLoader);
 			},
-			async action(handleAction, { unstable_pattern }) {
-				await traced(`action (${route.id})`, routeAttributes(unstable_pattern), handleAction);
+			async action(handleAction, { pattern }) {
+				await traced(`action (${route.id})`, routeAttributes(pattern), handleAction);
 			},
-			async middleware(handleMiddleware, { unstable_pattern }) {
-				await traced(`middleware (${route.id})`, routeAttributes(unstable_pattern), handleMiddleware);
+			async middleware(handleMiddleware, { pattern }) {
+				await traced(`middleware (${route.id})`, routeAttributes(pattern), handleMiddleware);
 			}
 		});
 	}
@@ -232,15 +232,16 @@ const platformInstrumentation = {
 *
 * - Spreads all app module properties to forward unknown/future exports
 * - Wraps the default handler for platform-level processing
-* - Prepends a platform instrumentation to unstable_instrumentations
+* - Prepends a platform instrumentation to instrumentations
 */
 function composeServerEntry(appModule) {
+	if (process.env.NODE_ENV !== "production" && "unstable_instrumentations" in appModule && !("instrumentations" in appModule)) console.warn("[storefront-next] entry.server exports `unstable_instrumentations`, which React Router 7.18 no longer reads. Rename the export to `instrumentations` or it will not register.");
 	return {
 		...appModule,
 		default(request, statusCode, headers, context, loadContext) {
 			return appModule.default(request, statusCode, headers, context, loadContext);
 		},
-		unstable_instrumentations: [platformInstrumentation, ...appModule.unstable_instrumentations ?? []]
+		instrumentations: [platformInstrumentation, ...appModule.instrumentations ?? []]
 	};
 }
 

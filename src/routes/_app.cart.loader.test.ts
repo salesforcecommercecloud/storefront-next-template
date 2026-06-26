@@ -18,7 +18,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { loader } from './_app.cart';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 import type { Route } from './+types/_app.cart';
 
 vi.mock('@/middlewares/basket.server', () => ({
@@ -79,7 +79,8 @@ describe('Cart route loader', () => {
         params: { siteId: 'test-site', localeId: 'en-US' },
         context: createTestContext({ currency: 'USD' }),
         request: new Request('http://localhost/cart'),
-        unstable_pattern: UNSTABLE_PATTERN,
+        pattern: ROUTE_PATTERN,
+        url: new URL('http://localhost/cart'),
     });
 
     beforeEach(() => {

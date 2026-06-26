@@ -40,9 +40,23 @@ import { platformInstrumentation } from '../otel/react-router/instrumentation';
  *
  * - Spreads all app module properties to forward unknown/future exports
  * - Wraps the default handler for platform-level processing
- * - Prepends a platform instrumentation to unstable_instrumentations
+ * - Prepends a platform instrumentation to instrumentations
  */
 export function composeServerEntry(appModule: ServerEntryModule): ServerEntryModule {
+    // React Router 7.18 reads the server-entry `instrumentations` export by name,
+    // so an ejected entry still exporting the pre-stabilization `unstable_instrumentations`
+    // compiles fine but is never registered. Surface that in dev so it doesn't ship silently.
+    if (
+        process.env.NODE_ENV !== 'production' &&
+        'unstable_instrumentations' in appModule &&
+        !('instrumentations' in appModule)
+    ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            '[storefront-next] entry.server exports `unstable_instrumentations`, which React Router 7.18 ' +
+                'no longer reads. Rename the export to `instrumentations` or it will not register.'
+        );
+    }
     return {
         // Spread all properties first so unknown/future exports pass through
         ...appModule,
@@ -50,6 +64,6 @@ export function composeServerEntry(appModule: ServerEntryModule): ServerEntryMod
         default(request, statusCode, headers, context, loadContext) {
             return appModule.default(request, statusCode, headers, context, loadContext);
         },
-        unstable_instrumentations: [platformInstrumentation, ...(appModule.unstable_instrumentations ?? [])],
+        instrumentations: [platformInstrumentation, ...(appModule.instrumentations ?? [])],
     };
 }

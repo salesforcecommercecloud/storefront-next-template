@@ -136,7 +136,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -168,7 +168,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -198,7 +198,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -225,7 +225,7 @@ describe('action.cart-bundle-add', () => {
             const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {});
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(false);
@@ -238,7 +238,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expectStatus(result, 405);
@@ -275,7 +275,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
+                createActionArgs(request, {} as any, { pattern: resourceRoutes.cartBundleAdd })
             );
 
             expectStatus(result, 409);

@@ -66,7 +66,7 @@ describe('middlewares/error-cache-control.server.ts', () => {
 
     function callMiddleware(request: Request): Promise<Response> {
         return errorCacheControlMiddleware(
-            createLoaderArgs(request, mockContext, { unstable_pattern: '/' }),
+            createLoaderArgs(request, mockContext, { pattern: '/' }),
             mockNext
         ) as Promise<Response>;
     }

@@ -76,7 +76,7 @@ describe('action.promo-code-add', () => {
             createActionArgs(
                 createFormDataRequest(`http://localhost${resourceRoutes.promoCodeAdd}`, 'POST', { promoCode: code }),
                 {} as any,
-                { unstable_pattern: resourceRoutes.promoCodeAdd }
+                { pattern: resourceRoutes.promoCodeAdd }
             )
         );
 

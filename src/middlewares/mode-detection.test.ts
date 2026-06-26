@@ -63,7 +63,7 @@ describe('modeDetectionMiddleware', () => {
             mockNext.mockResolvedValue(expectedResponse);
 
             const result = await modeDetectionMiddlewareServer(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
+                createLoaderArgs(mockRequest, mockContext, { pattern: '*' }),
                 mockNext
             );
 
@@ -75,10 +75,7 @@ describe('modeDetectionMiddleware', () => {
             isDesignModeActive.mockReturnValue(true);
             isPreviewModeActive.mockReturnValue(false);
 
-            await modeDetectionMiddlewareServer(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
-                mockNext
-            );
+            await modeDetectionMiddlewareServer(createLoaderArgs(mockRequest, mockContext, { pattern: '*' }), mockNext);
 
             expect(isDesignModeActive).toHaveBeenCalledWith(mockRequest);
             expect(isPreviewModeActive).toHaveBeenCalledWith(mockRequest);
@@ -94,10 +91,7 @@ describe('modeDetectionMiddleware', () => {
             isDesignModeActive.mockReturnValue(false);
             isPreviewModeActive.mockReturnValue(true);
 
-            await modeDetectionMiddlewareServer(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
-                mockNext
-            );
+            await modeDetectionMiddlewareServer(createLoaderArgs(mockRequest, mockContext, { pattern: '*' }), mockNext);
 
             expect(isDesignModeActive).toHaveBeenCalledWith(mockRequest);
             expect(isPreviewModeActive).toHaveBeenCalledWith(mockRequest);
@@ -113,10 +107,7 @@ describe('modeDetectionMiddleware', () => {
             isDesignModeActive.mockReturnValue(false);
             isPreviewModeActive.mockReturnValue(false);
 
-            await modeDetectionMiddlewareServer(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
-                mockNext
-            );
+            await modeDetectionMiddlewareServer(createLoaderArgs(mockRequest, mockContext, { pattern: '*' }), mockNext);
 
             expect(isDesignModeActive).toHaveBeenCalledWith(mockRequest);
             expect(isPreviewModeActive).toHaveBeenCalledWith(mockRequest);
@@ -139,10 +130,7 @@ describe('modeDetectionMiddleware', () => {
                 return Promise.resolve(new Response('test'));
             });
 
-            await modeDetectionMiddlewareServer(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
-                mockNext
-            );
+            await modeDetectionMiddlewareServer(createLoaderArgs(mockRequest, mockContext, { pattern: '*' }), mockNext);
 
             expect(contextDuringNext).toEqual({
                 isDesignMode: true,

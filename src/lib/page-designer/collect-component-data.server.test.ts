@@ -33,9 +33,10 @@ const TEST_CONTEXT = { get: vi.fn(), set: vi.fn() };
 const createCtx = (context = TEST_CONTEXT) =>
     ({
         request: new Request('https://example.com/page'),
+        url: new URL('https://example.com/page'),
         context,
         params: {},
-        unstable_pattern: '/',
+        pattern: '/',
     }) as LoaderFunctionArgs;
 
 const createComponent = (id: string, typeId: string, regions: any[] = []) =>

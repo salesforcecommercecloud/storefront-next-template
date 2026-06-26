@@ -160,8 +160,8 @@
     "zod": "4.1.13"
   },
   "devDependencies": {
-    "@react-router/dev": "7.12.0",
-    "@react-router/fs-routes": "7.12.0",
+    "@react-router/dev": "7.18.0",
+    "@react-router/fs-routes": "7.18.0",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
@@ -176,7 +176,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-i18next": "16.0.0",
-    "react-router": "7.12.0",
+    "react-router": "7.18.0",
     "remix-i18next": "7.4.2",
     "shx": "^0.4.0",
     "tsdown": "^0.15.4",

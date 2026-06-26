@@ -19,7 +19,7 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { loader } from './_app.account.store-preferences';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -103,7 +103,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });
@@ -123,7 +124,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
             });
 
             expect(result).toEqual({ preferredStore: mockStore, error: null });
@@ -143,7 +145,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
             });
 
             expect(result.preferredStore).toBeNull();
@@ -167,7 +170,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });

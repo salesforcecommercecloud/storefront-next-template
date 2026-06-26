@@ -86,7 +86,7 @@ const renderWithAction = (loaderData: { token: string; email: string }) => {
             path: '/',
             Component: WrappedComponent,
             action: async ({ request }) =>
-                action(createActionArgs(request, mockContext, { unstable_pattern: '/reset-password' })),
+                action(createActionArgs(request, mockContext, { pattern: '/reset-password' })),
         },
     ]);
     return render(
@@ -118,7 +118,7 @@ describe('reset-password route', () => {
     describe('loader', () => {
         it('should return loader data when token and email are provided', () => {
             const mockRequest = new Request('http://localhost/reset-password?token=abc123&email=test@example.com');
-            const result = loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' }));
+            const result = loader(createLoaderArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
             expect(result).toEqual({
                 token: 'abc123',
@@ -128,7 +128,7 @@ describe('reset-password route', () => {
 
         it('should redirect to forgot-password when token is missing', () => {
             const mockRequest = new Request('http://localhost/reset-password?email=test@example.com');
-            const result = loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' }));
+            const result = loader(createLoaderArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
             // Check if it's a Response (redirect)
             expect(result).toBeInstanceOf(Response);
@@ -140,7 +140,7 @@ describe('reset-password route', () => {
 
         it('should redirect to forgot-password when email is missing', () => {
             const mockRequest = new Request('http://localhost/reset-password?token=abc123');
-            const result = loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' }));
+            const result = loader(createLoaderArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
             // Check if it's a Response (redirect)
             expect(result).toBeInstanceOf(Response);
@@ -152,7 +152,7 @@ describe('reset-password route', () => {
 
         it('should redirect to forgot-password when both token and email are missing', () => {
             const mockRequest = new Request('http://localhost/reset-password');
-            const result = loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' }));
+            const result = loader(createLoaderArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
             expect(result).toBeInstanceOf(Response);
             if (result instanceof Response) {
@@ -178,9 +178,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 expect(result).toBeInstanceOf(Response);
                 if (result instanceof Response) {
@@ -205,9 +203,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -229,9 +225,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -253,9 +247,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -278,9 +270,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -305,9 +295,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 expect(mockIsPasswordValid).toHaveBeenCalledWith('weak');
                 // Returns error data, not redirect
@@ -343,9 +331,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 expect(mockIsPasswordValid).toHaveBeenCalledWith('Test123!');
                 expect(mockResetPasswordWithToken).toHaveBeenCalledWith(mockContext, {
@@ -388,9 +374,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 expect(mockResetPasswordWithToken).toHaveBeenCalled();
                 // "Invalid token" matches INVALID_TOKEN_ERROR — shows user-friendly invalid-token message
@@ -416,9 +400,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 expect(result).toBeInstanceOf(Response);
                 if (result instanceof Response) {
@@ -443,9 +425,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -468,9 +448,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Returns error data, not redirect
                 expect(result).toEqual({
@@ -493,9 +471,7 @@ describe('reset-password route', () => {
                     body: formData.toString(),
                 });
 
-                const result = await action(
-                    createActionArgs(mockRequest, mockContext, { unstable_pattern: '/reset-password' })
-                );
+                const result = await action(createActionArgs(mockRequest, mockContext, { pattern: '/reset-password' }));
 
                 // Passwords don't match - should return error data
                 expect(result).toEqual({

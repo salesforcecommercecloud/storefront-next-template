@@ -102,7 +102,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -127,7 +127,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
@@ -162,7 +162,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -194,7 +194,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
@@ -261,7 +261,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -317,7 +317,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response.status).toBe(500);
@@ -406,7 +406,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -513,7 +513,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
@@ -590,7 +590,7 @@ describe('action.place-order action', () => {
             request,
             context: mockContext,
             params: {},
-            unstable_pattern: resourceRoutes.placeOrder,
+            pattern: resourceRoutes.placeOrder,
         } as ActionFunctionArgs);
 
         // Should not save addresses or phone for an existing registered shopper
@@ -737,7 +737,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -757,7 +757,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -777,7 +777,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -799,7 +799,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             // Order still succeeds even when all profile saves fail
@@ -820,7 +820,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -841,7 +841,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledTimes(1);
@@ -929,7 +929,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -959,7 +959,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -983,7 +983,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -1061,7 +1061,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             expect(response.status).toBe(302);
@@ -1143,7 +1143,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             // Phone from formData should be used, not the billing address phone
@@ -1219,7 +1219,7 @@ describe('action.place-order action', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: resourceRoutes.placeOrder,
+                pattern: resourceRoutes.placeOrder,
             } as ActionFunctionArgs);
 
             // Should reach createOrder, not 400 with 'Billing address is required'.

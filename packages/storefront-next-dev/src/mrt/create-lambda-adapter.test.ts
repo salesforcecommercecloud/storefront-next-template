@@ -20,6 +20,7 @@ import { PassThrough, type Writable } from 'stream';
 import { EventEmitter } from 'events';
 import zlib from 'node:zlib';
 import express, { type Express } from 'express';
+import { writeReadableStreamToWritable } from '@react-router/node';
 import { createStreamingLambdaAdapter, createExpressRequest, createExpressResponse } from './create-lambda-adapter';
 
 // Mock awslambda global
@@ -2679,6 +2680,144 @@ describe('create-lambda-adapter', () => {
                 const result = res.write(uint8Array);
 
                 expect(result).toBe(true);
+            });
+        });
+
+        describe('backpressure handling', () => {
+            // A response stream that applies real backpressure: the first write()
+            // returns false and a 'drain' fires on the next event-loop tick, on the
+            // stream itself. This mirrors the AWS Lambda response stream that does not
+            // surface its drain on res — the condition that stalled React Router 7.16+.
+            function createBackpressuringStream(): Writable & EventEmitter & { getChunks: () => Buffer[] } {
+                const stream = new EventEmitter() as any;
+                const chunks: Buffer[] = [];
+                let saturated = false;
+                stream.writable = true;
+                stream.writableEnded = false;
+                stream.destroyed = false;
+                stream.write = vi.fn((chunk: any) => {
+                    chunks.push(Buffer.from(chunk));
+                    if (!saturated) {
+                        saturated = true;
+                        setImmediate(() => {
+                            saturated = false;
+                            stream.emit('drain');
+                        });
+                        return false;
+                    }
+                    return true;
+                });
+                stream.end = vi.fn((cb?: any) => {
+                    stream.writableEnded = true;
+                    stream.emit('finish');
+                    if (typeof cb === 'function') cb();
+                    return stream;
+                });
+                stream.destroy = vi.fn((err?: any) => {
+                    stream.destroyed = true;
+                    stream.writable = false;
+                    stream.emit('close', err);
+                    return stream;
+                });
+                return Object.assign(stream, { getChunks: () => chunks }) as Writable &
+                    EventEmitter & { getChunks: () => Buffer[] };
+            }
+
+            function readableStreamOf(parts: string[]): ReadableStream {
+                const encoder = new TextEncoder();
+                return new ReadableStream({
+                    start(controller) {
+                        for (const part of parts) {
+                            controller.enqueue(encoder.encode(part));
+                        }
+                        controller.close();
+                    },
+                });
+            }
+
+            async function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T> {
+                let timer: ReturnType<typeof setTimeout> | undefined;
+                const deadline = new Promise<never>((_, reject) => {
+                    timer = setTimeout(
+                        () => reject(new Error(`stream did not finish within ${ms}ms — drain not forwarded to res`)),
+                        ms
+                    );
+                });
+                try {
+                    return await Promise.race([promise, deadline]);
+                } finally {
+                    clearTimeout(timer);
+                }
+            }
+
+            it("completes React Router's stream write when the response stream applies backpressure", async () => {
+                const destination = createBackpressuringStream();
+                const event = createMockEvent({ httpMethod: 'GET' });
+                const context = createMockContext();
+                const res = createExpressResponse(destination, event, context);
+                res.setHeader('Content-Type', 'text/html');
+
+                // The real 7.18 writer awaits a 'drain' on res whenever res.write()
+                // reports backpressure. The MRT response stream does not surface its
+                // drain on res, so res.write reports each accepted chunk as writable
+                // and the writer keeps flowing instead of hanging until the platform
+                // timeout. Every chunk still reaches the destination.
+                await withDeadline(
+                    writeReadableStreamToWritable(
+                        readableStreamOf(['<!doctype html>', '<body>', 'streamed content', '</body>']),
+                        res as unknown as Writable
+                    ),
+                    1000
+                );
+
+                expect(destination.end).toHaveBeenCalled();
+                expect(res.finished).toBe(true);
+                expect(Buffer.concat(destination.getChunks()).toString()).toContain('streamed content');
+            });
+
+            it('reports accepted writes as writable on the compressed path so the writer never stalls', async () => {
+                const realCreateGzip = zlib.createGzip;
+                let gzip: ReturnType<typeof zlib.createGzip> | undefined;
+                const createGzipSpy = vi.spyOn(zlib, 'createGzip').mockImplementation((options) => {
+                    gzip = realCreateGzip(options);
+                    return gzip;
+                });
+
+                try {
+                    const stream = createCollectingStream();
+                    const request = createRequestWithEncoding('gzip');
+                    const event = createMockEvent({ httpMethod: 'GET', headers: { 'Accept-Encoding': 'gzip' } });
+                    const context = createMockContext();
+                    const res = createExpressResponse(stream, event, context, request);
+                    res.setHeader('Content-Type', 'text/html');
+
+                    // First write negotiates compression.
+                    const firstWrite = res.write('<!doctype html>');
+                    expect(createGzipSpy).toHaveBeenCalledTimes(1);
+                    expect(gzip).toBeDefined();
+                    expect(firstWrite).toBe(true);
+
+                    if (!gzip) throw new Error('compression stream was not created');
+
+                    // Even when the compression stream signals backpressure (write
+                    // returns false), res.write reports the chunk as accepted so React
+                    // Router 7.16+ does not await a drain the MRT response stream never
+                    // delivers. The chunk still flows through to the gzip stream.
+                    const realGzipWrite = gzip.write.bind(gzip);
+                    const gzipWriteSpy = vi
+                        .spyOn(gzip, 'write')
+                        .mockImplementation((...args: Parameters<typeof realGzipWrite>) => {
+                            realGzipWrite(...args);
+                            return false;
+                        });
+                    expect(res.write('<body>more content</body>')).toBe(true);
+                    expect(gzipWriteSpy).toHaveBeenCalled();
+
+                    res.end();
+                    await stream.waitForEnd();
+                } finally {
+                    createGzipSpy.mockRestore();
+                }
             });
         });
     });

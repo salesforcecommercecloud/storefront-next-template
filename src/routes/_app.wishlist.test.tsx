@@ -16,7 +16,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { loader } from './_app.wishlist';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 
 // SCAPI clients are exercised by loadWishlistPageData; mock them so the loader
 // path can run without hitting the network.
@@ -106,8 +106,9 @@ describe('_app.wishlist loader', () => {
         const thrown = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         }).then(
             () => {
                 throw new Error('Loader should have thrown a redirect Response');
@@ -138,8 +139,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();
@@ -177,8 +179,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toEqual(mockWishlist);
@@ -198,8 +201,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();
@@ -219,8 +223,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();

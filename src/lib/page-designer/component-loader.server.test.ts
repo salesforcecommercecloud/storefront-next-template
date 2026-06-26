@@ -55,9 +55,10 @@ const MOCK_PD_TOKEN = 'abc123';
 const createLoaderArgs = (url: string, context = TEST_CONTEXT) =>
     ({
         request: new Request(url),
+        url: new URL(url),
         context,
         params: {},
-        unstable_pattern: '/',
+        pattern: '/',
     }) as LoaderFunctionArgs;
 
 const createMockComponent = (id: string, typeId: string, additionalProps = {}) => ({

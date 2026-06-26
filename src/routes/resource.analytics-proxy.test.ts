@@ -43,9 +43,10 @@ function createArgs(method: string, targetUrl?: string) {
     const params = targetUrl ? `?url=${encodeURIComponent(targetUrl)}` : '';
     return {
         request: new Request(`http://localhost${resourceRoutes.analyticsProxy}${params}`, { method }),
+        url: new URL(`http://localhost${resourceRoutes.analyticsProxy}${params}`),
         params: {},
         context: new RouterContextProvider(),
-        unstable_pattern: resourceRoutes.analyticsProxy,
+        pattern: resourceRoutes.analyticsProxy,
     };
 }
 

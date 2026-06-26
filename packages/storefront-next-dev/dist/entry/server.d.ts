@@ -7,7 +7,7 @@ import { ServerEntryModule } from "react-router";
  *
  * - Spreads all app module properties to forward unknown/future exports
  * - Wraps the default handler for platform-level processing
- * - Prepends a platform instrumentation to unstable_instrumentations
+ * - Prepends a platform instrumentation to instrumentations
  */
 declare function composeServerEntry(appModule: ServerEntryModule): ServerEntryModule;
 //#endregion

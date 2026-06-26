@@ -31,7 +31,8 @@ const HEADER_DATA_RESPONSE = 'X-Remix-Response';
  * from either signal:
  *
  * - **Request URL** — the pathname ends in `.data`. This is the future-safe signal, but it only reaches middleware
- *   once the app preserves the suffix on `request.url` (react-router ≥ 7.13.2 with `unstable_passThroughRequests`).
+ *   once the app preserves the suffix on `request.url` (react-router ≥ 7.13.2 with `v8_passThroughRequests`,
+ *   stabilized from `unstable_passThroughRequests` in 7.15).
  *   On earlier versions of React Router, the suffix is stripped before middleware runs.
  * - **Response header** — the response carries `X-Remix-Response`. This works on react-router ≥ 7.3.0, where it is the
  *   only middleware-visible signal for a data response.

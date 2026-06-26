@@ -45,9 +45,10 @@ function createArgs(qualifiers: string | undefined): ActionFunctionArgs {
     const data: Record<string, string> = qualifiers !== undefined ? { qualifiers } : {};
     return {
         request: createFormDataRequest(ACTION_URL, 'PUT', data),
+        url: new URL(ACTION_URL),
         params: {},
         context: mockContext,
-        unstable_pattern: 'action/update-shopper-context',
+        pattern: 'action/update-shopper-context',
     };
 }
 
@@ -217,9 +218,10 @@ describe('action.update-shopper-context', () => {
         test('returns 405 when request method is not PUT', async () => {
             const args: ActionFunctionArgs = {
                 request: createFormDataRequest(ACTION_URL, 'POST', { qualifiers: '{"src":"email"}' }),
+                url: new URL(ACTION_URL),
                 params: {},
                 context: mockContext,
-                unstable_pattern: 'action/update-shopper-context',
+                pattern: 'action/update-shopper-context',
             };
             const res = await action(args);
             const data = res.data;

@@ -48,7 +48,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -67,7 +73,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -84,7 +96,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -102,7 +120,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -119,7 +143,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -138,7 +168,13 @@ describe('gcpPreferencesMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -159,7 +195,13 @@ describe('gcpPreferencesMiddleware', () => {
         vi.resetModules();
         const fresh = await import('./gcp-preferences');
         await fresh.gcpPreferencesMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL(new Request('https://example.com').url),
+            },
             next as MiddlewareNext
         );
 
@@ -180,7 +222,13 @@ describe('gcpPreferencesMiddleware', () => {
 
         await expect(
             fresh.gcpPreferencesMiddleware(
-                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                {
+                    request: new Request('https://example.com'),
+                    context,
+                    params: {},
+                    pattern: '',
+                    url: new URL(new Request('https://example.com').url),
+                },
                 next as MiddlewareNext
             )
         ).rejects.toThrow(`Data store request failed for 'gcp'.`);

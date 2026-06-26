@@ -102,7 +102,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'products',
+                    url: new URL(mockRequest.url),
+                    pattern: 'products',
                 },
                 mockNext
             )) as Response;
@@ -119,7 +120,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'products',
+                    url: new URL(mockRequest.url),
+                    pattern: 'products',
                 },
                 mockNext
             );
@@ -143,7 +145,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: postRequest,
-                    unstable_pattern: 'action/cart-add',
+                    url: new URL(postRequest.url),
+                    pattern: 'action/cart-add',
                 },
                 mockNext
             )) as Response;
@@ -159,7 +162,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'resource/products',
+                    url: new URL(mockRequest.url),
+                    pattern: 'resource/products',
                 },
                 mockNext
             )) as Response;
@@ -175,7 +179,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'action/cart-update',
+                    url: new URL(mockRequest.url),
+                    pattern: 'action/cart-update',
                 },
                 mockNext
             )) as Response;
@@ -197,7 +202,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/products'),
-                        unstable_pattern: 'products',
+                        url: new URL('http://localhost:3000/products'),
+                        pattern: 'products',
                     },
                     mockNext
                 );
@@ -224,7 +230,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/product/12345?color=blue'),
-                        unstable_pattern: 'product',
+                        url: new URL('http://localhost:3000/product/12345?color=blue'),
+                        pattern: 'product',
                     },
                     mockNext
                 );
@@ -250,7 +257,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/products?_routes=products&filter=new'),
-                        unstable_pattern: 'products',
+                        url: new URL('http://localhost:3000/products?_routes=products&filter=new'),
+                        pattern: 'products',
                     },
                     mockNext
                 );
@@ -278,7 +286,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/maintenance'),
-                        unstable_pattern: 'maintenance',
+                        url: new URL('http://localhost:3000/maintenance'),
+                        pattern: 'maintenance',
                     },
                     mockNext
                 );
@@ -304,7 +313,8 @@ describe('maintenanceMiddleware', () => {
                         request: createMockRequest(
                             'http://localhost:3000/search?q=shoes&size=10&page=2&_routes=search'
                         ),
-                        unstable_pattern: 'search',
+                        url: new URL('http://localhost:3000/search?q=shoes&size=10&page=2&_routes=search'),
+                        pattern: 'search',
                     },
                     mockNext
                 );
@@ -336,7 +346,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: mockRequest,
-                        unstable_pattern: 'products',
+                        url: new URL(mockRequest.url),
+                        pattern: 'products',
                     },
                     mockNext
                 )
@@ -348,7 +359,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: mockRequest,
-                        unstable_pattern: 'products',
+                        url: new URL(mockRequest.url),
+                        pattern: 'products',
                     },
                     mockNext
                 );
@@ -369,7 +381,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: mockRequest,
-                        unstable_pattern: 'products',
+                        url: new URL(mockRequest.url),
+                        pattern: 'products',
                     },
                     mockNext
                 )
@@ -394,7 +407,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: maintenanceRequest,
-                    unstable_pattern: 'maintenance',
+                    url: new URL(maintenanceRequest.url),
+                    pattern: 'maintenance',
                 },
                 mockNext
             )) as Response;
@@ -414,7 +428,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: maintenanceRequest,
-                    unstable_pattern: 'maintenance',
+                    url: new URL(maintenanceRequest.url),
+                    pattern: 'maintenance',
                 },
                 mockNext
             )) as Response;
@@ -434,7 +449,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: maintenanceRequest,
-                    unstable_pattern: 'maintenance',
+                    url: new URL(maintenanceRequest.url),
+                    pattern: 'maintenance',
                 },
                 mockNext
             );
@@ -453,7 +469,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: createMockRequest('http://localhost:3000/'),
-                    unstable_pattern: '',
+                    url: new URL('http://localhost:3000/'),
+                    pattern: '',
                 },
                 mockNext
             )) as Response;
@@ -470,7 +487,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: createMockRequest(`http://localhost:3000${longPath}`),
-                    unstable_pattern: 'products',
+                    url: new URL(`http://localhost:3000${longPath}`),
+                    pattern: 'products',
                 },
                 mockNext
             )) as Response;
@@ -489,7 +507,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/search?q=shoes%20%26%20boots'),
-                        unstable_pattern: 'search',
+                        url: new URL('http://localhost:3000/search?q=shoes%20%26%20boots'),
+                        pattern: 'search',
                     },
                     mockNext
                 );
@@ -514,7 +533,8 @@ describe('maintenanceMiddleware', () => {
                         context: createMockContext(),
                         params: {},
                         request: createMockRequest('http://localhost:3000/products'),
-                        unstable_pattern: 'products',
+                        url: new URL('http://localhost:3000/products'),
+                        pattern: 'products',
                     },
                     mockNext
                 ),
@@ -523,7 +543,8 @@ describe('maintenanceMiddleware', () => {
                         context: createMockContext(),
                         params: {},
                         request: createMockRequest('http://localhost:3000/cart'),
-                        unstable_pattern: 'cart',
+                        url: new URL('http://localhost:3000/cart'),
+                        pattern: 'cart',
                     },
                     mockNext
                 ),
@@ -532,7 +553,8 @@ describe('maintenanceMiddleware', () => {
                         context: createMockContext(),
                         params: {},
                         request: createMockRequest('http://localhost:3000/checkout'),
-                        unstable_pattern: 'checkout',
+                        url: new URL('http://localhost:3000/checkout'),
+                        pattern: 'checkout',
                     },
                     mockNext
                 ),
@@ -546,7 +568,7 @@ describe('maintenanceMiddleware', () => {
             });
         });
 
-        test('handles empty unstable_pattern', async () => {
+        test('handles empty pattern', async () => {
             mockNext.mockResolvedValue(createMockResponse(200));
 
             const result = (await maintenanceMiddleware(
@@ -554,7 +576,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: '',
+                    url: new URL(mockRequest.url),
+                    pattern: '',
                 },
                 mockNext
             )) as Response;
@@ -576,7 +599,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: minimalRequest,
-                    unstable_pattern: 'test',
+                    url: new URL(minimalRequest.url),
+                    pattern: 'test',
                 },
                 mockNext
             )) as Response;
@@ -599,7 +623,8 @@ describe('maintenanceMiddleware', () => {
                         context: mockContext,
                         params: {},
                         request: createMockRequest('http://localhost:3000/products'),
-                        unstable_pattern: 'products',
+                        url: new URL('http://localhost:3000/products'),
+                        pattern: 'products',
                     },
                     mockNext
                 );
@@ -622,7 +647,8 @@ describe('maintenanceMiddleware', () => {
                     context: createMockContext(),
                     params: {},
                     request: createMockRequest('http://localhost:3000' + redirectLocation.split('?')[0]),
-                    unstable_pattern: 'maintenance',
+                    url: new URL('http://localhost:3000' + redirectLocation.split('?')[0]),
+                    pattern: 'maintenance',
                 },
                 mockNext
             )) as Response;
@@ -642,7 +668,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: postRequest,
-                    unstable_pattern: 'action/cart-add',
+                    url: new URL(postRequest.url),
+                    pattern: 'action/cart-add',
                 },
                 mockNext
             );
@@ -659,7 +686,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'resource/config',
+                    url: new URL(mockRequest.url),
+                    pattern: 'resource/config',
                 },
                 mockNext
             );
@@ -678,7 +706,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'products',
+                    url: new URL(mockRequest.url),
+                    pattern: 'products',
                 },
                 mockNext
             )) as Response;
@@ -694,7 +723,8 @@ describe('maintenanceMiddleware', () => {
                     context: mockContext,
                     params: {},
                     request: mockRequest,
-                    unstable_pattern: 'products',
+                    url: new URL(mockRequest.url),
+                    pattern: 'products',
                 },
                 mockNext
             )) as Response;

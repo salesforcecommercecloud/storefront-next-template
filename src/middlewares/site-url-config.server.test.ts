@@ -67,7 +67,13 @@ describe('siteUrlConfigMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await siteUrlConfigMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL('https://example.com'),
+            },
             next as MiddlewareNext
         );
 
@@ -91,7 +97,13 @@ describe('siteUrlConfigMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await siteUrlConfigMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL('https://example.com'),
+            },
             next as MiddlewareNext
         );
 
@@ -112,7 +124,13 @@ describe('siteUrlConfigMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await siteUrlConfigMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL('https://example.com'),
+            },
             next as MiddlewareNext
         );
 
@@ -138,9 +156,10 @@ describe('siteUrlConfigMiddleware', () => {
         await siteUrlConfigMiddleware(
             {
                 request: new Request('https://example.com'),
+                url: new URL('https://example.com'),
                 context: emptyContext,
                 params: {},
-                unstable_pattern: '',
+                pattern: '',
             },
             next as MiddlewareNext
         );
@@ -155,7 +174,13 @@ describe('siteUrlConfigMiddleware', () => {
         } as unknown as typeof DataStore._testDocumentClient;
 
         await siteUrlConfigMiddleware(
-            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            {
+                request: new Request('https://example.com'),
+                context,
+                params: {},
+                pattern: '',
+                url: new URL('https://example.com'),
+            },
             next as MiddlewareNext
         );
 

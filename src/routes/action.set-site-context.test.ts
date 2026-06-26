@@ -63,9 +63,10 @@ function createArgs(type: string, payload: Record<string, string> = {}): ActionF
             type,
             payload: JSON.stringify(payload),
         }),
+        url: new URL('http://localhost/action/set-site-context'),
         params: {},
         context: createContext(),
-        unstable_pattern: 'action/set-site-context',
+        pattern: 'action/set-site-context',
     };
 }
 

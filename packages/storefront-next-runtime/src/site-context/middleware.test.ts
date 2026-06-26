@@ -103,7 +103,9 @@ describe('createSiteContextMiddleware', () => {
         const { createSiteContextMiddleware, siteContext: ctx } = await getMiddleware();
         const middleware = createSiteContextMiddleware(config);
         const response = (await middleware(
-            { request, context, params: {}, unstable_pattern: '' } as Parameters<MiddlewareFunction<Response>>[0],
+            { request, context, params: {}, pattern: '', url: new URL(request.url) } as Parameters<
+                MiddlewareFunction<Response>
+            >[0],
             next as MiddlewareNext
         )) as Response;
         return { response, context: context.get(ctx) as SiteContext };
@@ -225,7 +227,9 @@ describe('createSiteContextMiddleware', () => {
         const request = new Request('https://example.com/us/en-US/');
 
         await middleware(
-            { request, context, params: {}, unstable_pattern: '' } as Parameters<MiddlewareFunction<Response>>[0],
+            { request, context, params: {}, pattern: '', url: new URL(request.url) } as Parameters<
+                MiddlewareFunction<Response>
+            >[0],
             next as MiddlewareNext
         );
 
@@ -246,7 +250,9 @@ describe('createSiteContextMiddleware', () => {
 
         await expect(
             middleware(
-                { request, context, params: {}, unstable_pattern: '' } as Parameters<MiddlewareFunction<Response>>[0],
+                { request, context, params: {}, pattern: '', url: new URL(request.url) } as Parameters<
+                    MiddlewareFunction<Response>
+                >[0],
                 next as MiddlewareNext
             )
         ).rejects.toThrow('Default site nonexistent not found');
@@ -263,7 +269,9 @@ describe('createSiteContextMiddleware', () => {
 
         await expect(
             middleware(
-                { request, context, params: {}, unstable_pattern: '' } as Parameters<MiddlewareFunction<Response>>[0],
+                { request, context, params: {}, pattern: '', url: new URL(request.url) } as Parameters<
+                    MiddlewareFunction<Response>
+                >[0],
                 next as MiddlewareNext
             )
         ).rejects.toThrow('Default locale fr-FR not found in the list of supported locales for site site-us');

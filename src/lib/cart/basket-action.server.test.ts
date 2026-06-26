@@ -58,13 +58,13 @@ describe('createBasketAction', () => {
     /** Send a POST request to the action with the given form data. */
     function postFormData(action: ReturnType<typeof buildAction>, data: Record<string, string> = { itemId: '123' }) {
         const request = createFormDataRequest('http://localhost/test', 'POST', data);
-        return action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
+        return action(createActionArgs(request, {} as any, { pattern: '/test' }));
     }
 
     it('returns 405 when request method does not match', async () => {
         const action = buildAction(() => Promise.resolve(mockBasket as any));
         const request = createFormDataRequest('http://localhost/test', 'PATCH', { itemId: '123' });
-        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
+        const result = await action(createActionArgs(request, {} as any, { pattern: '/test' }));
 
         expectStatus(result, 405);
         expect(result.data.success).toBe(false);

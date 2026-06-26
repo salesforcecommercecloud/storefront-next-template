@@ -312,7 +312,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes&offset=0'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
 
@@ -346,7 +346,7 @@ describe('SearchPage', () => {
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
                 ),
                 mockContext,
-                { unstable_pattern: '/search' }
+                { pattern: '/search' }
             );
 
             await loader(args);
@@ -365,15 +365,17 @@ describe('SearchPage', () => {
         test('should parse filters query param into initialFiltersOpen', async () => {
             const openArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=open'),
+                url: new URL('https://example.com/search?q=shoes&filters=open'),
                 context: mockContext,
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: '/search',
+                pattern: '/search',
             };
             const closedArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=closed'),
+                url: new URL('https://example.com/search?q=shoes&filters=closed'),
                 context: mockContext,
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: '/search',
+                pattern: '/search',
             };
 
             const openResult = await loader(openArgs);
@@ -388,7 +390,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
 
@@ -429,7 +431,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -469,7 +471,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -504,7 +506,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -543,7 +545,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -582,7 +584,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);

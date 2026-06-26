@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../otel/react-router/instrumentation', () => ({
     platformInstrumentation: { handler: vi.fn(), route: vi.fn() },
@@ -66,15 +66,15 @@ describe('composeServerEntry', () => {
         expect(composed.handleError).toBe(mockHandleError);
     });
 
-    it('should prepend platform instrumentation to unstable_instrumentations', () => {
+    it('should prepend platform instrumentation to instrumentations', () => {
         const appInstrumentation = { handler: vi.fn() };
         const appModule = createMockModule({
-            unstable_instrumentations: [appInstrumentation],
+            instrumentations: [appInstrumentation],
         });
         const composed = composeServerEntry(appModule);
 
         // Platform instrumentation prepended + app instrumentation preserved
-        const instrumentations = composed.unstable_instrumentations ?? [];
+        const instrumentations = composed.instrumentations ?? [];
         expect(instrumentations).toHaveLength(2);
         expect(instrumentations[0]).not.toBe(appInstrumentation);
         expect(instrumentations[0]).toHaveProperty('handler');
@@ -85,7 +85,7 @@ describe('composeServerEntry', () => {
         const appModule = createMockModule();
         const composed = composeServerEntry(appModule);
 
-        const instrumentations = composed.unstable_instrumentations ?? [];
+        const instrumentations = composed.instrumentations ?? [];
         expect(instrumentations).toHaveLength(1);
         expect(instrumentations[0]).toHaveProperty('handler');
     });
@@ -142,5 +142,55 @@ describe('composeServerEntry', () => {
         expect(composed.streamTimeout).toBe(5000);
         // Unknown property is preserved
         expect(composed.futureExport).toEqual({ nested: true });
+    });
+
+    describe('unstable_instrumentations dev-mode warning', () => {
+        const originalNodeEnv = process.env.NODE_ENV;
+
+        afterEach(() => {
+            process.env.NODE_ENV = originalNodeEnv;
+            vi.restoreAllMocks();
+        });
+
+        it('warns when an ejected entry still exports unstable_instrumentations', () => {
+            process.env.NODE_ENV = 'development';
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+            composeServerEntry({
+                default: mockDefault,
+                unstable_instrumentations: [{ handler: vi.fn() }],
+            } as unknown as ServerEntryModule);
+            expect(warn).toHaveBeenCalledWith(expect.stringContaining('unstable_instrumentations'));
+        });
+
+        it('does not warn when the entry uses the new instrumentations name', () => {
+            process.env.NODE_ENV = 'development';
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+            composeServerEntry({
+                default: mockDefault,
+                instrumentations: [{ handler: vi.fn() }],
+            });
+            expect(warn).not.toHaveBeenCalled();
+        });
+
+        it('does not warn when both names are present (rename in progress)', () => {
+            process.env.NODE_ENV = 'development';
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+            composeServerEntry({
+                default: mockDefault,
+                instrumentations: [{ handler: vi.fn() }],
+                unstable_instrumentations: [{ handler: vi.fn() }],
+            } as unknown as ServerEntryModule);
+            expect(warn).not.toHaveBeenCalled();
+        });
+
+        it('does not warn in production', () => {
+            process.env.NODE_ENV = 'production';
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+            composeServerEntry({
+                default: mockDefault,
+                unstable_instrumentations: [{ handler: vi.fn() }],
+            } as unknown as ServerEntryModule);
+            expect(warn).not.toHaveBeenCalled();
+        });
     });
 });

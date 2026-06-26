@@ -23,10 +23,7 @@ import { routes } from '@/route-paths';
  * This signal will be resolved by the maintenanceMiddleware when the first
  * successful API call completes.
  */
-export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
-    { context, request, unstable_pattern },
-    next
-) => {
+export const maintenanceMiddleware: MiddlewareFunction<Response> = async ({ context, request, pattern }, next) => {
     const logger = getLogger(context);
     logger.debug('Maintenance: middleware starting');
     const maintenance = createMaintenance();
@@ -36,10 +33,10 @@ export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
 
     try {
         const handledCriticalData = await maintenance.promise;
-        redirectHome = handledCriticalData && unstable_pattern === 'maintenance';
+        redirectHome = handledCriticalData && pattern === 'maintenance';
     } catch (e) {
         // 503 Error -> Redirect to maintenance page
-        if (e instanceof Response && e.status === 503 && unstable_pattern !== 'maintenance') {
+        if (e instanceof Response && e.status === 503 && pattern !== 'maintenance') {
             logger.info('Maintenance: redirecting to maintenance page');
             // Preserve the `returnPath` and filter out the internal `_routes` parameter
             const url = new URL(request.url);

@@ -27,12 +27,14 @@ function makeArgs(url = 'http://localhost/'): { args: Args; context: RouterConte
         get: (k: unknown) => store.get(k),
         set: (k: unknown, v: unknown) => store.set(k, v),
     } as unknown as RouterContextProvider;
+    const request = new Request(url);
     return {
         args: {
-            request: new Request(url),
+            request,
             context,
             params: {},
-            unstable_pattern: '',
+            pattern: '',
+            url: new URL(request.url),
         } as Args,
         context,
     };

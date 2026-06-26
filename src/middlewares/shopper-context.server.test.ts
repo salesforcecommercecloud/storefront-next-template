@@ -104,11 +104,13 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 /**
- * Satisfies React Router's DataFunctionArgs (request, context, params, unstable_pattern).
- * React Router added required unstable_pattern in a 7.x release;
+ * Satisfies React Router's DataFunctionArgs (request, context, params, pattern).
+ * React Router added required pattern in a 7.x release;
  */
 const createMiddlewareArgs = (request: Request, context: RouterContextProvider) =>
-    ({ request, context, params: {}, unstable_pattern: '/' }) as Parameters<typeof shopperContextMiddleware>[0];
+    ({ request, context, params: {}, pattern: '/', url: new URL(request.url) }) as Parameters<
+        typeof shopperContextMiddleware
+    >[0];
 
 type MiddlewareNext = Parameters<typeof shopperContextMiddleware>[1];
 

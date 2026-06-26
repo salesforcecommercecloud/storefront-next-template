@@ -1438,7 +1438,7 @@ export * from ${importPath};
 export default _composed.default;
 export const handleDataRequest = _composed.handleDataRequest;
 export const handleError = _composed.handleError;
-export const unstable_instrumentations = _composed.unstable_instrumentations;
+export const instrumentations = _composed.instrumentations;
 export const streamTimeout = _composed.streamTimeout;
 `.trim();
 }

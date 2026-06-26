@@ -485,8 +485,18 @@ export function createExpressResponse(
     /**
      * Writes a chunk to the appropriate stream (compression stream if enabled, otherwise httpResponseStream)
      *
+     * Returns whether the chunk was accepted, NOT the stream's backpressure signal.
+     * A backpressured write (write() returning false) has still buffered the chunk —
+     * Node's pipe drains it to the response stream on its own. React Router 7.16+
+     * treats a falsy res.write() as a cue to await a 'drain' event on res before
+     * sending the next chunk; the MRT response stream does not surface drain on res,
+     * so reporting backpressure here would stall the whole response until it times
+     * out. Reporting "accepted" keeps the writer flowing (the behavior React Router
+     * relied on before 7.16) while real flow control stays inside the compression →
+     * HttpResponseStream pipe.
+     *
      * @param chunk - The data chunk to write
-     * @returns true if the chunk was written successfully, false otherwise
+     * @returns true if the chunk was accepted, false if it could not be written
      */
     const writeChunk = (chunk?: string | Buffer | Uint8Array): boolean => {
         // Don't write null, undefined
@@ -497,12 +507,14 @@ export function createExpressResponse(
         try {
             if (shouldCompress && compressionStream && compressionStream.writable) {
                 // Write to compression stream, which will compress and pipe to httpResponseStream
-                return compressionStream.write(chunk);
+                compressionStream.write(chunk);
             } else if (httpResponseStream && httpResponseStream.writable) {
                 // No compression, write directly to httpResponseStream
-                return httpResponseStream.write(chunk);
+                httpResponseStream.write(chunk);
+            } else {
+                return false;
             }
-            return false;
+            return true;
         } catch (error) {
             console.error('Error writing chunk:', error);
             return false;
@@ -825,23 +837,11 @@ export function createExpressResponse(
         // if a real case appears.
         if (isNullOrUndefined(chunk)) {
             writeChunk(Buffer.alloc(0));
-        }
-
-        // Chunks can be falsy ('', 0, etc.) but not null or undefined
-        if (!isNullOrUndefined(chunk)) {
-            const result = writeChunk(chunk);
-            if (!result) {
-                // Backpressure - wait for drain event before ending
-                const streamToWait = compressionStream || httpResponseStream;
-                if (streamToWait) {
-                    streamToWait.once('drain', () => {
-                        endStream(this);
-                    });
-                } else {
-                    endStream(this);
-                }
-                return this;
-            }
+        } else {
+            // Chunks can be falsy ('', 0, etc.) but not null or undefined.
+            // writeChunk buffers into the compression → HttpResponseStream pipe,
+            // which drains on its own; endStream flushes and ends that pipe.
+            writeChunk(chunk);
         }
 
         // End the stream(s) and emit finish event

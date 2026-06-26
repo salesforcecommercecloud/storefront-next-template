@@ -132,9 +132,10 @@ describe('action.wishlist-add', () => {
             });
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const result = await action(args);
@@ -148,9 +149,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest();
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             // When productId is missing, Error is thrown and caught
@@ -191,9 +193,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -236,9 +239,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -287,9 +291,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -352,9 +357,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             // No timer advancement needed for fallback path - creation fails immediately
@@ -414,9 +420,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation
@@ -471,9 +478,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -516,9 +524,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -552,9 +561,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -603,9 +613,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -636,9 +647,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -670,9 +682,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -733,9 +746,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation
@@ -787,9 +801,10 @@ describe('action.wishlist-add', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation

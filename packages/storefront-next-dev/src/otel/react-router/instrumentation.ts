@@ -17,7 +17,7 @@
 /**
  * Platform-level handler instrumentation.
  *
- * Uses React Router's unstable_ServerInstrumentation API to observe the
+ * Uses React Router's ServerInstrumentation API to observe the
  * request lifecycle at the handler and route levels. This runs around ALL
  * requests (document + data) and provides OpenTelemetry spans for:
  * - `request` — root span per incoming HTTP request
@@ -38,7 +38,7 @@
  */
 
 import { type Tracer, type Attributes, SpanStatusCode } from '@opentelemetry/api';
-import type { unstable_ServerInstrumentation } from 'react-router';
+import type { ServerInstrumentation } from 'react-router';
 import { ATTR_HTTP_REQUEST_METHOD, ATTR_URL_PATH } from '@opentelemetry/semantic-conventions';
 import { initTelemetry } from '../setup';
 
@@ -82,7 +82,7 @@ async function traced(
  * HTTP attributes common to all spans.
  * url.path only — url.full would expose query params which may contain auth
  * tokens or PII. http.response.status_code is not available from
- * unstable_InstrumentationHandlerResult.
+ * InstrumentationHandlerResult.
  */
 function httpAttributes(request: { method: string; url: string }): Attributes {
     const attrs: Attributes = { [ATTR_HTTP_REQUEST_METHOD]: request.method };
@@ -94,7 +94,7 @@ function httpAttributes(request: { method: string; url: string }): Attributes {
     return attrs;
 }
 
-export const platformInstrumentation: unstable_ServerInstrumentation = {
+export const platformInstrumentation: ServerInstrumentation = {
     handler(handler) {
         handler.instrument({
             async request(handleRequest, { request }) {
@@ -107,22 +107,22 @@ export const platformInstrumentation: unstable_ServerInstrumentation = {
         // These spans are children of the request span which already carries
         // them, and rr.route.id / rr.route.pattern are the meaningful
         // identifiers at the route level.
-        function routeAttributes(unstable_pattern: string): Attributes {
+        function routeAttributes(pattern: string): Attributes {
             return {
                 'rr.route.id': route.id,
-                'rr.route.pattern': unstable_pattern,
+                'rr.route.pattern': pattern,
             };
         }
 
         route.instrument({
-            async loader(handleLoader, { unstable_pattern }) {
-                await traced(`loader (${route.id})`, routeAttributes(unstable_pattern), handleLoader);
+            async loader(handleLoader, { pattern }) {
+                await traced(`loader (${route.id})`, routeAttributes(pattern), handleLoader);
             },
-            async action(handleAction, { unstable_pattern }) {
-                await traced(`action (${route.id})`, routeAttributes(unstable_pattern), handleAction);
+            async action(handleAction, { pattern }) {
+                await traced(`action (${route.id})`, routeAttributes(pattern), handleAction);
             },
-            async middleware(handleMiddleware, { unstable_pattern }) {
-                await traced(`middleware (${route.id})`, routeAttributes(unstable_pattern), handleMiddleware);
+            async middleware(handleMiddleware, { pattern }) {
+                await traced(`middleware (${route.id})`, routeAttributes(pattern), handleMiddleware);
             },
         });
     },

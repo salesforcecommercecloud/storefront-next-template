@@ -273,9 +273,10 @@ describe('CategoryPage', () => {
 
     const createLoaderArgs = (url: string, overrides?: { params?: Record<string, string> }): Route.LoaderArgs => ({
         request: new Request(url),
+        url: new URL(url),
         context: mockContext,
         params: { siteId: 'test-site', localeId: 'en-US', categoryId: 'electronics', ...overrides?.params },
-        unstable_pattern: '/category/:categoryId',
+        pattern: '/category/:categoryId',
     });
 
     beforeEach(() => {

@@ -30,12 +30,14 @@ const createMockResolvedConfig = (overrides: Record<string, any> = {}) => {
             v8_viteEnvironmentApi: true,
             unstable_optimizeDeps: true,
             v8_splitRouteModules: false,
-            unstable_subResourceIntegrity: false,
-            unstable_trailingSlashAwareDataRequests: false,
+            subResourceIntegrity: false,
+            v8_trailingSlashAwareDataRequests: false,
+            v8_passThroughRequests: false,
         },
         routeDiscovery: { mode: 'initial' as const },
         serverModuleFormat: 'cjs' as const,
         ssr: true,
+        subResourceIntegrity: false,
         prerender: false,
         allowedActionOrigins: [],
         ...overrides,
@@ -257,8 +259,9 @@ describe('react-router.config', () => {
                         v8_viteEnvironmentApi: true,
                         unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
-                        unstable_subResourceIntegrity: false,
-                        unstable_trailingSlashAwareDataRequests: false,
+                        subResourceIntegrity: false,
+                        v8_trailingSlashAwareDataRequests: false,
+                        v8_passThroughRequests: false,
                     },
                 });
 
@@ -279,7 +282,9 @@ describe('react-router.config', () => {
                         v8_viteEnvironmentApi: false,
                         unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
-                        unstable_subResourceIntegrity: false,
+                        subResourceIntegrity: false,
+                        v8_trailingSlashAwareDataRequests: false,
+                        v8_passThroughRequests: false,
                     },
                 });
 
@@ -303,7 +308,9 @@ describe('react-router.config', () => {
                         v8_viteEnvironmentApi: false,
                         unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
-                        unstable_subResourceIntegrity: false,
+                        subResourceIntegrity: false,
+                        v8_trailingSlashAwareDataRequests: false,
+                        v8_passThroughRequests: false,
                     },
                 });
 

@@ -55,7 +55,10 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -83,7 +86,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should skip when hybrid mode is disabled', async () => {
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -109,7 +115,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should skip when legacyRoutes is empty', async () => {
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -129,7 +138,10 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -146,7 +158,10 @@ describe('legacyRoutesMiddleware', () => {
 
             // Don't await — the middleware returns a never-resolving promise on redirect paths
             // (keeps React Router suspended while the browser navigates away)
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // window.location.href is set synchronously before the promise
             expect(mockNext).not.toHaveBeenCalled();
@@ -156,7 +171,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should not redirect when path does not exactly match', async () => {
             const request = new Request('https://example.com/checkout/payment');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // Should continue normal navigation since /checkout/payment !== /checkout
             expect(mockNext).toHaveBeenCalledOnce();
@@ -165,7 +183,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should trigger redirect path and preserve existing query params', () => {
             const request = new Request('https://example.com/checkout?step=2&item=abc');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             // Query string is preserved verbatim — no extra params are injected.
@@ -175,7 +196,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should trigger redirect path and preserve hash fragment', () => {
             const request = new Request('https://example.com/checkout#payment');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/checkout#payment');
@@ -184,7 +208,10 @@ describe('legacyRoutesMiddleware', () => {
         test('should continue normal navigation when path does not match', async () => {
             const request = new Request('https://example.com/product/123');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -193,7 +220,10 @@ describe('legacyRoutesMiddleware', () => {
             // /s/ is in legacyRoutes, but a full legacy path like /s/<siteId>/en_US/Cart-Show is not
             const request = new Request(`https://example.com/s/${mockAltSiteObject.id}/en_US/Cart-Show`);
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // Should continue normal navigation since it's not an exact match
             expect(mockNext).toHaveBeenCalledOnce();
@@ -213,7 +243,10 @@ describe('legacyRoutesMiddleware', () => {
             // resulting full-document load (see the middleware's header comment).
             const request = new Request('https://example.com/checkout');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(window.location.href).toBe('https://example.com/checkout');
             expect(window.location.href).not.toContain('redirected');
@@ -224,7 +257,10 @@ describe('legacyRoutesMiddleware', () => {
             // just an ordinary query param now. (Guards against re-introducing loop-guard behavior.)
             const request = new Request('https://example.com/checkout');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/checkout');
@@ -261,7 +297,10 @@ describe('legacyRoutesMiddleware', () => {
         ])('does not redirect infrastructure path %s to legacy', async (path) => {
             const request = new Request(`https://example.com${path}`);
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // Must fall through to React Router, NOT trigger a full-page legacy navigation.
             expect(mockNext).toHaveBeenCalledOnce();
@@ -273,7 +312,10 @@ describe('legacyRoutesMiddleware', () => {
             // home navigation (/global/en-GB) still strips to '/' and routes to legacy.
             const request = new Request('https://example.com/global/en-GB');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/');
@@ -296,7 +338,7 @@ describe('legacyRoutesMiddleware', () => {
                 const request = new Request(`https://example.com${path}`);
 
                 void legacyRoutesMiddleware(
-                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
                     mockNext
                 );
 
@@ -324,7 +366,10 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -334,7 +379,10 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -343,7 +391,10 @@ describe('legacyRoutesMiddleware', () => {
             // /account is a legacy route, but /accounts is not (exact matching)
             const request = new Request('https://example.com/accounts/profile');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // Should continue normal navigation since /accounts/profile !== /account
             expect(mockNext).toHaveBeenCalledOnce();
@@ -503,7 +554,10 @@ describe('legacyRoutesMiddleware', () => {
         test('appends the suffix to the redirect path for a suffixed route', () => {
             const request = new Request('https://example.com/product/552437');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/product/552437.html');
@@ -514,7 +568,10 @@ describe('legacyRoutesMiddleware', () => {
                 'https://example.com/product/552437?Quantity=1&uuid=83f650ea79f62ea4950d45ad08&source=cart'
             );
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             // .html lands on the path, not after the query string; original params survive.
@@ -526,7 +583,10 @@ describe('legacyRoutesMiddleware', () => {
         test('appends the suffix before the hash fragment', () => {
             const request = new Request('https://example.com/product/552437#reviews');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(window.location.href).toBe('https://example.com/product/552437.html#reviews');
         });
@@ -534,7 +594,10 @@ describe('legacyRoutesMiddleware', () => {
         test('does not double-append when the path already ends with the suffix', () => {
             const request = new Request('https://example.com/product/552437.html');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(window.location.href).toBe('https://example.com/product/552437.html');
         });
@@ -542,7 +605,10 @@ describe('legacyRoutesMiddleware', () => {
         test('does not append a suffix to a clean-path legacy route', () => {
             const request = new Request('https://example.com/cart');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             // /cart has no suffix — must stay clean, not become /cart.html
             expect(window.location.href).toBe('https://example.com/cart');
@@ -553,7 +619,10 @@ describe('legacyRoutesMiddleware', () => {
             // legacy backend receives e.g. /categoryLv1/shoes/running.html
             const request = new Request('https://example.com/categoryLv1/shoes/running');
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/categoryLv1/shoes/running.html');
@@ -585,7 +654,10 @@ describe('legacyRoutesMiddleware', () => {
             const locale = mockSiteObject.defaultLocale;
             const request = new Request(`https://example.com/${siteRef}/${locale}/checkout`);
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             // Navigation target must be the stripped pathname so the legacy backend (or local
@@ -598,7 +670,10 @@ describe('legacyRoutesMiddleware', () => {
             const locale = mockSiteObject.defaultLocale;
             const request = new Request(`https://example.com/${siteRef}/${locale}/product/123`);
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/product/123');
@@ -609,7 +684,10 @@ describe('legacyRoutesMiddleware', () => {
             const locale = mockSiteObject.defaultLocale;
             const request = new Request(`https://example.com/${siteRef}/${locale}/checkout?step=2&item=abc#payment`);
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc#payment');
@@ -620,7 +698,10 @@ describe('legacyRoutesMiddleware', () => {
                 `https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/category/womens`
             );
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            await legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -646,7 +727,10 @@ describe('legacyRoutesMiddleware', () => {
             const locale = mockSiteObject.defaultLocale;
             const request = new Request(`https://example.com/${siteRef}/${locale}/product/123?source=cart`);
 
-            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+            void legacyRoutesMiddleware(
+                { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
+                mockNext
+            );
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toBe('https://example.com/product/123.html?source=cart');
@@ -691,7 +775,7 @@ describe('legacyRoutesMiddleware', () => {
                 (window as any).location.href = '';
                 const request = new Request(url);
                 void legacyRoutesMiddleware(
-                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
                     mockNext
                 );
                 expect(mockNext).not.toHaveBeenCalled();
@@ -712,7 +796,7 @@ describe('legacyRoutesMiddleware', () => {
             for (const url of testCases) {
                 const request = new Request(url);
                 await legacyRoutesMiddleware(
-                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    { request, context: mockContext, params: {}, pattern: '', url: new URL(request.url) },
                     mockNext
                 );
                 expect(mockNext).toHaveBeenCalledOnce();

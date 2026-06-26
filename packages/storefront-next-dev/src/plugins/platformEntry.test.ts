@@ -116,7 +116,7 @@ describe('platformEntryPlugin', () => {
             expect(result).toContain('composeServerEntry');
             expect(result).toContain('export default _composed.default');
             expect(result).toContain('export const handleError');
-            expect(result).toContain('export const unstable_instrumentations');
+            expect(result).toContain('export const instrumentations');
             expect(result).toContain('export const streamTimeout');
         });
 

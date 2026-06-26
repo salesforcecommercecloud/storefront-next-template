@@ -129,9 +129,10 @@ describe('action.wishlist-remove', () => {
             });
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const result = await action(args);
@@ -145,9 +146,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest();
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             // When both itemId and productId are missing, Error is thrown and caught
@@ -185,9 +187,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -228,9 +231,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -278,9 +282,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -334,9 +339,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123', 'item-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -395,9 +401,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-456', 'item-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -431,9 +438,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -460,9 +468,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -482,9 +491,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -513,9 +523,10 @@ describe('action.wishlist-remove', () => {
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
+                url: new URL(request.url),
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);

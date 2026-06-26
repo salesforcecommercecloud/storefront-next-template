@@ -44,9 +44,10 @@ async function runWith(configOverrides: Record<string, unknown>) {
     await siteContextMiddleware(
         {
             request: new Request('https://example.com/'),
+            url: new URL('https://example.com/'),
             context: {} as RouterContextProvider,
             params: {},
-            unstable_pattern: '',
+            pattern: '',
         } as Parameters<MiddlewareFunction<Response>>[0],
         next
     );
