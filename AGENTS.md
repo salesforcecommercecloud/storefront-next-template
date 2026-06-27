@@ -226,7 +226,7 @@ Shape is token-driven. `rounded-ui` and `shadow-ui` apply to 19 primitives (Card
 
 **Always override the SOURCE tokens (`--ui-radius`, `--ui-shadow`, `--ui-border-width`), never the bridge variables (`--radius-ui`, `--shadow-ui`).**
 
-The bridge variables are inlined at compile time by Tailwind's `@theme inline { --radius-ui: var(--ui-radius); }`, so `.rounded-ui` actually compiles to `border-radius: var(--ui-radius)` directly. Writing to `--radius-ui` at runtime has no effect — the bridge name doesn't survive into the served CSS. Only `--ui-radius` / `--ui-shadow` / `--ui-border-width` are real runtime variables. See [docs/multi-vertical/README-SHAPE-TOKENS.md](./docs/multi-vertical/README-SHAPE-TOKENS.md) for the full mechanism.
+The bridge variables are inlined at compile time by Tailwind's `@theme inline { --radius-ui: var(--ui-radius); }`, so `.rounded-ui` actually compiles to `border-radius: var(--ui-radius)` directly. Writing to `--radius-ui` at runtime has no effect — the bridge name doesn't survive into the served CSS. Only `--ui-radius` / `--ui-shadow` / `--ui-border-width` are real runtime variables. See [docs/README-SHAPE-TOKENS.md](./docs/README-SHAPE-TOKENS.md) for the full mechanism.
 
 **Never** add explicit shape classes to components that already use these token utilities.
 
@@ -307,6 +307,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 
 **UI & frontend:**
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — Tailwind, shadcn, design tokens
+- [docs/README-SHAPE-TOKENS.md](./docs/README-SHAPE-TOKENS.md) — Shape tokens: source vs bridge variables, scoped overrides for Card/Button/Input shape
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance entry point: web fonts, third-party scripts, bundles, client-side transform anti-patterns; links to all other performance guides
 - [docs/README-IMAGES.md](./docs/README-IMAGES.md) — DIS integration, `<DynamicImage>`, alt text
 - [docs/README-SEO.md](./docs/README-SEO.md) — Page titles, meta tags, canonical URLs
