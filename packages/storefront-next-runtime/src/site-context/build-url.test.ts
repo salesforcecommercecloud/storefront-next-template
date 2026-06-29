@@ -21,6 +21,7 @@ import {
     decomposeUrl,
     resolvePrefix,
     stripPathPrefix,
+    extractPrefixParamValues,
 } from './build-url';
 
 describe('parseSearchConfig', () => {
@@ -219,6 +220,54 @@ describe('stripPathPrefix', () => {
         it('returns pathname unchanged when prefix is "/"', () => {
             expect(stripPathPrefix({ pathname: '/checkout', prefix: '/' })).toBe('/checkout');
         });
+    });
+});
+
+describe('extractPrefixParamValues', () => {
+    it('captures siteId + localeId from a /:siteId/:localeId prefix', () => {
+        expect(extractPrefixParamValues({ pathname: '/global/en-GB/cart', prefix: '/:siteId/:localeId' })).toEqual({
+            siteId: 'global',
+            localeId: 'en-GB',
+        });
+    });
+
+    it('captures a single locale alias from a /:localeId prefix', () => {
+        expect(extractPrefixParamValues({ pathname: '/uk/cart', prefix: '/:localeId' })).toEqual({ localeId: 'uk' });
+    });
+
+    it('captures the placeholder from a mixed (literal + placeholder) prefix', () => {
+        expect(extractPrefixParamValues({ pathname: '/shop/uk/x', prefix: '/shop/:localeId' })).toEqual({
+            localeId: 'uk',
+        });
+    });
+
+    it('captures when the pathname equals the prefix exactly (no remainder)', () => {
+        expect(extractPrefixParamValues({ pathname: '/global/en-GB', prefix: '/:siteId/:localeId' })).toEqual({
+            siteId: 'global',
+            localeId: 'en-GB',
+        });
+    });
+
+    it('returns {} when the path has fewer segments than the prefix', () => {
+        expect(extractPrefixParamValues({ pathname: '/cart', prefix: '/:siteId/:localeId' })).toEqual({});
+        expect(extractPrefixParamValues({ pathname: '/global', prefix: '/:siteId/:localeId' })).toEqual({});
+    });
+
+    it('returns {} when a literal segment does not match', () => {
+        expect(extractPrefixParamValues({ pathname: '/store/uk/x', prefix: '/shop/:localeId' })).toEqual({});
+    });
+
+    it('returns {} for an empty or root prefix', () => {
+        expect(extractPrefixParamValues({ pathname: '/cart', prefix: '' })).toEqual({});
+        expect(extractPrefixParamValues({ pathname: '/cart', prefix: '/' })).toEqual({});
+    });
+
+    it('round-trips with stripPathPrefix: bare path + captured params reconstruct the input', () => {
+        const pathname = '/global/en-GB/product/123';
+        const prefix = '/:siteId/:localeId';
+        const params = extractPrefixParamValues({ pathname, prefix });
+        const bare = stripPathPrefix({ pathname, prefix });
+        expect(`/${params.siteId}/${params.localeId}${bare}`).toBe(pathname);
     });
 });
 

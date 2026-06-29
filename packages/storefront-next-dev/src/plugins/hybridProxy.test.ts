@@ -17,7 +17,13 @@ import { describe, it, expect, afterEach } from 'vitest';
 import http from 'http';
 import { AddressInfo } from 'net';
 import type { ViteDevServer } from 'vite';
-import { shouldSkipProxy, rewriteCookieForLocalhost, rewriteLocationForProxy, hybridProxyPlugin } from './hybridProxy';
+import {
+    shouldSkipProxy,
+    rewriteCookieForLocalhost,
+    rewriteLocationForProxy,
+    rewriteToSfraPath,
+    hybridProxyPlugin,
+} from './hybridProxy';
 
 describe('shouldSkipProxy', () => {
     describe('Vite internals — always skip', () => {
@@ -153,7 +159,8 @@ describe('proxyRes handler — SFRA plugin_redirect 200+Location normalization',
      * so the plugin always proxies — we're exercising the proxyRes path, not routing.
      */
     async function startProxy(
-        upstreamHandler: (req: http.IncomingMessage, res: http.ServerResponse, ctx: { upstreamUrl: string }) => void
+        upstreamHandler: (req: http.IncomingMessage, res: http.ServerResponse, ctx: { upstreamUrl: string }) => void,
+        pluginOverrides: Partial<Parameters<typeof hybridProxyPlugin>[0]> = {}
     ): Promise<ProxyContext> {
         // Stand the upstream up first so we know its port before the handler runs
         let upstreamUrl = '';
@@ -170,6 +177,7 @@ describe('proxyRes handler — SFRA plugin_redirect 200+Location normalization',
             routeMatcher: () => false,
             defaultSiteId: 'RefArchGlobal',
             locale: 'en-GB',
+            ...pluginOverrides,
         });
 
         // Mimic Vite's middleware registration so the plugin attaches its handler
@@ -328,6 +336,59 @@ describe('proxyRes handler — SFRA plugin_redirect 200+Location normalization',
         expect(response.statusCode).toBe(302);
         expect(response.headers['set-cookie']).toBeUndefined();
     });
+
+    describe('path rewrite — wiring through proxyReq', () => {
+        /** Capture the path the upstream receives, echo it back so the test can assert on it. */
+        const echoPath = (req: http.IncomingMessage, res: http.ServerResponse) => {
+            res.writeHead(200, { 'content-type': 'text/html' });
+            res.end(`<html>${req.url}</html>`);
+        };
+
+        it('does not double-stack the locale for a /:localeId-prefixed path (the escalation repro)', async () => {
+            const ctx = await startProxy(echoPath, {
+                urlPrefix: '/:localeId',
+                localeAliases: ['en-GB', 'uk'],
+                siteAliases: ['RefArchGlobal', 'global'],
+            });
+
+            const response = await request(ctx.proxyUrl, '/uk/cart');
+
+            // Reuses the path's own locale instead of /s/RefArchGlobal/en-GB/uk/cart.
+            expect(response.body).toContain('/s/RefArchGlobal/uk/cart');
+        });
+
+        it('preserves the query string across the SFRA rewrite', async () => {
+            const ctx = await startProxy(echoPath, {
+                urlPrefix: '/:localeId',
+                localeAliases: ['en-GB', 'uk'],
+                siteAliases: ['RefArchGlobal', 'global'],
+            });
+
+            const response = await request(ctx.proxyUrl, '/uk/cart?foo=bar&baz=1');
+
+            expect(response.body).toContain('/s/RefArchGlobal/uk/cart?foo=bar&baz=1');
+        });
+
+        it('honors the rewritePath escape hatch when provided', async () => {
+            const ctx = await startProxy(echoPath, {
+                rewritePath: (pathname) => `/custom${pathname}`,
+            });
+
+            const response = await request(ctx.proxyUrl, '/cart?x=1');
+
+            expect(response.body).toContain('/custom/cart?x=1');
+        });
+
+        it('falls back to the built-in rewrite when rewritePath returns null', async () => {
+            const ctx = await startProxy(echoPath, {
+                rewritePath: () => null,
+            });
+
+            const response = await request(ctx.proxyUrl, '/cart');
+
+            expect(response.body).toContain('/s/RefArchGlobal/en-GB/cart');
+        });
+    });
 });
 
 describe('rewriteLocationForProxy', () => {
@@ -434,5 +495,93 @@ describe('rewriteLocationForProxy', () => {
             proxyOrigin,
         });
         expect(result).toEqual({ kind: 'malformed' });
+    });
+});
+
+describe('rewriteToSfraPath', () => {
+    const SITE = 'RefArchGlobal';
+    const LOCALE = 'en-GB';
+
+    describe('no url.prefix (bare functional paths)', () => {
+        const base = { defaultSiteId: SITE, defaultLocale: LOCALE };
+
+        it('decorates a bare path with /s/{site}/{locale}', () => {
+            expect(rewriteToSfraPath('/cart', base)).toBe('/s/RefArchGlobal/en-GB/cart');
+        });
+
+        it('maps "/" to the locale-less site root', () => {
+            expect(rewriteToSfraPath('/', base)).toBe('/s/RefArchGlobal');
+        });
+
+        it('leaves already-SFCC-shaped paths untouched', () => {
+            expect(rewriteToSfraPath('/s/RefArchGlobal/en-GB/Cart-Show', base)).toBe(
+                '/s/RefArchGlobal/en-GB/Cart-Show'
+            );
+            expect(rewriteToSfraPath('/on/demandware.static/x.css', base)).toBe('/on/demandware.static/x.css');
+        });
+    });
+
+    describe('url.prefix = /:localeId (locale-prefixed shopper URLs)', () => {
+        const base = {
+            defaultSiteId: SITE,
+            defaultLocale: LOCALE,
+            urlPrefix: '/:localeId',
+            localeAliases: ['en-GB', 'uk', 'de-DE'],
+            siteAliases: ['RefArchGlobal', 'global'],
+        };
+
+        it('reuses the locale the path carries instead of double-stacking — the escalation repro', () => {
+            // Before the fix this produced /s/RefArchGlobal/en-GB/uk/cart → 404.
+            expect(rewriteToSfraPath('/uk/cart', base)).toBe('/s/RefArchGlobal/uk/cart');
+        });
+
+        it('passes a canonical locale id straight through', () => {
+            expect(rewriteToSfraPath('/de-DE/checkout', base)).toBe('/s/RefArchGlobal/de-DE/checkout');
+        });
+
+        it('treats a locale home (just the locale segment) as the SFRA site root for that locale', () => {
+            expect(rewriteToSfraPath('/uk', base)).toBe('/s/RefArchGlobal/uk/');
+        });
+
+        it('does NOT mis-strip a bare legacy path that is not a known locale', () => {
+            // `/cart` fits the single-segment prefix structurally, but `cart` is not a known
+            // locale — so it must be treated as a bare path and decorated with the fallback locale.
+            expect(rewriteToSfraPath('/cart', base)).toBe('/s/RefArchGlobal/en-GB/cart');
+        });
+
+        it('matches the locale alias case-insensitively and forwards the canonical casing', () => {
+            // Mixed-case segments (`/en-gb`, `/UK`) are common in hand-typed/linked URLs. They
+            // must match the catalog and be normalized to the canonical-cased alias rather than
+            // falling through to the double-stack (`/s/RefArchGlobal/en-GB/en-gb/cart`).
+            expect(rewriteToSfraPath('/en-gb/cart', base)).toBe('/s/RefArchGlobal/en-GB/cart');
+            expect(rewriteToSfraPath('/UK/cart', base)).toBe('/s/RefArchGlobal/uk/cart');
+        });
+    });
+
+    describe('url.prefix = /:siteId/:localeId (site + locale prefix)', () => {
+        const base = {
+            defaultSiteId: SITE,
+            defaultLocale: LOCALE,
+            urlPrefix: '/:siteId/:localeId',
+            localeAliases: ['en-GB', 'uk'],
+            siteAliases: ['RefArchGlobal', 'global'],
+        };
+
+        it('reuses both the site and locale the path carries (no double site, no double locale)', () => {
+            expect(rewriteToSfraPath('/global/uk/cart', base)).toBe('/s/global/uk/cart');
+        });
+
+        it('falls back to defaults when the leading segments are not a known site/locale', () => {
+            // `/cart/foo` → siteId=cart, localeId=foo; neither is known, so treat the whole
+            // path as bare and decorate with the fallbacks rather than emitting /s/cart/foo/…
+            expect(rewriteToSfraPath('/cart/foo', base)).toBe('/s/RefArchGlobal/en-GB/cart/foo');
+        });
+
+        it('falls back when the site half matches but the locale half is unknown (partial match)', () => {
+            // `/global/cart` → siteId=global (known), localeId=cart (NOT a known locale). The
+            // gate requires BOTH halves, so a known site alone must not be honored — the whole
+            // path is treated as bare. Guards the `siteOk && localeOk` (not `||`) contract.
+            expect(rewriteToSfraPath('/global/cart', base)).toBe('/s/RefArchGlobal/en-GB/global/cart');
+        });
     });
 });

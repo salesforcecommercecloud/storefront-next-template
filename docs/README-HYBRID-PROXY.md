@@ -70,11 +70,11 @@ A JSON array of route patterns that belong to SFRA (the legacy backend). When a 
 
 Supports three pattern forms:
 
-| Form        | Example            | Matches                                                                              | Does **not** match                  |
-| ----------- | ------------------ | ------------------------------------------------------------------------------------ | ----------------------------------- |
-| Exact path  | `/cart`            | `/cart` only                                                                         | `/cart/` or `/cart/anything`        |
-| Named param | `/product/:id`     | A single path segment in place of `:id` (e.g. `/product/123`)                        | `/product/123/details` (multi-segment) |
-| Wildcard    | `/categoryLv1/*`   | Any path content under the prefix, including `/` (e.g. `/categoryLv1/shoes/running`) | `/categoryLv1` (no trailing slash)  |
+| Form        | Example          | Matches                                                                              | Does **not** match                     |
+| ----------- | ---------------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
+| Exact path  | `/cart`          | `/cart` only                                                                         | `/cart/` or `/cart/anything`           |
+| Named param | `/product/:id`   | A single path segment in place of `:id` (e.g. `/product/123`)                        | `/product/123/details` (multi-segment) |
+| Wildcard    | `/categoryLv1/*` | Any path content under the prefix, including `/` (e.g. `/categoryLv1/shoes/running`) | `/categoryLv1` (no trailing slash)     |
 
 ```bash
 PUBLIC__app__hybrid__legacyRoutes='["/cart", "/checkout", "/product/:id", "/categoryLv1/*"]'
@@ -232,11 +232,29 @@ The proxy automatically rewrites paths to SFRA's expected URL format. You never 
 
 | Browser URL                 | Proxied to SFCC as                              |
 | --------------------------- | ----------------------------------------------- |
+| `/`                         | `/s/RefArchGlobal` (locale-less site root)      |
 | `/cart`                     | `/s/RefArchGlobal/en-GB/cart`                   |
 | `/checkout`                 | `/s/RefArchGlobal/en-GB/checkout`               |
 | `/on/demandware.static/...` | `/on/demandware.static/...` (no transformation) |
+| `/s/...`                    | `/s/...` (no transformation)                    |
 
-The `siteId` comes from `PUBLIC__app__defaultSiteId`. The `locale` uses `HYBRID_PROXY_LOCALE` → `PUBLIC__app__i18n__fallbackLng` → `default`.
+The `siteId` comes from `PUBLIC__app__defaultSiteId`. The `locale` uses `HYBRID_PROXY_LOCALE` → `PUBLIC__app__i18n__fallbackLng` → `default`. The query string is always preserved through the rewrite.
+
+### URL-prefix awareness (multi-site / locale prefixes)
+
+When your storefront uses a `url.prefix` in `config.server.ts` (e.g. `/:localeId` or `/:siteId/:localeId`), Storefront Next emits links that already carry the site/locale segment — `/uk/cart`, `/global/en-GB/cart`. The proxy reads `url.prefix` and your site/locale alias catalog from `config.server.ts` automatically and **reuses the site/locale the path already carries** rather than stacking the fallback on top of it. No extra `.env` configuration is required for the standard prefix shapes.
+
+| `url.prefix`         | Browser URL          | Proxied to SFCC as            | Note                                                                           |
+| -------------------- | -------------------- | ----------------------------- | ------------------------------------------------------------------------------ |
+| _none_               | `/cart`              | `/s/RefArchGlobal/en-GB/cart` | Decorated with the `defaultSiteId` / fallback locale                           |
+| `/:localeId`         | `/uk/cart`           | `/s/RefArchGlobal/uk/cart`    | Reuses `uk` from the path — **not** double-stacked                             |
+| `/:localeId`         | `/uk`                | `/s/RefArchGlobal/uk/`        | Locale home keeps its locale                                                   |
+| `/:localeId`         | `/cart`              | `/s/RefArchGlobal/en-GB/cart` | Bare legacy path — `cart` isn't a known locale, so the fallback locale is used |
+| `/:siteId/:localeId` | `/global/en-GB/cart` | `/s/global/en-GB/cart`        | Reuses both segments from the path                                             |
+
+A prefix segment is only treated as a site or locale when it is a **known identifier** — a site/locale id or its configured alias. This is what lets the proxy tell a locale home (`/uk`) apart from a bare legacy path (`/cart`) when both fit a single-segment `/:localeId` prefix: `uk` is a known locale alias, `cart` is not.
+
+> **Escape hatch (last resort).** For a non-standard URL model the standard prefix handling can't express, `hybridProxyPlugin` accepts an optional `rewritePath(pathname)` callback in `vite.config.ts`. Return the SFRA path to use, or `null` to fall through to the built-in transformation. Prefer the OOTB behavior — reach for this only when your URL model genuinely differs from the `url.prefix` shapes above.
 
 ---
 

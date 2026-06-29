@@ -15,7 +15,7 @@
  */
 export { SiteProvider, useSite, type SiteContextValue } from './site-context';
 export { applyUrlConfig } from './apply-url-config';
-export { buildUrl, resolvePrefix, stripPathPrefix } from './build-url';
+export { buildUrl, resolvePrefix, stripPathPrefix, extractPrefixParamValues } from './build-url';
 
 export { createSiteContextMiddleware, resolveSiteContext, siteContext, getSiteContextCookies } from './middleware';
 export type { ResolvedSiteContext } from './middleware';

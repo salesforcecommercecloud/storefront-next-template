@@ -204,6 +204,44 @@ interface HybridProxyPluginOptions {
   defaultSiteId?: string;
   /** Locale for SFRA paths (e.g., 'en-GB'). Defaults to 'default' if not provided. */
   locale?: string;
+  /**
+   * The storefront's `url.prefix` (from `config.server.ts`), e.g. `'/:siteId/:localeId'`
+   * or `'/:localeId'`. When set, the proxy strips this prefix from the incoming path
+   * before decorating to SFRA's `/s/{siteId}/{locale}/…` form, and reuses the
+   * site/locale the path already carries instead of the `defaultSiteId`/`locale`
+   * fallbacks. This is what keeps a prefixed request like `/uk/cart` from being
+   * double-stacked into `/s/{siteId}/{locale}/uk/cart`.
+   *
+   * Prefix support is OOTB: with `url.prefix` configured, no further opt-in is needed.
+   * Leave undefined (or `'/'`) for storefronts that emit bare functional paths.
+   */
+  urlPrefix?: string;
+  /**
+   * Known locale identifiers — every locale `id` AND `alias` the storefront serves
+   * (e.g. `['en-GB', 'uk', 'de-DE']`). Used to confirm that a captured prefix segment
+   * is really a locale before treating it as one, so a bare path like `/cart` under a
+   * `/:localeId` prefix isn't mistaken for the locale `cart`. The matched value is
+   * passed straight through as the SFRA locale path segment (SFRA resolves both the
+   * BM site-path alias `uk` and the canonical `en-GB`).
+   */
+  localeAliases?: string[];
+  /**
+   * Known site identifiers — every site `id` AND `alias` the storefront serves
+   * (e.g. `['RefArchGlobal', 'global']`). Same role as {@link localeAliases} for the
+   * `:siteId` segment of a `/:siteId/:localeId`-style prefix.
+   */
+  siteAliases?: string[];
+  /**
+   * Last-resort escape hatch: fully override how an incoming proxy path is rewritten
+   * to the SFRA path. Receives the bare pathname (no query) and returns the SFRA path
+   * (no query — the proxy re-appends the original query string). Return `null` to fall
+   * back to the built-in OOTB rewrite.
+   *
+   * Prefer leaving this undefined: with `urlPrefix` set the built-in rewrite already
+   * handles all standard prefix shapes. Use this only for a non-standard URL model the
+   * prefix machinery can't express.
+   */
+  rewritePath?: (pathname: string) => string | null;
 }
 /**
  * Vite plugin for hybrid proxying between Storefront Next and legacy SFRA.

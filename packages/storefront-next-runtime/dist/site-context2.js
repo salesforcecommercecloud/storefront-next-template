@@ -126,6 +126,40 @@ function stripPathPrefix({ pathname, prefix }) {
 	return remaining.length === 0 ? "" : `/${remaining.join("/")}`;
 }
 /**
+* Extracts the values of `:param` placeholders in a prefix pattern from a pathname.
+*
+* Mirrors {@link stripPathPrefix}'s matching rules: literal segments must match the
+* pathname exactly, `:param` segments capture the corresponding path segment. Returns
+* an empty object when the pathname doesn't carry the prefix (a literal segment
+* mismatches, or the path has fewer segments than the prefix) — so a non-empty result
+* is a reliable signal that the prefix was present.
+*
+* Pair this with {@link stripPathPrefix}: strip gives you the bare functional path,
+* this gives you the site/locale the path carried. Together they let a caller
+* re-decorate a path for a different URL shape without double-stacking.
+*
+* @example
+* extractPrefixParamValues({ pathname: '/global/en-GB/cart', prefix: '/:siteId/:localeId' }) // → { siteId: 'global', localeId: 'en-GB' }
+* extractPrefixParamValues({ pathname: '/uk/cart',           prefix: '/:localeId' })          // → { localeId: 'uk' }
+* extractPrefixParamValues({ pathname: '/shop/uk/x',         prefix: '/shop/:localeId' })     // → { localeId: 'uk' }
+* extractPrefixParamValues({ pathname: '/cart',              prefix: '/:siteId/:localeId' })  // → {} (too few segments)
+* extractPrefixParamValues({ pathname: '/other/x',          prefix: '/shop/:localeId' })     // → {} (literal mismatch)
+* extractPrefixParamValues({ pathname: '/cart',              prefix: '' })                    // → {}
+*/
+function extractPrefixParamValues({ pathname, prefix }) {
+	if (!prefix || prefix === "/") return {};
+	const prefixSegments = prefix.split("/").filter(Boolean);
+	const pathSegments = pathname.split("/").filter(Boolean);
+	if (pathSegments.length < prefixSegments.length) return {};
+	const values = {};
+	for (let i = 0; i < prefixSegments.length; i++) {
+		const segment = prefixSegments[i];
+		if (segment.startsWith(":")) values[segment.slice(1)] = pathSegments[i];
+		else if (segment !== pathSegments[i]) return {};
+	}
+	return values;
+}
+/**
 * Builds a fully-qualified URL with site context prefix and search params.
 *
 * Only keys defined in urlConfig.search are set by site context. Any other query params
@@ -544,5 +578,5 @@ function createSiteContextMiddleware(config) {
 }
 
 //#endregion
-export { requestToLocaleMap as a, stripPathPrefix as c, siteContext as i, SiteProvider as l, getSiteContextCookies as n, buildUrl as o, resolveSiteContext as r, resolvePrefix as s, createSiteContextMiddleware as t, useSite as u };
+export { requestToLocaleMap as a, resolvePrefix as c, useSite as d, siteContext as i, stripPathPrefix as l, getSiteContextCookies as n, buildUrl as o, resolveSiteContext as r, extractPrefixParamValues as s, createSiteContextMiddleware as t, SiteProvider as u };
 //# sourceMappingURL=site-context2.js.map

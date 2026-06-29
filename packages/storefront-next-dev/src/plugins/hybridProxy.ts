@@ -56,6 +56,7 @@ import type { Plugin, ViteDevServer } from 'vite';
 import httpProxy from 'http-proxy';
 import type { IncomingMessage } from 'http';
 import { gunzipSync, brotliDecompressSync, inflateSync } from 'zlib';
+import { stripPathPrefix, extractPrefixParamValues } from '@salesforce/storefront-next-runtime/site-context';
 import { logger } from '../logger';
 
 export interface HybridProxyPluginOptions {
@@ -80,6 +81,44 @@ export interface HybridProxyPluginOptions {
     defaultSiteId?: string;
     /** Locale for SFRA paths (e.g., 'en-GB'). Defaults to 'default' if not provided. */
     locale?: string;
+    /**
+     * The storefront's `url.prefix` (from `config.server.ts`), e.g. `'/:siteId/:localeId'`
+     * or `'/:localeId'`. When set, the proxy strips this prefix from the incoming path
+     * before decorating to SFRA's `/s/{siteId}/{locale}/…` form, and reuses the
+     * site/locale the path already carries instead of the `defaultSiteId`/`locale`
+     * fallbacks. This is what keeps a prefixed request like `/uk/cart` from being
+     * double-stacked into `/s/{siteId}/{locale}/uk/cart`.
+     *
+     * Prefix support is OOTB: with `url.prefix` configured, no further opt-in is needed.
+     * Leave undefined (or `'/'`) for storefronts that emit bare functional paths.
+     */
+    urlPrefix?: string;
+    /**
+     * Known locale identifiers — every locale `id` AND `alias` the storefront serves
+     * (e.g. `['en-GB', 'uk', 'de-DE']`). Used to confirm that a captured prefix segment
+     * is really a locale before treating it as one, so a bare path like `/cart` under a
+     * `/:localeId` prefix isn't mistaken for the locale `cart`. The matched value is
+     * passed straight through as the SFRA locale path segment (SFRA resolves both the
+     * BM site-path alias `uk` and the canonical `en-GB`).
+     */
+    localeAliases?: string[];
+    /**
+     * Known site identifiers — every site `id` AND `alias` the storefront serves
+     * (e.g. `['RefArchGlobal', 'global']`). Same role as {@link localeAliases} for the
+     * `:siteId` segment of a `/:siteId/:localeId`-style prefix.
+     */
+    siteAliases?: string[];
+    /**
+     * Last-resort escape hatch: fully override how an incoming proxy path is rewritten
+     * to the SFRA path. Receives the bare pathname (no query) and returns the SFRA path
+     * (no query — the proxy re-appends the original query string). Return `null` to fall
+     * back to the built-in OOTB rewrite.
+     *
+     * Prefer leaving this undefined: with `urlPrefix` set the built-in rewrite already
+     * handles all standard prefix shapes. Use this only for a non-standard URL model the
+     * prefix machinery can't express.
+     */
+    rewritePath?: (pathname: string) => string | null;
 }
 
 /**
@@ -217,6 +256,122 @@ function escapeRegExp(str: string): string {
 }
 
 /**
+ * Resolve a captured prefix segment to its canonical-cased alias, case-insensitively.
+ * Returns the matching entry from `aliases` (preserving the catalog's casing) so the value
+ * forwarded to SFRA is always the expected canonical form, or `undefined` when the segment
+ * isn't a known site/locale identifier.
+ */
+function matchAlias(segment: string | undefined, aliases: string[]): string | undefined {
+    if (segment === undefined) return undefined;
+    const lower = segment.toLowerCase();
+    return aliases.find((alias) => alias.toLowerCase() === lower);
+}
+
+/**
+ * Rewrite an incoming proxy pathname to the SFRA `/s/{siteId}/{locale}/…` shape.
+ *
+ * This is the OOTB path transform. It is `url.prefix`-aware: when `urlPrefix` is set
+ * it strips the configured prefix to recover the bare functional path AND reuses the
+ * site/locale the path already carried — so a prefixed request like `/uk/cart` becomes
+ * `/s/{siteId}/uk/cart` rather than the double-stacked `/s/{siteId}/{locale}/uk/cart`.
+ *
+ * It handles every standard prefix shape uniformly:
+ * - no prefix (`''`/`/`):     `/cart`            → `/s/{site}/{locale}/cart`
+ * - `/:localeId`:             `/uk/cart`         → `/s/{site}/uk/cart`
+ * - `/:siteId/:localeId`:     `/global/uk/cart`  → `/s/global/uk/cart`
+ *
+ * Disambiguation: a captured prefix segment is only treated as a site/locale when it is
+ * a known identifier (`siteAliases`/`localeAliases`). This stops a bare path like `/cart`
+ * under a `/:localeId` prefix — which is structurally indistinguishable from a locale
+ * home `/uk` — from being mis-stripped (here `cart` isn't a known locale, so the whole
+ * path is treated as the bare functional path and decorated with the `defaultSiteId`/
+ * `defaultLocale` fallbacks). When a prefix segment IS a known site/locale, that value is
+ * passed straight through as the SFRA path segment; SFRA resolves both the BM site-path
+ * alias (`uk`) and the canonical id (`en-GB`).
+ *
+ * Paths already in SFCC shape (`/s/…`, `/on/demandware.…`) are returned unchanged — the
+ * caller is expected to skip them, but this stays defensive.
+ *
+ * Pure function (query string handled by the caller) so it's unit-testable in isolation.
+ *
+ * @param pathname - Incoming pathname on the proxy (no query string).
+ * @param opts.defaultSiteId - Site to use when the path doesn't carry one.
+ * @param opts.defaultLocale - Locale to use when the path doesn't carry one.
+ * @param opts.urlPrefix - The storefront's `url.prefix` (e.g. `'/:siteId/:localeId'`).
+ * @param opts.localeAliases - Known locale ids + aliases.
+ * @param opts.siteAliases - Known site ids + aliases.
+ */
+export function rewriteToSfraPath(
+    pathname: string,
+    opts: {
+        defaultSiteId: string;
+        defaultLocale: string;
+        urlPrefix?: string;
+        localeAliases?: string[];
+        siteAliases?: string[];
+    }
+): string {
+    const { defaultSiteId, defaultLocale, urlPrefix, localeAliases = [], siteAliases = [] } = opts;
+
+    // Already SFCC-shaped — nothing to decorate.
+    if (pathname.startsWith('/s/') || pathname.startsWith('/on/demandware.')) {
+        return pathname;
+    }
+
+    // Default to the configured fallbacks; override below if the path carries its own.
+    let site = defaultSiteId;
+    let locale = defaultLocale;
+    let barePath = pathname;
+    // Whether the locale came from the path (a real locale segment) vs. the fallback.
+    // A locale home like `/uk` carries a locale even though its bare path is `/`, so it
+    // must keep the locale in the SFRA path; only a truly locale-less root drops it.
+    let localeFromPath = false;
+
+    if (urlPrefix && urlPrefix !== '/') {
+        const captured = extractPrefixParamValues({ pathname, prefix: urlPrefix });
+
+        // Keys off the literal placeholder names `siteId`/`localeId` — the only names the
+        // framework's prefix producers ever emit: `<Link>` and `useNavigate` build `params`
+        // as `{ siteId, localeId }`, so a prefix with any other placeholder would already be
+        // unresolvable storefront-wide before reaching the proxy.
+        // Match captured segments against the known identifiers case-insensitively — shoppers
+        // and links routinely use mixed case (`/en-gb/cart`, `/UK/cart`) even though the
+        // canonical ids are cased (`en-GB`). A case-sensitive match here would reject those and
+        // fall through to the double-stack this function exists to prevent. The matched value is
+        // the *canonical-cased* alias from the catalog (not the raw segment), so SFRA always
+        // receives the casing it expects.
+        const matchedSite = 'siteId' in captured ? matchAlias(captured.siteId, siteAliases) : undefined;
+        const matchedLocale = 'localeId' in captured ? matchAlias(captured.localeId, localeAliases) : undefined;
+
+        // Only honor the captured segments when they're genuine site/locale identifiers.
+        // This is what distinguishes a locale home (`/uk`) from a bare legacy path (`/cart`)
+        // when both fit a single-segment `/:localeId` prefix.
+        const siteOk = !('siteId' in captured) || matchedSite !== undefined;
+        const localeOk = !('localeId' in captured) || matchedLocale !== undefined;
+
+        if (Object.keys(captured).length > 0 && siteOk && localeOk) {
+            if (matchedSite) site = matchedSite;
+            if (matchedLocale) {
+                locale = matchedLocale;
+                localeFromPath = true;
+            }
+            // Strip the prefix to the bare functional path; '' (locale home) coerces to '/'.
+            barePath = stripPathPrefix({ pathname, prefix: urlPrefix }) || '/';
+        }
+    }
+
+    if (barePath === '/') {
+        // A locale home (`/uk` → bare `/` but locale known) keeps its locale: SFRA serves
+        // the localized site root at `/s/{site}/{locale}/`. A truly locale-less root maps to
+        // the bare `/s/{site}` so SFCC resolves the default — decorating it with a fallback
+        // locale would proxy to a non-existent storefront URL.
+        return localeFromPath ? `/s/${site}/${locale}/` : `/s/${site}`;
+    }
+
+    return `/s/${site}/${locale}${barePath}`;
+}
+
+/**
  * Discriminated result of {@link rewriteLocationForProxy}.
  *
  * - `rewritten` — Location was same-origin; the proxy URL is in `url`.
@@ -341,8 +496,11 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
     logger.debug(`Hybrid proxy routing rules: ${options.routingRules.slice(0, 100)}...`);
     const locale = options.locale || 'default';
     const defaultSiteId = options.defaultSiteId;
+    const { urlPrefix, localeAliases, siteAliases, rewritePath } = options;
     logger.debug(
-        `Hybrid proxy path transformation: / → /s/${defaultSiteId}, /path → /s/${defaultSiteId}/${locale}/path`
+        urlPrefix
+            ? `Hybrid proxy path transformation: url.prefix=${urlPrefix} → /s/${defaultSiteId}/{locale}/{bare path}`
+            : `Hybrid proxy path transformation: / → /s/${defaultSiteId}, /path → /s/${defaultSiteId}/${locale}/path`
     );
 
     // Pre-compile regex for URL rewriting in response bodies
@@ -371,17 +529,23 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
 
         if (needsTransformation) {
             const originalPath = proxyReq.path;
-            /**
-             * "/" maps to the SFRA/SiteGenesis site root — no locale in the path
-             * This would simply proxy to SFCC hostname (eg.: https://zzrf-001.dx.commercecloud.salesforce.com/s/{siteId}/{locale}/) which is not a valid storefront URL.
-             * We need to rewrite the path to /s/{siteId} so that it can be proxied to the correct SFCC URL.
-             */
-            if (pathname === '/') {
-                proxyReq.path = `/s/${defaultSiteId}${url.search}`;
-            } else {
-                // Rewrite internal proxy path without changing browser URL
-                proxyReq.path = `/s/${defaultSiteId}/${locale}${pathname}${url.search}`;
-            }
+
+            // Last-resort escape hatch: let a customer fully override the path rewrite.
+            // Returning null falls through to the built-in, prefix-aware OOTB rewrite.
+            const overridden = rewritePath?.(pathname) ?? null;
+            const sfraPath =
+                overridden ??
+                rewriteToSfraPath(pathname, {
+                    defaultSiteId,
+                    defaultLocale: locale,
+                    urlPrefix,
+                    localeAliases,
+                    siteAliases,
+                });
+
+            // Re-append the original query string. `url.search` includes the leading '?'
+            // (or is '') so params survive the SFRA hop — SFCC otherwise drops them.
+            proxyReq.path = `${sfraPath}${url.search}`;
             logger.debug(`Hybrid proxy path rewrite: ${originalPath} → ${proxyReq.path}`);
         }
     });
