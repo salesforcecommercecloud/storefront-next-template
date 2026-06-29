@@ -7,7 +7,7 @@ settings:
 overrides:
   happy-dom>@types/node: ^24.0.0
   '@isaacs/brace-expansion': ^5.0.1
-  axios: ^1.15.2
+  axios: 1.16.1
   basic-ftp: ^5.3.1
   flatted: ^3.4.2
   shell-quote: ^1.8.4
@@ -397,8 +397,8 @@ importers:
         specifier: ^2.32.0
         version: 2.43.0
       axios:
-        specifier: ^1.15.2
-        version: 1.18.1(debug@4.4.3)
+        specifier: 1.16.1
+        version: 1.16.1(debug@4.4.3)
       chai:
         specifier: ^4.3.10
         version: 4.5.0
@@ -580,8 +580,8 @@ importers:
         specifier: ^4.20.5
         version: 4.22.4
       undici:
-        specifier: ^6.21.3
-        version: 6.27.0
+        specifier: 7.28.0
+        version: 7.28.0
       yaml:
         specifier: ^2.8.2
         version: 2.9.0
@@ -4782,8 +4782,8 @@ packages:
     resolution: {integrity: sha512-s7iGf5GaVMxEG0ENN9x+xTr7GFZCb1ZP/1uATUpCEK2X78nDB3RwbtFCo9pGAf9ru+VwoQ464DkaLEeRM08wJA==}
     engines: {node: '>=4'}
 
-  axios@1.18.1:
-    resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
+  axios@1.16.1:
+    resolution: {integrity: sha512-caYkukvroVPO8KrzuJEb50Hm07KwfBZPEC3VeFHTsqWHvKTsy54hjJz9BS/cdaypROE2rH6xvm9mHX4fgWkr3A==}
 
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
@@ -10273,10 +10273,6 @@ packages:
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
 
-  undici@6.27.0:
-    resolution: {integrity: sha512-YmfV3YnEDzXRC5lZ2jWtWWHKGUm1zIt8AhesR1tens+HTNv+YZlN/dp6G727LOvMJ8xjP9Be7Y2Sdr96LDm+pg==}
-    engines: {node: '>=18.17'}
-
   undici@7.28.0:
     resolution: {integrity: sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA==}
     engines: {node: '>=20.18.1'}
@@ -15304,7 +15300,7 @@ snapshots:
 
   axe-core@4.12.1: {}
 
-  axios@1.18.1(debug@4.4.3):
+  axios@1.16.1(debug@4.4.3):
     dependencies:
       follow-redirects: 1.16.0(debug@4.4.3)
       form-data: 4.0.6
@@ -15942,7 +15938,7 @@ snapshots:
       '@xmldom/xmldom': 0.9.8
       acorn: 8.15.0
       arrify: 3.0.0
-      axios: 1.18.1(debug@4.4.3)
+      axios: 1.16.1(debug@4.4.3)
       chalk: 4.1.2
       cheerio: 1.2.0
       chokidar: 4.0.3
@@ -22047,8 +22043,6 @@ snapshots:
 
   undici-types@7.10.0: {}
 
-  undici@6.27.0: {}
-
   undici@7.28.0: {}
 
   unicode-emoji-modifier-base@1.0.0: {}
@@ -22287,7 +22281,7 @@ snapshots:
 
   wait-on@7.2.0:
     dependencies:
-      axios: 1.18.1(debug@4.4.3)
+      axios: 1.16.1(debug@4.4.3)
       joi: 17.13.4
       lodash: 4.18.1
       minimist: 1.2.8
@@ -22298,7 +22292,7 @@ snapshots:
 
   wait-on@8.0.5(debug@4.4.3):
     dependencies:
-      axios: 1.18.1(debug@4.4.3)
+      axios: 1.16.1(debug@4.4.3)
       joi: 18.2.3
       lodash: 4.18.1
       minimist: 1.2.8
