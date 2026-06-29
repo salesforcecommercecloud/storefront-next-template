@@ -374,11 +374,28 @@ describe('WishlistProvider — SCAPI-backed mutations', () => {
         const { result } = setup(guestState);
 
         await act(async () => {
-            const r = (await result.current.actions.add('sku-6')) as { success: boolean; errors?: string[] };
-            expect(r.success).toBe(false);
-            expect(r.errors).toEqual(['Not signed in']);
+            const added = (await result.current.actions.add('sku-6')) as { success: boolean; errors?: string[] };
+            expect(added.success).toBe(false);
+            expect(added.errors).toEqual(['Not signed in']);
+
+            const removed = (await result.current.actions.remove('sku-6')) as { success: boolean; errors?: string[] };
+            expect(removed.success).toBe(false);
+            expect(removed.errors).toEqual(['Not signed in']);
         });
 
+        expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    test('remove(): returns "Not in wishlist" when the product is not present', async () => {
+        const { result } = setupFor('sku-absent');
+
+        let response!: { success: boolean; errors?: string[] };
+        await act(async () => {
+            response = (await result.current.actions.remove('sku-absent')) as { success: boolean; errors?: string[] };
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.errors).toEqual(['Not in wishlist']);
         expect(fetchSpy).not.toHaveBeenCalled();
     });
 });
@@ -600,5 +617,47 @@ describe('WishlistProvider — async hydration via Promise initialState', () => 
         } finally {
             consoleSpy.mockRestore();
         }
+    });
+
+    test('resolving the Promise hydrates the store WITHOUT re-rendering useWishlistActions consumers', async () => {
+        // The store fill must reach only the topic subscribers whose entries changed to prevent a whole-page hydration
+        // flicker.
+        const actionsRenders = { count: 0 };
+        function ActionsConsumer() {
+            // Subscribes to the actions context only — NOT to the store. It must not
+            // re-render when the store hydrates.
+            useWishlistActions();
+            const renderRef = useRef(0);
+            renderRef.current += 1;
+            useEffect(() => {
+                actionsRenders.count = renderRef.current;
+            });
+            return <span data-testid="actions-consumer">ok</span>;
+        }
+
+        const resolve: Promise<WishlistInitialState> = Promise.resolve({
+            customerId: 'c1',
+            listId: 'l1',
+            itemsByProductId: new Map([['abc', { itemId: 'i1' }]]),
+        });
+
+        await act(async () => {
+            render(
+                <WishlistProvider initialState={resolve}>
+                    <ActionsConsumer />
+                    <MembershipReadout productId="abc" />
+                </WishlistProvider>
+            );
+            await resolve;
+        });
+
+        // Hydration actually ran: the topic subscriber for 'abc' flipped to "in".
+        await waitFor(() => {
+            expect(screen.getByTestId('member-abc')).toHaveTextContent('in');
+        });
+
+        // The critical assertion: the actions consumer rendered exactly once (mount),
+        // proving the provider did not re-render and the actions context stayed stable.
+        expect(actionsRenders.count).toBe(1);
     });
 });

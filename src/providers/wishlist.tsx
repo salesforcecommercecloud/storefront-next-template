@@ -26,7 +26,7 @@ import {
 } from 'react';
 import { useScapiFetchClient } from '@/hooks/use-scapi-fetch';
 import type { ApiResponse } from '@/lib/scapi/types';
-import { EMPTY_WISHLIST_STATE, type WishlistInitialState } from '@/lib/wishlist/state';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
 
 /**
  * Placeholder itemId stored alongside an optimistically-inserted product while the
@@ -105,10 +105,13 @@ function createWishlistStore(initial: ReadonlyMap<string, WishlistEntry>) {
 
 /**
  * Actions exposed to mutating components. The reference identity of `add`,
- * `remove`, and `toggle` only changes when the underlying SCAPI client identity
- * changes (i.e. `customerId`/`listId` change). `isPending` is a global "any
- * mutation in flight" flag — components that need per-product pending state
- * should derive it from the `__pending__` sentinel via `useWishlistEntry`.
+ * `remove`, and `toggle` is stable for the provider's lifetime — they read the
+ * current `customerId`/`listId` from a ref at call time, so they don't change
+ * identity when those IDs hydrate. Don't key an effect on these references
+ * expecting it to re-run after hydration; subscribe to the store instead.
+ * `isPending` is a global "any mutation in flight" flag — components that need
+ * per-product pending state should derive it from the `__pending__` sentinel
+ * via `useWishlistEntry`.
  */
 export type WishlistActions = {
     /** Optimistic add. Resolves with the SCAPI result; rolls back on `!success`. */
@@ -275,18 +278,22 @@ export function WishlistProvider({
     initialState: Promise<WishlistInitialState> | WishlistInitialState;
     children: ReactNode;
 }) {
-    // Hydrated state. Starts empty when initialState is a Promise; useEffect
-    // below resolves and writes through to the store + customer/list IDs.
-    const [hydrated, setHydrated] = useState<WishlistInitialState>(() =>
-        initialState instanceof Promise ? EMPTY_WISHLIST_STATE : initialState
-    );
-    const { customerId, listId } = hydrated;
-
     // Single store instance per provider mount. Initial entries from the sync
     // path; for the Promise path we replaceAll() once the Promise resolves so
     // the store reference itself stays stable for the provider's lifetime.
     const [store] = useState(() =>
         createWishlistStore(initialState instanceof Promise ? new Map() : initialState.itemsByProductId)
+    );
+
+    // Customer/list IDs live on a ref, not in state. They feed only the per-call SCAPI `params` overrides in
+    // add/remove (the URL ids), which read the current ref value on click — never during render. Holding them in
+    // `useState` would re-render the whole provider when async hydration flips null → real, which rebuilds the actions
+    // context value and re-renders every consumer of the page subtree at once (a whole-page hydration flicker). The
+    // store fill below reaches only the topic subscribers whose entries actually changed.
+    const idsRef = useRef<{ customerId: string | null; listId: string | null }>(
+        initialState instanceof Promise
+            ? { customerId: null, listId: null }
+            : { customerId: initialState.customerId, listId: initialState.listId }
     );
 
     // When initialState is a Promise, hydrate post-mount. `useEffect` doesn't run
@@ -299,7 +306,7 @@ export function WishlistProvider({
         void initialState.then(
             (state) => {
                 if (cancelled) return;
-                setHydrated(state);
+                idsRef.current = { customerId: state.customerId, listId: state.listId };
                 store.replaceAll(state.itemsByProductId);
             },
             () => {
@@ -311,22 +318,18 @@ export function WishlistProvider({
         };
     }, [initialState, store]);
 
-    // Construction-time SCAPI hooks. customerId/listId may be null for guests; the
-    // provider short-circuits add/remove before submit() is called in that case, so
-    // the empty-string placeholders here are safe.
-    //
-    // SSR-safe: the SCAPI hooks below only memoize a URL and build a `submit`
-    // callback during render — they do not fire `fetch()` or touch global state.
-    // The first network call happens inside `submit`, which only runs on user
-    // interaction (heart click). Initial state is hydrated from `initialState`.
+    // SSR-safe SCAPI hooks: they only memoize a URL and build a `submit` callback during render — they do not fire
+    // `fetch()` or touch global state. The first network call happens inside `submit`, which only runs on user
+    // interaction (heart click), at which point add/remove supply the real customer/list IDs via a per-call `params`
+    // override. The construction-time placeholders here are never sent.
     const addFetch = useScapiFetchClient('shopperCustomers', 'createCustomerProductListItem', {
-        params: { path: { customerId: customerId ?? '', listId: listId ?? '' } },
+        params: { path: { customerId: '', listId: '' } },
         // Construction-time placeholder; the real body is supplied per-call to submit().
         // SCAPI requires priority/quantity/public on this endpoint.
         body: { productId: '', quantity: 1, type: 'product', public: false, priority: 1 },
     });
     const removeFetch = useScapiFetchClient('shopperCustomers', 'deleteCustomerProductListItem', {
-        params: { path: { customerId: customerId ?? '', listId: listId ?? '', itemId: '__placeholder__' } },
+        params: { path: { customerId: '', listId: '', itemId: '__placeholder__' } },
     });
 
     const isPending = addFetch.isPending || removeFetch.isPending;
@@ -341,6 +344,7 @@ export function WishlistProvider({
 
     const add = useCallback(
         async (productId: string): Promise<ApiResponse<unknown>> => {
+            const { customerId, listId } = idsRef.current;
             if (!customerId || !listId) {
                 return { success: false, errors: ['Not signed in'] };
             }
@@ -361,13 +365,18 @@ export function WishlistProvider({
             // Optimistic insert with placeholder itemId; replaced on success.
             store.set(productId, { itemId: PENDING_ITEM_ID });
 
-            const result = await addSubmitRef.current({
-                productId,
-                quantity: 1,
-                type: 'product',
-                public: false,
-                priority: 1,
-            });
+            // Per-call params override re-encodes the URL with the current customer/list IDs
+            // (hydrated post-mount into idsRef) for this submit.
+            const result = await addSubmitRef.current(
+                {
+                    productId,
+                    quantity: 1,
+                    type: 'product',
+                    public: false,
+                    priority: 1,
+                },
+                { params: { path: { customerId, listId } } }
+            );
 
             if (!result.success) {
                 store.delete(productId);
@@ -385,11 +394,12 @@ export function WishlistProvider({
             store.delete(productId);
             return { success: false, errors: ['Wishlist item missing id'] };
         },
-        [customerId, listId, store]
+        [store]
     );
 
     const remove = useCallback(
         async (productId: string): Promise<ApiResponse<unknown>> => {
+            const { customerId, listId } = idsRef.current;
             if (!customerId || !listId) {
                 return { success: false, errors: ['Not signed in'] };
             }
@@ -418,7 +428,7 @@ export function WishlistProvider({
             }
             return result;
         },
-        [customerId, listId, store]
+        [store]
     );
 
     const toggle = useCallback(
