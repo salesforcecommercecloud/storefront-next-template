@@ -12,12 +12,12 @@ import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
 import { minimatch } from "minimatch";
-import { ROOT_CONTEXT, SpanStatusCode, context, propagation, trace } from "@opentelemetry/api";
+import { ROOT_CONTEXT, SpanKind, SpanStatusCode, context, trace } from "@opentelemetry/api";
 import { ExportResultCode, W3CTraceContextPropagator, hrTimeToTimeStamp, parseTraceParent } from "@opentelemetry/core";
+import { ATTR_HTTP_REQUEST_METHOD, ATTR_HTTP_RESPONSE_STATUS_CODE, ATTR_SERVICE_NAME, ATTR_URL_PATH } from "@opentelemetry/semantic-conventions";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { AlwaysOnSampler, ConsoleSpanExporter, ParentBasedSampler, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { Resource } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 
@@ -403,6 +403,43 @@ var MrtConsoleSpanExporter = class extends ConsoleSpanExporter {
 
 //#endregion
 //#region src/otel/setup.ts
+/**
+* A privately-held W3C Trace Context propagator, used to inject `traceparent` onto
+* outbound fetches WITHOUT going through OpenTelemetry's global propagator registry.
+*
+* ## Why not the global propagator?
+*
+* `UndiciInstrumentation` injects outbound headers by calling the *global* registered
+* propagator (`propagation.inject()`). Registering one with `setGlobalPropagator()`
+* works locally, but is a silent no-op on Managed Runtime (MRT):
+*
+*   - The MRT Lambda wrapper bundles its own copy of `@opentelemetry/api` (declared
+*     `^1.9.1`, with core/sdk at 2.x) and boots first, creating the version-keyed
+*     global registry object (`globalThis[Symbol.for('opentelemetry.js.api.1')]`,
+*     stamped `version: "1.9.1"`).
+*   - Our SDK bundle ships a *different* copy of `@opentelemetry/api` (`1.9.0`). When
+*     our code calls `setGlobalPropagator()`, OTel's `registerGlobal()` compares the
+*     registry's recorded version against ours with an EXACT string match — `"1.9.1"
+*     !== "1.9.0"` — refuses the registration, and reports the error only to OTel's
+*     internal diag channel (which we do not wire up). The propagation slot stays
+*     empty, so undici's `propagation.inject()` injects nothing and no `traceparent`
+*     reaches SCAPI. Proven on soak: `propagation.fields() === []`, 0/198 outbound
+*     requests carried a header.
+*
+* This is the same multi-instance split that makes inbound `propagation.extract()`
+* fail (see `express/middleware.ts`, which bypasses it with `parseTraceParent` +
+* `trace.setSpanContext`). MRT's own data-plane tracer solves it the same way: it
+* holds a private `new W3CTraceContextPropagator()` and calls `inject()`/`extract()`
+* on it directly, never touching the global registry.
+*
+* Holding our own instance and injecting it ourselves (in the undici `requestHook`)
+* makes outbound propagation deterministic and independent of MRT's bundle, its OTel
+* version, and its boot order. We deliberately do NOT call `setGlobalPropagator()` —
+* leaving the global propagator as the default no-op guarantees undici's own
+* `propagation.inject()` (which runs right after our hook) adds nothing, so the
+* `traceparent` is written exactly once in every environment.
+*/
+const outboundPropagator = new W3CTraceContextPropagator();
 const SERVICE_NAME = "storefront-next";
 /**
 * Initializes OpenTelemetry and returns a Tracer from the provider directly.
@@ -430,17 +467,20 @@ function initTelemetry() {
 			sampler: new ParentBasedSampler({ root: new AlwaysOnSampler() })
 		});
 		provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
-		provider.register();
-		propagation.setGlobalPropagator(new W3CTraceContextPropagator());
+		provider.register({ propagator: null });
 		if (!globalThis[UNDICI_REGISTERED_KEY]) {
 			globalThis[UNDICI_REGISTERED_KEY] = true;
 			registerInstrumentations({
 				tracerProvider: provider,
 				instrumentations: [new UndiciInstrumentation({ requestHook(span, request) {
 					try {
-						const method = request.method.toUpperCase();
-						const url = `${request.origin}${request.path}`;
-						span.updateName(`${method} ${url}`);
+						span.updateName("sfnext.fetch");
+					} catch {}
+					try {
+						const ctx = trace.setSpan(context.active(), span);
+						outboundPropagator.inject(ctx, request, { set(req, key, value) {
+							req.addHeader?.(key, value);
+						} });
 					} catch {}
 				} })]
 			});
@@ -469,10 +509,13 @@ function createOtelExpressMiddleware() {
 				...inboundSpanContext,
 				isRemote: true
 			}) : ROOT_CONTEXT;
-			tracer.startActiveSpan(`[sfnext] server ${method} ${url}`, { attributes: {
-				"http.request.method": method,
-				"url.path": url
-			} }, parentContext, (serverSpan) => {
+			tracer.startActiveSpan("sfnext.request", {
+				kind: SpanKind.SERVER,
+				attributes: {
+					[ATTR_HTTP_REQUEST_METHOD]: method,
+					[ATTR_URL_PATH]: url
+				}
+			}, parentContext, (serverSpan) => {
 				try {
 					const spanContext = trace.getSpan(context.active())?.spanContext();
 					if (spanContext) {
@@ -484,28 +527,26 @@ function createOtelExpressMiddleware() {
 				const serverCtx = context.active();
 				const startTime = performance.now();
 				let streamingSpan = null;
-				let ttfbMs = 0;
+				let firstByteMs = 0;
 				let ended = false;
-				function recordTTFB() {
+				function startStreamingSpan() {
 					if (streamingSpan) return;
 					try {
-						ttfbMs = Math.round(performance.now() - startTime);
-						serverSpan.setAttribute("sfnext.ttfb_ms", ttfbMs);
-						streamingSpan = tracer.startSpan(`[sfnext] response streaming ${method} ${url}`, { attributes: {
-							"http.request.method": method,
-							"url.path": url,
-							"sfnext.ttfb_ms": ttfbMs
+						firstByteMs = Math.round(performance.now() - startTime);
+						streamingSpan = tracer.startSpan("sfnext.response_streaming", { attributes: {
+							[ATTR_HTTP_REQUEST_METHOD]: method,
+							[ATTR_URL_PATH]: url
 						} }, serverCtx);
 					} catch {}
 				}
 				const origWriteHead = res.writeHead.bind(res);
 				res.writeHead = ((...args) => {
-					recordTTFB();
+					startStreamingSpan();
 					return origWriteHead(...args);
 				});
 				const origWrite = res.write.bind(res);
 				res.write = ((...args) => {
-					recordTTFB();
+					startStreamingSpan();
 					return origWrite(...args);
 				});
 				function endSpans() {
@@ -515,12 +556,12 @@ function createOtelExpressMiddleware() {
 						const totalMs = Math.round(performance.now() - startTime);
 						const statusCode = res.statusCode;
 						if (streamingSpan) {
-							streamingSpan.setAttribute("http.streaming_duration_ms", totalMs - ttfbMs);
-							streamingSpan.setAttribute("http.response.status_code", statusCode);
+							streamingSpan.setAttribute("http.streaming_duration_ms", totalMs - firstByteMs);
+							streamingSpan.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE, statusCode);
 							if (statusCode >= 500) streamingSpan.setStatus({ code: SpanStatusCode.ERROR });
 							streamingSpan.end();
 						}
-						serverSpan.setAttribute("http.response.status_code", statusCode);
+						serverSpan.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE, statusCode);
 						serverSpan.setAttribute("http.total_duration_ms", totalMs);
 						if (statusCode >= 500) serverSpan.setStatus({ code: SpanStatusCode.ERROR });
 						serverSpan.end();

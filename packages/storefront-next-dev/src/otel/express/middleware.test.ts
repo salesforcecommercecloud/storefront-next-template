@@ -70,7 +70,7 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 
 import { createOtelExpressMiddleware } from './middleware';
 import { initTelemetry } from '../setup';
-import { ROOT_CONTEXT, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, SpanKind, trace } from '@opentelemetry/api';
 
 /** A well-formed inbound W3C traceparent used to exercise the continuation path. */
 const INBOUND_TRACEPARENT = '00-11111111111111111111111111111111-2222222222222222-01';
@@ -149,8 +149,8 @@ describe('createOtelExpressMiddleware', () => {
             middleware(req, mockResponse() as never, vi.fn());
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                '[sfnext] server GET /products',
-                { attributes: { 'http.request.method': 'GET', 'url.path': '/products' } },
+                'sfnext.request',
+                { kind: SpanKind.SERVER, attributes: { 'http.request.method': 'GET', 'url.path': '/products' } },
                 'mock-parent-context',
                 expect.any(Function)
             );
@@ -162,7 +162,7 @@ describe('createOtelExpressMiddleware', () => {
 
             expect(trace.setSpanContext).not.toHaveBeenCalled();
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                '[sfnext] server GET /products',
+                'sfnext.request',
                 expect.anything(),
                 ROOT_CONTEXT,
                 expect.any(Function)
@@ -177,7 +177,7 @@ describe('createOtelExpressMiddleware', () => {
 
             expect(trace.setSpanContext).not.toHaveBeenCalled();
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                '[sfnext] server GET /products',
+                'sfnext.request',
                 expect.anything(),
                 ROOT_CONTEXT,
                 expect.any(Function)
@@ -200,13 +200,13 @@ describe('createOtelExpressMiddleware', () => {
     });
 
     describe('server span', () => {
-        it('creates a span with correct name pattern [sfnext] server METHOD /path', () => {
+        it('creates a SERVER-kind span named "sfnext.request"', () => {
             const middleware = createOtelExpressMiddleware();
             middleware(mockRequest('GET', '/'), mockResponse() as never, vi.fn());
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                '[sfnext] server GET /',
-                { attributes: { 'http.request.method': 'GET', 'url.path': '/' } },
+                'sfnext.request',
+                { kind: SpanKind.SERVER, attributes: { 'http.request.method': 'GET', 'url.path': '/' } },
                 'mock-root-context',
                 expect.any(Function)
             );
@@ -217,8 +217,8 @@ describe('createOtelExpressMiddleware', () => {
             middleware(mockRequest('POST', '/cart'), mockResponse() as never, vi.fn());
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                '[sfnext] server POST /cart',
-                { attributes: { 'http.request.method': 'POST', 'url.path': '/cart' } },
+                'sfnext.request',
+                { kind: SpanKind.SERVER, attributes: { 'http.request.method': 'POST', 'url.path': '/cart' } },
                 'mock-root-context',
                 expect.any(Function)
             );
@@ -226,7 +226,7 @@ describe('createOtelExpressMiddleware', () => {
     });
 
     describe('streaming span', () => {
-        it('is created on first writeHead with sfnext.ttfb_ms', () => {
+        it('is created on first writeHead with method and url.path attributes', () => {
             const middleware = createOtelExpressMiddleware();
             const res = mockResponse();
             middleware(mockRequest(), res as never, vi.fn());
@@ -236,15 +236,15 @@ describe('createOtelExpressMiddleware', () => {
 
             expect(mockTracer.startSpan).toHaveBeenCalledOnce();
             expect(mockTracer.startSpan).toHaveBeenCalledWith(
-                '[sfnext] response streaming GET /products',
+                'sfnext.response_streaming',
                 expect.objectContaining({
                     attributes: expect.objectContaining({
-                        'sfnext.ttfb_ms': expect.any(Number),
+                        'http.request.method': 'GET',
+                        'url.path': '/products',
                     }),
                 }),
                 'mock-context'
             );
-            expect(mockServerSpan.setAttribute).toHaveBeenCalledWith('sfnext.ttfb_ms', expect.any(Number));
         });
 
         it('is only created once even if writeHead is called multiple times', () => {

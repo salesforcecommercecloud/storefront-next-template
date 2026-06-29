@@ -93,13 +93,13 @@ describe('platformInstrumentation', () => {
     // ─── handler / request ───────────────────────────────────────────────────
 
     describe('handler request span', () => {
-        it('starts a span named "react-router ssr" with http.request.method and url.path attributes', async () => {
+        it('starts a span named "sfnext.ssr" with http.request.method and url.path attributes', async () => {
             const { request } = getHandlerCallbacks(platformInstrumentation);
 
             await request(vi.fn().mockResolvedValue({ status: 'ok' }), { request: testRequest });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                'react-router ssr',
+                'sfnext.ssr',
                 { attributes: { 'http.request.method': GET, 'url.path': '/products' } },
                 expect.any(Function)
             );
@@ -133,7 +133,7 @@ describe('platformInstrumentation', () => {
         const pattern = '/products';
         const routeId = 'routes/products';
 
-        it('starts a span named "loader (routeId)" with route attributes only (HTTP attrs on parent request span)', async () => {
+        it('starts a span named "sfnext.loader" with rr.route.id + http.route (method/path on parent server span)', async () => {
             const { loader } = getRouteCallbacks(platformInstrumentation, routeId);
 
             await loader(vi.fn().mockResolvedValue({ status: 'ok' }), {
@@ -142,11 +142,11 @@ describe('platformInstrumentation', () => {
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                `loader (${routeId})`,
+                'sfnext.loader',
                 {
                     attributes: {
                         'rr.route.id': routeId,
-                        'rr.route.pattern': pattern,
+                        'http.route': pattern,
                     },
                 },
                 expect.any(Function)
@@ -186,7 +186,7 @@ describe('platformInstrumentation', () => {
         const pattern = '/cart';
         const routeId = 'routes/cart';
 
-        it('starts a span named "action (routeId)" with route attributes only (HTTP attrs on parent request span)', async () => {
+        it('starts a span named "sfnext.action" with rr.route.id + http.route (method/path on parent server span)', async () => {
             const { action } = getRouteCallbacks(platformInstrumentation, routeId);
 
             await action(vi.fn().mockResolvedValue({ status: 'ok' }), {
@@ -195,11 +195,11 @@ describe('platformInstrumentation', () => {
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                `action (${routeId})`,
+                'sfnext.action',
                 {
                     attributes: {
                         'rr.route.id': routeId,
-                        'rr.route.pattern': pattern,
+                        'http.route': pattern,
                     },
                 },
                 expect.any(Function)
@@ -227,7 +227,7 @@ describe('platformInstrumentation', () => {
         const pattern = '/account';
         const routeId = 'routes/account';
 
-        it('creates an active span named "middleware (routeId)" via startActiveSpan', async () => {
+        it('creates an active span named "sfnext.middleware" via startActiveSpan', async () => {
             const { middleware } = getRouteCallbacks(platformInstrumentation, routeId);
 
             await middleware(vi.fn().mockResolvedValue({ status: 'ok' }), {
@@ -236,11 +236,11 @@ describe('platformInstrumentation', () => {
             });
 
             expect(mockTracer.startActiveSpan).toHaveBeenCalledWith(
-                `middleware (${routeId})`,
+                'sfnext.middleware',
                 {
                     attributes: {
                         'rr.route.id': routeId,
-                        'rr.route.pattern': pattern,
+                        'http.route': pattern,
                     },
                 },
                 expect.any(Function)

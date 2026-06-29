@@ -479,7 +479,7 @@ importers:
         version: 3.2.88(@types/node@24.3.0)
       '@oclif/plugin-plugins':
         specifier: ^5
-        version: 5.4.78
+        version: 5.4.79
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -2448,8 +2448,8 @@ packages:
     resolution: {integrity: sha512-jezB3NEz8fQdb/jrZq8YPvEiF+aH0wHiexVCvnj7Rmy+mmTHicEuGJMPiYeJNcRvG687raIhc6TjyMMPKi0W4A==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-plugins@5.4.78':
-    resolution: {integrity: sha512-CXNJfRasUZXXN7DYHms9oPComJCqajPAF08r29QWINORLTCkw6dBDWaMY8ZUHDSzBFeGXegNm4c84MG7YRBx+Q==}
+  '@oclif/plugin-plugins@5.4.79':
+    resolution: {integrity: sha512-Nnk3OzELhldXN/544lhIMo1uLC/4W2/hEY+3Oj8WGbkWR7kBn8xwvgCbb3BAx/BROqPP/S+ZPDz8gdom7HudTA==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-version@2.2.36':
@@ -9899,6 +9899,9 @@ packages:
   tar-fs@3.1.2:
     resolution: {integrity: sha512-QGxxTxxyleAdyM3kpFs14ymbYmNFrfY+pHj7Z8FgtbZ7w2//VAgLMac7sT6nRpIHjppXO2AwwEOg0bPFVRcmXw==}
 
+  tar-fs@3.1.3:
+    resolution: {integrity: sha512-/hU4AXnIdZu+Gvl1pk0oI5f5HxWsCJRtY2aFaJdk9VvyL48DWU6iU5WAIPG+wIi1YvWA6eTJvIviP/tMAZZNwQ==}
+
   tar-stream@3.2.0:
     resolution: {integrity: sha512-ojzvCvVaNp6aOTFmG7jaRD0meowIAuPc3cMMhSgKiVWws1GyHbGd/xvnyuRKcKlMpt3qvxx6r0hreCNITP9hIg==}
 
@@ -12812,7 +12815,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/plugin-plugins@5.4.78':
+  '@oclif/plugin-plugins@5.4.79':
     dependencies:
       '@oclif/core': 4.11.11
       ansis: 3.17.0
@@ -12997,7 +13000,7 @@ snapshots:
       progress: 2.0.3
       proxy-agent: 6.5.0
       semver: 7.8.5
-      tar-fs: 3.1.2
+      tar-fs: 3.1.3
       yargs: 17.7.3
     transitivePeerDependencies:
       - bare-abort-controller
@@ -21636,6 +21639,18 @@ snapshots:
   tapable@2.3.3: {}
 
   tar-fs@3.1.2:
+    dependencies:
+      pump: 3.0.4
+      tar-stream: 3.2.0
+    optionalDependencies:
+      bare-fs: 4.7.2
+      bare-path: 3.0.1
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+
+  tar-fs@3.1.3:
     dependencies:
       pump: 3.0.4
       tar-stream: 3.2.0

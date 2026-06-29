@@ -55,10 +55,11 @@
  * `traceparent` header on the request the storefront receives. To appear on the
  * same end-to-end trace as the surrounding services, the storefront behaves as a
  * standard downstream participant:
- *   - It continues the inbound trace (see the Express middleware, which extracts
- *     `traceparent` into the parent context).
- *   - It forwards `traceparent` on outbound fetches (UndiciInstrumentation injects
- *     it automatically via the globally-registered propagator below).
+ *   - It continues the inbound trace (see the Express middleware, which parses the
+ *     inbound `traceparent` into the parent context).
+ *   - It forwards `traceparent` on outbound fetches (the UndiciInstrumentation
+ *     `requestHook` below injects it via a privately-held W3C propagator — see the
+ *     `outboundPropagator` doc comment for why the global registry is bypassed).
  *   - It honors MRT's sampling decision via a ParentBasedSampler — it never forces
  *     a sampled trace and implements no sampling policy of its own. MRT owns the
  *     rate via MRT_DISTRIBUTED_TRACING_ENABLED / MRT_DISTRIBUTED_TRACING_SAMPLING_RATE.
@@ -66,7 +67,7 @@
  * @env SFNEXT_OTEL_ENABLED — set to `"true"` to enable (e.g. `SFNEXT_OTEL_ENABLED=true pnpm dev`)
  */
 
-import { propagation, type Tracer } from '@opentelemetry/api';
+import { context, trace, type Tracer } from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { AlwaysOnSampler, ParentBasedSampler, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
@@ -74,8 +75,46 @@ import { MrtConsoleSpanExporter } from './mrt-console-span-exporter';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
+import { UndiciInstrumentation, type UndiciRequest } from '@opentelemetry/instrumentation-undici';
 import { logger } from '../logger';
+
+/**
+ * A privately-held W3C Trace Context propagator, used to inject `traceparent` onto
+ * outbound fetches WITHOUT going through OpenTelemetry's global propagator registry.
+ *
+ * ## Why not the global propagator?
+ *
+ * `UndiciInstrumentation` injects outbound headers by calling the *global* registered
+ * propagator (`propagation.inject()`). Registering one with `setGlobalPropagator()`
+ * works locally, but is a silent no-op on Managed Runtime (MRT):
+ *
+ *   - The MRT Lambda wrapper bundles its own copy of `@opentelemetry/api` (declared
+ *     `^1.9.1`, with core/sdk at 2.x) and boots first, creating the version-keyed
+ *     global registry object (`globalThis[Symbol.for('opentelemetry.js.api.1')]`,
+ *     stamped `version: "1.9.1"`).
+ *   - Our SDK bundle ships a *different* copy of `@opentelemetry/api` (`1.9.0`). When
+ *     our code calls `setGlobalPropagator()`, OTel's `registerGlobal()` compares the
+ *     registry's recorded version against ours with an EXACT string match — `"1.9.1"
+ *     !== "1.9.0"` — refuses the registration, and reports the error only to OTel's
+ *     internal diag channel (which we do not wire up). The propagation slot stays
+ *     empty, so undici's `propagation.inject()` injects nothing and no `traceparent`
+ *     reaches SCAPI. Proven on soak: `propagation.fields() === []`, 0/198 outbound
+ *     requests carried a header.
+ *
+ * This is the same multi-instance split that makes inbound `propagation.extract()`
+ * fail (see `express/middleware.ts`, which bypasses it with `parseTraceParent` +
+ * `trace.setSpanContext`). MRT's own data-plane tracer solves it the same way: it
+ * holds a private `new W3CTraceContextPropagator()` and calls `inject()`/`extract()`
+ * on it directly, never touching the global registry.
+ *
+ * Holding our own instance and injecting it ourselves (in the undici `requestHook`)
+ * makes outbound propagation deterministic and independent of MRT's bundle, its OTel
+ * version, and its boot order. We deliberately do NOT call `setGlobalPropagator()` —
+ * leaving the global propagator as the default no-op guarantees undici's own
+ * `propagation.inject()` (which runs right after our hook) adds nothing, so the
+ * `traceparent` is written exactly once in every environment.
+ */
+const outboundPropagator = new W3CTraceContextPropagator();
 
 export const SERVICE_NAME = 'storefront-next';
 
@@ -119,18 +158,18 @@ export function initTelemetry(): Tracer | null {
         });
 
         provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
-        provider.register();
-
-        // Register the standard W3C Trace Context propagator. This single
-        // registration drives propagation in both directions:
-        //   - inbound: the Express middleware calls propagation.extract() to continue
-        //     the trace described by the incoming `traceparent`.
-        //   - outbound: UndiciInstrumentation calls propagation.inject() to add
-        //     `traceparent` to every outgoing fetch (SCAPI, etc.).
-        // Registration lives here, inside the SFNEXT_OTEL_ENABLED-gated init path, so
-        // that when tracing is disabled no propagator is installed and no trace
-        // headers are ever added.
-        propagation.setGlobalPropagator(new W3CTraceContextPropagator());
+        // Register with `propagator: null` so the provider sets up the global tracer
+        // provider and the AsyncLocalStorage context manager, but does NOT install a
+        // global propagator. (`register()` otherwise defaults to a W3C propagator built
+        // from OTEL_PROPAGATORS.) We deliberately own propagation ourselves:
+        //   - outbound: the undici requestHook below injects via our `outboundPropagator`.
+        //   - inbound: the Express middleware parses `traceparent` by hand
+        //     (parseTraceParent + trace.setSpanContext).
+        // Both bypass the global registry, which is unreliable on MRT (see the
+        // `outboundPropagator` doc comment). Leaving the global propagator as the
+        // default no-op also means undici's own propagation.inject() — which runs right
+        // after our hook — adds nothing, so `traceparent` is written exactly once.
+        provider.register({ propagator: null });
 
         // Guard against double-registration across Vite module boundaries.
         // See comment above UNDICI_REGISTERED_KEY.
@@ -142,11 +181,38 @@ export function initTelemetry(): Tracer | null {
                     new UndiciInstrumentation({
                         requestHook(span, request) {
                             try {
-                                const method = request.method.toUpperCase();
-                                const url = `${request.origin}${request.path}`;
-                                span.updateName(`${method} ${url}`);
+                                // Static, low-cardinality client span name shared by every
+                                // outbound fetch (SCAPI, SLAS, …), matching the dotted
+                                // `sfnext.*` operation namespace used by our other spans.
+                                // The HTTP detail (method, full url, host, status) is already
+                                // set on the span as attributes by the instrumentation —
+                                // `http.request.method`, `url.full`, `url.path`, `url.query`,
+                                // `server.address`, `http.response.status_code` — so traces
+                                // aggregate by operation and the high-cardinality values
+                                // (paths/queries that can carry ids, tokens, or PII) stay out
+                                // of the span name.
+                                span.updateName('sfnext.fetch');
                             } catch {
                                 // Non-fatal — default span name is acceptable
+                            }
+
+                            // Inject `traceparent` ourselves, via our private propagator, so the
+                            // header reaches SCAPI even when undici's own global-propagator
+                            // inject() is a no-op on MRT (see `outboundPropagator` above). The
+                            // hook runs just before undici's inject(), and because we never
+                            // register a global propagator that inject() adds nothing — so the
+                            // header is written exactly once. We build the context from THIS
+                            // CLIENT span (a pure realm-global-symbol write, no registry lookup),
+                            // matching what undici would have injected.
+                            try {
+                                const ctx = trace.setSpan(context.active(), span);
+                                outboundPropagator.inject(ctx, request, {
+                                    set(req: UndiciRequest, key: string, value: string) {
+                                        req.addHeader?.(key, value);
+                                    },
+                                });
+                            } catch {
+                                // Non-fatal — propagation must never break the request
                             }
                         },
                     }),

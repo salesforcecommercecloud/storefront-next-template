@@ -17,9 +17,14 @@
 /**
  * Express middleware that creates server and streaming OTel spans.
  *
- * - **Server span** wraps the entire Express request lifecycle (receive → response close).
- * - **Streaming span** starts at TTFB (first `writeHead` or `write`) and ends when
- *   the response stream closes.
+ * - **`sfnext.request`** (`SpanKind.SERVER`) wraps the entire Express request
+ *   lifecycle (receive → response close). It is the single SERVER span for the
+ *   storefront service — the inbound entry point that backends use to build the
+ *   service topology and RED metrics. The request method and path live in
+ *   attributes (`http.request.method`, `url.path`), not the span name, keeping the
+ *   name low-cardinality so traces aggregate cleanly.
+ * - **`sfnext.response_streaming`** (`SpanKind.INTERNAL`) starts when the first byte
+ *   is written (first `writeHead` or `write`) and ends when the response stream closes.
  *
  * Uses `startActiveSpan` for the server span so all downstream spans (React Router's
  * `request`, loaders, middleware) automatically become children via OTel context propagation.
@@ -40,8 +45,13 @@
  */
 
 import type { RequestHandler } from 'express';
-import { context, ROOT_CONTEXT, type Span, SpanStatusCode, trace } from '@opentelemetry/api';
+import { context, ROOT_CONTEXT, type Span, SpanKind, SpanStatusCode, trace } from '@opentelemetry/api';
 import { parseTraceParent } from '@opentelemetry/core';
+import {
+    ATTR_HTTP_REQUEST_METHOD,
+    ATTR_HTTP_RESPONSE_STATUS_CODE,
+    ATTR_URL_PATH,
+} from '@opentelemetry/semantic-conventions';
 import { initTelemetry } from '../setup';
 
 export function createOtelExpressMiddleware(): RequestHandler {
@@ -78,8 +88,11 @@ export function createOtelExpressMiddleware(): RequestHandler {
             // (shared trace ID, parented to MRT's span) and becomes the active span
             // for all downstream children and outbound fetches.
             tracer.startActiveSpan(
-                `[sfnext] server ${method} ${url}`,
-                { attributes: { 'http.request.method': method, 'url.path': url } },
+                'sfnext.request',
+                {
+                    kind: SpanKind.SERVER,
+                    attributes: { [ATTR_HTTP_REQUEST_METHOD]: method, [ATTR_URL_PATH]: url },
+                },
                 parentContext,
                 (serverSpan) => {
                     try {
@@ -97,21 +110,20 @@ export function createOtelExpressMiddleware(): RequestHandler {
                     const serverCtx = context.active();
                     const startTime = performance.now();
                     let streamingSpan: Span | null = null;
-                    let ttfbMs = 0;
+                    let firstByteMs = 0;
                     let ended = false;
 
-                    function recordTTFB() {
+                    // Start the response-streaming span when the first byte is written.
+                    function startStreamingSpan() {
                         if (streamingSpan) return;
                         try {
-                            ttfbMs = Math.round(performance.now() - startTime);
-                            serverSpan.setAttribute('sfnext.ttfb_ms', ttfbMs);
+                            firstByteMs = Math.round(performance.now() - startTime);
                             streamingSpan = tracer.startSpan(
-                                `[sfnext] response streaming ${method} ${url}`,
+                                'sfnext.response_streaming',
                                 {
                                     attributes: {
-                                        'http.request.method': method,
-                                        'url.path': url,
-                                        'sfnext.ttfb_ms': ttfbMs,
+                                        [ATTR_HTTP_REQUEST_METHOD]: method,
+                                        [ATTR_URL_PATH]: url,
                                     },
                                 },
                                 serverCtx
@@ -121,15 +133,15 @@ export function createOtelExpressMiddleware(): RequestHandler {
                         }
                     }
 
-                    // Patch writeHead + write to detect first byte
+                    // Patch writeHead + write to detect the first byte of the response
                     const origWriteHead = res.writeHead.bind(res);
                     res.writeHead = ((...args: Parameters<typeof origWriteHead>) => {
-                        recordTTFB();
+                        startStreamingSpan();
                         return origWriteHead(...args);
                     }) as typeof origWriteHead;
                     const origWrite = res.write.bind(res);
                     res.write = ((...args: Parameters<typeof origWrite>) => {
-                        recordTTFB();
+                        startStreamingSpan();
                         return origWrite(...args);
                     }) as typeof origWrite;
 
@@ -141,12 +153,12 @@ export function createOtelExpressMiddleware(): RequestHandler {
                             const statusCode = res.statusCode;
 
                             if (streamingSpan) {
-                                streamingSpan.setAttribute('http.streaming_duration_ms', totalMs - ttfbMs);
-                                streamingSpan.setAttribute('http.response.status_code', statusCode);
+                                streamingSpan.setAttribute('http.streaming_duration_ms', totalMs - firstByteMs);
+                                streamingSpan.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE, statusCode);
                                 if (statusCode >= 500) streamingSpan.setStatus({ code: SpanStatusCode.ERROR });
                                 streamingSpan.end();
                             }
-                            serverSpan.setAttribute('http.response.status_code', statusCode);
+                            serverSpan.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE, statusCode);
                             serverSpan.setAttribute('http.total_duration_ms', totalMs);
                             if (statusCode >= 500) serverSpan.setStatus({ code: SpanStatusCode.ERROR });
                             serverSpan.end();

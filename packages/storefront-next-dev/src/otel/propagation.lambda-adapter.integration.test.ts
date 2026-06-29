@@ -120,7 +120,7 @@ describe('W3C trace-context propagation through the MRT Lambda adapter', () => {
             );
     }
 
-    const serverSpan = (spans: EmittedSpan[]) => spans.find((s) => s.name.startsWith('[sfnext] server'));
+    const serverSpan = (spans: EmittedSpan[]) => spans.find((s) => s.name === 'sfnext.request');
 
     it('continues the inbound trace for a lowercase single-value traceparent (the shape observed on MRT)', () => {
         const req = createExpressRequest(buildEvent({ headers: { traceparent: SAMPLED } }), {} as Context);

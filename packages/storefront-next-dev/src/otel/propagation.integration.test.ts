@@ -29,9 +29,12 @@
  * unsampled-inbound case below would start emitting a competing trace and fail.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { EventEmitter } from 'node:events';
-import { context, propagation, ROOT_CONTEXT, trace, type Tracer } from '@opentelemetry/api';
+import http from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { ROOT_CONTEXT, trace, TraceFlags, type Tracer } from '@opentelemetry/api';
+import { parseTraceParent } from '@opentelemetry/core';
 import { createOtelExpressMiddleware } from './express/middleware';
 import { initTelemetry } from './setup';
 
@@ -106,7 +109,7 @@ describe('W3C trace-context propagation (integration)', () => {
             );
     }
 
-    const serverSpan = (spans: EmittedSpan[]) => spans.find((s) => s.name.startsWith('[sfnext] server'));
+    const serverSpan = (spans: EmittedSpan[]) => spans.find((s) => s.name === 'sfnext.request');
 
     describe('inbound continuation', () => {
         it('continues a sampled inbound trace: same trace ID, parented to the inbound span', () => {
@@ -153,34 +156,69 @@ describe('W3C trace-context propagation (integration)', () => {
         });
     });
 
-    describe('outbound injection', () => {
-        it('injects a traceparent carrying the active trace ID', () => {
-            const tracer = initTelemetry() as Tracer;
-            const parentContext = propagation.extract(ROOT_CONTEXT, { traceparent: SAMPLED });
+    // Real outbound fetches go through undici and the UndiciInstrumentation
+    // `requestHook` registered by initTelemetry(). The header on the wire is
+    // captured by a loopback HTTP server, so this exercises the production
+    // injection path end-to-end — including the private-propagator injection that
+    // replaces the (MRT-broken) global `propagation.inject()`. There is NO global
+    // propagator registered; this proves the header still lands without one.
+    describe('outbound injection (real undici fetch)', () => {
+        let server: http.Server;
+        let baseUrl: string;
+        let lastTraceparent: string | undefined;
 
-            const carrier: Record<string, string> = {};
-            tracer.startActiveSpan('outbound-test', {}, parentContext, (span) => {
-                // This is exactly what UndiciInstrumentation does on each outbound fetch.
-                propagation.inject(context.active(), carrier);
-                span.end();
+        beforeAll(async () => {
+            server = http.createServer((req, res) => {
+                lastTraceparent = req.headers.traceparent as string | undefined;
+                res.statusCode = 200;
+                res.end('ok');
             });
-
-            expect(carrier.traceparent).toBeDefined();
-            // Outbound traceparent continues the active (inbound) trace ID.
-            expect(carrier.traceparent).toMatch(new RegExp(`^00-${VALID_TRACE_ID}-[0-9a-f]{16}-01$`));
+            await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+            const { port } = server.address() as AddressInfo;
+            baseUrl = `http://127.0.0.1:${port}/`;
         });
 
-        it('uses the standard W3C propagator as the registered global propagator', () => {
-            // The single registration in setup.ts is what drives outbound injection.
-            // Round-tripping a carrier proves a working W3C propagator is installed.
-            const carrier: Record<string, string> = {};
+        afterAll(async () => {
+            await new Promise<void>((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())));
+        });
+
+        beforeEach(() => {
+            lastTraceparent = undefined;
+        });
+
+        it('injects a traceparent carrying the active trace ID onto the outbound request', async () => {
             const tracer = initTelemetry() as Tracer;
-            tracer.startActiveSpan('roundtrip', (span) => {
-                propagation.inject(context.active(), carrier);
+            // Start a server-like span carrying a known, sampled trace ID, then fetch
+            // within its active context — exactly the shape of an SCAPI call made
+            // while handling a request.
+            const parentContext = trace.setSpanContext(ROOT_CONTEXT, {
+                traceId: VALID_TRACE_ID,
+                spanId: VALID_PARENT_SPAN_ID,
+                traceFlags: TraceFlags.SAMPLED,
+                isRemote: true,
+            });
+            await tracer.startActiveSpan('outbound-test', {}, parentContext, async (span) => {
+                await fetch(baseUrl).then((r) => r.text());
                 span.end();
             });
-            const extracted = propagation.extract(ROOT_CONTEXT, carrier);
-            expect(trace.getSpanContext(extracted)?.traceId).toMatch(/^[0-9a-f]{32}$/);
+
+            expect(lastTraceparent).toBeDefined();
+            // The wire header continues the active trace ID, with a fresh CLIENT span
+            // ID as the parent and the sampled flag preserved.
+            expect(lastTraceparent).toMatch(new RegExp(`^00-${VALID_TRACE_ID}-[0-9a-f]{16}-01$`));
+        });
+
+        it('emits a well-formed W3C traceparent parseable back into a valid span context', async () => {
+            const tracer = initTelemetry() as Tracer;
+            await tracer.startActiveSpan('roundtrip', async (span) => {
+                await fetch(baseUrl).then((r) => r.text());
+                span.end();
+            });
+
+            expect(lastTraceparent).toBeDefined();
+            const parsed = parseTraceParent(lastTraceparent as string);
+            expect(parsed?.traceId).toMatch(/^[0-9a-f]{32}$/);
+            expect(parsed?.spanId).toMatch(/^[0-9a-f]{16}$/);
         });
     });
 });

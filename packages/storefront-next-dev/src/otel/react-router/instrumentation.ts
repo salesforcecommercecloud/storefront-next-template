@@ -20,10 +20,14 @@
  * Uses React Router's ServerInstrumentation API to observe the
  * request lifecycle at the handler and route levels. This runs around ALL
  * requests (document + data) and provides OpenTelemetry spans for:
- * - `request` — root span per incoming HTTP request
- * - `loader` — child span per route loader
- * - `action` — child span per route action
- * - `middleware` — child span per route middleware
+ * - `sfnext.ssr` — SSR render span per incoming HTTP request (handler level)
+ * - `sfnext.loader` — child span per route loader
+ * - `sfnext.action` — child span per route action
+ * - `sfnext.middleware` — child span per route middleware
+ *
+ * Span names are low-cardinality operation names; the route is carried in the
+ * `rr.route.id` and `http.route` attributes rather than the name, so traces
+ * aggregate by operation and filter by route.
  *
  * `tracer` is `null` when OTel is disabled. Each handler checks explicitly
  * and calls through immediately, so the disabled path is always obvious.
@@ -39,7 +43,7 @@
 
 import { type Tracer, type Attributes, SpanStatusCode } from '@opentelemetry/api';
 import type { ServerInstrumentation } from 'react-router';
-import { ATTR_HTTP_REQUEST_METHOD, ATTR_URL_PATH } from '@opentelemetry/semantic-conventions';
+import { ATTR_HTTP_REQUEST_METHOD, ATTR_HTTP_ROUTE, ATTR_URL_PATH } from '@opentelemetry/semantic-conventions';
 import { initTelemetry } from '../setup';
 
 const tracer: Tracer | null = process.env.SFNEXT_OTEL_ENABLED === 'true' ? initTelemetry() : null;
@@ -98,31 +102,31 @@ export const platformInstrumentation: ServerInstrumentation = {
     handler(handler) {
         handler.instrument({
             async request(handleRequest, { request }) {
-                await traced('react-router ssr', httpAttributes(request), handleRequest);
+                await traced('sfnext.ssr', httpAttributes(request), handleRequest);
             },
         });
     },
     route(route) {
-        // HTTP attributes (method, url.path) are intentionally omitted here.
-        // These spans are children of the request span which already carries
-        // them, and rr.route.id / rr.route.pattern are the meaningful
-        // identifiers at the route level.
+        // The request method/url.path live on the parent server span. At the route
+        // level the meaningful identifiers are the framework route id (`rr.route.id`)
+        // and the URL route template (`http.route`, the standard semantic-convention
+        // key — a bounded, low-cardinality value, never the raw path with ids).
         function routeAttributes(pattern: string): Attributes {
             return {
                 'rr.route.id': route.id,
-                'rr.route.pattern': pattern,
+                [ATTR_HTTP_ROUTE]: pattern,
             };
         }
 
         route.instrument({
             async loader(handleLoader, { pattern }) {
-                await traced(`loader (${route.id})`, routeAttributes(pattern), handleLoader);
+                await traced('sfnext.loader', routeAttributes(pattern), handleLoader);
             },
             async action(handleAction, { pattern }) {
-                await traced(`action (${route.id})`, routeAttributes(pattern), handleAction);
+                await traced('sfnext.action', routeAttributes(pattern), handleAction);
             },
             async middleware(handleMiddleware, { pattern }) {
-                await traced(`middleware (${route.id})`, routeAttributes(pattern), handleMiddleware);
+                await traced('sfnext.middleware', routeAttributes(pattern), handleMiddleware);
             },
         });
     },

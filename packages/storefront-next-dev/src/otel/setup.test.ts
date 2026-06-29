@@ -17,7 +17,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { propagation, ROOT_CONTEXT, trace, TraceFlags } from '@opentelemetry/api';
-import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
 type SDKTracer = ReturnType<typeof NodeTracerProvider.prototype.getTracer>;
 
@@ -78,26 +77,31 @@ describe('initTelemetry', () => {
         expect(registerSpy).toHaveBeenCalledOnce();
     });
 
-    it('registers the standard W3C trace context propagator globally', async () => {
+    it('does NOT register a global propagator (outbound injection is done directly)', async () => {
         spyOnProvider();
-        // setGlobalPropagator drives both inbound extraction and outbound injection.
-        // It must be the standard W3CTraceContextPropagator — no custom propagator.
+        // Deliberate design choice: we never call setGlobalPropagator(). On MRT that
+        // registration is silently refused (the version-keyed global registry is owned
+        // by MRT's @opentelemetry/api copy), so it cannot be relied on. Instead the
+        // undici requestHook injects `traceparent` via a privately-held W3C propagator.
+        // Leaving the global propagator as the default no-op also guarantees undici's
+        // own propagation.inject() adds nothing, so the header is written exactly once.
+        // (The real injection path is covered end-to-end in propagation.integration.test.ts.)
         const setPropagatorSpy = vi.spyOn(propagation, 'setGlobalPropagator').mockReturnValue(true);
 
         const { initTelemetry } = await import('./setup');
         initTelemetry();
 
-        expect(setPropagatorSpy).toHaveBeenCalledOnce();
-        expect(setPropagatorSpy).toHaveBeenCalledWith(expect.any(W3CTraceContextPropagator));
+        expect(setPropagatorSpy).not.toHaveBeenCalled();
     });
 
-    it('injects no outbound traceparent when telemetry is disabled (no propagator registered)', () => {
-        // When SFNEXT_OTEL_ENABLED is unset, initTelemetry() never runs, so
-        // setGlobalPropagator() is never called and OTel's default no-op propagator
-        // stays in effect. Reset to that baseline and confirm that — even for a
-        // context carrying a valid, sampled span — inject() adds nothing. (Contrast
-        // with the enabled outbound test in propagation.integration.test.ts, where
-        // the registered W3C propagator does inject a traceparent.)
+    it('leaves the global propagator as a no-op (no traceparent injected via the global API)', () => {
+        // Because setGlobalPropagator() is never called, OTel's default no-op
+        // propagator stays in effect for the global API. Confirm that — even for a
+        // context carrying a valid, sampled span — the global propagation.inject()
+        // adds nothing. This is what prevents a duplicate header: undici's own
+        // global inject() (which runs right after our requestHook) is this same no-op.
+        // (Our direct injection via the private propagator is covered in
+        // propagation.integration.test.ts.)
         propagation.disable();
         const contextWithSpan = trace.setSpanContext(ROOT_CONTEXT, {
             traceId: '11111111111111111111111111111111',
