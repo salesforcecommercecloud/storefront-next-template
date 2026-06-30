@@ -101,12 +101,16 @@ const baseConfig = defineConfig([
         ],
     },
     {
-        // Plain Node scripts (.js / .mjs / .cjs) aren't part of the TS project,
-        // so typed typescript-eslint rules (e.g. `await-thenable`) can't load
-        // parser services for them. Without this disable block, generated/mirror
-        // projects (which lint `scripts/*.mjs` via the root config) crash with
-        // "You have used a rule which requires type information" — fatal exit 2.
-        files: ['**/*.{js,mjs,cjs}'],
+        // Plain Node scripts (.js / .mjs / .cjs / .mts / .cts) and the ambient
+        // declarations that type them (.d.mts / .d.cts) aren't part of the TS
+        // project, so typed typescript-eslint rules (e.g. `await-thenable`) can't
+        // load parser services for them. Without this disable block, generated/
+        // mirror projects (which lint `scripts/*.mjs` and their `.d.mts` type
+        // shims via the root config) crash with "You have used a rule which
+        // requires type information" — fatal exit 2. `.mts`/`.cts` are the
+        // explicit Node module-system extensions, the same script category as
+        // `.mjs`/`.cjs`; a typed `.mts` source would add its own override.
+        files: ['**/*.{js,mjs,cjs,mts,cts}'],
         settings: {
             react: {
                 version: 'detect', // Auto-detect React version
