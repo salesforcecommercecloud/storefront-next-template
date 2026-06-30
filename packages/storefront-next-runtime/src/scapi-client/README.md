@@ -610,13 +610,15 @@ The following npm scripts are available in `package.json`:
 {
   "scapi:generate-types": "openapi-typescript -c ./openapi-specs/redocly.yaml",
   "scapi:generate-operations": "pnpm dlx tsx scripts/generate-operation-maps.ts",
-  "scapi:generate": "pnpm scapi:generate-types && pnpm scapi:generate-operations"
+  "scapi:generate": "pnpm scapi:generate-types && pnpm scapi:generate-operations",
+  "scapi:update-specs": "pnpm dlx tsx scripts/update-scapi-specs.ts"
 }
 ```
 
 - **`scapi:generate-types`**: Generates TypeScript type definitions from OpenAPI specs
 - **`scapi:generate-operations`**: Generates operation mapping files from generated types
 - **`scapi:generate`**: Runs both generation steps in sequence (recommended)
+- **`scapi:update-specs`**: Downloads the latest released specs from Anypoint Exchange, swaps the spec folders, rewrites `redocly.yaml`, and regenerates the client. Pass `--check` for a dry run that exits non-zero when a spec has drifted. See [Updating to New OpenAPI Specifications](#updating-to-new-openapi-specifications).
 
 ### Usage
 
@@ -713,75 +715,38 @@ clients.shopperStores        // Store locator
 
 ## Updating to New OpenAPI Specifications
 
-When Salesforce releases new versions of SCAPI specifications:
+Spec updates are **automated** — you should rarely do this by hand.
 
-### Step 1: Download New Specifications
+### Automated (default)
 
-Download the new OpenAPI specification files from Salesforce B2C Commerce and place them in the `openapi-specs/` directory:
+The [`SCAPI Spec Update`](../../../../.github/workflows/scapi-spec-update.yml) workflow runs `pnpm scapi:update-specs` weekly (and on demand via *Run workflow*). For every spec tracked in `openapi-specs/redocly.yaml`, it asks Anypoint Exchange for the latest released (`MAJOR.MINOR.PATCH`) version whose major matches the tracked API version (e.g. `shopper-baskets` `v2` ↔ `2.x.x`), and when a newer one exists it downloads the spec, swaps the folder, rewrites `redocly.yaml`, regenerates the client, and opens a PR. Reviewing the spec + generated diff on that PR is part of the [release process](../../../../CONTRIBUTING.md) so the shipped client never silently drifts behind the live APIs.
 
-```bash
-cd packages/storefront-next-runtime/openapi-specs/
+The Exchange coordinates come from each spec folder's `exchange.json` (`groupId` / `assetId` / `version` / `apiVersion`) — that file is the source of truth for what we ship and what to diff against.
 
-# Example: Updating shopper-products spec from 1.0.37 to 1.0.38
-# Replace the existing spec folder with the new version
-rm -rf shopper-products-oas-1.0.37
-cp -r ~/Downloads/shopper-products-oas-1.0.38 ./
-```
-
-### Step 2: Update redocly.yaml
-
-Update the `openapi-specs/redocly.yaml` configuration to point to the new specification version:
-
-```yaml
-apis:
-  shopper-products-v1:
-    root: ./shopper-products-oas-1.0.38/shopper-products-oas-v1-public.yaml  # Updated version
-    x-openapi-ts:
-      output: ../src/scapi-client/generated/shopper-products-v1.ts
-```
-
-### Step 3: Regenerate Types and Operations
-
-Run the generation script to update all types and operation mappings:
+To run it locally (requires `ANYPOINT_USERNAME` / `ANYPOINT_PASSWORD`):
 
 ```bash
 cd packages/storefront-next-runtime
-pnpm scapi:generate
+
+# Dry run — report drift, exit non-zero if any spec is outdated. No writes.
+pnpm scapi:update-specs --check
+
+# Apply: download new specs, swap folders, rewrite redocly.yaml, regenerate.
+pnpm scapi:update-specs
 ```
 
-This will:
-1. Generate new TypeScript types from the updated OpenAPI specs
-2. Parse the types to extract operation mappings
-3. Create updated `*.operations.ts` files
+Then review `git diff openapi-specs/ src/scapi-client/generated/`, run `pnpm test`, and commit.
 
-### Step 4: Review Changes
+### Manual fallback
 
-Review the generated files to ensure:
-- New operations are correctly mapped
-- Existing operations haven't changed unexpectedly
-- Types are correctly inferred
+If the automation is unavailable (e.g. a spec not yet on Exchange, or a pre-release you need to pin), update by hand:
 
-```bash
-git diff src/scapi-client/generated/
-```
-
-### Step 5: Test
-
-Run tests to ensure the updates don't break existing functionality:
-
-```bash
-pnpm test
-pnpm typecheck
-```
-
-### Step 6: Commit Changes
-
-Commit both the new OpenAPI specs and generated files:
-
-```bash
-git add openapi-specs/ src/scapi-client/generated/
-git commit -m "Update SCAPI specs to version X.Y.Z"
-```
+1. **Download the spec** and replace the folder under `openapi-specs/` (keep the `<assetId>-<version>` naming and the `exchange.json` descriptor).
+2. **Point `redocly.yaml`** at the new `root:` path for that api entry.
+3. **Regenerate** with `pnpm scapi:generate` (types + operation maps).
+4. **Review** `git diff src/scapi-client/generated/` for breaking vs. non-breaking changes.
+5. **Test** with `pnpm test` and `pnpm typecheck`.
+6. **Commit** both `openapi-specs/` and the regenerated `src/scapi-client/generated/`.
 
 **Note:** While the generated files are checked into git, they should be treated as build artifacts. Always regenerate them rather than manually editing.
 

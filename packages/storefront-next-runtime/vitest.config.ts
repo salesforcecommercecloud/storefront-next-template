@@ -32,7 +32,12 @@ export default defineConfig({
             reporters: ['text', 'lcov', 'json-summary'],
         },
         // Vitest tests - exclude Jest test files
-        include: ['src/**/*.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
+        include: [
+            'src/**/*.test.{ts,tsx}',
+            'src/**/*.spec.{ts,tsx}',
+            // Build/CI scripts aren't published, but their pure logic is unit-tested.
+            'scripts/**/*.test.{ts,tsx}',
+        ],
         exclude: ['**/node_modules/**', '**/dist/**'],
     },
 });

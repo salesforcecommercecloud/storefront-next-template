@@ -143,7 +143,8 @@
     "clean": "shx rm -rf dist",
     "scapi:generate-types": "openapi-typescript -c ./openapi-specs/redocly.yaml",
     "scapi:generate-operations": "pnpm dlx tsx scripts/generate-operation-maps.ts",
-    "scapi:generate": "pnpm scapi:generate-types && pnpm scapi:generate-operations"
+    "scapi:generate": "pnpm scapi:generate-types && pnpm scapi:generate-operations",
+    "scapi:update-specs": "pnpm dlx tsx scripts/update-scapi-specs.ts"
   },
   "keywords": [
     "salesforce",
