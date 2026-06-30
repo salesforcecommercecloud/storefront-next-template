@@ -16,7 +16,7 @@
 import { describe, expect, it } from 'vitest';
 import { BASKET_COOKIE_NAME, parseBasketCookie } from './cookie';
 
-const snapshot = { basketId: 'basket-123', totalItemCount: 4, uniqueProductCount: 2 };
+const snapshot = { basketId: 'basket-123', totalItemCount: 4, uniqueProductCount: 2, lastModified: '' };
 
 const withCookie = (value: string) => `${BASKET_COOKIE_NAME}=${value}`;
 
@@ -85,7 +85,7 @@ describe('parseBasketCookie', () => {
 
     it('accepts zero counts (empty cart is a valid snapshot)', () => {
         // Zero is a non-negative integer — the guard must not reject a freshly-cleared basket.
-        const empty = { basketId: 'basket-empty', totalItemCount: 0, uniqueProductCount: 0 };
+        const empty = { basketId: 'basket-empty', totalItemCount: 0, uniqueProductCount: 0, lastModified: '' };
         expect(parseBasketCookie(withCookie(btoa(JSON.stringify(empty))))).toEqual(empty);
     });
 
@@ -122,11 +122,51 @@ describe('parseBasketCookie', () => {
         expect(parseBasketCookie(withCookie(btoa(JSON.stringify(null))))).toBeNull();
     });
 
+    describe('lastModified field', () => {
+        it('accepts an empty string lastModified (basket with no lastModified from SCAPI)', () => {
+            const s = { ...snapshot, lastModified: '' };
+            expect(parseBasketCookie(withCookie(btoa(JSON.stringify(s))))).toEqual(s);
+        });
+
+        it('accepts a valid ISO-8601 lastModified', () => {
+            const s = { ...snapshot, lastModified: '2026-06-29T10:23:44.000Z' };
+            expect(parseBasketCookie(withCookie(btoa(JSON.stringify(s))))).toEqual(s);
+        });
+
+        it('tolerates a missing lastModified and normalizes it to "" (pre-lastModified cookie)', () => {
+            // A cookie written before this field was introduced lacks lastModified entirely (JSON.stringify drops
+            // undefined-valued keys). Rejecting it would discard otherwise-valid cookies on the first read after a
+            // deploy, blanking the cart badge; instead the reader accepts it and normalizes lastModified to ''.
+            const withoutLastModified = { ...snapshot };
+            delete (withoutLastModified as Partial<typeof snapshot>).lastModified;
+            expect(parseBasketCookie(withCookie(btoa(JSON.stringify(withoutLastModified))))).toEqual({
+                ...withoutLastModified,
+                lastModified: '',
+            });
+        });
+
+        it('returns null when lastModified is present but not a string', () => {
+            // A present (non-undefined) non-string value indicates tampering or an incompatible writer, so reject it.
+            expect(
+                parseBasketCookie(withCookie(btoa(JSON.stringify({ ...snapshot, lastModified: 12345 }))))
+            ).toBeNull();
+            expect(parseBasketCookie(withCookie(btoa(JSON.stringify({ ...snapshot, lastModified: null }))))).toBeNull();
+            expect(parseBasketCookie(withCookie(btoa(JSON.stringify({ ...snapshot, lastModified: true }))))).toBeNull();
+        });
+
+        it('returns null when lastModified is a non-empty non-ASCII string', () => {
+            // A localized date string or emoji would break the ASCII-only decoder shortcut.
+            expect(
+                parseBasketCookie(withCookie(btoa(JSON.stringify({ ...snapshot, lastModified: '2026-Grüße' }))))
+            ).toBeNull();
+        });
+    });
+
     // -----------------------------------------------------------------------------------------
     // ASCII-only pipeline limits
     //
     // The shortcut decoder used here only works for ASCII payloads. The validator's `basketId` ASCII
-    // check (`ASCII_BASKET_ID`) closes the loop: if a writer ever uses React Router's full
+    // check (`ASCII_PRINTABLE`) closes the loop: if a writer ever uses React Router's full
     // `createCookie` encode pipeline with non-ASCII content, the shortcut decoder Mojibake-corrupts
     // the string into Latin-1 reinterpreted bytes — almost all of which lie outside the printable ASCII
     // range and so fail the regex. The validator returns `null` rather than serving a silently-corrupted
@@ -151,7 +191,7 @@ describe('parseBasketCookie', () => {
 
             // `atob` decodes successfully and the parsed JSON is shape-valid, but `basketId` lands as
             // Latin-1 Mojibake (e.g. 0xC3 0xBC bytes reinterpreted as separate Latin-1 chars), and those
-            // chars sit outside printable ASCII — `ASCII_BASKET_ID` rejects them.
+            // chars sit outside printable ASCII — `ASCII_PRINTABLE` rejects them.
             expect(parseBasketCookie(withCookie(encodeURIComponent(bridged)))).toBeNull();
         });
 

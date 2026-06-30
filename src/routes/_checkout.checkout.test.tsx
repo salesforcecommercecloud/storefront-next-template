@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { type LoaderFunctionArgs, type ClientLoaderFunctionArgs, MemoryRouter } from 'react-router';
+import {
+    type LoaderFunctionArgs,
+    type ClientLoaderFunctionArgs,
+    createMemoryRouter,
+    RouterProvider,
+} from 'react-router';
 import { createLoaderArgs } from '@/lib/test-utils';
 import { act, render, screen } from '@testing-library/react';
-import type React from 'react';
+import React, { useState } from 'react';
+
+// CheckoutView calls useRevalidateOnReturn, which uses useRevalidator - that hook requires a data
+// router context. Wrap the rendered element in a minimal in-memory data router so these integration
+// tests provide that context (a plain MemoryRouter is not a data router).
+function DataRouterStub({ children }: { children: React.ReactNode }) {
+    const [router] = useState(() => createMemoryRouter([{ path: '*', element: <>{children}</> }]));
+    return <RouterProvider router={router} />;
+}
 import { resourceRoutes } from '@/route-paths';
 
 const mockUniversalServerLoader = vi.fn();
@@ -333,9 +346,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             // Should render error boundary and basket provider
@@ -354,9 +367,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -383,9 +396,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -410,9 +423,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -451,9 +464,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -471,9 +484,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -491,9 +504,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -511,9 +524,9 @@ describe('Checkout Route Components', () => {
             };
 
             render(
-                <MemoryRouter>
+                <DataRouterStub>
                     <CheckoutPage loaderData={mockLoaderData} />
-                </MemoryRouter>
+                </DataRouterStub>
             );
 
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -539,9 +552,9 @@ describe('Checkout Route Components', () => {
             // so the Suspense boundary resolves and CheckoutProvider mounts before assertions.
             await act(async () => {
                 render(
-                    <MemoryRouter>
+                    <DataRouterStub>
                         <CheckoutPage loaderData={loaderData} />
-                    </MemoryRouter>
+                    </DataRouterStub>
                 );
                 await Promise.resolve();
             });

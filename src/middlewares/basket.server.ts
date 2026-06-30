@@ -49,10 +49,13 @@ export type BasketSnapshotOptions = {
 };
 
 // Cookie-safe snapshot of a basket used before full hydration.
+// All fields must remain ASCII so the client cookie decoder's ASCII-only shortcut stays valid.
 export type BasketSnapshot = {
     basketId: string;
     totalItemCount: number;
     uniqueProductCount: number;
+    /** ISO-8601 timestamp from SCAPI's `basket.lastModified`. Empty string when absent. Must be ASCII. */
+    lastModified: string;
     [key: string]: unknown;
 };
 
@@ -125,6 +128,8 @@ export const defaultCreateSnapshot = (basket: Basket): BasketSnapshot => ({
     basketId: basket.basketId ?? '',
     totalItemCount: (basket.productItems ?? []).reduce((sum, item) => sum + (item.quantity ?? 0), 0),
     uniqueProductCount: (basket.productItems ?? []).length,
+    // ISO-8601 timestamps are pure ASCII, keeping the cookie decoder's ASCII-only shortcut valid.
+    lastModified: basket.lastModified ?? '',
 });
 
 /**
@@ -315,7 +320,7 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
         const metadata = context.get(basketMetadataContext);
         if (metadata?.basketMarkedForDeletion) {
             const expired = await basketCookie.serialize(
-                { basketId: '', totalItemCount: 0, uniqueProductCount: 0 },
+                { basketId: '', totalItemCount: 0, uniqueProductCount: 0, lastModified: '' },
                 { expires: new Date(0) }
             );
             response.headers.append('Set-Cookie', expired);

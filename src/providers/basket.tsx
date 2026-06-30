@@ -50,6 +50,7 @@ const defaultCreateSnapshot = (basket: ShopperBasketsV2.schemas['Basket']): Bask
     basketId: basket.basketId ?? '',
     totalItemCount: (basket.productItems ?? []).reduce((sum, item) => sum + (item.quantity ?? 0), 0),
     uniqueProductCount: (basket.productItems ?? []).length,
+    lastModified: basket.lastModified ?? '',
 });
 
 /*

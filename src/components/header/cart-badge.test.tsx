@@ -59,6 +59,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 2,
             uniqueProductCount: 2,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -81,6 +82,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -100,6 +102,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
         setMiniCartOpen(true);
 
@@ -113,6 +116,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -129,6 +133,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -146,6 +151,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 0,
             uniqueProductCount: 0,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -174,6 +180,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -197,6 +204,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);

@@ -100,6 +100,7 @@ describe('Cart route loader', () => {
             totalItemCount: 1,
             uniqueProductCount: 1,
             currency: 'USD',
+            lastModified: '',
         });
         vi.mocked(fetchProductsInBasket).mockResolvedValue({
             productsByItemId: { 'item-1': { id: 'product-1' } as any },
@@ -124,6 +125,7 @@ describe('Cart route loader', () => {
             totalItemCount: 1,
             uniqueProductCount: 1,
             currency: 'USD',
+            lastModified: '',
         });
         expect(result.pageUrl).toContain('/cart');
     });

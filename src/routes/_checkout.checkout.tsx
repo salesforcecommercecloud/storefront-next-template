@@ -25,6 +25,7 @@ import { hasValidShippingMethodForEveryShipment } from '@/components/checkout/ut
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { CheckoutSkeleton } from '@/components/checkout/components/checkout-skeletons';
 import { useBasketUpdater } from '@/providers/basket';
+import { useRevalidateOnReturn } from '@/hooks/use-revalidate-on-return';
 import { useToast } from '@/components/toast';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
@@ -96,6 +97,13 @@ function CheckoutView({
             updateBasket(basket);
         }
     }, [basket, updateBasket]);
+
+    // Revalidate when returning to this tab and another tab/device has mutated the basket.
+    // Passes the lastModified the loader rendered with so the comparison is stable across renders.
+    // The route's shouldRevalidate skips on step-intent and 3xx submissions; a programmatic
+    // revalidation carries neither formData nor actionResult, so it falls through to
+    // defaultShouldRevalidate (true for an imperative revalidate) and the loader re-runs.
+    useRevalidateOnReturn({ basketId: basket?.basketId, lastModified: basket?.lastModified });
 
     // Block rendering if basket is not available
     if (!basket?.basketId) {

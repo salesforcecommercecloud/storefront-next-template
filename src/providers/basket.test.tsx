@@ -95,6 +95,7 @@ describe('BasketProvider hooks', () => {
         basketId: 'basket-123',
         totalItemCount: 0,
         uniqueProductCount: 0,
+        lastModified: '',
     };
 
     beforeEach(() => {
@@ -741,6 +742,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-from-cookie',
                 totalItemCount: 5,
                 uniqueProductCount: 2,
+                lastModified: '',
             };
             writeBasketCookie(btoa(JSON.stringify(cookieSnapshot)));
 
@@ -789,6 +791,7 @@ describe('BasketProvider hooks', () => {
                         basketId: 'cookie-id-1',
                         totalItemCount: 1,
                         uniqueProductCount: 1,
+                        lastModified: '',
                     })
                 )
             );
@@ -807,6 +810,7 @@ describe('BasketProvider hooks', () => {
                         basketId: 'cookie-id-2',
                         totalItemCount: 4,
                         uniqueProductCount: 2,
+                        lastModified: '',
                     })
                 )
             );
@@ -888,6 +892,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-abc',
                 totalItemCount: 5,
                 uniqueProductCount: 2,
+                lastModified: '',
             });
         });
 
@@ -907,6 +912,7 @@ describe('BasketProvider hooks', () => {
                 basketId: '',
                 totalItemCount: 0,
                 uniqueProductCount: 0,
+                lastModified: '',
             });
         });
 
@@ -931,6 +937,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-xyz',
                 totalItemCount: 0,
                 uniqueProductCount: 1,
+                lastModified: '',
             });
         });
 
@@ -1161,6 +1168,7 @@ describe('BasketProvider hooks', () => {
             basketId: 'cookie-id-from-another-shopper',
             totalItemCount: 7,
             uniqueProductCount: 3,
+            lastModified: '',
         };
 
         const SnapshotProbe = () => {
