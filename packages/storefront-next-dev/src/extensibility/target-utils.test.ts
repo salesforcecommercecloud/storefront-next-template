@@ -669,23 +669,6 @@ describe('target-utils', () => {
             expect(ids).toContain('valid.target');
         });
 
-        it('should exclude ui-target-dev-mode and ui-target-smoke-test directories', () => {
-            fs.ensureDirSync(join(testDir, 'ui-target-dev-mode'));
-            fs.writeFileSync(
-                join(testDir, 'ui-target-dev-mode', 'tool.tsx'),
-                `<UITarget targetId="dev.only.target" />`
-            );
-            fs.ensureDirSync(join(testDir, 'ui-target-smoke-test'));
-            fs.writeFileSync(
-                join(testDir, 'ui-target-smoke-test', 'test.tsx'),
-                `<UITarget targetId="smoke.test.target" />`
-            );
-
-            const ids = collectUITargetIds(testDir);
-            expect(ids).not.toContain('dev.only.target');
-            expect(ids).not.toContain('smoke.test.target');
-        });
-
         it('should return empty set when no targets found', () => {
             fs.writeFileSync(join(testDir, 'page.tsx'), `export default function Page() { return <div />; }`);
 

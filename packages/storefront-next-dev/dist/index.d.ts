@@ -137,48 +137,41 @@ declare function transformTargetPlaceholderPlugin(): {
 };
 //#endregion
 //#region src/plugins/uiTargetDevMode.d.ts
+/**
+ * @deprecated This plugin has been removed. It was an internal-only debugging aid
+ * that could cause build failures when extensions were trimmed. The export is kept
+ * as a no-op for backward compatibility and will be removed in v2.
+ *
+ * **Migration:** Remove any `uiTargetDevMode()` plugin from your `vite.config.ts`,
+ * delete `vite-plugins/ui-target-dev-mode.ts` if it exists, and remove the plugin
+ * from the Vite plugins array.
+ */
 interface UITargetDevModeConfig {
   /**
-   * Enable dev mode visual markers. Defaults to false.
-   * Set via VITE_UI_TARGET_DEV_MODE=true environment variable.
+   * @deprecated No longer used
    */
   enabled?: boolean;
   /**
-   * Build-time filter: only show targets matching a category prefix.
-   * Set via VITE_TARGET_FILTER_CATEGORY=pdp environment variable.
-   * @example filterCategory: 'pdp' — only shows targets whose id starts with "pdp."
+   * @deprecated No longer used
    */
   filterCategory?: string;
   /**
-   * Map of targetId → hint label for overlay grouping/filtering.
-   * Built from target-config.json at config time and injected into each dev marker
-   * as a __hint__ prop, which is emitted as a data-ui-target-hint DOM attribute.
-   * Example: { 'emailSignUp.consent.marketing': 't/my-branch/W-123', 'checkout.contactInfo': 'pr:1384' }
+   * @deprecated No longer used
    */
   hintMap?: Record<string, string>;
 }
 /**
- * Vite plugin that adds visual markers to UITarget components in development.
+ * @deprecated This plugin has been removed. It was an internal-only debugging aid
+ * that could cause build failures when extensions were trimmed. The export is kept
+ * as a no-op for backward compatibility and will be removed in v2.
  *
- * PRODUCTION: This plugin is completely inactive - zero overhead.
- * DEVELOPMENT: Transforms UITarget JSX to add visual debugging markers.
+ * **Migration:** Remove any `uiTargetDevMode()` plugin from your `vite.config.ts`,
+ * delete `vite-plugins/ui-target-dev-mode.ts` if it exists, and remove the plugin
+ * from the Vite plugins array.
  *
- * @example
- * // Source code:
- * <UITarget targetId="pdp.loyalty.badge">
- *   <Widget />
- * </UITarget>
- *
- * // Transformed in DEV mode:
- * <UITargetDevMarker
- *   targetId="pdp.loyalty.badge"
- *   __file__="/src/components/product.tsx"
- *   __hasChildren__={true}
- * >
- *   <Widget />
- * </UITargetDevMarker>
+ * @returns A no-op Vite plugin
  */
-declare function uiTargetDevModePlugin(config?: UITargetDevModeConfig): Plugin;
+declare function uiTargetDevModePlugin(_config?: UITargetDevModeConfig): Plugin;
 //#endregion
 //#region src/plugins/hybridProxy.d.ts
 

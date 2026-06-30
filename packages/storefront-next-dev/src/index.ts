@@ -19,7 +19,7 @@ export { storefrontNextTargets as default, type StorefrontNextTargetsConfig } fr
 // Named export: Transform target placeholder components (UITarget & UITargetProviders)
 export { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
 
-// Named export: Target dev mode plugin for visual debugging of UITargets (dev only)
+// Named export: Target dev mode plugin (DEPRECATED — no-op for backward compatibility)
 export { uiTargetDevModePlugin, type UITargetDevModeConfig } from './plugins/uiTargetDevMode';
 
 // Named export: Hybrid proxy plugin for local development against legacy SFRA

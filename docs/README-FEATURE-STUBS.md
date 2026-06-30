@@ -110,7 +110,7 @@ Parent components to update (remove the marker block):
 
 Config updates:
 - Remove `SFDC_EXT_CUSTOMER_PREFERENCES` from `src/extensions/config.json`
-- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+- Re-run `pnpm locales:aggregate-extensions`
 
 ---
 
@@ -141,7 +141,7 @@ Parent components to update (remove the marker block):
 
 Config updates:
 - Remove `SFDC_EXT_BNPL` from `src/extensions/config.json`
-- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+- Re-run `pnpm locales:aggregate-extensions`
 
 ---
 
@@ -177,7 +177,7 @@ Parent components to update (remove the marker block):
 
 Config updates:
 - Remove `SFDC_EXT_PRODUCT_CONTENT` from `src/extensions/config.json`
-- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+- Re-run `pnpm locales:aggregate-extensions`
 
 ---
 
@@ -209,7 +209,7 @@ Parent components to update (remove the marker block):
 
 Config updates:
 - Remove `SFDC_EXT_RATINGS_REVIEWS` from `src/extensions/config.json`
-- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+- Re-run `pnpm locales:aggregate-extensions`
 
 ---
 
@@ -241,7 +241,7 @@ Parent components to update (remove the marker block):
 Config updates:
 - Remove `SFDC_EXT_SHIPPING_DELIVERY` from `src/extensions/config.json`
 - Update `SFDC_EXT_BOPIS` dependencies to remove `"SFDC_EXT_SHIPPING_DELIVERY"`
-- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+- Re-run `pnpm locales:aggregate-extensions`
 
 ---
 

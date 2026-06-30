@@ -22,7 +22,6 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 
 import { envValidation } from './vite-plugins/env-validation';
 import { reactRouter } from './vite-plugins/react-router';
-import { uiTargetDevMode } from './vite-plugins/ui-target-dev-mode';
 import { storefrontNext } from './vite-plugins/storefront-next';
 import { bundlesize } from './vite-plugins/bundlesize';
 import { bundleVisualizer } from './vite-plugins/bundle-visualizer';
@@ -59,7 +58,6 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
-            uiTargetDevMode(),
             storefrontNext(),
             bundlesize(),
             bundleVisualizer(),

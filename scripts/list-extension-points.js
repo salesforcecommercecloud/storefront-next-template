@@ -54,7 +54,9 @@ const HOOK_CONSTANT_PATTERN = /(\w+):\s*'(sfcc\.[^']+)'/g;
 const HOOK_CALL_PATTERN = /hookId:\s*ACTION_HOOK_IDS\.(\w+)/g;
 const BLOCKING_PATTERN = /blocking:\s*true/;
 
-const EXCLUDED_DIRS = new Set(['ui-target-dev-mode', 'ui-target-smoke-test', 'node_modules', '.storybook']);
+// Directories to exclude from extension point discovery.
+// Dev-tooling directories with UITarget or hook usage should be added here.
+const EXCLUDED_DIRS = new Set(['node_modules', '.storybook']);
 
 function walkFiles(dir, extensions, results = []) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

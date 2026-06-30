@@ -56,10 +56,6 @@ pnpm test src/components/foo     # Single file/dir
 pnpm storybook:test --type=snapshot     # Snapshot tests
 pnpm storybook:test --type=interaction  # Interaction tests
 pnpm storybook:test --type=a11y         # A11y tests
-
-# UITargets
-pnpm dev:ui-targets        # Visual overlay showing targets
-pnpm smoke-test:generate   # Sync target-config.json (additive)
 ```
 
 ### Less common command variants

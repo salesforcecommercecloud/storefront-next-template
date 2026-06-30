@@ -64,12 +64,6 @@ export function transformTargetPlaceholderPlugin() {
         },
 
         transform(code: string, id: string) {
-            // Skip UITarget transformation if dev mode is active
-            // Let targetDevModePlugin handle it instead (adds visual markers)
-            if (process.env.VITE_UI_TARGET_DEV_MODE === 'true') {
-                return null;
-            }
-
             try {
                 const transformedCode = transformTargets(code, componentRegistry, contextProviders);
                 if (transformedCode) {

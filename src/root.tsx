@@ -369,8 +369,6 @@ export function Layout({ children }: PropsWithChildren) {
                 <AppToaster />
                 <ScrollRestoration nonce={nonce} />
                 <Scripts nonce={nonce} />
-                {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}
-                <UITargetDevModeInit />
             </body>
         </html>
     );
@@ -770,29 +768,5 @@ function BackNavigationRevalidator() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return null;
-}
-
-/**
- * Initialize UITarget dev mode overlay (DEV ONLY - zero production overhead)
- * Lazy-loads the overlay when VITE_UI_TARGET_DEV_MODE=true
- */
-function UITargetDevModeInit() {
-    useEffect(() => {
-        // Only runs in browser
-        if (typeof window === 'undefined') return;
-
-        // Only in development
-        if (import.meta.env.PROD) return;
-
-        // Only if enabled
-        if (import.meta.env.VITE_UI_TARGET_DEV_MODE !== 'true') return;
-
-        // Lazy load the overlay
-        void import('@/lib/ui-target-dev-mode').then(({ initUITargetDevMode }) => {
-            void initUITargetDevMode();
-        });
-    }, []);
-
     return null;
 }

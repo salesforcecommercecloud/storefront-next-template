@@ -467,7 +467,6 @@ export function buildTargetRegistry(
 }
 
 const TARGET_ID_PATTERN = /<UITarget[\s][^>]*targetId=["']([^"']+)["']/g;
-const EXCLUDED_DIRS = new Set(['ui-target-dev-mode', 'ui-target-smoke-test']);
 
 /**
  * Recursively collect all UITarget IDs declared in template source files.
@@ -481,7 +480,7 @@ export function collectUITargetIds(sourceDir: string): Set<string> {
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
-                if (entry.name === 'extensions' || EXCLUDED_DIRS.has(entry.name)) continue;
+                if (entry.name === 'extensions') continue;
                 walk(fullPath);
             } else if (
                 entry.isFile() &&

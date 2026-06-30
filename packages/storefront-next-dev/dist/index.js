@@ -5,7 +5,7 @@ import { createRequire } from "module";
 import path$1, { dirname, join, relative, resolve as resolve$1 } from "path";
 import { fileURLToPath } from "url";
 import { parse } from "@babel/parser";
-import { booleanLiteral, identifier, importDeclaration, importSpecifier, isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isStringLiteral, isVariableDeclaration, jsxAttribute, jsxClosingElement, jsxClosingFragment, jsxElement, jsxExpressionContainer, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText, stringLiteral } from "@babel/types";
+import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
 import traverseModule from "@babel/traverse";
 import { existsSync, readFileSync, writeFileSync } from "fs";
@@ -369,7 +369,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$2 = traverseModule.default || traverseModule;
+const traverse$1 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "UITargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -444,7 +444,7 @@ function runReplacementPass(ast, tagName, targetRegistry = null, contextProvider
 			if (replacedId) targetIdsReplaced.add(replacedId);
 		} else if (contextProviders) findAndReplaceProviders(pathToReplace, contextProviders);
 	};
-	traverse$2(ast, {
+	traverse$1(ast, {
 		VariableDeclaration(nodePath) {
 			const declarationPaths = nodePath.get("declarations");
 			const declarationsArray = Array.isArray(declarationPaths) ? declarationPaths : [declarationPaths];
@@ -497,7 +497,7 @@ function transformTargets(code, targetRegistry, contextProviders) {
 	});
 	if (TARGET_COMPONENT_JSX_RE.test(code)) {
 		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, TARGET_COMPONENT_TAG, targetRegistry, null), targetRegistry);
-		traverse$2(ast, { ImportDeclaration(nodePath) {
+		traverse$1(ast, { ImportDeclaration(nodePath) {
 			if (nodePath.node.source.value === "@/targets/ui-target") nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 	}
@@ -505,7 +505,7 @@ function transformTargets(code, targetRegistry, contextProviders) {
 		const importStatements = /* @__PURE__ */ new Set();
 		for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
 		const replacementImportStatements = Array.from(importStatements).join("\n");
-		traverse$2(ast, { ImportDeclaration(nodePath) {
+		traverse$1(ast, { ImportDeclaration(nodePath) {
 			if (nodePath.node.source.value === "@/targets/ui-target-providers") nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 		runReplacementPass(ast, TARGET_PROVIDERS_TAG, null, contextProviders);
@@ -608,7 +608,6 @@ function buildTargetRegistry(rootDir, options = {}) {
 	};
 }
 const TARGET_ID_PATTERN = /<UITarget[\s][^>]*targetId=["']([^"']+)["']/g;
-const EXCLUDED_DIRS = new Set(["ui-target-dev-mode", "ui-target-smoke-test"]);
 /**
 * Recursively collect all UITarget IDs declared in template source files.
 * Excludes extension directories so only "real" UITarget placements are counted.
@@ -620,7 +619,7 @@ function collectUITargetIds(sourceDir) {
 		for (const entry of entries) {
 			const fullPath = path$1.join(dir, entry.name);
 			if (entry.isDirectory()) {
-				if (entry.name === "extensions" || EXCLUDED_DIRS.has(entry.name)) continue;
+				if (entry.name === "extensions") continue;
 				walk(fullPath);
 			} else if (entry.isFile() && /\.(tsx?|jsx?)$/.test(entry.name) && !/\.test\.(tsx?|jsx?)$/.test(entry.name)) {
 				const content = fs.readFileSync(fullPath, "utf-8");
@@ -671,7 +670,6 @@ function transformTargetPlaceholderPlugin() {
 			}
 		},
 		transform(code, id) {
-			if (process.env.VITE_UI_TARGET_DEV_MODE === "true") return null;
 			try {
 				const transformedCode = transformTargets(code, componentRegistry, contextProviders);
 				if (transformedCode) return {
@@ -1584,7 +1582,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse$1 = traverseModule.default || traverseModule;
+const traverse = traverseModule.default || traverseModule;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.
@@ -1614,7 +1612,7 @@ function hasExportCandidate(code, names) {
 */
 function hasComponentDecorator(ast) {
 	let found = false;
-	traverse$1(ast, { ClassDeclaration(path$2) {
+	traverse(ast, { ClassDeclaration(path$2) {
 		const decorators = path$2.node.decorators;
 		if (!decorators) return;
 		for (const decorator of decorators) if (decorator.expression.type === "CallExpression" && isIdentifier(decorator.expression.callee) && decorator.expression.callee.name === "Component") {
@@ -1661,7 +1659,7 @@ function stripExports(code, exportsToStrip, preParsedAst) {
 	let changed = false;
 	const previouslyReferencedIdentifiers = findReferencedIdentifiers(ast);
 	const removedExportLocalNames = /* @__PURE__ */ new Set();
-	traverse$1(ast, { ExportNamedDeclaration(path$2) {
+	traverse(ast, { ExportNamedDeclaration(path$2) {
 		const { declaration, specifiers } = path$2.node;
 		if (declaration && isVariableDeclaration(declaration)) {
 			const remaining = declaration.declarations.filter((decl) => {
@@ -1719,7 +1717,7 @@ function stripExports(code, exportsToStrip, preParsedAst) {
 			}
 		}
 	} });
-	if (changed) traverse$1(ast, { ExpressionStatement(path$2) {
+	if (changed) traverse(ast, { ExpressionStatement(path$2) {
 		if (!path$2.parentPath?.isProgram()) return;
 		if (path$2.node.expression.type === "AssignmentExpression") {
 			const left = path$2.node.expression.left;
@@ -2038,93 +2036,19 @@ function storefrontNextTargets(config = {}) {
 
 //#endregion
 //#region src/plugins/uiTargetDevMode.ts
-const traverse = traverseModule.default || traverseModule;
-const UI_TARGET_JSX_RE = /<UITarget[\s/>]/;
 /**
-* Vite plugin that adds visual markers to UITarget components in development.
+* @deprecated This plugin has been removed. It was an internal-only debugging aid
+* that could cause build failures when extensions were trimmed. The export is kept
+* as a no-op for backward compatibility and will be removed in v2.
 *
-* PRODUCTION: This plugin is completely inactive - zero overhead.
-* DEVELOPMENT: Transforms UITarget JSX to add visual debugging markers.
+* **Migration:** Remove any `uiTargetDevMode()` plugin from your `vite.config.ts`,
+* delete `vite-plugins/ui-target-dev-mode.ts` if it exists, and remove the plugin
+* from the Vite plugins array.
 *
-* @example
-* // Source code:
-* <UITarget targetId="pdp.loyalty.badge">
-*   <Widget />
-* </UITarget>
-*
-* // Transformed in DEV mode:
-* <UITargetDevMarker
-*   targetId="pdp.loyalty.badge"
-*   __file__="/src/components/product.tsx"
-*   __hasChildren__={true}
-* >
-*   <Widget />
-* </UITargetDevMarker>
+* @returns A no-op Vite plugin
 */
-function uiTargetDevModePlugin(config = {}) {
-	if (process.env.NODE_ENV === "production") return { name: "storefront-next:ui-target-dev-mode-noop" };
-	if (!(config.enabled ?? process.env.VITE_UI_TARGET_DEV_MODE === "true")) return { name: "storefront-next:ui-target-dev-mode-disabled" };
-	logger.info("🎯 UITarget Dev Mode enabled");
-	if (config.filterCategory) logger.info(`   Filtering to category: ${config.filterCategory} (build-time)`);
-	return {
-		name: "storefront-next:ui-target-dev-mode",
-		enforce: "pre",
-		transform(code, id) {
-			if (!id.match(/\.(tsx|jsx)$/)) return null;
-			if (id.includes("node_modules")) return null;
-			if (id.includes("/targets/ui-target.tsx")) return null;
-			if (!UI_TARGET_JSX_RE.test(code) || !code.includes("from '@/targets/ui-target'")) return null;
-			try {
-				const ast = parse(code, {
-					sourceType: "module",
-					plugins: [
-						"typescript",
-						"jsx",
-						"decorators-legacy"
-					]
-				});
-				let hasTransforms = false;
-				const targetIds = [];
-				traverse(ast, { JSXElement(path$2) {
-					const openingElement = path$2.node.openingElement;
-					if (!isJSXIdentifier(openingElement.name) || openingElement.name.name !== "UITarget") return;
-					const targetIdAttr = openingElement.attributes.find((attr) => isJSXAttribute(attr) && isJSXIdentifier(attr.name) && attr.name.name === "targetId");
-					if (!targetIdAttr) {
-						logger.warn(`UITarget without targetId in ${id}`);
-						return;
-					}
-					const targetId = isStringLiteral(targetIdAttr.value) ? targetIdAttr.value.value : null;
-					if (!targetId) {
-						logger.warn(`UITarget with non-string targetId in ${id}`);
-						return;
-					}
-					if (config.filterCategory && !targetId.startsWith(`${config.filterCategory}.`)) return;
-					const hasChildren = path$2.node.children.length > 0;
-					openingElement.name = jsxIdentifier("UITargetDevMarker");
-					if (path$2.node.closingElement) path$2.node.closingElement.name = jsxIdentifier("UITargetDevMarker");
-					const hint = config.hintMap?.[targetId];
-					openingElement.attributes.push(jsxAttribute(jsxIdentifier("__file__"), stringLiteral(id)), jsxAttribute(jsxIdentifier("__hasChildren__"), jsxExpressionContainer(booleanLiteral(hasChildren))), ...hint ? [jsxAttribute(jsxIdentifier("__hint__"), stringLiteral(hint))] : []);
-					hasTransforms = true;
-					targetIds.push(targetId);
-				} });
-				if (!hasTransforms) return null;
-				const devMarkerImport = importDeclaration([importSpecifier(identifier("UITargetDevMarker"), identifier("UITargetDevMarker"))], stringLiteral("@/lib/ui-target-dev-mode/marker"));
-				ast.program.body.unshift(devMarkerImport);
-				const output = generate(ast, {
-					retainLines: true,
-					compact: false
-				}, code);
-				logger.debug(`Transformed ${targetIds.length} targets in ${id.split("/").pop()}`);
-				return {
-					code: output.code,
-					map: output.map
-				};
-			} catch (error) {
-				logger.error(`Failed to transform UITarget in ${id}:`, error);
-				return null;
-			}
-		}
-	};
+function uiTargetDevModePlugin(_config) {
+	return { name: "storefront-next:ui-target-dev-mode-deprecated-noop" };
 }
 
 //#endregion
