@@ -29,7 +29,26 @@ import {
 import { prepareForLocalDev } from './utils/local-dev-setup';
 
 const DEFAULT_STOREFRONT = 'sfcc-storefront';
-const STOREFRONT_NEXT_GITHUB_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-template';
+
+// Per-vertical customer-facing template repositories. Each vertical is published to
+// its own GitHub repo (not branches/tags of a shared repo), so the CLI clones one of
+// these — or a custom URL the user supplies.
+const STOREFRONT_FASHION_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-template';
+const STOREFRONT_COSMETIC_URL = 'https://github.com/SalesforceCommerceCloud/storefront-next-beauty';
+
+/**
+ * Available storefront verticals, keyed by the value accepted by the `--vertical` flag.
+ * `label` is the human-facing choice shown in the interactive prompt; `url` is the
+ * published template repository cloned for that vertical. Extend this map to surface a
+ * new vertical in both the prompt and the flag.
+ */
+const VERTICALS: Record<string, { label: string; url: string }> = {
+    fashion: { label: 'Salesforce B2C Commerce Retail Storefront (Fashion)', url: STOREFRONT_FASHION_URL },
+    cosmetic: { label: 'Salesforce B2C Commerce Beauty Storefront (Cosmetic)', url: STOREFRONT_COSMETIC_URL },
+};
+
+// The vertical used when `--defaults` is set but no template/vertical is specified.
+const DEFAULT_VERTICAL = 'fashion';
 
 const isLocalPath = (template: string): boolean =>
     template.startsWith('file://') ||
@@ -42,6 +61,7 @@ export const createStorefront = async (
         localPackagesDir?: string;
         name?: string;
         template?: string;
+        vertical?: string;
         templateBranch?: string;
         defaults?: boolean;
         outputDir?: string;
@@ -76,15 +96,36 @@ export const createStorefront = async (
 
     const outputPath = options.outputDir ? path.join(options.outputDir, storefront) : storefront;
 
-    // Use provided template or prompt for it
+    // Resolve the template to clone in strict priority order — each branch only runs
+    // when no higher-priority option already set `template`, so the order below is the
+    // precedence (highest first):
+    //   1. --template (explicit URL/path) always wins.
+    //   2. --vertical maps to that vertical's published repo and skips the prompt.
+    //   3. --defaults (with neither of the above) falls back to the default vertical
+    //      so CI/automation never blocks on the interactive prompt.
+    //   4. Otherwise prompt the user to pick a vertical or supply a custom URL.
+    // The `else if` makes the precedence structural: --vertical wins over --defaults, and
+    // --defaults can never override an explicit --template (the `!template` guard).
     let template = options.template;
+    if (!template && options.vertical) {
+        const vertical = VERTICALS[options.vertical];
+        if (!vertical) {
+            logger.error(
+                `Unknown vertical "${options.vertical}". Available verticals: ${Object.keys(VERTICALS).join(', ')}.`
+            );
+            process.exit(1);
+        }
+        template = vertical.url;
+    } else if (!template && options.defaults) {
+        template = VERTICALS[DEFAULT_VERTICAL].url;
+    }
     if (!template) {
         const response = await prompts({
             type: 'select',
             name: 'template',
             message: '📄 Which template would you like to use for your storefront?\n',
             choices: [
-                { title: 'Salesforce B2C Commerce Retail Storefront', value: STOREFRONT_NEXT_GITHUB_URL },
+                ...Object.values(VERTICALS).map((vertical) => ({ title: vertical.label, value: vertical.url })),
                 { title: 'A different template (I will provide the Github URL)', value: 'custom' },
             ],
         });

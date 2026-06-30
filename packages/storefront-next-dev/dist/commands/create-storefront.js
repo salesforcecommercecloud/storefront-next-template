@@ -12,7 +12,23 @@ import { parseEnv } from "node:util";
 
 //#region src/create-storefront.ts
 const DEFAULT_STOREFRONT = "sfcc-storefront";
-const STOREFRONT_NEXT_GITHUB_URL = "https://github.com/SalesforceCommerceCloud/storefront-next-template";
+/**
+* Available storefront verticals, keyed by the value accepted by the `--vertical` flag.
+* `label` is the human-facing choice shown in the interactive prompt; `url` is the
+* published template repository cloned for that vertical. Extend this map to surface a
+* new vertical in both the prompt and the flag.
+*/
+const VERTICALS = {
+	fashion: {
+		label: "Salesforce B2C Commerce Retail Storefront (Fashion)",
+		url: "https://github.com/SalesforceCommerceCloud/storefront-next-template"
+	},
+	cosmetic: {
+		label: "Salesforce B2C Commerce Beauty Storefront (Cosmetic)",
+		url: "https://github.com/SalesforceCommerceCloud/storefront-next-beauty"
+	}
+};
+const DEFAULT_VERTICAL = "fashion";
 const isLocalPath = (template) => template.startsWith("file://") || template.startsWith("/") || template.startsWith("./") || template.startsWith("../");
 const createStorefront = async (options = {}) => {
 	try {
@@ -35,15 +51,23 @@ const createStorefront = async (options = {}) => {
 	logger.info("\n");
 	const outputPath = options.outputDir ? path.join(options.outputDir, storefront) : storefront;
 	let template = options.template;
+	if (!template && options.vertical) {
+		const vertical = VERTICALS[options.vertical];
+		if (!vertical) {
+			logger.error(`Unknown vertical "${options.vertical}". Available verticals: ${Object.keys(VERTICALS).join(", ")}.`);
+			process.exit(1);
+		}
+		template = vertical.url;
+	} else if (!template && options.defaults) template = VERTICALS[DEFAULT_VERTICAL].url;
 	if (!template) {
 		template = (await prompts({
 			type: "select",
 			name: "template",
 			message: "📄 Which template would you like to use for your storefront?\n",
-			choices: [{
-				title: "Salesforce B2C Commerce Retail Storefront",
-				value: STOREFRONT_NEXT_GITHUB_URL
-			}, {
+			choices: [...Object.values(VERTICALS).map((vertical) => ({
+				title: vertical.label,
+				value: vertical.url
+			})), {
 				title: "A different template (I will provide the Github URL)",
 				value: "custom"
 			}]
@@ -198,6 +222,7 @@ var CreateStorefront = class CreateStorefront extends Command {
 	static description = "Create a storefront project";
 	static examples = [
 		"<%= config.bin %> <%= command.id %>",
+		"<%= config.bin %> <%= command.id %> -n my-storefront -V cosmetic",
 		"<%= config.bin %> <%= command.id %> -n my-storefront -t https://github.com/org/template -b release-0.2.x",
 		"<%= config.bin %> <%= command.id %> -n my-storefront -t /path/to/local/template",
 		"<%= config.bin %> <%= command.id %> -l /path/to/monorepo/packages"
@@ -210,6 +235,11 @@ var CreateStorefront = class CreateStorefront extends Command {
 		template: Flags.string({
 			char: "t",
 			description: "Template repository to use for the storefront (GitHub URL or local path)"
+		}),
+		vertical: Flags.string({
+			char: "V",
+			description: "Vertical template to generate from. Selects the matching published template repository. Ignored if --template is provided.",
+			options: ["fashion", "cosmetic"]
 		}),
 		"template-branch": Flags.string({
 			char: "b",
@@ -234,6 +264,7 @@ var CreateStorefront = class CreateStorefront extends Command {
 		await createStorefront({
 			name: flags.name,
 			template: flags.template,
+			vertical: flags.vertical,
 			templateBranch: flags["template-branch"],
 			localPackagesDir: flags["local-packages-dir"],
 			defaults: flags.defaults,

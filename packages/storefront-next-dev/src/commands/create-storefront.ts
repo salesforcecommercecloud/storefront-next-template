@@ -25,6 +25,7 @@ export default class CreateStorefront extends Command {
 
     static examples = [
         '<%= config.bin %> <%= command.id %>',
+        '<%= config.bin %> <%= command.id %> -n my-storefront -V cosmetic',
         '<%= config.bin %> <%= command.id %> -n my-storefront -t https://github.com/org/template -b release-0.2.x',
         '<%= config.bin %> <%= command.id %> -n my-storefront -t /path/to/local/template',
         '<%= config.bin %> <%= command.id %> -l /path/to/monorepo/packages',
@@ -38,6 +39,12 @@ export default class CreateStorefront extends Command {
         template: Flags.string({
             char: 't',
             description: 'Template repository to use for the storefront (GitHub URL or local path)',
+        }),
+        vertical: Flags.string({
+            char: 'V',
+            description:
+                'Vertical template to generate from. Selects the matching published template repository. Ignored if --template is provided.',
+            options: ['fashion', 'cosmetic'],
         }),
         'template-branch': Flags.string({
             char: 'b',
@@ -64,6 +71,7 @@ export default class CreateStorefront extends Command {
         await createStorefront({
             name: flags.name,
             template: flags.template,
+            vertical: flags.vertical,
             templateBranch: flags['template-branch'],
             localPackagesDir: flags['local-packages-dir'],
             defaults: flags.defaults,

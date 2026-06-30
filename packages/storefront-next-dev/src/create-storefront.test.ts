@@ -903,6 +903,122 @@ describe('create-storefront', () => {
         });
     });
 
+    describe('--vertical flag', () => {
+        // Shared mock setup: a remote clone with no extensions and an empty config-meta.
+        const mockRemoteClone = () => {
+            vi.mocked(execSync).mockImplementation(() => '');
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                if (String(p).includes('config.json')) return false;
+                if (String(p).endsWith('.env.default')) return false;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+        };
+
+        it('should clone the fashion vertical repo without prompting when --vertical fashion is provided', async () => {
+            mockRemoteClone();
+
+            await createStorefront({ name: 'my-storefront', vertical: 'fashion', defaults: true });
+
+            expect(execFileSync).toHaveBeenCalledWith('git', [
+                'clone',
+                '--depth',
+                '1',
+                'https://github.com/SalesforceCommerceCloud/storefront-next-template',
+                'my-storefront',
+            ]);
+            expect(prompts).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'template' }));
+        });
+
+        it('should clone the cosmetic vertical repo without prompting when --vertical cosmetic is provided', async () => {
+            mockRemoteClone();
+
+            await createStorefront({ name: 'my-storefront', vertical: 'cosmetic', defaults: true });
+
+            expect(execFileSync).toHaveBeenCalledWith('git', [
+                'clone',
+                '--depth',
+                '1',
+                'https://github.com/SalesforceCommerceCloud/storefront-next-beauty',
+                'my-storefront',
+            ]);
+            expect(prompts).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'template' }));
+        });
+
+        it('should abort with a helpful message when an unknown vertical is provided', async () => {
+            vi.mocked(execSync).mockImplementation(() => '');
+
+            await createStorefront({ name: 'my-storefront', vertical: 'nope', defaults: true }).catch(() => {});
+
+            expect(exitMock).toHaveBeenCalledWith(1);
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Unknown vertical "nope"')
+            );
+        });
+
+        it('should default to the fashion vertical when --defaults is set with no template or vertical', async () => {
+            mockRemoteClone();
+
+            await createStorefront({ name: 'my-storefront', defaults: true });
+
+            expect(execFileSync).toHaveBeenCalledWith('git', [
+                'clone',
+                '--depth',
+                '1',
+                'https://github.com/SalesforceCommerceCloud/storefront-next-template',
+                'my-storefront',
+            ]);
+            expect(prompts).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'template' }));
+        });
+
+        it('should let --vertical take precedence over the --defaults fallback', async () => {
+            mockRemoteClone();
+
+            // cosmetic + defaults: the vertical must win over the fashion default fallback.
+            await createStorefront({ name: 'my-storefront', vertical: 'cosmetic', defaults: true });
+
+            expect(execFileSync).toHaveBeenCalledWith('git', [
+                'clone',
+                '--depth',
+                '1',
+                'https://github.com/SalesforceCommerceCloud/storefront-next-beauty',
+                'my-storefront',
+            ]);
+            // The fashion default must never be cloned when a vertical is explicit.
+            expect(execFileSync).not.toHaveBeenCalledWith(
+                'git',
+                expect.arrayContaining(['https://github.com/SalesforceCommerceCloud/storefront-next-template'])
+            );
+        });
+
+        it('should let an explicit --template take precedence over the --defaults fallback', async () => {
+            mockRemoteClone();
+
+            // template + defaults: the explicit URL must win; the fashion default must not clone.
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://github.com/org/custom-template',
+                defaults: true,
+            });
+
+            expect(execFileSync).toHaveBeenCalledWith('git', [
+                'clone',
+                '--depth',
+                '1',
+                'https://github.com/org/custom-template',
+                'my-storefront',
+            ]);
+            expect(execFileSync).not.toHaveBeenCalledWith(
+                'git',
+                expect.arrayContaining(['https://github.com/SalesforceCommerceCloud/storefront-next-template'])
+            );
+        });
+    });
+
     describe('--defaults flag', () => {
         it('should skip extension and config prompts when defaults is true', async () => {
             vi.mocked(fs.existsSync).mockImplementation((p: any) => {
