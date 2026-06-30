@@ -1,5 +1,169 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`OrderSummary stories snapshot > CartItemsAccordionInteraction story renders and matches snapshot 1`] = `
+<div
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"
+  data-slot="card"
+>
+  <div
+    class="px-[var(--cart-summary-px)]"
+    data-slot="card-content"
+  >
+    <div
+      class="space-y-4"
+      data-testid="sf-order-summary"
+    >
+      <h2
+        class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
+        id="order-summary-heading-desktop"
+      >
+        Order Summary
+      </h2>
+      <hr
+        class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+      />
+      <div
+        aria-label="Order Summary"
+        class="space-y-2"
+        role="region"
+      >
+        <div
+          class="w-full"
+          data-orientation="vertical"
+          data-slot="accordion"
+        >
+          <div
+            class="border-b last:border-b-0"
+            data-orientation="vertical"
+            data-slot="accordion-item"
+            data-state="closed"
+          >
+            <h3
+              class="flex"
+              data-orientation="vertical"
+              data-state="closed"
+            >
+              <button
+                aria-controls="radix-«x»"
+                aria-expanded="false"
+                class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-ui py-4 text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left"
+                data-orientation="vertical"
+                data-radix-collection-item=""
+                data-slot="accordion-trigger"
+                data-state="closed"
+                id="radix-«x»"
+                type="button"
+              >
+                <span
+                  class="flex-1 text-left text-sm text-primary"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-shopping-cart inline mr-2 w-4 h-4"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="8"
+                      cy="21"
+                      r="1"
+                    />
+                    <circle
+                      cx="19"
+                      cy="21"
+                      r="1"
+                    />
+                    <path
+                      d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                    />
+                  </svg>
+                  3 items in cart
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </button>
+            </h3>
+            <div
+              aria-labelledby="radix-«x»"
+              class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+              data-orientation="vertical"
+              data-slot="accordion-content"
+              data-state="closed"
+              hidden=""
+              id="radix-«x»"
+              role="region"
+              style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
+            />
+          </div>
+        </div>
+        <div
+          class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
+        >
+          <div
+            class="flex justify-between items-center"
+          >
+            <span>
+              Subtotal
+            </span>
+            <span>
+              £73.57
+            </span>
+          </div>
+          <div
+            class="flex justify-between items-center"
+          >
+            <div
+              class="flex items-center"
+            >
+              <span>
+                Shipping
+              </span>
+            </div>
+            <span
+              class="text-muted-foreground"
+            >
+              TBD
+            </span>
+          </div>
+          <div
+            class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
+          >
+            <span>
+              Total
+            </span>
+            <span>
+              £73.57
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`OrderSummary stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
   class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui border-border py-6 shadow-ui !py-4"

@@ -473,13 +473,13 @@ importers:
         version: 4.11.11
       '@oclif/plugin-help':
         specifier: ^6.2.36
-        version: 6.2.52
+        version: 6.2.53
       '@oclif/plugin-not-found':
         specifier: ^3.2.73
         version: 3.2.88(@types/node@24.3.0)
       '@oclif/plugin-plugins':
         specifier: ^5
-        version: 5.4.79
+        version: 5.4.80
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -1218,8 +1218,8 @@ packages:
     peerDependencies:
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.5':
-    resolution: {integrity: sha512-oNjBvzLq2GPZtJphCjLqXow/cHySHSgtxvKZb7OqSZ/xHgw6NWNhfad+6AB9cLeVm6eA9d/qMll3JdEHjy6M+A==}
+  '@csstools/css-syntax-patches-for-csstree@1.1.6':
+    resolution: {integrity: sha512-TcJCWFbXLPpJYq6z7bfOyjWYJDiDg2/I4gyUC9pqPNqHFRIey0EB0q0L5cSnQDfWJg8Jd6VadakxdIez/3zkqQ==}
     peerDependencies:
       css-tree: ^3.2.1
     peerDependenciesMeta:
@@ -2432,8 +2432,8 @@ packages:
     resolution: {integrity: sha512-ZMcQTsHaiCEOZIRZoynUQ+98fyM1Adoqx4LbOgYWRVKXKbavHPCZKm6F+/y0GpWscXVoeGnvJO6GIBsigrqaSA==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.52':
-    resolution: {integrity: sha512-qtrVz41wHDqG2rvx7xToYHVgJVBRcxE8aPSla/d5wNuHPZsDLm56Nl07pI+DNLA42Xbt9a70POl08qZgBH6FgA==}
+  '@oclif/plugin-help@6.2.53':
+    resolution: {integrity: sha512-njx2nTH87EQEEuz4ShNtL0gzzN981MRkDPqScbu+Tkd7NpIv30OHdTjQK1GzGtkf+V2RvSYIrX+LrLsUVh9DJw==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-not-found@3.2.72':
@@ -2448,8 +2448,8 @@ packages:
     resolution: {integrity: sha512-jezB3NEz8fQdb/jrZq8YPvEiF+aH0wHiexVCvnj7Rmy+mmTHicEuGJMPiYeJNcRvG687raIhc6TjyMMPKi0W4A==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-plugins@5.4.79':
-    resolution: {integrity: sha512-Nnk3OzELhldXN/544lhIMo1uLC/4W2/hEY+3Oj8WGbkWR7kBn8xwvgCbb3BAx/BROqPP/S+ZPDz8gdom7HudTA==}
+  '@oclif/plugin-plugins@5.4.80':
+    resolution: {integrity: sha512-D32rqGtj9YdMixC0qHyqqT5aVAHZ0gXeJ5OgotOEtfuPsVOlRHqf5QZzzxj55XjeSO2+w309sVngqkO+WudSEQ==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-version@2.2.36':
@@ -8895,8 +8895,8 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postcss@8.5.15:
-    resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
+  postcss@8.5.16:
+    resolution: {integrity: sha512-vuwillviilfKZsg0VGj5R/YwwcHx4SLsIOI/7K6mQkWx+l5cUHTjj5g0AasTBcyXsbfTgrwsUNmVUb5xVwyPwg==}
     engines: {node: ^10 || ^12 || >=14}
 
   powershell-utils@0.1.0:
@@ -9991,14 +9991,14 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
-  tldts-core@7.4.4:
-    resolution: {integrity: sha512-vwVLJVvvpslm7vqAH7+XNj/neA/Ynq7DT2EEcMuwc5YzN5XaMyRAqxwU+uX3azZ1FQtB2gvrvnLnAEkvYlVdfg==}
+  tldts-core@7.4.5:
+    resolution: {integrity: sha512-pGrwzZDvPwKe+7NNUqAunb6rqTfynr0VOUhCMdqbu5xlvNiszsAJygRzwvpVycdzejlbpY+SWJOn+s75Og7FEA==}
 
   tldts-icann@6.1.86:
     resolution: {integrity: sha512-NFxmRT2lAEMcCOBgeZ0NuM0zsK/xgmNajnY6n4S1mwAKocft2s2ise1O3nQxrH3c+uY6hgHUV9GGNVp7tUE4Sg==}
 
-  tldts@7.4.4:
-    resolution: {integrity: sha512-kFXFK7O4WPextIUAOk8qtnw9dxR9UIXP9CjuH1cTBVBZMDeQcUPgr/IazGiw1B0Yiw5L75gHLWeW4iD793r90g==}
+  tldts@7.4.5:
+    resolution: {integrity: sha512-RfEzKWcq5fHUOFq7J3rl3Oz6ylKGtcHqUznzj4EcXsxLSIjJcvpbXAQtWGeJQ0xKnimR5e0Cn+cn9TssfMzm+g==}
     hasBin: true
 
   tmp@0.0.33:
@@ -10386,8 +10386,8 @@ packages:
     resolution: {integrity: sha512-kiGUalWN+rgBJ/1OHZsBtU4rXZOfj/7rKQxULKlIzwzQSvMJUUNgPwJEEh7gU6xEVxC0ahoOBvN2YI8GH6FNgA==}
     engines: {node: '>=10.12.0'}
 
-  valibot@1.4.1:
-    resolution: {integrity: sha512-klCmFTz2jeDluy9RwX+F884TCiogtdBJ/YaxSx1EOBYXa3NXNWj8kR1jjN8rzluwojJVWWaHJ4r1U5LfICnM3g==}
+  valibot@1.4.2:
+    resolution: {integrity: sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -11497,7 +11497,7 @@ snapshots:
     dependencies:
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.5(css-tree@3.2.1)':
+  '@csstools/css-syntax-patches-for-csstree@1.1.6(css-tree@3.2.1)':
     optionalDependencies:
       css-tree: 3.2.1
 
@@ -12773,7 +12773,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.8.0
 
-  '@oclif/plugin-help@6.2.52':
+  '@oclif/plugin-help@6.2.53':
     dependencies:
       '@oclif/core': 4.11.11
 
@@ -12811,7 +12811,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/plugin-plugins@5.4.79':
+  '@oclif/plugin-plugins@5.4.80':
     dependencies:
       '@oclif/core': 4.11.11
       ansis: 3.17.0
@@ -13626,7 +13626,7 @@ snapshots:
       react-router: 7.18.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       semver: 7.8.5
       tinyglobby: 0.2.17
-      valibot: 1.4.1(typescript@5.9.2)
+      valibot: 1.4.2(typescript@5.9.2)
       vite: 7.1.7(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vite-node: 3.2.4(@types/node@24.3.0)(jiti@2.7.0)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     optionalDependencies:
@@ -16225,7 +16225,7 @@ snapshots:
   cssstyle@5.3.7:
     dependencies:
       '@asamuzakjp/css-color': 4.1.2
-      '@csstools/css-syntax-patches-for-csstree': 1.1.5(css-tree@3.2.1)
+      '@csstools/css-syntax-patches-for-csstree': 1.1.6(css-tree@3.2.1)
       css-tree: 3.2.1
       lru-cache: 11.5.1
 
@@ -20419,7 +20419,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss@8.5.15:
+  postcss@8.5.16:
     dependencies:
       nanoid: 3.3.15
       picocolors: 1.1.1
@@ -21759,15 +21759,15 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
-  tldts-core@7.4.4: {}
+  tldts-core@7.4.5: {}
 
   tldts-icann@6.1.86:
     dependencies:
       tldts-core: 6.1.86
 
-  tldts@7.4.4:
+  tldts@7.4.5:
     dependencies:
-      tldts-core: 7.4.4
+      tldts-core: 7.4.5
 
   tmp@0.0.33:
     dependencies:
@@ -21792,7 +21792,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.4.4
+      tldts: 7.4.5
 
   tr46@0.0.3: {}
 
@@ -22154,7 +22154,7 @@ snapshots:
       '@types/istanbul-lib-coverage': 2.0.6
       convert-source-map: 2.0.0
 
-  valibot@1.4.1(typescript@5.9.2):
+  valibot@1.4.2(typescript@5.9.2):
     optionalDependencies:
       typescript: 5.9.2
 
@@ -22220,7 +22220,7 @@ snapshots:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
-      postcss: 8.5.15
+      postcss: 8.5.16
       rollup: 4.62.2
       tinyglobby: 0.2.17
     optionalDependencies:
