@@ -50,9 +50,7 @@ Scenario(
         checkoutPage.validatePageLoaded();
 
         await stubLoginPrefs({ branch: 'loginModal', email });
-        await checkoutPage.fillContactInfoEmail(email);
-        await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-        await checkoutPage.blurEmailField();
+        await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
         const loginModalAppeared = await checkoutPage.waitForLoginModal(10);
         expect(loginModalAppeared, 'Login modal should appear after email blur when requiresLogin is true').to.be.true;
@@ -94,9 +92,7 @@ Scenario('Continue as Guest from login modal completes full checkout with order 
     checkoutPage.validatePageLoaded();
 
     await stubLoginPrefs({ branch: 'loginModal', email });
-    await checkoutPage.fillContactInfoEmail(email);
-    await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-    await checkoutPage.blurEmailField();
+    await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
     const loginModalAppeared = await checkoutPage.waitForLoginModal(10);
     expect(loginModalAppeared, 'Login modal should appear').to.be.true;

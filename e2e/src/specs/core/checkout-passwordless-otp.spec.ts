@@ -48,9 +48,7 @@ Scenario('Guest enters registered email, sees passwordless OTP modal, and contin
     checkoutPage.validatePageLoaded();
 
     await stubLoginPrefs({ branch: 'otp', email: registeredEmail });
-    await checkoutPage.fillContactInfoEmail(registeredEmail);
-    await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-    await checkoutPage.blurEmailField();
+    await checkoutPage.fillContactInfoForPasswordless(registeredEmail, TEST_SHIPPING_ADDRESS.phone);
 
     const modalAppeared = await checkoutPage.waitForPasswordlessOtpModal(10);
     expect(modalAppeared, 'Passwordless OTP modal should appear after email blur').to.be.true;

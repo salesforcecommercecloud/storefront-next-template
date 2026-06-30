@@ -59,9 +59,7 @@ Scenario(
         // and SLAS 404 (email not registered) - both are mapped to "let the shopper
         // proceed as guest". Neither modal should open.
         await stubLoginPrefs({ branch: 'guest', email });
-        await checkoutPage.fillContactInfoEmail(email);
-        await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-        await checkoutPage.blurEmailField();
+        await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
         // Wait briefly to let any modal open if it were going to.
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -106,9 +104,7 @@ Scenario(
         checkoutPage.validatePageLoaded();
 
         await stubLoginPrefs({ branch: 'loginModal', email });
-        await checkoutPage.fillContactInfoEmail(email);
-        await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-        await checkoutPage.blurEmailField();
+        await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
         const loginModalAppeared = await checkoutPage.waitForLoginModal(10);
         expect(loginModalAppeared, 'Standard login modal should open when requiresLogin is true').to.be.true;

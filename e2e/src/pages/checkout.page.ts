@@ -2093,6 +2093,20 @@ class CheckoutPage {
     }
 
     /**
+     * Fill contact info for the passwordless flow without prematurely triggering the OTP modal.
+     *
+     * The email field's onBlur fires passwordless detection. Filling email first and then moving focus
+     * to the phone field blurs the email mid-sequence, opening the OTP modal while the phone is still
+     * being entered. The remaining phone characters land in the OTP input and the flow breaks. Filling
+     * the phone first makes the explicit email blur the only blur that reaches the detection handler.
+     */
+    async fillContactInfoForPasswordless(email: string, phone: string): Promise<void> {
+        this.fillContactInfoPhone(phone);
+        this.fillContactInfoEmail(email);
+        await this.blurEmailField();
+    }
+
+    /**
      * Wait for passwordless OTP modal to appear
      */
     waitForPasswordlessOtpModal(timeoutSeconds: number = 10): boolean {
