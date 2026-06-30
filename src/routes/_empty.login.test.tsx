@@ -302,6 +302,34 @@ describe('Login Route', () => {
             }
         });
 
+        it('translates session_expired error code to the localized message', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+
+            const mockRequest = new Request('http://localhost:5173/login?error=session_expired');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { pattern: '/login' })
+            );
+
+            if (!(result instanceof Response)) {
+                expect(result.error).toBe('errors:api.unauthorized');
+            }
+        });
+
+        it('passes through unrecognized error codes unchanged', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+
+            const mockRequest = new Request('http://localhost:5173/login?error=some_other_error');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { pattern: '/login' })
+            );
+
+            if (!(result instanceof Response)) {
+                expect(result.error).toBe('some_other_error');
+            }
+        });
+
         it('should parse mode from URL query parameter', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' });
 
@@ -1236,6 +1264,25 @@ describe('Login Route', () => {
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
             expect(screen.queryByTestId('social-buttons')).not.toBeInTheDocument();
+        });
+
+        it('displays the localized session-expired message above the form when error is set', () => {
+            renderWithAction({
+                error: 'errors:api.unauthorized',
+                passwordlessSent: false,
+                email: undefined,
+                mode: 'password',
+                isPasswordlessLoginEnabled: false,
+                isSocialLoginEnabled: false,
+                pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
+            });
+
+            expect(screen.getByText('errors:api.unauthorized')).toBeInTheDocument();
+            // The message appears above the form inputs.
+            const errorEl = screen.getByText('errors:api.unauthorized');
+            const emailInput = screen.getByLabelText(/email/i);
+            expect(errorEl.compareDocumentPosition(emailInput) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         });
 
         it('should not show error on initial render', () => {

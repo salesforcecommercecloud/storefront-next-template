@@ -184,8 +184,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     // and swallows SCAPI errors — a missing snapshot must not block sign-in.
     const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
 
+    const { t } = getTranslation(context);
+    const resolvedError = error === 'session_expired' ? t('errors:api.unauthorized') : error;
+
     return {
-        error,
+        error: resolvedError,
         passwordlessSent,
         showOTPForm,
         email,

@@ -57,6 +57,21 @@ const GLOBAL_ERROR_KEYS: Record<string, string> = {
 
 const DEFAULT_ERROR_KEY = 'errors:api.serverError';
 
+const UNAUTHORIZED_CODES = new Set(['NOT_AUTHENTICATED', 'NOT_AUTHORIZED', 'EXPIRED']);
+
+/**
+ * Returns true when the fetcher data carries an auth/session-expired error code,
+ * meaning the shopper's session is no longer valid.
+ */
+export function isUnauthorizedError(data: CheckoutErrorData): boolean {
+    if (!data) return false;
+    const raw = data.error ?? data.formError;
+    if (raw && typeof raw === 'object' && 'code' in raw) {
+        return UNAUTHORIZED_CODES.has((raw as { code: string }).code);
+    }
+    return false;
+}
+
 /**
  * Resolves an error code to a translated user-facing message using a two-level lookup:
  * 1. Step-specific override (e.g. OPERATION_FAILED at payment -> "Payment processing failed")

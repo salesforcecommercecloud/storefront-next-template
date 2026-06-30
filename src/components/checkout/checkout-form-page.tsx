@@ -37,7 +37,8 @@ import { UITarget } from '@/targets/ui-target';
 import { PaymentSubmissionRefProvider } from './payment-submission-context';
 import { clearCheckoutCorrelationId, getOrCreateCheckoutCorrelationId } from '@/lib/checkout/correlation';
 import { Spinner } from '@/components/spinner';
-import { getCheckoutDisplayError } from './utils/checkout-display-error';
+import { getCheckoutDisplayError, isUnauthorizedError } from './utils/checkout-display-error';
+import { SessionExpiredBanner } from './components/session-expired-banner';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
 import { handlePickupContinueAction, hasAnyValidShippingMethod } from './utils/checkout-utils';
 import { isAddressEmpty } from '@/lib/address/address-utils';
@@ -844,6 +845,13 @@ export default function CheckoutFormPage({
         step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && !shippingBlocked;
     const isEstimate = cart ? isOrderTotalEstimated(cart) : true;
 
+    const showSessionExpiredBanner =
+        isUnauthorizedError(contactFetcher.data) ||
+        isUnauthorizedError(shippingAddressFetcher.data) ||
+        isUnauthorizedError(shippingOptionsFetcher.data) ||
+        isUnauthorizedError(paymentFetcher.data) ||
+        isUnauthorizedError(placeOrderFetcher.data);
+
     return (
         <div data-section="checkout" className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
@@ -851,6 +859,11 @@ export default function CheckoutFormPage({
                 <Typography variant="h2" as="h1" className="mb-8">
                     {t('pageTitle')}
                 </Typography>
+                {showSessionExpiredBanner && (
+                    <div className="mb-6">
+                        <SessionExpiredBanner returnUrl={routes.checkout} />
+                    </div>
+                )}
                 {/* Mobile Order Summary + My Cart */}
                 <div className="md:hidden mb-6 border border-border">
                     <Suspense fallback={<OrderSummarySkeleton />}>

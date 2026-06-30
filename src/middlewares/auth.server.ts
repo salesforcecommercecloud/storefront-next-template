@@ -50,6 +50,7 @@ import {
 } from '@/middlewares/auth.utils';
 import { isAbsoluteURL } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
+import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
@@ -58,6 +59,13 @@ import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies
 import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context/constants';
+
+/**
+ * Sentinel value stored in auth storage when a registered shopper's refresh token fails.
+ * The post-handler section reads this and emits a redirect to the login page instead of
+ * falling through to guest login.
+ */
+const SESSION_EXPIRED_REDIRECT = '__session_expired_redirect__';
 
 /**
  * Refresh access token using refresh token.
@@ -531,12 +539,16 @@ const retrieveAuthStorageData = async (
             logger.info('Auth: token refreshed', { userType: storage.get('userType') });
             return 'tokenRefreshed';
         } catch (error) {
-            // Invalid/expired refresh token: log and fall through to guest login. We do NOT
-            // record this in storage.error — only the FINAL outcome of this function should
-            // populate the error key, so a successful guest login below leaves clean state.
-            // (Previously this set storage.error here, which leaked into a successful guest
-            // login because updateAuthStorageDataByTokenResponse doesn't clear keys on success.)
-            logger.warn('Auth: refresh token failed, falling back to guest login', { error, storedUserType });
+            logger.warn('Auth: refresh token failed', { error, storedUserType });
+            // Registered shopper whose refresh failed: set a sentinel so the post-handler
+            // can redirect to login instead of silently creating a guest session. The guest
+            // login below still runs so next() has a valid token and does not crash; the
+            // post-handler replaces the response with the redirect before it is returned.
+            if (storedUserType === 'registered') {
+                storage.set('error', SESSION_EXPIRED_REDIRECT);
+                // Fall through so guest login runs and next() has a usable token.
+            }
+            // Guest refresh failure: fall through to guest login (no sentinel needed).
         }
     }
 
@@ -960,6 +972,32 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         });
         authRecoveryTriggered = recovery.authRecoveryTriggered;
         response = recovery.response;
+    }
+
+    if (storedAuthError === SESSION_EXPIRED_REDIRECT) {
+        // Delete the sentinel before the isDestroyed/error block below so it does not
+        // trigger a full cookie clear on what is otherwise a valid guest token.
+        authStorage.delete('error');
+
+        if (hasAuthRecoveryGuard) {
+            // Guard is already set: a previous session-expired redirect already fired but
+            // the session is still broken. Fall through to guest login (already done above)
+            // to avoid an infinite redirect loop.
+            logger.warn('Auth middleware: registered refresh failure blocked by guard, falling back to guest');
+        } else {
+            // Redirect the registered shopper to the login page. The request path already
+            // carries the site/locale prefix (e.g. /uk/en-GB/checkout), so buildUrlFromContext
+            // applies the same prefix to /login and the current path is used as returnUrl.
+            const requestPath = new URL(request.url).pathname;
+            const loginPath = buildUrlFromContext('/login', context);
+            const loginUrl = `${loginPath}?returnUrl=${encodeURIComponent(requestPath)}&error=session_expired`;
+            logger.info('Auth middleware: registered refresh failed, redirecting to login', { requestPath });
+            authRecoveryTriggered = true;
+            response = new Response(null, {
+                status: 307,
+                headers: { Location: loginUrl },
+            });
+        }
     }
 
     // After calling the handler: Write back storage data and cookies, if required

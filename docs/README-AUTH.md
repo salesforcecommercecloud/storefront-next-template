@@ -22,6 +22,8 @@ auth.server.ts middleware
   • decode access-token JWT (userType, customerId, usid, expiry, tracking consent)
   • if access token valid → use it
     elif refresh token present → refresh
+      if refresh fails AND user was registered → 307 redirect to /login?returnUrl=...&error=session_expired
+      if refresh fails AND user was guest → guest login
     else → guest login
   • write updated tokens/metadata via Set-Cookie
         │
@@ -78,6 +80,14 @@ All auth state is stored across separate cookies, each with its own purpose, exp
 When a SCAPI call returns **401** for a non-SLAS endpoint, the SCAPI client throws `AuthTokenInvalidError`. The middleware catches it in `handleAuthTokenInvalidation`, clears stale token state, re-runs the refresh/guest flow, and — if recovery succeeds — issues a **307 redirect** back to the same URL so the request restarts with fresh cookies. The redirect carries `x-sfnext-auth-recovery: 1` (observability only).
 
 To prevent loops, a short-lived guard cookie `cc-auth-recover` (`Max-Age=30`) is set during recovery. If a 401 recurs while the guard is present, recovery is **not** retried — the error surfaces and the response carries `x-sfnext-auth-recovery-guard: 1`. The guard is cleared on the follow-up request.
+
+### Registered session expiry redirect
+
+When a **registered** shopper's SLAS refresh token fails (SLAS returns a 400), the middleware redirects to `/login` (with the site/locale prefix) instead of silently downgrading the shopper to a guest session. The redirect carries `returnUrl` (the original request path, already prefixed) and `error=session_expired` so the login page can display a contextual message. A fresh guest session is created in parallel so the application has a valid token while the redirect is processed.
+
+The same `cc-auth-recover` guard cookie prevents redirect loops: if the guard is already set when the redirect would fire, the middleware falls through to the guest session rather than redirecting again. The guard expires after 30 seconds and is cleared on the follow-up request.
+
+Guest shoppers whose refresh token fails are unaffected by this change. They continue to receive a new guest session silently.
 
 ### JWT Integrity Validation
 

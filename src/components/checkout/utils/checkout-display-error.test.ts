@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect } from 'vitest';
-import { getCheckoutDisplayError } from './checkout-display-error';
+import { getCheckoutDisplayError, isUnauthorizedError } from './checkout-display-error';
 
 const mockT = (key: string) => `translated:${key}`;
 
@@ -181,5 +181,39 @@ describe('getCheckoutDisplayError', () => {
             const data = { step: 'payment', error: { code: 'OPERATION_FAILED', message: '' } };
             expect(getCheckoutDisplayError(data, 'payment')).toBeUndefined();
         });
+    });
+});
+
+describe('isUnauthorizedError', () => {
+    test('returns false for null data', () => {
+        expect(isUnauthorizedError(null)).toBe(false);
+    });
+
+    test('returns false for undefined data', () => {
+        expect(isUnauthorizedError(undefined)).toBe(false);
+    });
+
+    test('returns true for NOT_AUTHENTICATED code', () => {
+        expect(isUnauthorizedError({ error: { code: 'NOT_AUTHENTICATED', message: '401' } })).toBe(true);
+    });
+
+    test('returns true for NOT_AUTHORIZED code', () => {
+        expect(isUnauthorizedError({ error: { code: 'NOT_AUTHORIZED', message: '403' } })).toBe(true);
+    });
+
+    test('returns true for EXPIRED code', () => {
+        expect(isUnauthorizedError({ error: { code: 'EXPIRED', message: 'Token expired' } })).toBe(true);
+    });
+
+    test('returns false for non-auth error code', () => {
+        expect(isUnauthorizedError({ error: { code: 'NOT_FOUND', message: 'Basket not found' } })).toBe(false);
+    });
+
+    test('returns false when error is a plain string', () => {
+        expect(isUnauthorizedError({ formError: 'Session expired' })).toBe(false);
+    });
+
+    test('returns false when error field is absent', () => {
+        expect(isUnauthorizedError({ step: 'payment' })).toBe(false);
     });
 });
