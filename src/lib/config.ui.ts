@@ -41,6 +41,38 @@ export interface UIConfig {
              * @default true
              */
             showRecommendations: boolean;
+            /**
+             * When true, the cart line item (default variant) shows the
+             * variation-attributes row (e.g. "Color: …", "Size: …").
+             *
+             * @default true
+             */
+            showLineItemVariantAttributes: boolean;
+            /**
+             * When true, the cart line item (default variant) shows the
+             * strikethrough list price alongside the current price. When false,
+             * only the current price renders (no list price, "From" prefix, or
+             * inline `ProductPrice` promo callout). Note: this is the price
+             * column's inline callout, NOT the separate "Saved $X" badge —
+             * that is gated independently by `showLineItemPromoBadge`.
+             *
+             * @default true
+             */
+            showLineItemListPrice: boolean;
+            /**
+             * When true, the cart line item (default variant) shows the
+             * "Saved $X" promotion badge in the price column.
+             *
+             * @default true
+             */
+            showLineItemPromoBadge: boolean;
+            /**
+             * When true, the cart line item (default variant) shows the
+             * "Bonus Product" badge next to the title for bonus line items.
+             *
+             * @default true
+             */
+            showLineItemBonusBadge: boolean;
         };
         category: {
             /**
@@ -61,6 +93,10 @@ export const uiConfig: UIConfig = {
     pages: {
         cart: {
             showRecommendations: true,
+            showLineItemVariantAttributes: true,
+            showLineItemListPrice: true,
+            showLineItemPromoBadge: true,
+            showLineItemBonusBadge: true,
         },
         category: {
             showCategoryLabel: false,

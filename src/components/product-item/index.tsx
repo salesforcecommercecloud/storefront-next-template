@@ -37,6 +37,7 @@ import { getPriceData } from '../product-price/utils';
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { uiConfig } from '@/lib/config.ui';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
@@ -109,10 +110,17 @@ export function ProductItemVariantImage({
  * ProductItemVariantName component that renders product name as a link
  *
  * @param props - Component props
- * @param props.product - Product data containing name and ID information
+ * @param props.productItem - Product data containing name and ID information
+ * @param props.showBonusBadge - When true (default), renders the "Bonus Product" badge for bonus line items
  * @returns JSX element with product name link
  */
-export function ProductItemVariantName({ productItem }: { productItem: EnrichedProductItem }): ReactElement {
+export function ProductItemVariantName({
+    productItem,
+    showBonusBadge = true,
+}: {
+    productItem: EnrichedProductItem;
+    showBonusBadge?: boolean;
+}): ReactElement {
     const { t: tCart } = useTranslation('cart');
     const { t: tProduct } = useTranslation('product');
     if (!productItem) {
@@ -125,7 +133,7 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
         <div className="mb-2 md:mb-4 flex items-start gap-2 min-w-0">
-            {isBonusProduct && (
+            {showBonusBadge && isBonusProduct && (
                 <Badge variant="default" className="" role="status" aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
                 </Badge>
@@ -303,6 +311,10 @@ function ProductItem({
     const { t, i18n } = useTranslation();
     const config = useConfig();
     const showLineItemDescription = config.pages.cart?.showLineItemDescription ?? false;
+    // Per-vertical line-item display flags (default variant only). Resolved via the
+    // @/lib/config.ui seam — cosmetic overlays these to pare the cart tile down.
+    const { showLineItemVariantAttributes, showLineItemListPrice, showLineItemPromoBadge, showLineItemBonusBadge } =
+        uiConfig.pages.cart;
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
@@ -336,7 +348,11 @@ function ProductItem({
         return <div data-testid="product-item-error">Product data not available</div>;
     }
 
-    // Summary variant - compact display for product summary
+    // Summary variant - compact display for product summary.
+    // NOTE: the showLineItem* UI-config flags (variant attributes, list price, promo badge, bonus badge)
+    // are intentionally scoped to the DEFAULT variant below — they are NOT applied here. The summary tile
+    // (order summaries / checkout) keeps showing all of these regardless of vertical. Don't "consistency-fix"
+    // them onto this path without a deliberate decision.
     if (displayVariant === 'summary') {
         return (
             <div
@@ -390,15 +406,20 @@ function ProductItem({
                             <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0">
                                 <div className="min-w-0">
                                     <div className="md:hidden float-right ml-2">{deliveryActions?.(productItem)}</div>
-                                    <ProductItemVariantName productItem={productItem} />
+                                    <ProductItemVariantName
+                                        productItem={productItem}
+                                        showBonusBadge={showLineItemBonusBadge}
+                                    />
                                     {productItem.bundledProducts && (
                                         <BundledProductItems bundledProducts={productItem.bundledProducts} />
                                     )}
-                                    <ProductItemVariantAttributes
-                                        productItem={productItem}
-                                        displayVariant={displayVariant}
-                                        promotions={promotions}
-                                    />
+                                    {showLineItemVariantAttributes && (
+                                        <ProductItemVariantAttributes
+                                            productItem={productItem}
+                                            displayVariant={displayVariant}
+                                            promotions={promotions}
+                                        />
+                                    )}
                                     {showLineItemDescription && productItem.shortDescription ? (
                                         <Typography variant="muted" as="p" className="text-sm mt-2">
                                             {productItem.shortDescription}
@@ -441,6 +462,7 @@ function ProductItem({
                                                         currency={currency}
                                                         labelForA11y={productItem?.productName}
                                                         hidePromo
+                                                        currentPriceOnly={!showLineItemListPrice}
                                                         className="flex flex-row flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                                                         currentPriceProps={{
                                                             className:
@@ -468,7 +490,9 @@ function ProductItem({
                                                 </div>
                                             )}
                                         </div>
-                                        <ProductItemPromotions productItem={productItem} alignEnd />
+                                        {showLineItemPromoBadge && (
+                                            <ProductItemPromotions productItem={productItem} alignEnd />
+                                        )}
                                     </div>
 
                                     <div className="flex shrink-0 justify-end">
