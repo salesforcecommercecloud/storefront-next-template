@@ -291,7 +291,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                         <span
                                             key={interest.id}
                                             data-testid={`interest-badge-${interest.id}`}
-                                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
+                                            className={`inline-flex items-center gap-1.5 rounded-ui px-3 py-1.5 text-sm font-medium ${
                                                 isEditing
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'bg-primary/10 text-primary'
@@ -301,7 +301,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                 <button
                                                     type="button"
                                                     onClick={() => handleRemoveInterest(interest.id)}
-                                                    className="ml-0.5 rounded hover:bg-primary-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
+                                                    className="ml-0.5 rounded-ui hover:bg-primary-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
                                                     aria-label={`Remove ${interest.name}`}>
                                                     <XIcon className="h-3.5 w-3.5" />
                                                 </button>
@@ -345,7 +345,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                             <span
                                                                 key={val}
                                                                 data-testid={`pref-badge-${pref.id}-${val}`}
-                                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
+                                                                className={`inline-flex items-center gap-1.5 rounded-ui px-3 py-1.5 text-sm font-medium ${
                                                                     isEditing
                                                                         ? 'bg-primary text-primary-foreground'
                                                                         : 'bg-primary/10 text-primary'
@@ -357,7 +357,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                                         onClick={() =>
                                                                             handleRemoveMultiSelectItem(pref.id, val)
                                                                         }
-                                                                        className="ml-0.5 rounded hover:bg-primary-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
+                                                                        className="ml-0.5 rounded-ui hover:bg-primary-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
                                                                         aria-label={`Remove ${label}`}>
                                                                         <XIcon className="h-3.5 w-3.5" />
                                                                     </button>
@@ -402,7 +402,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
                                                             }
                                                             disabled={!isEditing}
                                                             className={cn(
-                                                                'px-4 py-2.5 text-sm font-medium transition-colors',
+                                                                'rounded-ui px-4 py-2.5 text-sm font-medium transition-colors',
                                                                 isSelected
                                                                     ? 'bg-foreground text-background'
                                                                     : isEditing

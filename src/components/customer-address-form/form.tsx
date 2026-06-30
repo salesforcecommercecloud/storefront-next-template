@@ -238,12 +238,12 @@ export const CustomerAddressForm = ({
             <Form {...form}>
                 <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-address-form">
                     {inlineSuccessMessage && (
-                        <div className="mb-4 p-3 bg-success/10 border border-success/20">
+                        <div className="mb-4 p-3 bg-success/10 rounded-ui border border-success/20">
                             <p className="text-sm text-success">{inlineSuccessMessage}</p>
                         </div>
                     )}
                     {inlineErrorMessage && (
-                        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20">
+                        <div className="mb-4 p-3 bg-destructive/10 rounded-ui border border-destructive/20">
                             <p className="text-sm text-destructive">{inlineErrorMessage}</p>
                         </div>
                     )}

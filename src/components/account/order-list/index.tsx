@@ -306,9 +306,9 @@ export function OrderListSkeleton(): ReactElement {
                         <CardContent className="p-6 space-y-4 border-b border-border animate-pulse">
                             <div className="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
                                 <div className="flex flex-wrap gap-x-8 gap-y-2">
-                                    <div className="h-10 w-24 bg-muted-foreground/20 rounded" />
-                                    <div className="h-10 w-20 bg-muted-foreground/20 rounded" />
-                                    <div className="h-10 w-16 bg-muted-foreground/20 rounded" />
+                                    <div className="h-10 w-24 bg-muted-foreground/20 rounded-ui" />
+                                    <div className="h-10 w-20 bg-muted-foreground/20 rounded-ui" />
+                                    <div className="h-10 w-16 bg-muted-foreground/20 rounded-ui" />
                                 </div>
                                 <div className="h-8 w-24 bg-muted-foreground/20 rounded-full" />
                             </div>
@@ -321,7 +321,7 @@ export function OrderListSkeleton(): ReactElement {
                 ))}
             </div>
             <div className="p-6 m-0 border-b border-x border-border rounded-b-xl">
-                <div className="h-5 w-32 bg-muted-foreground/20 rounded" />
+                <div className="h-5 w-32 bg-muted-foreground/20 rounded-ui" />
             </div>
         </>
     );

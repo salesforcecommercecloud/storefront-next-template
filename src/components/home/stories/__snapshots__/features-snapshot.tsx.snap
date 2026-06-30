@@ -26,7 +26,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
         class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3"
       >
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"
@@ -40,7 +40,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
           </p>
         </div>
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"
@@ -54,7 +54,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
           </p>
         </div>
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"
@@ -68,7 +68,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
           </p>
         </div>
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"
@@ -82,7 +82,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
           </p>
         </div>
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"
@@ -96,7 +96,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
           </p>
         </div>
         <div
-          class="bg-muted/30 p-6"
+          class="rounded-ui bg-muted/30 p-6"
         >
           <h3
             class="text-2xl font-semibold text-foreground mb-2"

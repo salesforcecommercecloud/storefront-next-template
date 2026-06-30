@@ -64,7 +64,7 @@ export default function ProductInfoCard({
     return (
         <div
             className={cn(
-                'flex items-start gap-3 border-2 bg-secondary p-4',
+                'flex items-start gap-3 rounded-ui border-2 bg-secondary p-4',
                 borderClassName ?? 'border-order-border',
                 className
             )}>

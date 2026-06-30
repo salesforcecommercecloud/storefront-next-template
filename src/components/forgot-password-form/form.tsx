@@ -26,7 +26,7 @@ export function ForgotPasswordForm({ error }: ForgotPasswordFormProps) {
     return (
         <Form method="post" className="space-y-6">
             {error && (
-                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20">
+                <div className="mb-4 p-3 bg-destructive/10 rounded-ui border border-destructive/20">
                     <p className="text-sm text-destructive">{error}</p>
                 </div>
             )}

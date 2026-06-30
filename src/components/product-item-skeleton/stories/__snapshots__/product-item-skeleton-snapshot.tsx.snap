@@ -11,7 +11,7 @@ exports[`ProductItemSkeleton stories snapshot > Default story renders and matche
       class="flex items-start"
     >
       <div
-        class="bg-accent animate-pulse rounded-ui flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded"
+        class="bg-accent animate-pulse rounded-ui flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded-ui"
         data-slot="skeleton"
       />
       <div

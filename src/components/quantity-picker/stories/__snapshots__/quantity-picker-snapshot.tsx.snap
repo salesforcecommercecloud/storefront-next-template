@@ -2,7 +2,7 @@
 
 exports[`QuantityPicker stories snapshot > AtMaximum story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input"
+  class="inline-flex items-center border border-input rounded-ui overflow-hidden"
 >
   <button
     aria-label="Decrement Quantity for the product"
@@ -33,7 +33,7 @@ exports[`QuantityPicker stories snapshot > AtMaximum story renders and matches s
 
 exports[`QuantityPicker stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input"
+  class="inline-flex items-center border border-input rounded-ui overflow-hidden"
 >
   <button
     aria-label="Decrement Quantity for the product"
@@ -63,7 +63,7 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
 
 exports[`QuantityPicker stories snapshot > Disabled story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input"
+  class="inline-flex items-center border border-input rounded-ui overflow-hidden"
 >
   <button
     aria-label="Decrement Quantity for the product"
@@ -95,7 +95,7 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
 
 exports[`QuantityPicker stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div
-  class="inline-flex items-center border border-input"
+  class="inline-flex items-center border border-input rounded-ui overflow-hidden"
 >
   <button
     aria-label="Decrement Quantity for Test Product"

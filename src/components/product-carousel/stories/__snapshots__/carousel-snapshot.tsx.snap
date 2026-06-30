@@ -103,12 +103,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -121,7 +123,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -263,7 +265,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -385,12 +387,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -403,7 +407,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -545,7 +549,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -667,12 +671,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -685,7 +691,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -827,7 +833,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -949,12 +955,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -967,7 +975,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1109,7 +1117,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -1231,12 +1239,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -1249,7 +1259,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1391,7 +1401,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -1513,12 +1523,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -1531,7 +1543,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1673,7 +1685,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -1795,12 +1807,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -1813,7 +1827,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1955,7 +1969,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -2077,12 +2091,14 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -2095,7 +2111,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2237,7 +2253,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -2466,12 +2482,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -2484,7 +2502,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2626,7 +2644,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -2748,12 +2766,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -2766,7 +2786,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2908,7 +2928,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -3030,12 +3050,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -3048,7 +3070,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3190,7 +3212,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -3312,12 +3334,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -3330,7 +3354,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3472,7 +3496,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -3594,12 +3618,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -3612,7 +3638,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3754,7 +3780,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -3876,12 +3902,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -3894,7 +3922,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4036,7 +4064,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -4158,12 +4186,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -4176,7 +4206,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4318,7 +4348,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -4440,12 +4470,14 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -4458,7 +4490,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4600,7 +4632,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -4827,12 +4859,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -4845,7 +4879,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4987,7 +5021,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -5109,12 +5143,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -5127,7 +5163,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5269,7 +5305,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -5391,12 +5427,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -5409,7 +5447,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5551,7 +5589,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -5673,12 +5711,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -5691,7 +5731,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5833,7 +5873,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -5955,12 +5995,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -5973,7 +6015,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6115,7 +6157,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -6237,12 +6279,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -6255,7 +6299,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6397,7 +6441,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -6519,12 +6563,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -6537,7 +6583,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6679,7 +6725,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -6801,12 +6847,14 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -6819,7 +6867,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6961,7 +7009,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -7189,12 +7237,14 @@ exports[`ProductCarousel stories snapshot > SingleProduct story renders and matc
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -7207,7 +7257,7 @@ exports[`ProductCarousel stories snapshot > SingleProduct story renders and matc
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -7349,7 +7399,7 @@ exports[`ProductCarousel stories snapshot > SingleProduct story renders and matc
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -7585,12 +7635,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -7603,7 +7655,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -7745,7 +7797,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -7867,12 +7919,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -7885,7 +7939,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -8027,7 +8081,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -8149,12 +8203,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -8167,7 +8223,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -8309,7 +8365,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -8431,12 +8487,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -8449,7 +8507,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -8591,7 +8649,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -8713,12 +8771,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -8731,7 +8791,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -8873,7 +8933,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -8995,12 +9055,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -9013,7 +9075,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -9155,7 +9217,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -9277,12 +9339,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -9295,7 +9359,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -9437,7 +9501,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -9559,12 +9623,14 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -9577,7 +9643,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -9719,7 +9785,7 @@ exports[`ProductCarousel stories snapshot > WithShopAllLink story renders and ma
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -9953,12 +10019,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -9971,7 +10039,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -10113,7 +10181,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -10235,12 +10303,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -10253,7 +10323,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -10395,7 +10465,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -10517,12 +10587,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -10535,7 +10607,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -10677,7 +10749,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -10799,12 +10871,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -10817,7 +10891,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -10959,7 +11033,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -11081,12 +11155,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -11099,7 +11175,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -11241,7 +11317,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -11363,12 +11439,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -11381,7 +11459,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -11523,7 +11601,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -11645,12 +11723,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -11663,7 +11743,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -11805,7 +11885,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -11927,12 +12007,14 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -11945,7 +12027,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -12087,7 +12169,7 @@ exports[`ProductCarousel stories snapshot > WithSubtitle story renders and match
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -12314,12 +12396,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -12332,7 +12416,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -12474,7 +12558,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -12596,12 +12680,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -12614,7 +12700,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -12756,7 +12842,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -12878,12 +12964,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -12896,7 +12984,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -13038,7 +13126,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -13160,12 +13248,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -13178,7 +13268,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -13320,7 +13410,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -13442,12 +13532,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -13460,7 +13552,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -13602,7 +13694,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -13724,12 +13816,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -13742,7 +13836,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -13884,7 +13978,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -14006,12 +14100,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -14024,7 +14120,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -14166,7 +14262,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)
@@ -14288,12 +14384,14 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
                       >
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           New
                         </span>
                         <span
-                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none"
+                          class="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui"
+                          data-slot="badge"
                         >
                           Sale
                         </span>
@@ -14306,7 +14404,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
+                            class="w-9 h-9 p-2 flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -14448,7 +14546,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           </div>
                           <button
                             aria-label="(218)"
-                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
+                            class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui text-xs text-muted-foreground"
                             type="button"
                           >
                             (218)

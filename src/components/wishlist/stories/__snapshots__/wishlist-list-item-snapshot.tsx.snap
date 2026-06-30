@@ -5,7 +5,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
   data-testid="wishlist-item-item-variant-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
@@ -14,7 +14,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
       to="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <img
           alt="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit, Charcoal, small"
@@ -142,7 +142,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
   data-testid="wishlist-item-item-master-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
@@ -151,7 +151,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
       to="/RefArchGlobal/en-GB/product/25686395M"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <img
           alt="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit, , small"
@@ -286,7 +286,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
   data-testid="wishlist-item-item-minimal-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Simple Product"
@@ -295,7 +295,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
       to="/RefArchGlobal/en-GB/product/minimal-product-1"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <div
           class="w-full h-full bg-muted"
@@ -379,7 +379,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
   data-testid="wishlist-item-item-standard-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
@@ -388,7 +388,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
       to="/RefArchGlobal/en-GB/product/P0048M"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <img
           alt="Laptop Briefcase with wheels (37L), , small"
@@ -497,7 +497,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
   data-testid="wishlist-item-item-standard-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
@@ -506,7 +506,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
       to="/RefArchGlobal/en-GB/product/P0048M"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <img
           alt="Laptop Briefcase with wheels (37L), , small"
@@ -615,7 +615,7 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
   data-testid="wishlist-item-item-variant-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border bg-card"
+    class="flex gap-4 p-4 rounded-ui border border-border bg-card"
   >
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
@@ -624,7 +624,7 @@ exports[`WishlistListItem stories snapshot > OutOfStockVariant renders and match
       to="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
     >
       <div
-        class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
+        class="w-20 h-20 md:w-28 md:h-28 rounded-ui overflow-hidden bg-muted flex items-center justify-center"
       >
         <img
           alt="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit, Charcoal, small"

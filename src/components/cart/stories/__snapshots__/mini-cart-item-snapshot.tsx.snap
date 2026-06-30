@@ -105,7 +105,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
               data-testid="mini-cart-item"
             >
               <div
-                class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted overflow-hidden transition-all duration-500"
+                class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted overflow-hidden rounded-ui transition-all duration-500"
               >
                 <div
                   class="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs"
@@ -225,7 +225,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     Quantity
                   </label>
                   <div
-                    class="inline-flex border border-input h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
+                    class="inline-flex border border-input rounded-ui overflow-hidden h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                   >
                     <button
                       aria-label="Decrement Quantity for Product Name"
@@ -408,7 +408,7 @@ exports[`MiniCartItem stories snapshot > Default story renders and matches snaps
               data-testid="mini-cart-item"
             >
               <div
-                class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted overflow-hidden transition-all duration-500"
+                class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-muted overflow-hidden rounded-ui transition-all duration-500"
               >
                 <div
                   class="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs"
@@ -521,7 +521,7 @@ exports[`MiniCartItem stories snapshot > Default story renders and matches snaps
                     Quantity
                   </label>
                   <div
-                    class="inline-flex border border-input h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
+                    class="inline-flex border border-input rounded-ui overflow-hidden h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                   >
                     <button
                       aria-label="Decrement Quantity for Product Name"

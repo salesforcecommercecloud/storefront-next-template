@@ -118,7 +118,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
               >
                 <img
                   alt="Classic Shirt"
@@ -132,7 +132,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
               >
                 <img
                   alt="Dress Pants"
@@ -150,7 +150,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
             </div>
           </div>
           <div
-            class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
+            class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui rounded-ui bg-muted border-border p-0"
             data-slot="card"
           >
             <div
@@ -337,7 +337,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
               >
                 <img
                   alt="Summer Dress"
@@ -494,7 +494,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
               >
                 <img
                   alt="Cancelled Item 1"
@@ -514,7 +514,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               class="relative"
             >
               <div
-                class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
               >
                 <img
                   alt="Cancelled Item 2"

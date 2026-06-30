@@ -141,7 +141,7 @@ export default function Payment({
                                                         return (
                                                             <div
                                                                 key="new"
-                                                                className="flex items-center gap-2 border border-input bg-card p-4">
+                                                                className="flex items-center gap-2 rounded-ui border border-input bg-card p-4">
                                                                 <RadioGroupItem value="new" id="new-payment" />
                                                                 <Label
                                                                     htmlFor="new-payment"
@@ -165,7 +165,7 @@ export default function Payment({
                                                     return (
                                                         <div
                                                             key={method.id}
-                                                            className="flex items-start gap-2 border border-input bg-card p-4">
+                                                            className="flex items-start gap-2 rounded-ui border border-input bg-card p-4">
                                                             <RadioGroupItem
                                                                 value={method.id}
                                                                 id={method.id}
@@ -233,7 +233,7 @@ export default function Payment({
 
                                     {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
                                         <div className="space-y-2">
-                                            <div className="border border-input bg-card p-4 space-y-4">
+                                            <div className="rounded-ui border border-input bg-card p-4 space-y-4">
                                                 {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
                                                     <div className="flex items-center gap-2">
                                                         <RadioGroup

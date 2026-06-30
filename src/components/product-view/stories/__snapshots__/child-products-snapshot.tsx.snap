@@ -436,7 +436,7 @@ exports[`ChildProducts stories snapshot > Playground story renders and matches s
           Quantity
         </label>
         <div
-          class="inline-flex items-center border border-input"
+          class="inline-flex items-center border border-input rounded-ui overflow-hidden"
         >
           <button
             aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
@@ -486,7 +486,7 @@ exports[`ChildProducts stories snapshot > Playground story renders and matches s
             tabindex="0"
           >
             <label
-              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
               data-slot="label"
               for="delivery-option-womens-jewelry-bundleM"
             >
@@ -529,7 +529,7 @@ exports[`ChildProducts stories snapshot > Playground story renders and matches s
               </div>
             </label>
             <label
-              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
+              class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
               data-slot="label"
               for="pickup-option-womens-jewelry-bundleM"
             >

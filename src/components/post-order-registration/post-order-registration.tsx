@@ -101,7 +101,7 @@ export function PostOrderRegistration({
             </CardHeader>
             <CardContent>
                 {error && (
-                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20">
+                    <div className="mb-4 p-3 rounded-ui bg-destructive/10 border border-destructive/20">
                         <p className="text-sm text-destructive">{error}</p>
                     </div>
                 )}

@@ -38,7 +38,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
     class="flex flex-col gap-4"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui shadow-ui border-border gap-0 py-4"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui shadow-ui rounded-ui border-border gap-0 py-4"
       data-slot="card"
     >
       <div
@@ -95,7 +95,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui shadow-ui border-border gap-0 py-4"
+      class="bg-card text-card-foreground flex flex-col rounded-ui border-ui shadow-ui rounded-ui border-border gap-0 py-4"
       data-slot="card"
     >
       <div

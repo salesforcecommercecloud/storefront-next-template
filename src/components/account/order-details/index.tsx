@@ -225,7 +225,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         {shipment.trackingNumber != null && (
                                                             <Card
-                                                                className=" min-h-[4rem] p-0 bg-card"
+                                                                className="rounded-ui  min-h-[4rem] p-0 bg-card"
                                                                 data-card="tracking-number">
                                                                 <CardContent className="p-3">
                                                                     <p className="text-xs font-semibold text-foreground">
@@ -239,7 +239,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                         )}
                                                         {shipment.shippingAddress && (
                                                             <Card
-                                                                className=" min-h-[4rem] p-0 bg-card"
+                                                                className="rounded-ui  min-h-[4rem] p-0 bg-card"
                                                                 data-card="shipping-address">
                                                                 <CardContent className="p-3">
                                                                     <p className="text-xs font-semibold text-foreground">
@@ -278,7 +278,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                             {paymentMethodDisplays.length > 0 && (
                                 <div className="space-y-1.5">
                                     <p className="text-xs font-semibold text-foreground">{t('orders.paymentMethod')}</p>
-                                    <Card className="p-0 bg-card" data-card="payment-method">
+                                    <Card className="rounded-ui p-0 bg-card" data-card="payment-method">
                                         <CardContent className="p-3 py-2">
                                             <ul className="text-sm font-medium text-muted-foreground space-y-1 list-none">
                                                 {paymentMethodDisplays.map(({ id, label }) => (

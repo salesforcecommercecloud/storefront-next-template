@@ -214,7 +214,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
 
     return (
         <>
-            <Card className="">
+            <Card>
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <CardTitle className="text-lg">
@@ -241,13 +241,13 @@ export default function AuthorizedPickupPeople(): ReactElement {
                             {people.map((person) => (
                                 <li
                                     key={person.id}
-                                    className="flex flex-col gap-2 border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    className="flex flex-col gap-2 rounded-ui border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <span className="text-sm font-medium text-foreground">
                                                 {person.firstName} {person.lastName}
                                             </span>
-                                            <Badge className="rounded border-0 bg-active-bg px-2 py-0.5 text-xs font-medium text-active-foreground">
+                                            <Badge className="rounded-ui border-0 bg-active-bg px-2 py-0.5 text-xs font-medium text-active-foreground">
                                                 {t('storePreferences.authorizedPickupPeople.statusActive')}
                                             </Badge>
                                         </div>

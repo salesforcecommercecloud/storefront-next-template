@@ -8,7 +8,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-ui border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Sweater"
@@ -17,7 +17,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         href="/RefArchGlobal/en-GB/product/701643108633M"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui h-24 w-24"
           data-slot="product-item-image"
         >
           <img
@@ -139,7 +139,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-ui border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Product One"
@@ -148,7 +148,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         href="/RefArchGlobal/en-GB/product/prod-1"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui h-24 w-24"
           data-slot="product-item-image"
         >
           <div
@@ -223,7 +223,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-ui border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
         aria-label="View Product Two"
@@ -232,7 +232,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         href="/RefArchGlobal/en-GB/product/prod-2"
       >
         <div
-          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24"
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui h-24 w-24"
           data-slot="product-item-image"
         >
           <div

@@ -90,7 +90,7 @@ export function ProductItemVariantImage({
         <div
             data-slot="product-item-image"
             className={cn(
-                'bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
+                'bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui',
                 className
             )}>
             {image && optimizedImageUrl ? (

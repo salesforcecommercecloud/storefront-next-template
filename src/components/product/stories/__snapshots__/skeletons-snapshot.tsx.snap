@@ -165,7 +165,7 @@ exports[`Product Skeletons stories snapshot > MainSkeleton story renders and mat
       class="mt-16 space-y-4"
     >
       <div
-        class="border p-4"
+        class="rounded-ui border p-4"
       >
         <div
           class="bg-accent animate-pulse rounded-ui h-6 w-48"
@@ -173,7 +173,7 @@ exports[`Product Skeletons stories snapshot > MainSkeleton story renders and mat
         />
       </div>
       <div
-        class="border p-4"
+        class="rounded-ui border p-4"
       >
         <div
           class="bg-accent animate-pulse rounded-ui h-6 w-48"
@@ -181,7 +181,7 @@ exports[`Product Skeletons stories snapshot > MainSkeleton story renders and mat
         />
       </div>
       <div
-        class="border p-4"
+        class="rounded-ui border p-4"
       >
         <div
           class="bg-accent animate-pulse rounded-ui h-6 w-48"

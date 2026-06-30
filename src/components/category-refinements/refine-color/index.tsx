@@ -48,7 +48,7 @@ const colorOptionButtonClass = cn(
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
 );
 
-const swatchBaseClass = 'size-8 shrink-0 border';
+const swatchBaseClass = 'size-8 shrink-0 border rounded-ui';
 const swatchSelectedClass = cn(
     swatchBaseClass,
     'border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background'

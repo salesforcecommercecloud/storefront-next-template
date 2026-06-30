@@ -46,7 +46,7 @@ export default function FaqQuestionItem({
             onClick={() => onClick?.(question)}
             aria-label={ariaLabel}
             className={cn(
-                'flex w-full cursor-pointer items-center gap-3 border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors',
+                'flex w-full cursor-pointer items-center gap-3 rounded-ui border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors',
                 'hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground',
                 className
             )}>

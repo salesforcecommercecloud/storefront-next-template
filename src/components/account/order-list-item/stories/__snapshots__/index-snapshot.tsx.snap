@@ -91,7 +91,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Classic White Shirt"
@@ -105,7 +105,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Blue Dress Pants"
@@ -244,7 +244,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Classic White Shirt"
@@ -258,7 +258,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Blue Dress Pants"
@@ -276,7 +276,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
         </div>
       </div>
       <div
-        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
+        class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui rounded-ui bg-muted border-border p-0"
         data-slot="card"
       >
         <div
@@ -466,7 +466,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 1"
@@ -486,7 +486,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 2"
@@ -500,7 +500,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 3"
@@ -514,7 +514,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 4"
@@ -534,7 +534,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 5"
@@ -548,7 +548,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 6"
@@ -562,7 +562,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 7"
@@ -582,7 +582,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 8"
@@ -596,7 +596,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 9"
@@ -610,7 +610,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 10"
@@ -630,7 +630,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 11"
@@ -644,7 +644,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           class="relative"
         >
           <div
-            class="w-16 h-16 overflow-hidden bg-muted border border-border"
+            class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
           >
             <img
               alt="Product 12"
@@ -655,7 +655,7 @@ exports[`OrderListItem stories snapshot > WithThumbnailOverflow story renders an
           </div>
         </div>
         <div
-          class="w-16 h-16 bg-muted border border-border flex items-center justify-center"
+          class="w-16 h-16 bg-muted border border-border rounded-ui flex items-center justify-center"
         >
           <span
             class="text-sm font-medium leading-none text-left text-muted-foreground"

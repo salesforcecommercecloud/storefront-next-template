@@ -40,7 +40,7 @@ const HeartIcon = forwardRef<ComponentRef<'button'>, HeartIconProps>(
             <button
                 ref={ref}
                 className={cn(
-                    'absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md border-0 flex items-center justify-center',
+                    'absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md border-0 flex items-center justify-center rounded-ui',
                     'transition-all duration-200 ease-in-out cursor-pointer',
                     'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     'disabled:opacity-60 disabled:cursor-not-allowed',

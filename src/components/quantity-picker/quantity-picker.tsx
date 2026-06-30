@@ -89,7 +89,7 @@ export default function QuantityPicker({
     });
 
     return (
-        <div className={cn('inline-flex items-center border border-input', className)}>
+        <div className={cn('inline-flex items-center border border-input rounded-ui overflow-hidden', className)}>
             {/* Decrement Button */}
             <button
                 onClick={handleDecrement}

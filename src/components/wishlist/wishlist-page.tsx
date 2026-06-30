@@ -81,7 +81,7 @@ export function WishlistSkeleton(): ReactElement {
     return (
         <div className="space-y-6">
             {/* Header card skeleton */}
-            <Card className="px-6 py-3 gap-0 bg-card border-border">
+            <Card className="px-6 py-3 gap-0 rounded-ui bg-card border-border">
                 <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                     {t('navigation.wishlist')}
                 </h1>
@@ -96,8 +96,8 @@ export function WishlistSkeleton(): ReactElement {
                 <div className="p-4 space-y-4">
                     <Skeleton className="h-5 w-36" />
                     {(['skeleton-1', 'skeleton-2', 'skeleton-3'] as const).map((key) => (
-                        <div key={key} className="flex gap-4 p-4 border border-border">
-                            <Skeleton className="w-20 h-20 md:w-28 md:h-28 flex-shrink-0 rounded" />
+                        <div key={key} className="flex gap-4 p-4 rounded-ui border border-border">
+                            <Skeleton className="w-20 h-20 md:w-28 md:h-28 flex-shrink-0 rounded-ui" />
                             <div className="flex-1 space-y-2">
                                 <Skeleton className="h-4 w-3/4" />
                                 <Skeleton className="h-3 w-1/2" />

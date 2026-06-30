@@ -16,7 +16,7 @@ exports[`SavedAddressesList stories snapshot > DefaultView story renders and mat
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -160,7 +160,7 @@ exports[`SavedAddressesList stories snapshot > SingleAddress story renders and m
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -275,7 +275,7 @@ exports[`SavedAddressesList stories snapshot > WithAddNewAddress story renders a
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -425,7 +425,7 @@ exports[`SavedAddressesList stories snapshot > WithDefaultAddressSelected story 
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -624,7 +624,7 @@ exports[`SavedAddressesList stories snapshot > WithEditAddress story renders and
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -908,7 +908,7 @@ exports[`SavedAddressesList stories snapshot > WithNonDefaultAddressSelected sto
         </label>
       </div>
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"
@@ -1052,7 +1052,7 @@ exports[`SavedAddressesList stories snapshot > WithViewAll story renders and mat
       tabindex="0"
     >
       <div
-        class="group flex items-start gap-2 transition-all duration-200 border border-primary p-4"
+        class="group flex items-start gap-2 transition-all duration-200 rounded-ui border border-primary p-4"
       >
         <button
           aria-checked="true"

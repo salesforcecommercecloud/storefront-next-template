@@ -40,7 +40,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui md:w-32 w-16"
                     data-slot="product-item-image"
                   >
                     <img
@@ -144,7 +144,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             Quantity
                           </label>
                           <div
-                            class="inline-flex items-center border border-input"
+                            class="inline-flex items-center border border-input rounded-ui overflow-hidden"
                           >
                             <button
                               aria-label="Decrement Quantity for the product"
@@ -201,7 +201,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui md:w-32 w-16"
                     data-slot="product-item-image"
                   >
                     <img
@@ -337,7 +337,7 @@ exports[`ProductItemsList stories snapshot > FullyFeatured story renders and mat
                             Quantity
                           </label>
                           <div
-                            class="inline-flex items-center border border-input"
+                            class="inline-flex items-center border border-input rounded-ui overflow-hidden"
                           >
                             <button
                               aria-label="Decrement Quantity for the product"

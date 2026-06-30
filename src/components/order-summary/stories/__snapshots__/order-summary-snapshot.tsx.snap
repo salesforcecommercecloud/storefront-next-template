@@ -1016,7 +1016,8 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
             class="flex justify-between items-center gap-2"
           >
             <span
-              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui"
+              data-slot="badge"
             >
               20% Off Discount
             </span>
@@ -1382,7 +1383,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                           class="flex items-center justify-center"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui w-16"
                             data-slot="product-item-image"
                           >
                             <img
@@ -1484,7 +1485,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                           class="flex items-center justify-center"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui w-16"
                             data-slot="product-item-image"
                           >
                             <img
@@ -1588,7 +1589,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                           class="flex items-center justify-center"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui w-16"
                             data-slot="product-item-image"
                           >
                             <img
@@ -1710,7 +1711,8 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
             class="flex justify-between items-center gap-2"
           >
             <span
-              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui"
+              data-slot="badge"
             >
               Buy one Classic Fit Shirt, get 2 free ties!
             </span>
@@ -1809,7 +1811,8 @@ exports[`OrderSummary stories snapshot > WithCouponDiscount story renders and ma
             class="flex justify-between items-center gap-2"
           >
             <span
-              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui"
+              data-slot="badge"
             >
               10% Off Order
             </span>
@@ -2175,7 +2178,7 @@ exports[`OrderSummary stories snapshot > WithGiftLine story renders and matches 
                           class="flex items-center justify-center"
                         >
                           <div
-                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden rounded-ui w-16"
                             data-slot="product-item-image"
                           >
                             <img
@@ -2368,7 +2371,8 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
             class="flex justify-between items-center gap-2"
           >
             <span
-              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui"
+              data-slot="badge"
             >
               $10 Off Ties
             </span>
@@ -2382,7 +2386,8 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
             class="flex justify-between items-center gap-2"
           >
             <span
-              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              class="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui"
+              data-slot="badge"
             >
               15% Off Tops
             </span>

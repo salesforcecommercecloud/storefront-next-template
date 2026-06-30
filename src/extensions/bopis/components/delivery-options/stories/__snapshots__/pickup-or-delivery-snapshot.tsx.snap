@@ -16,7 +16,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="delivery-option"
       >
@@ -89,7 +89,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
         data-slot="label"
         for="pickup-option"
       >
@@ -153,7 +153,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
         data-slot="label"
         for="delivery-option"
       >
@@ -198,7 +198,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="pickup-option"
       >
@@ -301,7 +301,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="delivery-option"
       >
@@ -374,7 +374,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
         data-slot="label"
         for="pickup-option"
       >
@@ -447,7 +447,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="delivery-option"
       >
@@ -520,7 +520,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
         data-slot="label"
         for="pickup-option"
       >
@@ -584,7 +584,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
         data-slot="label"
         for="delivery-option"
       >
@@ -627,7 +627,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="pickup-option"
       >
@@ -721,7 +721,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="delivery-option"
       >
@@ -794,7 +794,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
         data-slot="label"
         for="pickup-option"
       >
@@ -869,7 +869,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
       tabindex="0"
     >
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
         data-slot="label"
         for="delivery-option"
       >
@@ -912,7 +912,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
         </div>
       </label>
       <label
-        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
+        class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-primary"
         data-slot="label"
         for="pickup-option"
       >

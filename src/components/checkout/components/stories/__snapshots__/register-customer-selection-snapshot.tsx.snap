@@ -6,7 +6,7 @@ exports[`RegisterCustomerSelection stories snapshot > AccountCreated story rende
 >
   <section
     aria-label="Account Created"
-    class="flex items-start gap-4 border border-input p-4"
+    class="flex items-start gap-4 rounded-ui border border-input p-4"
   >
     <div
       class="flex flex-1 flex-col gap-1"

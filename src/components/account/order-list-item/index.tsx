@@ -134,7 +134,7 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
 function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
     return (
         <div className="relative">
-            <div className="w-16 h-16 overflow-hidden bg-muted border border-border">
+            <div className="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border">
                 {item.imageUrl ? (
                     <img
                         src={item.imageUrl}
@@ -143,7 +143,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
                         loading="lazy"
                     />
                 ) : (
-                    <div className="w-full h-full bg-muted rounded" />
+                    <div className="w-full h-full bg-muted" />
                 )}
             </div>
             {item.quantity > 1 && (
@@ -162,7 +162,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
  */
 function OverflowIndicator({ count }: { count: number }): ReactElement {
     return (
-        <div className="w-16 h-16 bg-muted border border-border flex items-center justify-center">
+        <div className="w-16 h-16 bg-muted border border-border rounded-ui flex items-center justify-center">
             <Typography variant="small" as="span" className="text-muted-foreground">
                 +{count}
             </Typography>
@@ -178,7 +178,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-muted border-border p-0 ">
+        <Card className="rounded-ui bg-muted border-border p-0 ">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-muted-foreground" aria-hidden />

@@ -351,7 +351,7 @@ const DotButton = React.memo(
     }): ReactElement => (
         <button
             onClick={() => onClick(index)}
-            className={`transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${
+            className={`rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${
                 isActive ? 'w-8 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/75'
             }`}
             role="tab"
@@ -385,7 +385,7 @@ const NavigationButton = React.memo(
             <button
                 onClick={onClick}
                 disabled={disabled}
-                className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
                 aria-label={`${label} slide (${currentSlide} of ${totalSlides})`}>
                 <Icon className="w-6 h-6 text-primary-foreground" strokeWidth={2} />
             </button>

@@ -59,7 +59,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
                         </p>
                     </div>
                     {/* Inner region: thumbnails + copy + CTA — matches Recent Orders thumbnail treatment */}
-                    <div className="border border-border p-4 sm:p-5">
+                    <div className="rounded-ui border border-border p-4 sm:p-5">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                             <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                                 {thumbs.length > 0 ? (

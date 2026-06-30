@@ -78,7 +78,7 @@ export function RemovePaymentMethodDialog({
                 <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.removeConfirmation')}</p>
 
-                    <Card className="border-border bg-muted/60 py-0">
+                    <Card className="rounded-ui border-border bg-muted/60 py-0">
                         <div className="p-4">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">{t('paymentMethods.paymentMethod')}</span>
@@ -94,7 +94,7 @@ export function RemovePaymentMethodDialog({
                             </p>
                             {paymentMethod.isDefault && (
                                 <div className="mt-2">
-                                    <span className="px-2 py-0.5 bg-muted border border-border text-primary text-xs font-semibold rounded">
+                                    <span className="px-2 py-0.5 bg-muted border border-border text-primary text-xs font-semibold rounded-ui">
                                         {t('paymentMethods.default')}
                                     </span>
                                 </div>

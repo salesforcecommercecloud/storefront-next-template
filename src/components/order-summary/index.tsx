@@ -217,7 +217,9 @@ function SummaryBodyContent({
                         ...(basket.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
                     ].map((adjustment) => (
                         <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center gap-2">
-                            <span className="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                            <span
+                                data-slot="badge"
+                                className="inline-flex w-fit max-w-full border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words rounded-ui">
                                 {adjustment.itemText}
                             </span>
                             <span className="text-sm font-normal leading-5 text-muted-foreground text-right">

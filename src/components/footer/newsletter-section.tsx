@@ -21,7 +21,7 @@ export default function NewsletterSection(): ReactElement {
     const { t } = useTranslation('footer');
     return (
         <div className="section-container">
-            <div className="bg-primary text-primary-foreground px-6 sm:px-8 py-12 md:py-16">
+            <div className="bg-primary text-primary-foreground px-6 sm:px-8 py-12 md:py-16 rounded-ui">
                 <div className="max-w-2xl mx-auto text-center">
                     <h2 className="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-primary-foreground mb-3">
                         {t('newsletter.title')}

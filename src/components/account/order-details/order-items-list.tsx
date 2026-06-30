@@ -85,7 +85,7 @@ export function OrderItemsList({
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
-                        <div className="flex flex-col gap-4 border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
+                        <div className="flex flex-col gap-4 rounded-ui border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
                             <Link
                                 to={routeHref(routes.product, { productId: item.productId ?? '' })}
                                 className="flex-shrink-0 block"

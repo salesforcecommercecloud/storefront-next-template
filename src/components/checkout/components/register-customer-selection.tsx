@@ -184,7 +184,7 @@ export default function RegisterCustomerSelection({
     if (accountCreated) {
         return (
             <section
-                className="flex items-start gap-4 border border-input p-4"
+                className="flex items-start gap-4 rounded-ui border border-input p-4"
                 aria-label={t('registration.accountCreatedTitle')}>
                 <div className="flex flex-1 flex-col gap-1">
                     <h6 className="text-sm font-semibold text-foreground">{t('registration.accountCreatedTitle')}</h6>

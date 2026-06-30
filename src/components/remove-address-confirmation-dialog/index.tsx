@@ -151,7 +151,7 @@ export function RemoveAddressConfirmationDialog({
 
                 {/* Default Address Warning */}
                 {isDefault && (
-                    <div className="flex gap-3 p-3 bg-destructive/10 border border-destructive/20">
+                    <div className="flex gap-3 p-3 rounded-ui bg-destructive/10 border border-destructive/20">
                         <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                         <p className="text-sm text-destructive">{t('addresses.removeDefaultWarning')}</p>
                     </div>

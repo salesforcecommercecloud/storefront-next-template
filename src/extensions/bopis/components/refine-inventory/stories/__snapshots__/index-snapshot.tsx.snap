@@ -3,7 +3,7 @@
 exports[`RefineInventory stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border mb-4"
+    class="border border-border mb-4 rounded-ui"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -85,7 +85,7 @@ exports[`RefineInventory stories snapshot > Default story renders and matches sn
 exports[`RefineInventory stories snapshot > DesktopLayout story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border mb-4"
+    class="border border-border mb-4 rounded-ui"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -168,7 +168,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
 <div>
   <div>
     <div
-      class="border border-border mb-4"
+      class="border border-border mb-4 rounded-ui"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
@@ -276,7 +276,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
 exports[`RefineInventory stories snapshot > MobileLayout story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border mb-4"
+    class="border border-border mb-4 rounded-ui"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -358,7 +358,7 @@ exports[`RefineInventory stories snapshot > MobileLayout story renders and match
 exports[`RefineInventory stories snapshot > WithStoreSelected story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border mb-4"
+    class="border border-border mb-4 rounded-ui"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >

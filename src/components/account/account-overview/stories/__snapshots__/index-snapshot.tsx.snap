@@ -163,7 +163,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
                   >
                     <img
                       alt="Classic White Shirt"
@@ -177,7 +177,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
                   >
                     <img
                       alt="Blue Dress Pants"
@@ -191,7 +191,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
                   >
                     <img
                       alt="Silk Scarf"
@@ -205,7 +205,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
                   >
                     <img
                       alt="Leather Handbag"
@@ -217,7 +217,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                 </div>
               </div>
               <div
-                class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui bg-muted border-border p-0"
+                class="text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui rounded-ui bg-muted border-border p-0"
                 data-slot="card"
               >
                 <div
@@ -423,7 +423,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                   class="relative"
                 >
                   <div
-                    class="w-16 h-16 overflow-hidden bg-muted border border-border"
+                    class="w-16 h-16 overflow-hidden rounded-ui bg-muted border border-border"
                   >
                     <img
                       alt="Running Shoes"
@@ -499,7 +499,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
             </p>
           </div>
           <div
-            class="border border-border p-4 sm:p-5"
+            class="rounded-ui border border-border p-4 sm:p-5"
           >
             <div
               class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -705,7 +705,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -742,7 +742,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -779,7 +779,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -821,7 +821,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/global/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1101,7 +1101,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1138,7 +1138,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1175,7 +1175,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1217,7 +1217,7 @@ exports[`AccountOverview stories snapshot > EmptyOrders story renders and matche
           href="/global/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1319,53 +1319,13 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
                 class="flex flex-wrap gap-x-8 gap-y-2"
               >
                 <div
-                  class="h-10 w-24 bg-muted-foreground/20 rounded"
+                  class="h-10 w-24 bg-muted-foreground/20 rounded-ui"
                 />
                 <div
-                  class="h-10 w-20 bg-muted-foreground/20 rounded"
+                  class="h-10 w-20 bg-muted-foreground/20 rounded-ui"
                 />
                 <div
-                  class="h-10 w-16 bg-muted-foreground/20 rounded"
-                />
-              </div>
-              <div
-                class="h-8 w-24 bg-muted-foreground/20 rounded-full"
-              />
-            </div>
-            <div
-              class="flex gap-2"
-            >
-              <div
-                class="w-16 h-16 bg-muted-foreground/20 rounded-lg"
-              />
-              <div
-                class="w-16 h-16 bg-muted-foreground/20 rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui py-0 border-0 border-border"
-          data-slot="card"
-        >
-          <div
-            class="p-6 space-y-4 border-b border-border animate-pulse"
-            data-slot="card-content"
-          >
-            <div
-              class="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
-            >
-              <div
-                class="flex flex-wrap gap-x-8 gap-y-2"
-              >
-                <div
-                  class="h-10 w-24 bg-muted-foreground/20 rounded"
-                />
-                <div
-                  class="h-10 w-20 bg-muted-foreground/20 rounded"
-                />
-                <div
-                  class="h-10 w-16 bg-muted-foreground/20 rounded"
+                  class="h-10 w-16 bg-muted-foreground/20 rounded-ui"
                 />
               </div>
               <div
@@ -1399,13 +1359,53 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
                 class="flex flex-wrap gap-x-8 gap-y-2"
               >
                 <div
-                  class="h-10 w-24 bg-muted-foreground/20 rounded"
+                  class="h-10 w-24 bg-muted-foreground/20 rounded-ui"
                 />
                 <div
-                  class="h-10 w-20 bg-muted-foreground/20 rounded"
+                  class="h-10 w-20 bg-muted-foreground/20 rounded-ui"
                 />
                 <div
-                  class="h-10 w-16 bg-muted-foreground/20 rounded"
+                  class="h-10 w-16 bg-muted-foreground/20 rounded-ui"
+                />
+              </div>
+              <div
+                class="h-8 w-24 bg-muted-foreground/20 rounded-full"
+              />
+            </div>
+            <div
+              class="flex gap-2"
+            >
+              <div
+                class="w-16 h-16 bg-muted-foreground/20 rounded-lg"
+              />
+              <div
+                class="w-16 h-16 bg-muted-foreground/20 rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-card text-card-foreground flex flex-col gap-6 rounded-ui border-ui shadow-ui py-0 border-0 border-border"
+          data-slot="card"
+        >
+          <div
+            class="p-6 space-y-4 border-b border-border animate-pulse"
+            data-slot="card-content"
+          >
+            <div
+              class="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+            >
+              <div
+                class="flex flex-wrap gap-x-8 gap-y-2"
+              >
+                <div
+                  class="h-10 w-24 bg-muted-foreground/20 rounded-ui"
+                />
+                <div
+                  class="h-10 w-20 bg-muted-foreground/20 rounded-ui"
+                />
+                <div
+                  class="h-10 w-16 bg-muted-foreground/20 rounded-ui"
                 />
               </div>
               <div
@@ -1429,7 +1429,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         class="p-6 m-0 border-b border-x border-border rounded-b-xl"
       >
         <div
-          class="h-5 w-32 bg-muted-foreground/20 rounded"
+          class="h-5 w-32 bg-muted-foreground/20 rounded-ui"
         />
       </div>
     </div>
@@ -1450,7 +1450,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           data-slot="skeleton"
         />
         <div
-          class="border border-border p-4 sm:p-5"
+          class="rounded-ui border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -1596,7 +1596,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border"
         >
           <div
             class="bg-accent animate-pulse rounded-ui w-4 h-4"
@@ -1608,7 +1608,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border"
         >
           <div
             class="bg-accent animate-pulse rounded-ui w-4 h-4"
@@ -1620,7 +1620,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border"
         >
           <div
             class="bg-accent animate-pulse rounded-ui w-4 h-4"
@@ -1632,7 +1632,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-ui border"
         >
           <div
             class="bg-accent animate-pulse rounded-ui w-4 h-4"

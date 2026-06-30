@@ -8,7 +8,7 @@ exports[`RefinePrice stories snapshot > FullyFeatured story renders and matches 
     class="flex flex-row gap-3 items-center justify-start self-stretch shrink-0 relative"
   >
     <div
-      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs"
+      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden rounded-ui shadow-xs"
     >
       <span
         aria-hidden="true"
@@ -35,7 +35,7 @@ exports[`RefinePrice stories snapshot > FullyFeatured story renders and matches 
       to
     </div>
     <div
-      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs"
+      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden rounded-ui shadow-xs"
     >
       <span
         aria-hidden="true"
@@ -197,7 +197,7 @@ exports[`RefinePrice stories snapshot > NoPredefinedRanges story renders and mat
     class="flex flex-row gap-3 items-center justify-start self-stretch shrink-0 relative"
   >
     <div
-      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs"
+      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden rounded-ui shadow-xs"
     >
       <span
         aria-hidden="true"
@@ -224,7 +224,7 @@ exports[`RefinePrice stories snapshot > NoPredefinedRanges story renders and mat
       to
     </div>
     <div
-      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs"
+      class="border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden rounded-ui shadow-xs"
     >
       <span
         aria-hidden="true"

@@ -272,7 +272,9 @@ export function WriteReviewModalContent({
             <div className="space-y-6 p-6">
                 {/* Error summary */}
                 {validationErrors.length > 0 && (
-                    <div role="alert" className=" border border-status-critical-border bg-status-critical-bg p-4">
+                    <div
+                        role="alert"
+                        className="rounded-ui border border-status-critical-border bg-status-critical-bg p-4">
                         <p className="text-sm font-medium text-status-critical-foreground">
                             {t('validation.pleaseFixFollowing')}
                         </p>
@@ -483,7 +485,7 @@ export function WriteReviewModalContent({
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         className={cn(
-                            'mt-2 flex flex-col items-center justify-center gap-2 border-2 border-dashed p-8 transition-colors cursor-pointer',
+                            'mt-2 flex flex-col items-center justify-center gap-2 rounded-ui border-2 border-dashed p-8 transition-colors cursor-pointer',
                             isUploadZoneHovered || isDragging
                                 ? 'border-primary bg-primary/5'
                                 : 'border-muted-foreground/40'
@@ -517,7 +519,7 @@ export function WriteReviewModalContent({
                                 {selectedFiles.map((file) => (
                                     <li
                                         key={`${file.name}-${file.size}-${file.lastModified}`}
-                                        className="flex items-center gap-2 border border-border bg-muted/30 px-2 py-1.5 text-sm">
+                                        className="flex items-center gap-2 rounded-ui border border-border bg-muted/30 px-2 py-1.5 text-sm">
                                         <span className="truncate max-w-[180px]" title={file.name}>
                                             {file.name}
                                         </span>
@@ -527,7 +529,7 @@ export function WriteReviewModalContent({
                                                 e.stopPropagation();
                                                 removeFile(selectedFiles.indexOf(file));
                                             }}
-                                            className="shrink-0 rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            className="shrink-0 rounded-ui p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
                                             aria-label={`Remove ${file.name}`}>
                                             ×
                                         </button>

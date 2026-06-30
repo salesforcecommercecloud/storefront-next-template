@@ -207,21 +207,21 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
         <button
           aria-label="Go to slide 1 of 3"
           aria-selected="true"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
           role="tab"
           tabindex="0"
         />
         <button
           aria-label="Go to slide 2 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
         <button
           aria-label="Go to slide 3 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
@@ -231,7 +231,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
       >
         <button
           aria-label="Previous slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"
@@ -253,7 +253,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
         </button>
         <button
           aria-label="Next slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"
@@ -510,21 +510,21 @@ exports[`HeroCarousel stories snapshot > LongCopy story renders and matches snap
         <button
           aria-label="Go to slide 1 of 3"
           aria-selected="true"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
           role="tab"
           tabindex="0"
         />
         <button
           aria-label="Go to slide 2 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
         <button
           aria-label="Go to slide 3 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
@@ -534,7 +534,7 @@ exports[`HeroCarousel stories snapshot > LongCopy story renders and matches snap
       >
         <button
           aria-label="Previous slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"
@@ -556,7 +556,7 @@ exports[`HeroCarousel stories snapshot > LongCopy story renders and matches snap
         </button>
         <button
           aria-label="Next slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"
@@ -801,21 +801,21 @@ exports[`HeroCarousel stories snapshot > Playground story renders and matches sn
         <button
           aria-label="Go to slide 1 of 3"
           aria-selected="true"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-8 h-2 bg-white"
           role="tab"
           tabindex="0"
         />
         <button
           aria-label="Go to slide 2 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
         <button
           aria-label="Go to slide 3 of 3"
           aria-selected="false"
-          class="transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
+          class="rounded-ui transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 w-2 h-2 bg-white/50 hover:bg-white/75"
           role="tab"
           tabindex="-1"
         />
@@ -825,7 +825,7 @@ exports[`HeroCarousel stories snapshot > Playground story renders and matches sn
       >
         <button
           aria-label="Previous slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"
@@ -847,7 +847,7 @@ exports[`HeroCarousel stories snapshot > Playground story renders and matches sn
         </button>
         <button
           aria-label="Next slide (1 of 3)"
-          class="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          class="rounded-ui p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <svg
             aria-hidden="true"

@@ -218,7 +218,7 @@ exports[`StandardLoginForm stories snapshot > WithError story renders and matche
     method="post"
   >
     <div
-      class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded"
+      class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-ui"
     >
       Invalid email or password. Please try again.
     </div>

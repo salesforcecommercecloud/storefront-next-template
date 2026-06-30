@@ -118,7 +118,7 @@ export default function RefineInventory({ isFilterSelected, hasActiveFilter, tog
         <Collapsible
             open={isOpen}
             onOpenChange={setIsOpen}
-            className="border border-border mb-4"
+            className="border border-border mb-4 rounded-ui"
             data-testid="sf-store-inventory-filter">
             <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
                 <CollapsibleTrigger className="flex items-center justify-between w-full text-left px-1 py-1 -mx-1 cursor-pointer">

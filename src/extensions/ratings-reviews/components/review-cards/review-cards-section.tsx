@@ -197,7 +197,7 @@ export default function ReviewCardsSection({
                                         variant="outline"
                                         size="sm"
                                         className={cn(
-                                            'gap-1 rounded bg-muted border-transparent hover:bg-muted-hover',
+                                            'gap-1 rounded-ui bg-muted border-transparent hover:bg-muted-hover',
                                             isSelected && 'border-filter-selected-border bg-filter-selected'
                                         )}
                                         onClick={() => setSelectedRating(isSelected ? null : rating)}
@@ -214,7 +214,7 @@ export default function ReviewCardsSection({
                                 variant="outline"
                                 size="sm"
                                 className={cn(
-                                    'gap-1.5 rounded bg-muted border-transparent hover:bg-muted-hover',
+                                    'gap-1.5 rounded-ui bg-muted border-transparent hover:bg-muted-hover',
                                     withPhotosOnly && 'border-filter-selected-border bg-filter-selected'
                                 )}
                                 onClick={() => setWithPhotosOnly((prev) => !prev)}
@@ -270,7 +270,7 @@ export default function ReviewCardsSection({
                                 <button
                                     type="button"
                                     onClick={() => setSelectedRating(null)}
-                                    className="inline-flex items-center gap-1 border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="inline-flex items-center gap-1 rounded-ui border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     aria-label={t('filters.clearStarFilter', { count: selectedRating })}>
                                     <span>{t('filters.activeFilterStars', { count: selectedRating })}</span>
                                     <X className="size-3.5 shrink-0" aria-hidden />
@@ -280,7 +280,7 @@ export default function ReviewCardsSection({
                                 <button
                                     type="button"
                                     onClick={() => setWithPhotosOnly(false)}
-                                    className="inline-flex items-center gap-1 border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="inline-flex items-center gap-1 rounded-ui border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     aria-label={t('filters.clearPhotoFilter')}>
                                     <span>{t('filters.withPhotos')}</span>
                                     <X className="size-3.5 shrink-0" aria-hidden />

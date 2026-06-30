@@ -26,10 +26,10 @@ const ShippingCalculator = lazy(shippingCalculatorImport) as ComponentType<{
 const SKELETON_FALLBACK = (
     <div className="p-4 border border-muted-foreground/20 bg-card animate-pulse">
         <div className="space-y-3">
-            <div className="h-4 w-32 rounded bg-muted" />
+            <div className="h-4 w-32 rounded-ui bg-muted" />
             <div className="flex gap-2">
-                <div className="h-10 flex-1 rounded bg-muted" />
-                <div className="h-10 w-24 rounded bg-muted" />
+                <div className="h-10 flex-1 rounded-ui bg-muted" />
+                <div className="h-10 w-24 rounded-ui bg-muted" />
             </div>
         </div>
     </div>

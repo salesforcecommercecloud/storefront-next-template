@@ -443,7 +443,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                 {productData.badges.badges.map((badge) => (
                                     <span
                                         key={badge.label}
-                                        className="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none">
+                                        data-slot="badge"
+                                        className="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none rounded-ui">
                                         {badge.label}
                                     </span>
                                 ))}

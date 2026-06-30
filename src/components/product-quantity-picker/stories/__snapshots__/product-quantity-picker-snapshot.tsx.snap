@@ -12,7 +12,7 @@ exports[`ProductQuantityPicker stories snapshot > Default story renders and matc
     Quantity
   </label>
   <div
-    class="inline-flex items-center border border-input"
+    class="inline-flex items-center border border-input rounded-ui overflow-hidden"
   >
     <button
       aria-label="Decrement Quantity for Classic T-Shirt"
@@ -53,7 +53,7 @@ exports[`ProductQuantityPicker stories snapshot > LowStockWarning story renders 
     Quantity
   </label>
   <div
-    class="inline-flex items-center border border-input"
+    class="inline-flex items-center border border-input rounded-ui overflow-hidden"
   >
     <button
       aria-label="Decrement Quantity for Limited Edition Jacket"
@@ -100,7 +100,7 @@ exports[`ProductQuantityPicker stories snapshot > OutOfStock story renders and m
     Quantity
   </label>
   <div
-    class="inline-flex items-center border border-input"
+    class="inline-flex items-center border border-input rounded-ui overflow-hidden"
   >
     <button
       aria-label="Decrement Quantity for Sold Out Product"

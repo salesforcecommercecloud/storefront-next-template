@@ -838,7 +838,7 @@ exports[`CheckoutSkeletons stories snapshot > Payment story renders and matches 
         data-slot="skeleton"
       />
       <div
-        class="space-x-4 p-4 border-2 border-border flex items-center"
+        class="rounded-ui space-x-4 p-4 border-2 border-border flex items-center"
       >
         <div
           class="bg-accent animate-pulse rounded-ui h-5 w-5 rounded-full"
@@ -902,7 +902,7 @@ exports[`CheckoutSkeletons stories snapshot > Payment story renders and matches 
       class="flex items-center gap-2 py-2"
     >
       <div
-        class="bg-accent animate-pulse rounded-ui h-4 w-4 rounded"
+        class="bg-accent animate-pulse rounded-ui h-4 w-4 rounded-ui"
         data-slot="skeleton"
       />
       <div

@@ -211,7 +211,7 @@ function FilterSection({
 
     return (
         <section>
-            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border mb-4">
+            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border mb-4 rounded-ui">
                 <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
                     <CollapsibleTrigger className="flex items-center justify-between w-full text-left px-1 py-1 -mx-1 cursor-pointer">
                         <Typography variant="small" as="span" className="font-medium">

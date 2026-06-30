@@ -102,7 +102,7 @@ export default function PickupOrDelivery({
                 <Label
                     htmlFor={deliveryId}
                     className={cn(
-                        'flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer',
+                        'flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer',
                         value === DELIVERY_OPTIONS.DELIVERY
                             ? 'border-primary'
                             : 'border-muted-foreground/20 hover:border-primary/50',
@@ -152,7 +152,7 @@ export default function PickupOrDelivery({
                         }
                     }}
                     className={cn(
-                        'flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer',
+                        'flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer',
                         value === DELIVERY_OPTIONS.PICKUP
                             ? 'border-primary'
                             : 'border-muted-foreground/20 hover:border-primary/50',

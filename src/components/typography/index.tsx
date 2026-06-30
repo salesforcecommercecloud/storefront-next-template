@@ -29,7 +29,7 @@ const typographyVariants = cva('', {
             h6: 'text-base font-semibold tracking-tight',
             p: 'leading-7 [&:not(:first-child)]:mt-6',
             blockquote: 'mt-6 border-l-2 pl-6 italic',
-            'inline-code': 'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium',
+            'inline-code': 'relative rounded-ui bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium',
             lead: 'text-2xl text-muted-foreground',
             large: 'text-sm font-semibold',
             small: 'text-sm font-medium leading-none',

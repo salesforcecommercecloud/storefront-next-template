@@ -75,7 +75,7 @@ function SparkleIconBox({
     return (
         <div
             className={cn(
-                'flex shrink-0 items-center justify-center ',
+                'flex shrink-0 items-center justify-center rounded-ui',
                 dark ? 'bg-white/10 text-white' : 'bg-gray-100 text-black',
                 compact ? 'w-9 h-9' : 'w-8 h-8 sm:w-10 sm:h-10',
                 className
@@ -125,8 +125,9 @@ export function AiInsightCard({
                     </Typography>
                     {badgeText && (
                         <span
+                            data-slot="badge"
                             className={cn(
-                                'inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0',
+                                'inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0 rounded-ui',
                                 isDark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-800'
                             )}>
                             {badgeText}
@@ -191,7 +192,7 @@ export function AiInsightCard({
     );
 
     const wrapperClassName = cn(
-        ' border',
+        'border rounded-ui',
         isDark ? (compact ? 'p-3.5' : 'p-5') : compact ? 'p-2.5' : 'p-4',
         isClickable && 'cursor-pointer',
         isDark ? 'bg-neutral-900 border-neutral-800' : 'border-border bg-background',

@@ -179,7 +179,7 @@ export function AnnouncementBannerFallback() {
         <div
             aria-hidden="true"
             className="relative flex items-center gap-2 px-4 md:px-10 tracking-wide justify-center bg-primary text-primary-foreground py-3 text-sm animate-pulse">
-            <div className="h-4 w-48 rounded bg-primary-foreground/20" />
+            <div className="h-4 w-48 rounded-ui bg-primary-foreground/20" />
         </div>
     );
 }

@@ -149,7 +149,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                                     <TooltipTrigger asChild>
                                         <button
                                             type="button"
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded-ui text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                             aria-label={t('payment.cvvHelp')}>
                                             <Info className="size-4 shrink-0" strokeWidth={2.25} />
                                         </button>
@@ -173,7 +173,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                                 />
                                 <button
                                     type="button"
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center size-5 rounded-ui text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     onClick={() => setCvvVisible((v) => !v)}
                                     aria-label={cvvVisible ? t('payment.cvvHide') : t('payment.cvvShow')}>
                                     {cvvVisible ? (

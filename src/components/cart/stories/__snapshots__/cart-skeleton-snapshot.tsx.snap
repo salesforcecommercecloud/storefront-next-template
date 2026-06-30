@@ -19,13 +19,13 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
         class="md:order-2 lg:order-1"
       >
         <div
-          class="md:p-8 p-3 border border-muted-foreground/10 mb-3"
+          class="md:p-8 p-3 rounded-ui border border-muted-foreground/10 mb-3"
         >
           <div
             class="flex items-center gap-2 mb-6"
           >
             <div
-              class="bg-accent animate-pulse rounded-ui size-[1.125rem] shrink-0 rounded-sm"
+              class="bg-accent animate-pulse rounded-ui size-[1.125rem] shrink-0 rounded-ui"
               data-slot="skeleton"
             />
             <div
@@ -98,7 +98,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
                       class="flex min-w-0 flex-col items-end gap-2 md:gap-4 md:row-span-2"
                     >
                       <div
-                        class="bg-accent animate-pulse rounded-ui hidden md:block h-9 w-32 rounded-md"
+                        class="bg-accent animate-pulse rounded-ui hidden md:block h-9 w-32 rounded-ui"
                         data-slot="skeleton"
                       />
                       <div
@@ -113,15 +113,15 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
                         class="flex shrink-0 justify-end gap-1"
                       >
                         <div
-                          class="bg-accent animate-pulse rounded-ui h-9 w-9 rounded-md"
+                          class="bg-accent animate-pulse rounded-ui h-9 w-9 rounded-ui"
                           data-slot="skeleton"
                         />
                         <div
-                          class="bg-accent animate-pulse rounded-ui h-9 w-12 rounded-md"
+                          class="bg-accent animate-pulse rounded-ui h-9 w-12 rounded-ui"
                           data-slot="skeleton"
                         />
                         <div
-                          class="bg-accent animate-pulse rounded-ui h-9 w-9 rounded-md"
+                          class="bg-accent animate-pulse rounded-ui h-9 w-9 rounded-ui"
                           data-slot="skeleton"
                         />
                       </div>
@@ -233,26 +233,26 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
                 class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
               />
               <div
-                class="bg-accent animate-pulse rounded-ui h-9 w-full mt-2 rounded-md"
+                class="bg-accent animate-pulse rounded-ui h-9 w-full mt-2 rounded-ui"
                 data-slot="skeleton"
               />
               <div
                 class="flex justify-center"
               >
                 <div
-                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-md"
+                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-ui"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-md"
+                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-ui"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-md"
+                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-ui"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-md"
+                  class="bg-accent animate-pulse rounded-ui h-8 w-10 mr-2 rounded-ui"
                   data-slot="skeleton"
                 />
               </div>
@@ -281,7 +281,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
       class="px-4 py-4"
     >
       <div
-        class="bg-accent animate-pulse rounded-ui h-9 w-full rounded-md"
+        class="bg-accent animate-pulse rounded-ui h-9 w-full rounded-ui"
         data-slot="skeleton"
       />
     </div>

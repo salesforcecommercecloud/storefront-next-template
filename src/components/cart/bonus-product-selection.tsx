@@ -204,7 +204,7 @@ export default function BonusProductSelection({
     return (
         <section
             aria-label="Bonus Product Bundle"
-            className="w-full overflow-hidden border border-border bg-[var(--bg-input-30)] p-4">
+            className="w-full overflow-hidden rounded-ui border border-border bg-[var(--bg-input-30)] p-4">
             <h3 className="text-base leading-6 text-card-foreground font-sans pb-3">
                 <span className="font-semibold">{titleText}</span>
                 <span className="font-normal">{titleSuffix}</span>

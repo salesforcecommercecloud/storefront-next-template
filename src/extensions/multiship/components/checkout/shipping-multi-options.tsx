@@ -309,7 +309,7 @@ export default function ShippingMultiOptions({
                                             {data.availableShippingMethods.map((method) => (
                                                 <div
                                                     key={method.id}
-                                                    className="group flex items-center space-x-4 p-4 border-2 transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
+                                                    className="group flex items-center space-x-4 p-4 rounded-ui border-2 transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
                                                     <RadioGroupItem
                                                         value={method.id}
                                                         id={`${shipmentId}-${method.id}`}

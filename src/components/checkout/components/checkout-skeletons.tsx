@@ -142,7 +142,7 @@ export function PaymentSkeleton(): ReactElement {
             <CardContent className="space-y-6">
                 <div className="space-y-4">
                     <Skeleton className="h-4 w-48" />
-                    <div className="space-x-4 p-4 border-2 border-border flex items-center">
+                    <div className="rounded-ui space-x-4 p-4 border-2 border-border flex items-center">
                         <Skeleton className="h-5 w-5 rounded-full" />
                         <div className="flex-1 flex justify-between items-center">
                             <Skeleton className="h-5 w-40" />
@@ -165,7 +165,7 @@ export function PaymentSkeleton(): ReactElement {
                     </div>
                 </div>
                 <div className="flex items-center gap-2 py-2">
-                    <Skeleton className="h-4 w-4 rounded" />
+                    <Skeleton className="h-4 w-4 rounded-ui" />
                     <Skeleton className="h-4 w-64" />
                 </div>
             </CardContent>

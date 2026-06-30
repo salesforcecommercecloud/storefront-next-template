@@ -9,7 +9,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
+      class="size-8 shrink-0 border rounded-ui border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
       style="background-color: rgb(0, 0, 0);"
     />
     <div
@@ -34,7 +34,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-border"
+      class="size-8 shrink-0 border rounded-ui border-border"
       style="background-color: rgb(37, 99, 235);"
     />
     <div
@@ -59,7 +59,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-border"
+      class="size-8 shrink-0 border rounded-ui border-border"
       style="background-color: rgb(220, 38, 38);"
     />
     <div
@@ -84,7 +84,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-border"
+      class="size-8 shrink-0 border rounded-ui border-border"
       style="background-color: rgb(22, 163, 74);"
     />
     <div
@@ -109,7 +109,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-border"
+      class="size-8 shrink-0 border rounded-ui border-border"
       style="background-color: rgb(255, 255, 255);"
     />
     <div
@@ -134,7 +134,7 @@ exports[`RefineColor stories snapshot > FullyFeatured story renders and matches 
     type="button"
   >
     <div
-      class="size-8 shrink-0 border border-border"
+      class="size-8 shrink-0 border rounded-ui border-border"
       style="background-color: rgb(161, 98, 7);"
     />
     <div

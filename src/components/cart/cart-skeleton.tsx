@@ -38,7 +38,7 @@ function CartEmptySkeleton(): ReactElement {
                     <Skeleton className="h-4 w-72 max-w-full mx-auto mb-8" />
 
                     {/* Action Button — real EmptyCart only ever renders one button */}
-                    <Skeleton className="h-9 w-36 mx-auto rounded-md" />
+                    <Skeleton className="h-9 w-36 mx-auto rounded-ui" />
                 </div>
             </div>
         </div>
@@ -69,10 +69,10 @@ export default function CartSkeleton({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-muted-foreground/10 mb-3">
+                        <div className="md:p-8 p-3 rounded-ui border border-muted-foreground/10 mb-3">
                             {/* CartTitle: Truck icon + delivery heading + optional address */}
                             <div className="flex items-center gap-2 mb-6">
-                                <Skeleton className="size-[1.125rem] shrink-0 rounded-sm" />
+                                <Skeleton className="size-[1.125rem] shrink-0 rounded-ui" />
                                 <div className="space-y-1">
                                     <Skeleton className="h-6 w-48" />
                                     <Skeleton className="h-4 w-56 hidden md:block" />
@@ -108,15 +108,15 @@ export default function CartSkeleton({
                                                     {/* Right column — price, quantity picker, gift row */}
                                                     <div className="flex min-w-0 flex-col items-end gap-2 md:gap-4 md:row-span-2">
                                                         {/* Per-line delivery selector (BOPIS) is desktop-only */}
-                                                        <Skeleton className="hidden md:block h-9 w-32 rounded-md" />
+                                                        <Skeleton className="hidden md:block h-9 w-32 rounded-ui" />
                                                         <div className="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3">
                                                             <Skeleton className="h-7 w-[8.5rem]" />
                                                         </div>
                                                         {/* CartQuantityPicker stepper (≈ h-9 w-32) */}
                                                         <div className="flex shrink-0 justify-end gap-1">
-                                                            <Skeleton className="h-9 w-9 rounded-md" />
-                                                            <Skeleton className="h-9 w-12 rounded-md" />
-                                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                                            <Skeleton className="h-9 w-9 rounded-ui" />
+                                                            <Skeleton className="h-9 w-12 rounded-ui" />
+                                                            <Skeleton className="h-9 w-9 rounded-ui" />
                                                         </div>
                                                         {/* Gift checkbox + label row */}
                                                         <div className="flex w-full min-w-0 shrink-0 justify-end">
@@ -165,13 +165,13 @@ export default function CartSkeleton({
                                     </div>
                                     {/* Checkout action */}
                                     <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
-                                    <Skeleton className="h-9 w-full mt-2 rounded-md" />
+                                    <Skeleton className="h-9 w-full mt-2 rounded-ui" />
                                     {/* Payment method icons (4 × 40×32) */}
                                     <div className="flex justify-center">
-                                        <Skeleton className="h-8 w-10 mr-2 rounded-md" />
-                                        <Skeleton className="h-8 w-10 mr-2 rounded-md" />
-                                        <Skeleton className="h-8 w-10 mr-2 rounded-md" />
-                                        <Skeleton className="h-8 w-10 mr-2 rounded-md" />
+                                        <Skeleton className="h-8 w-10 mr-2 rounded-ui" />
+                                        <Skeleton className="h-8 w-10 mr-2 rounded-ui" />
+                                        <Skeleton className="h-8 w-10 mr-2 rounded-ui" />
+                                        <Skeleton className="h-8 w-10 mr-2 rounded-ui" />
                                     </div>
                                 </div>
                             </CardContent>
@@ -193,7 +193,7 @@ export default function CartSkeleton({
                     <Skeleton className="h-5 w-4" />
                 </div>
                 <div className="px-4 py-4">
-                    <Skeleton className="h-9 w-full rounded-md" />
+                    <Skeleton className="h-9 w-full rounded-ui" />
                 </div>
             </div>
         </div>

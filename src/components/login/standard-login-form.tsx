@@ -71,7 +71,7 @@ export default function StandardLoginForm({
     return (
         <Form method="post" action={loginActionPath} className="space-y-6" ref={formRef}>
             {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-ui">
                     {error}
                 </div>
             )}

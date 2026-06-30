@@ -90,7 +90,7 @@ exports[`ProductView stories snapshot > MissingImages story renders and matches 
           >
             <button
               aria-label="Add to Wishlist"
-              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
             >
               <svg
                 aria-hidden="true"
@@ -109,7 +109,7 @@ exports[`ProductView stories snapshot > MissingImages story renders and matches 
             </button>
             <button
               aria-label="Share"
-              class="w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              class="w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
               type="button"
             >
               <svg
@@ -405,7 +405,7 @@ exports[`ProductView stories snapshot > MissingImages story renders and matches 
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-061492183589M"
                   >
@@ -448,7 +448,7 @@ exports[`ProductView stories snapshot > MissingImages story renders and matches 
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
                     data-slot="label"
                     for="pickup-option-061492183589M"
                   >
@@ -515,7 +515,7 @@ exports[`ProductView stories snapshot > MissingImages story renders and matches 
               Quantity
             </label>
             <div
-              class="inline-flex items-center border border-input"
+              class="inline-flex items-center border border-input rounded-ui overflow-hidden"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"
@@ -697,7 +697,7 @@ exports[`ProductView stories snapshot > OutOfStock story renders and matches sna
           >
             <button
               aria-label="Add to Wishlist"
-              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
             >
               <svg
                 aria-hidden="true"
@@ -716,7 +716,7 @@ exports[`ProductView stories snapshot > OutOfStock story renders and matches sna
             </button>
             <button
               aria-label="Share"
-              class="w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              class="w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
               type="button"
             >
               <svg
@@ -1003,7 +1003,7 @@ exports[`ProductView stories snapshot > OutOfStock story renders and matches sna
               Quantity
             </label>
             <div
-              class="inline-flex items-center border border-input"
+              class="inline-flex items-center border border-input rounded-ui overflow-hidden"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"
@@ -1193,7 +1193,7 @@ exports[`ProductView stories snapshot > Playground story renders and matches sna
           >
             <button
               aria-label="Add to Wishlist"
-              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 hover:border-muted-foreground/50 hover:bg-background"
             >
               <svg
                 aria-hidden="true"
@@ -1212,7 +1212,7 @@ exports[`ProductView stories snapshot > Playground story renders and matches sna
             </button>
             <button
               aria-label="Share"
-              class="w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              class="w-9 h-9 p-2 shadow-md flex items-center justify-center rounded-ui transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
               type="button"
             >
               <svg
@@ -1508,7 +1508,7 @@ exports[`ProductView stories snapshot > Playground story renders and matches sna
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-061492183589M"
                   >
@@ -1551,7 +1551,7 @@ exports[`ProductView stories snapshot > Playground story renders and matches sna
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 rounded-ui p-3 border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
                     data-slot="label"
                     for="pickup-option-061492183589M"
                   >
@@ -1618,7 +1618,7 @@ exports[`ProductView stories snapshot > Playground story renders and matches sna
               Quantity
             </label>
             <div
-              class="inline-flex items-center border border-input"
+              class="inline-flex items-center border border-input rounded-ui overflow-hidden"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"

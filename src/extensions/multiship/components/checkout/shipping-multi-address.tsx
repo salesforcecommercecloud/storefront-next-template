@@ -402,7 +402,7 @@ export default function ShippingMultiAddress({
                             return (
                                 <div
                                     key={productItem?.itemId || `item-${index}`}
-                                    className="flex flex-col gap-6 p-6 border" // Added padding and border to match the card look
+                                    className="flex flex-col gap-6 p-6 rounded-ui border" // Added padding and border to match the card look
                                     data-testid={`sf-product-item-summary-${productItem?.productId || productItem?.id}`}>
                                     <div className="flex gap-4 items-start">
                                         <ProductItemVariantImage

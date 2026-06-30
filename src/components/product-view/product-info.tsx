@@ -476,7 +476,7 @@ export default function ProductInfo({
 
             {/* Product Bundle/Set Notice */}
             {(isProductASet || isProductABundle) && (
-                <div className="bg-primary/10 border border-primary p-4">
+                <div className="rounded-ui bg-primary/10 border border-primary p-4">
                     <p className="text-sm text-primary">
                         {isProductASet ? t('productSetNotice') : t('productBundleNotice')}
                     </p>

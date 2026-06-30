@@ -45,7 +45,7 @@ export function ProductItemSkeleton({ className }: ProductItemSkeletonProps): Re
         <div className={`${className || ''}`}>
             <div className="flex items-start">
                 {/* Product Image Skeleton */}
-                <Skeleton className="flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded" />
+                <Skeleton className="flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 mr-4 sm:mr-6 rounded-ui" />
 
                 {/* Product Details Skeleton */}
                 <div className="flex-1 space-y-3">

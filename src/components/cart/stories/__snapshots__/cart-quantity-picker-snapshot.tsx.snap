@@ -12,7 +12,7 @@ exports[`CartQuantityPicker stories snapshot > AtStockLimit story renders and ma
     Quantity
   </label>
   <div
-    class="inline-flex items-center border border-input"
+    class="inline-flex items-center border border-input rounded-ui overflow-hidden"
   >
     <button
       aria-label="Decrement Quantity for the product"
@@ -61,7 +61,7 @@ exports[`CartQuantityPicker stories snapshot > Default story renders and matches
     Quantity
   </label>
   <div
-    class="inline-flex items-center border border-input"
+    class="inline-flex items-center border border-input rounded-ui overflow-hidden"
   >
     <button
       aria-label="Decrement Quantity for the product"

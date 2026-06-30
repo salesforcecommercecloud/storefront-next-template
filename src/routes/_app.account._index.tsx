@@ -802,7 +802,7 @@ function AccountDetailsContent({
                                     variant="outline"
                                     size="sm"
                                     onClick={handleVerifyEmailClick}
-                                    className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                    className="rounded-ui bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                     {t('email.verifyEmail')}
                                 </Button>
                             )}
@@ -812,7 +812,7 @@ function AccountDetailsContent({
                                     size="sm"
                                     onClick={handleEmailEdit}
                                     disabled={!canSubmitCustomerUpdates}
-                                    className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                    className="rounded-ui bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                     {t('email.changeEmail')}
                                 </Button>
                             )}

@@ -28,7 +28,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
           </p>
         </div>
         <div
-          class="border border-border p-4 sm:p-5"
+          class="rounded-ui border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -135,7 +135,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
           </p>
         </div>
         <div
-          class="border border-border p-4 sm:p-5"
+          class="rounded-ui border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"

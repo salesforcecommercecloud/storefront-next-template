@@ -2,7 +2,7 @@
 
 exports[`AiInsightCard stories snapshot > Playground story renders and matches snapshot 1`] = `
 <div
-  class="border p-4 border-border bg-background"
+  class="border rounded-ui p-4 border-border bg-background"
   data-testid="ai-insight-card"
 >
   <div
@@ -13,7 +13,7 @@ exports[`AiInsightCard stories snapshot > Playground story renders and matches s
     >
       <div
         aria-hidden="true"
-        class="flex shrink-0 items-center justify-center bg-gray-100 text-black w-8 h-8 sm:w-10 sm:h-10"
+        class="flex shrink-0 items-center justify-center rounded-ui bg-gray-100 text-black w-8 h-8 sm:w-10 sm:h-10"
       >
         <svg
           aria-hidden="true"
@@ -40,7 +40,8 @@ exports[`AiInsightCard stories snapshot > Playground story renders and matches s
           AI Review Summary
         </h3>
         <span
-          class="inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0 bg-gray-100 text-gray-800"
+          class="inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0 rounded-ui bg-gray-100 text-gray-800"
+          data-slot="badge"
         >
           Beta
         </span>
@@ -84,7 +85,7 @@ exports[`AiInsightCard stories snapshot > Playground story renders and matches s
 
 exports[`AiInsightCard stories snapshot > ReviewSummary story renders and matches snapshot 1`] = `
 <div
-  class="border p-4 border-border bg-background"
+  class="border rounded-ui p-4 border-border bg-background"
   data-testid="ai-insight-card"
 >
   <div
@@ -95,7 +96,7 @@ exports[`AiInsightCard stories snapshot > ReviewSummary story renders and matche
     >
       <div
         aria-hidden="true"
-        class="flex shrink-0 items-center justify-center bg-gray-100 text-black w-8 h-8 sm:w-10 sm:h-10"
+        class="flex shrink-0 items-center justify-center rounded-ui bg-gray-100 text-black w-8 h-8 sm:w-10 sm:h-10"
       >
         <svg
           aria-hidden="true"
@@ -122,7 +123,8 @@ exports[`AiInsightCard stories snapshot > ReviewSummary story renders and matche
           AI Review Summary
         </h3>
         <span
-          class="inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0 bg-gray-100 text-gray-800"
+          class="inline-flex items-center justify-center text-xs font-medium px-2 py-1 shrink-0 rounded-ui bg-gray-100 text-gray-800"
+          data-slot="badge"
         >
           Beta
         </span>
@@ -167,7 +169,7 @@ exports[`AiInsightCard stories snapshot > ReviewSummary story renders and matche
 exports[`AiInsightCard stories snapshot > ShoppingAssistant story renders and matches snapshot 1`] = `
 <button
   aria-label="Shop with your Personal Assistant"
-  class="group w-full text-left border p-3.5 cursor-pointer bg-neutral-900 border-neutral-800"
+  class="group w-full text-left border rounded-ui p-3.5 cursor-pointer bg-neutral-900 border-neutral-800"
   data-testid="ai-insight-card"
   type="button"
 >
@@ -179,7 +181,7 @@ exports[`AiInsightCard stories snapshot > ShoppingAssistant story renders and ma
     >
       <div
         aria-hidden="true"
-        class="flex shrink-0 items-center justify-center bg-white/10 text-white w-9 h-9"
+        class="flex shrink-0 items-center justify-center rounded-ui bg-white/10 text-white w-9 h-9"
       >
         <svg
           aria-hidden="true"
