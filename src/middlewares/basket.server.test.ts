@@ -76,7 +76,7 @@ describe('basket.server middleware', () => {
     let mockContext: ReturnType<typeof createTestContext>;
     let mockNext: Parameters<MiddlewareFunction<Response>>[1];
     const createArgs = (request: Request, context: Readonly<RouterContextProvider>) =>
-        createLoaderArgs(request, context, { unstable_pattern: '' });
+        createLoaderArgs(request, context, { pattern: '' });
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -141,6 +141,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-from-cookie',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         };
         const cookieHeader = await basketCookie.serialize(snapshot);
         mockRequest = new Request('https://example.com', {
@@ -221,6 +222,25 @@ describe('basket.server middleware', () => {
             } as Parameters<typeof defaultCreateSnapshot>[0]);
             expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toBeNull();
         });
+
+        test('defaultCreateSnapshot includes lastModified from basket', () => {
+            const snapshot = defaultCreateSnapshot({
+                basketId: 'basket-ts',
+                lastModified: '2026-06-29T10:23:44.000Z',
+                productItems: [],
+            } as Parameters<typeof defaultCreateSnapshot>[0]);
+            expect(snapshot.lastModified).toBe('2026-06-29T10:23:44.000Z');
+            expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toEqual(snapshot);
+        });
+
+        test('defaultCreateSnapshot uses empty string when basket lastModified is absent', () => {
+            const snapshot = defaultCreateSnapshot({
+                basketId: 'basket-no-ts',
+                productItems: [],
+            } as Parameters<typeof defaultCreateSnapshot>[0]);
+            expect(snapshot.lastModified).toBe('');
+            expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toEqual(snapshot);
+        });
     });
 
     test('getBasketSnapshot returns null when no context is set', () => {
@@ -234,6 +254,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-snapshot',
             totalItemCount: 3,
             uniqueProductCount: 2,
+            lastModified: '',
         };
         const contextProvider = new RouterContextProvider();
         contextProvider.set(basketResourceContext, {
@@ -360,6 +381,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-existing',
             totalItemCount: 2,
             uniqueProductCount: 2,
+            lastModified: '',
         };
         const cookieHeader = await basketCookie.serialize(snapshot);
         mockRequest = new Request('https://example.com', {
@@ -431,6 +453,7 @@ describe('basket.server middleware', () => {
                 basketId: 'basket-existing',
                 totalItemCount: 1,
                 uniqueProductCount: 1,
+                lastModified: '',
             };
             const cookieHeader = await basketCookie.serialize(snapshot);
             mockRequest = new Request('https://example.com', {
@@ -504,6 +527,7 @@ describe('basket.server middleware', () => {
                 basketId: 'basket-stale',
                 totalItemCount: 1,
                 uniqueProductCount: 1,
+                lastModified: '',
             };
             const cookieHeader = await basketCookie.serialize(snapshot);
             mockRequest = new Request('https://example.com', {
@@ -548,6 +572,7 @@ describe('basket.server middleware', () => {
                 basketId: 'basket-stale',
                 totalItemCount: 1,
                 uniqueProductCount: 1,
+                lastModified: '',
             };
             const cookieHeader = await basketCookie.serialize(snapshot);
             mockRequest = new Request('https://example.com', {
@@ -587,6 +612,7 @@ describe('basket.server middleware', () => {
                 basketId: 'basket-existing',
                 totalItemCount: 1,
                 uniqueProductCount: 1,
+                lastModified: '',
             };
             const cookieHeader = await basketCookie.serialize(snapshot);
             mockRequest = new Request('https://example.com', {
@@ -641,6 +667,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-stale',
             totalItemCount: 3,
             uniqueProductCount: 3,
+            lastModified: '',
         };
         const cookieHeader = await basketCookie.serialize(snapshot);
         mockRequest = new Request('https://example.com', {
@@ -679,6 +706,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-existing',
             totalItemCount: 2,
             uniqueProductCount: 2,
+            lastModified: '',
         };
         const cookieHeader = await basketCookie.serialize(snapshot);
         mockRequest = new Request('https://example.com', {
@@ -723,6 +751,7 @@ describe('basket.server middleware', () => {
             basketId: 'basket-stale',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         };
         const cookieHeader = await basketCookie.serialize(snapshot);
         mockRequest = new Request('https://example.com', {

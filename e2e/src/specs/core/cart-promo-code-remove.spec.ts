@@ -38,11 +38,10 @@ Scenario('Guest shopper can remove an applied coupon from the cart by clicking t
     await productDetailPage.waitForPageReady();
     await productDetailPage.selectAllVariants();
 
-    const enabled = await productDetailPage.isAddToCartEnabled();
+    const enabled = await productDetailPage.waitForAddToCartReady();
     expect(enabled, 'Add to Cart should be enabled for the test product').to.equal(true);
 
-    productDetailPage.addToCart();
-    const outcome = await productDetailPage.waitForAddToCartOutcome(15);
+    const outcome = await productDetailPage.addToCartAndWaitForOutcome(15);
     expect(outcome, 'Add to cart should succeed').to.equal('success');
 
     cartPage.navigate('/cart');

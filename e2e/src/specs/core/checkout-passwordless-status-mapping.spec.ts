@@ -35,6 +35,7 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { stubLoginPrefs } from '../../utils/login-prefs-stub';
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -57,10 +58,8 @@ Scenario(
         // The action handler returns this for SLAS 403 (not authorized for passwordless)
         // and SLAS 404 (email not registered) - both are mapped to "let the shopper
         // proceed as guest". Neither modal should open.
-        await checkoutPage.mockPasswordlessAuthorizationGuestPath(email);
-        await checkoutPage.fillContactInfoEmail(email);
-        await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-        await checkoutPage.blurEmailField();
+        await stubLoginPrefs({ branch: 'guest', email });
+        await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
         // Wait briefly to let any modal open if it were going to.
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -104,10 +103,8 @@ Scenario(
 
         checkoutPage.validatePageLoaded();
 
-        await checkoutPage.mockPasswordlessAuthorizationRequiresLogin(email);
-        await checkoutPage.fillContactInfoEmail(email);
-        await checkoutPage.fillContactInfoPhone(TEST_SHIPPING_ADDRESS.phone);
-        await checkoutPage.blurEmailField();
+        await stubLoginPrefs({ branch: 'loginModal', email });
+        await checkoutPage.fillContactInfoForPasswordless(email, TEST_SHIPPING_ADDRESS.phone);
 
         const loginModalAppeared = await checkoutPage.waitForLoginModal(10);
         expect(loginModalAppeared, 'Standard login modal should open when requiresLogin is true').to.be.true;

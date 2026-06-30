@@ -41,7 +41,8 @@ export const createSelectedStoreCookie = (context: Parameters<MiddlewareFunction
                 path: '/',
                 maxAge: 60 * 60 * 24 * 365, // 1 year
                 sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production',
+                // `secure` inherited from the getCookieConfig default (isRemote()): set on
+                // deployed HTTPS, omitted on local dev/preview so Safari persists it.
                 httpOnly: false, // Client needs to read for hydration
             },
             context

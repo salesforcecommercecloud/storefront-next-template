@@ -32,6 +32,7 @@
 
 import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
 
@@ -61,6 +62,80 @@ const TEMPLATE_STORYBOOK_OVERRIDES = join(TEMPLATE_DIR, 'eslint.storybook-overri
 const OUTPUT_ESLINT_CONFIG = join(TEMPLATE_DIR, 'eslint.config.js');
 const OUTPUT_ESLINT_RULES = join(TEMPLATE_DIR, 'eslint.rules.js');
 const OUTPUT_STORYBOOK_OVERRIDES = join(TEMPLATE_DIR, 'eslint.storybook-overrides.js');
+const E2E_ESLINT_CONFIG = join(TEMPLATE_DIR, 'e2e', 'eslint.config.mjs');
+
+/**
+ * Format generated source with the project's own Prettier so the written file matches
+ * what `prettier --write` / `pnpm lint` would produce. The config is assembled by string
+ * concatenation (parent config + headers + Storybook imports), which can't anticipate the
+ * project's printWidth/indentation — so without this the generated eslint.config.js fails
+ * the project's own lint (W-23074938). Resolved from this script's location (the generated
+ * project's node_modules). Unlike the SDK copy, this script only runs with the monorepo /
+ * mirror checkout present (mirror sync + the release-qualification harness), so Prettier is
+ * always on disk here; we return unformatted only if it genuinely can't be resolved, and
+ * throw on a real format/config error rather than silently shipping output that won't lint.
+ *
+ * NOTE: mirror of the helper in
+ * packages/storefront-next-dev/src/extensibility/trim-extensions.ts — kept separate because
+ * the two live in different packages/module systems. Keep the parser/config-resolution
+ * behavior in sync; the fallback chains INTENTIONALLY differ — this copy has a single
+ * fallback (consumer Prettier → unformatted), while the trim-extensions.ts copy adds an
+ * SDK-bundled `import('prettier')` step because it runs pre-install. Don't "fix" that
+ * asymmetry or you reintroduce the pre-install bug (W-23074938).
+ *
+ * @param {string} content Serialized file content.
+ * @param {string} filePath Target path (drives parser + config resolution).
+ * @returns {Promise<string>} Prettier-formatted content; unchanged only if Prettier is absent.
+ */
+async function formatWithProjectPrettier(content, filePath) {
+    let prettier;
+    try {
+        const projectRequire = createRequire(import.meta.url);
+        prettier = projectRequire('prettier');
+    } catch {
+        console.warn('⚠️  Prettier not found in the project; eslint.config.js will be written unformatted.');
+        return content;
+    }
+    try {
+        const config = await prettier.resolveConfig(filePath, { editorconfig: true });
+        return await prettier.format(content, { ...config, filepath: filePath });
+    } catch (error) {
+        // A parse/config error is a real bug — fail loudly instead of emitting broken output.
+        throw new Error(`Prettier formatting failed for eslint.config.js: ${error.message}`);
+    }
+}
+
+/**
+ * Re-point the e2e package's ESLint config import at the standalone project root.
+ *
+ * In the monorepo the e2e config lives at `packages/template-retail-rsc-app/e2e/` and
+ * imports the shared base config three levels up (`../../../eslint.config.js` → monorepo
+ * root). The standalone template is flat — the e2e package sits directly under the
+ * project root — so the base config it consumes is one level up (`../eslint.config.js`,
+ * the file this script generates). Without this rewrite the import resolves above the
+ * project and `pnpm --filter ./e2e lint` fails with ERR_MODULE_NOT_FOUND (W-23074938).
+ *
+ * No-op in the monorepo (the file is left untouched there) and idempotent. We rewrite the
+ * path SPECIFIER itself rather than a specific import statement, so it works whether the base
+ * config is pulled in via `await import('../../../eslint.config.js')` (our template) or a
+ * static `import … from '../../../eslint.config.js'` (a custom/customer template) — and there
+ * is no import shape that references the base config but escapes the rewrite.
+ */
+async function rewriteE2eEslintImport() {
+    if (!existsSync(E2E_ESLINT_CONFIG)) {
+        return;
+    }
+    const original = await readFile(E2E_ESLINT_CONFIG, 'utf-8');
+    // Flatten the quoted base-config specifier (`'../../../eslint.config.js'` →
+    // `'../eslint.config.js'`) regardless of how it's imported.
+    const rewritten = original.replace(/(['"])\.\.\/\.\.\/\.\.\/eslint\.config\.js\1/g, '$1../eslint.config.js$1');
+    if (rewritten === original) {
+        console.log('ℹ️  e2e/eslint.config.mjs base-config import already flat (skipped)');
+        return;
+    }
+    console.log('✏️  Re-pointing e2e/eslint.config.mjs base-config import to the project root...');
+    await writeFile(E2E_ESLINT_CONFIG, await formatWithProjectPrettier(rewritten, E2E_ESLINT_CONFIG), 'utf-8');
+}
 
 async function generateStandaloneConfig() {
     // Check if we're in monorepo context by verifying:
@@ -181,7 +256,13 @@ export default [{ ignores: ['e2e/**'] }, ...baseConfig, ...storybookOverrides];
 `;
 
     console.log('✏️  Writing eslint.config.js...');
-    await writeFile(OUTPUT_ESLINT_CONFIG, standaloneConfig, 'utf-8');
+    // Format the concatenated config with the project's Prettier so it's lint-clean
+    // in the generated artifact (W-23074938).
+    const formattedConfig = await formatWithProjectPrettier(standaloneConfig, OUTPUT_ESLINT_CONFIG);
+    await writeFile(OUTPUT_ESLINT_CONFIG, formattedConfig, 'utf-8');
+
+    // Flatten the e2e sub-package's base-config import to match the standalone layout.
+    await rewriteE2eEslintImport();
 
     console.log('\n✅ Successfully generated standalone ESLint config!');
     console.log('📁 Files written:');

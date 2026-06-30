@@ -49,7 +49,7 @@ describe('action.otp-verify', () => {
             }),
             params: {},
             context: mockContext,
-            unstable_pattern: '/action/otp-verify',
+            pattern: '/action/otp-verify',
         } as ActionFunctionArgs;
     };
 

@@ -67,7 +67,7 @@ describe('useTransformSearchSuggestions', () => {
                         id: 'cat2',
                         name: 'Clothing',
                         // No image
-                        parentCategoryName: 'Fashion',
+                        parentCategoryName: 'Apparel',
                     },
                 ],
             },
@@ -88,7 +88,7 @@ describe('useTransformSearchSuggestions', () => {
                 link: '/category/cat2',
                 type: 'category',
                 image: undefined,
-                parentCategoryName: 'Fashion',
+                parentCategoryName: 'Apparel',
             },
         ]);
     });

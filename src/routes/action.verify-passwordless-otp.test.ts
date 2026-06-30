@@ -73,7 +73,7 @@ describe('action.verify-passwordless-otp', () => {
             }),
             params: {},
             context: mockContext,
-            unstable_pattern: '/action/verify-passwordless-otp',
+            pattern: '/action/verify-passwordless-otp',
         } as ActionFunctionArgs;
     };
 

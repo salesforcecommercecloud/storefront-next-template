@@ -291,7 +291,7 @@ export function StarRating({
                         onMouseEnter={onRatingLinkClick}
                         aria-label={ratingLinkAriaLabel}
                         className={cn(
-                            'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded',
+                            'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-ui',
                             ratingLinkClassName
                         )}>
                         {ratingLinkText}

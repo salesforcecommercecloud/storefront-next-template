@@ -30,6 +30,23 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { getSitePrefix, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 
+// Vertical-aware UI flags. `@/lib/config.ui` resolves to the active vertical's overlay via the same
+// Vite resolver the component uses, so these match exactly what ProductItem renders. The default
+// variant gates the variant-attributes row, "Saved $X" promo badge, and "Bonus Product" title badge
+// behind these flags (fashion = true, cosmetic = false), so assertions on those elements must follow suit.
+import { uiConfig } from '@/lib/config.ui';
+
+const { showLineItemVariantAttributes, showLineItemPromoBadge, showLineItemBonusBadge } = uiConfig.pages.cart;
+
+/** Assert an element is present when its gating flag is on, absent when off. */
+const expectGatedText = (matcher: Parameters<typeof screen.queryByText>[0], shown: boolean) => {
+    if (shown) {
+        expect(screen.getByText(matcher)).toBeInTheDocument();
+    } else {
+        expect(screen.queryByText(matcher)).not.toBeInTheDocument();
+    }
+};
+
 const mockSite = mockSiteObject;
 
 // Mock data
@@ -153,8 +170,8 @@ describe('ProductItem', () => {
             expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
             expect(image).toHaveAttribute('alt', 'Product image');
 
-            expect(screen.getByText('Color: Red')).toBeInTheDocument();
-            expect(screen.getByText('Size: Medium')).toBeInTheDocument();
+            expectGatedText('Color: Red', showLineItemVariantAttributes);
+            expectGatedText('Size: Medium', showLineItemVariantAttributes);
 
             // Should render the quantity picker component
             const quantityPicker = screen.getByDisplayValue('2');
@@ -558,8 +575,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithPromotions} promotions={mockPromotions} />);
 
-            // ProductItemPromotions shows a "Saved" badge when there's a discount
-            expect(screen.getByText(/Saved/)).toBeInTheDocument();
+            // ProductItemPromotions shows a "Saved" badge when there's a discount (gated in default variant)
+            expectGatedText(/Saved/, showLineItemPromoBadge);
         });
 
         test('does not render "Saved" badge when no discount exists', () => {
@@ -607,8 +624,8 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithPromotions} />);
 
             // Should render without errors even without promotions prop
-            // ProductItemPromotions shows "Saved" badge when there's a discount
-            expect(screen.getByText(/Saved/)).toBeInTheDocument();
+            // ProductItemPromotions shows "Saved" badge when there's a discount (gated in default variant)
+            expectGatedText(/Saved/, showLineItemPromoBadge);
         });
 
         test('render properly when no promotions', () => {
@@ -637,8 +654,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithLargeDiscount} />);
 
-            // ProductItemPromotions shows "Saved" badge for the large discount
-            expect(screen.getByText(/Saved/)).toBeInTheDocument();
+            // ProductItemPromotions shows "Saved" badge for the large discount (gated in default variant)
+            expectGatedText(/Saved/, showLineItemPromoBadge);
         });
 
         // NOTE: adjust this test when display price is implemented
@@ -681,8 +698,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={bonusProduct} />);
 
-            // Check for bonus product badge
-            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            // Check for bonus product badge (gated in default variant)
+            expectGatedText('Bonus Product', showLineItemBonusBadge);
         });
 
         test('does not show bonus badge for regular product', () => {
@@ -727,8 +744,8 @@ describe('ProductItem', () => {
             // Verify component renders without errors when price is 0
             expect(screen.getByRole('img', { name: /product image/i })).toBeInTheDocument();
             expect(screen.getByRole('link', { name: /test product/i })).toBeInTheDocument();
-            // Check that the bonus badge is shown
-            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            // Check that the bonus badge is shown (gated in default variant)
+            expectGatedText('Bonus Product', showLineItemBonusBadge);
         });
 
         test('disables quantity picker for bonus product', () => {
@@ -774,8 +791,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={completeBonusProduct} />);
 
-            // Verify all bonus product elements that ARE implemented
-            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            // Verify all bonus product elements that ARE implemented (badge gated in default variant)
+            expectGatedText('Bonus Product', showLineItemBonusBadge);
             expect(screen.getByText('Free Bonus Tie')).toBeInTheDocument();
 
             // Zero priceAfterItemDiscount shows "Free" text
@@ -835,8 +852,8 @@ describe('ProductItem', () => {
                 <ProductItem productItem={choiceBonusProduct} bonusDiscountLineItems={mockBonusDiscountLineItems} />
             );
 
-            // Should show bonus product badge
-            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            // Should show bonus product badge (gated in default variant)
+            expectGatedText('Bonus Product', showLineItemBonusBadge);
         });
 
         test('shows Remove button but hides Edit button for choice-based bonus product', () => {
@@ -932,8 +949,8 @@ describe('ProductItem', () => {
                 />
             );
 
-            // Should still render correctly without max
-            expect(screen.getByText('Bonus Product')).toBeInTheDocument();
+            // Should still render correctly without max (badge gated in default variant)
+            expectGatedText('Bonus Product', showLineItemBonusBadge);
             const quantityInput = screen.getByRole('spinbutton');
             expect(quantityInput).not.toBeDisabled();
             // Max attribute should not be set if not provided

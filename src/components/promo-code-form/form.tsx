@@ -28,11 +28,14 @@ import { formatCurrency } from '@/lib/currency';
 //hooks
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
+import { useBasketUpdater } from '@/providers/basket';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { isCouponApplied } from '@/lib/cart/coupon-status';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 //types
 import { createPromoCodeFormSchema, type PromoCodeFormData } from './index';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { type AppliedCouponRowProps, type PromoCodeFormProps } from './types';
 import { useTranslation } from 'react-i18next';
 
@@ -66,9 +69,16 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
     const [isOpen, setIsOpen] = useState(true);
     const { applyPromoCode, applyFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
     const { currency: siteCurrency } = useSite();
 
     const schema = useMemo(() => createPromoCodeFormSchema(t), [t]);
+
+    // Only render coupons that actually produced a discount. SCAPI keeps
+    // valid-but-ineligible coupons (e.g. statusCode 'no_applicable_promotion')
+    // on the basket so they auto-apply once a qualifying item is added, but
+    // they must not be presented to the shopper as applied.
+    const appliedCoupons = useMemo(() => basket?.couponItems?.filter(isCouponApplied) ?? [], [basket?.couponItems]);
 
     const form = useForm<PromoCodeFormData>({
         resolver: zodResolver(schema),
@@ -89,11 +99,20 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
     useEffect(() => {
         if (applyFetcher.data) {
             if (applyFetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                const responseBasket = (applyFetcher.data as BasketActionResponse).basket;
+                if (responseBasket) {
+                    updateBasket(responseBasket);
+                }
                 form.reset({ code: '' });
                 addToast(t('promoCode.successMessage'), 'success');
             } else {
-                // Get the error message from the API response
-                const errorMessage = t('promoCode.errorMessage');
+                // Prefer the server's status-specific message (e.g. "not applicable
+                // to your cart" for a valid-but-ineligible coupon) and fall back to
+                // the generic message when the action didn't provide one.
+                const errorMessage = applyFetcher.data.error?.message || t('promoCode.errorMessage');
 
                 // Set the form error with the specific API error message
                 form.setError('code', {
@@ -107,7 +126,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
         }
         // addToast is stable and does not need to be in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [applyFetcher.data, form, t]);
+    }, [applyFetcher.data, form, t, updateBasket]);
 
     /**
      * Handles form submission for applying a promo code.
@@ -158,17 +177,17 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 </AccordionItem>
             </Accordion>
 
-            {basket && basket.couponItems && basket.couponItems.length > 0 && (
+            {appliedCoupons.length > 0 && (
                 <div className="space-y-1" data-testid="applied-coupons">
-                    {basket.couponItems.map((item) => (
+                    {appliedCoupons.map((item) => (
                         <AppliedCouponRow
                             key={item.couponItemId}
                             item={item}
                             basketId={basketId}
-                            currency={basket.currency ?? siteCurrency}
+                            currency={basket?.currency ?? siteCurrency}
                             priceAdjustments={[
-                                ...(basket.orderPriceAdjustments ?? []),
-                                ...(basket.productItems ?? []).flatMap((p) => p.priceAdjustments ?? []),
+                                ...(basket?.orderPriceAdjustments ?? []),
+                                ...(basket?.productItems ?? []).flatMap((p) => p.priceAdjustments ?? []),
                             ]}
                         />
                     ))}
@@ -193,11 +212,19 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
     const { t, i18n } = useTranslation('cart');
     const { removePromoCode, removeFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
+    const updateBasket = useBasketUpdater();
     const isRemoving = removeFetcher.state !== FETCHER_STATES.IDLE;
 
     useEffect(() => {
         if (removeFetcher.data) {
             if (removeFetcher.data.success) {
+                // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
+                const responseBasket = (removeFetcher.data as BasketActionResponse).basket;
+                if (responseBasket) {
+                    updateBasket(responseBasket);
+                }
                 addToast(t('promoCode.removeSuccessMessage'), 'success');
             } else if (removeFetcher.data.error) {
                 addToast(t('promoCode.removeErrorMessage'), 'error');
@@ -205,7 +232,7 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
         }
         // addToast is stable and does not need to be in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [removeFetcher.data, t]);
+    }, [removeFetcher.data, t, updateBasket]);
 
     // Sum every price adjustment (order-level AND line-item-level) tied to this coupon.
     // SCAPI splits coupon discounts across both based on whether the promotion targets
@@ -222,7 +249,7 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
             <div className="inline-flex items-stretch">
                 <Badge
                     variant="secondary"
-                    className="gap-1 rounded-none text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                    className="gap-1 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
                     <Check className="size-3" />
                     {item.code}
                 </Badge>
@@ -232,7 +259,7 @@ export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }:
                     size="icon-sm"
                     aria-label={`${t('promoCode.remove')} ${item.code}`}
                     disabled={isRemoving}
-                    className="h-auto w-auto rounded-none px-1.5 py-0.5"
+                    className="h-auto w-auto px-1.5 py-0.5"
                     onClick={() => {
                         if (item.couponItemId) {
                             removePromoCode(item.couponItemId);

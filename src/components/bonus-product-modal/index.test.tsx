@@ -21,6 +21,7 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { BonusProductModal } from './index';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Mock dependencies
 const mockFetcherLoad = vi.fn();
@@ -52,6 +53,14 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
     }),
+}));
+
+// Stub only useBasketUpdater so the publish-back can be asserted; keep the rest of the provider real for any
+// AllProvidersWrapper consumers.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/providers/basket')>()),
+    useBasketUpdater: () => mockUpdateBasket,
 }));
 
 vi.mock('@/providers/product-view', () => ({
@@ -114,7 +123,6 @@ describe('BonusProductModal', () => {
             { id: 'bdli-xyz', maxBonusItems: 2, bonusProductsSelected: 0 },
             { id: 'bdli-abc', maxBonusItems: 1, bonusProductsSelected: 0 },
         ],
-        maxQuantity: 3,
     };
 
     beforeEach(() => {
@@ -164,8 +172,12 @@ describe('BonusProductModal', () => {
             // Check that product name is displayed in title
             expect(screen.getByText(/Striped Silk Tie/)).toBeInTheDocument();
 
-            // Check that selected count is displayed (0 of 2 selected - matches maxBonusItems in mockProps)
-            expect(screen.getByText(/0 of 2 selected/)).toBeInTheDocument();
+            // Check that the selected count is displayed (0 of 2 — matches maxBonusItems in mockProps).
+            // Derive the text from the resolved translation rather than hardcoding the canonical
+            // wording — verticals (e.g. cosmetic) override `selectionCount` to a compact "0/2" form.
+            const { t } = getTranslation();
+            const countText = t('cart:bonusProducts.selectionCount', { selected: 0, max: 2 }).trim();
+            expect(screen.getByText((content) => content.includes(countText))).toBeInTheDocument();
         });
 
         it('should update when open prop changes from false to true', () => {
@@ -391,6 +403,19 @@ describe('BonusProductModal', () => {
             expect(successCalls).toHaveLength(0);
             // Modal close was requested
             expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+        });
+
+        it('publishes the action-response basket into BasketProvider on success', () => {
+            const responseBasket = { basketId: 'b1', lastModified: '2026-06-24T10:00:00.000Z' };
+            setupAndClickAdd({ success: true, basket: responseBasket });
+
+            expect(mockUpdateBasket).toHaveBeenCalledWith(responseBasket);
+        });
+
+        it('does not publish a basket on a failed add-to-cart', () => {
+            setupAndClickAdd({ success: false, error: { message: 'Inventory short' } });
+
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
         });
 
         it('shows an error toast when add-to-cart fails', () => {

@@ -17,9 +17,12 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperSearch } from '@/scapi';
 import { ConfigWrapper } from '@/test-utils/config';
 import ProductGrid from './grid';
+
+const { t } = getTranslation();
 
 // Render ProductTile as a minimal element that exposes all props under test as data attributes.
 // This isolates the grid's own behaviour from ProductTile internals.
@@ -176,7 +179,7 @@ describe('ProductGrid — mixed critical and non-critical', () => {
     test('does not show empty message when both critical and non-critical have products', () => {
         renderGrid({ critical: [p1], nonCritical: [p2] });
 
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('common:noProductsFound'))).not.toBeInTheDocument();
     });
 
     test('shows loading overlay while a refinement navigation is pending', () => {
@@ -192,27 +195,27 @@ describe('ProductGrid — empty state', () => {
 
     test('shows empty message when critical is empty and nonCritical is not provided', () => {
         renderGrid({ critical: [] });
-        expect(screen.getByText('No products found')).toBeInTheDocument();
+        expect(screen.getByText(t('common:noProductsFound'))).toBeInTheDocument();
     });
 
     test('shows empty message when both critical and non-critical are empty', () => {
         renderGrid({ critical: [], nonCritical: [] });
-        expect(screen.getByText('No products found')).toBeInTheDocument();
+        expect(screen.getByText(t('common:noProductsFound'))).toBeInTheDocument();
     });
 
     test('hides empty message when critical has products', () => {
         renderGrid({ critical: [p1] });
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('common:noProductsFound'))).not.toBeInTheDocument();
     });
 
     test('hides empty message when non-critical has products and critical is empty', () => {
         renderGrid({ critical: [], nonCritical: [p1] });
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('common:noProductsFound'))).not.toBeInTheDocument();
     });
 
     test('hides empty message when critical has products even if non-critical is empty', () => {
         renderGrid({ critical: [p1], nonCritical: [] });
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('common:noProductsFound'))).not.toBeInTheDocument();
     });
 
     test('uses refinement-aware image widths when hasRefinementsPanel is true', () => {
@@ -253,7 +256,7 @@ describe('ProductGrid — skeleton placeholders', () => {
     test('does not show empty message when skeletonCount is provided', () => {
         renderGrid({ critical: [], skeletonCount: 4 });
 
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('common:noProductsFound'))).not.toBeInTheDocument();
     });
 });
 

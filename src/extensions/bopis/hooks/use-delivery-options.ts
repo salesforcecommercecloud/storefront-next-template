@@ -115,6 +115,14 @@ export function useDeliveryOptions({ product, quantity, isInBasket, pickupStore 
          * - They must fall through to the normal check to use the calculated inventory
          */
 
+        // A store selected with no inventory list cannot fulfill pickup — treat as OOS
+        if (pickupStore && !pickupStore.inventoryId) {
+            return {
+                isStoreOutOfStock: true,
+                isSiteOutOfStock: siteOutOfStockFor(product, quantity),
+            };
+        }
+
         // Early return for race condition case: store selected but inventory not yet loaded
         const hasStoreSelected = Boolean(pickupStore?.inventoryId);
         const hasInventoryData = Boolean(product?.inventories && product.inventories.length > 0);

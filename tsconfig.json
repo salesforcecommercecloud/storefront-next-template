@@ -9,12 +9,6 @@
         "jsx": "react-jsx",
         "rootDirs": [".", "./.react-router/types"],
         "baseUrl": ".",
-        "paths": {
-            "@/*": ["./src/*"],
-            "+types/*": ["./types/*"],
-            "@/config/server": ["./config.server.ts"],
-            "@storybook/test-utils": ["./.storybook/test-utils"]
-        },
         "esModuleInterop": true,
         "noEmit": true,
         "noUnusedLocals": true,
@@ -24,7 +18,23 @@
         "strict": true,
         "verbatimModuleSyntax": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "paths": {
+            "@/*": ["./src/*"],
+            "+types/*": ["./types/*"],
+            "@/config/server": ["./config.server.ts"],
+            "@storybook/test-utils": ["./.storybook/test-utils"]
+        }
     },
-    "exclude": ["dist", "node_modules", "**/*-snapshot.tsx", ".storybook/tests/generated-stories/**", "e2e"]
+    "exclude": [
+        "dist",
+        "node_modules",
+        "**/*-snapshot.tsx",
+        ".storybook/tests/generated-stories/**",
+        "e2e",
+        "src/verticals/**/routes/**/*",
+        "e2e/**/*",
+        "**/*-snapshot.tsx",
+        ".storybook/tests/generated-stories/**"
+    ]
 }

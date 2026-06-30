@@ -4,7 +4,7 @@ exports[`PickupOrDeliveryDropdown stories snapshot > CustomClass story renders a
 <button
   aria-expanded="false"
   aria-haspopup="menu"
-  class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+  class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
   data-slot="dropdown-menu-trigger"
   data-state="closed"
   id="radix-_r_4_"
@@ -47,7 +47,7 @@ exports[`PickupOrDeliveryDropdown stories snapshot > Default story renders and m
 <button
   aria-expanded="false"
   aria-haspopup="menu"
-  class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+  class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
   data-slot="dropdown-menu-trigger"
   data-state="closed"
   id="radix-_r_0_"
@@ -90,7 +90,7 @@ exports[`PickupOrDeliveryDropdown stories snapshot > PickupSelected story render
 <button
   aria-expanded="false"
   aria-haspopup="menu"
-  class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+  class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
   data-slot="dropdown-menu-trigger"
   data-state="closed"
   id="radix-_r_2_"

@@ -17,19 +17,12 @@ import { useRef } from 'react';
 import { useOtpInputs } from '@/hooks/use-otp-inputs';
 
 interface UseOtpVerificationOptions {
-    otpLength: number;
-    onVerify: (code: string) => void;
+    slotCount: number;
+    onPasteComplete?: (code: string) => void;
 }
 
-export function useOtpVerification({ otpLength, onVerify }: UseOtpVerificationOptions) {
-    const onVerifyRef = useRef(onVerify);
-    onVerifyRef.current = onVerify;
-
-    const otpInputs = useOtpInputs(otpLength, (code) => {
-        if (code.length === otpLength) {
-            onVerifyRef.current(code);
-        }
-    });
+export function useOtpVerification({ slotCount, onPasteComplete }: UseOtpVerificationOptions) {
+    const otpInputs = useOtpInputs(slotCount, onPasteComplete);
 
     const otpInputsRef = useRef(otpInputs);
     otpInputsRef.current = otpInputs;
@@ -38,8 +31,8 @@ export function useOtpVerification({ otpLength, onVerify }: UseOtpVerificationOp
     inputRefsStable.current = otpInputs.inputRefs;
 
     const refCallbacks = useRef<Array<(el: HTMLInputElement | null) => void> | null>(null);
-    if (!refCallbacks.current || refCallbacks.current.length !== otpLength) {
-        refCallbacks.current = Array.from({ length: otpLength }, (_, index) => {
+    if (!refCallbacks.current || refCallbacks.current.length !== slotCount) {
+        refCallbacks.current = Array.from({ length: slotCount }, (_, index) => {
             return (el: HTMLInputElement | null) => {
                 inputRefsStable.current.current[index] = el;
             };

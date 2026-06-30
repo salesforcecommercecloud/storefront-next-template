@@ -41,14 +41,14 @@ describe('CartSkeleton', () => {
             const { container } = render(<CartSkeleton productItemCount={0} />);
             expect(screen.getByTestId('sf-cart-empty-skeleton')).toBeInTheDocument();
             // Real EmptyCart only ever renders one button
-            const buttonSkeleton = container.querySelector('.h-9.rounded-md');
+            const buttonSkeleton = container.querySelector('.h-9.rounded-ui');
             expect(buttonSkeleton).toBeInTheDocument();
         });
 
         test('should render a single CTA button', () => {
             const { container } = render(<CartSkeleton productItemCount={0} />);
             // Real cart-empty.tsx renders one "Continue Shopping" button for guests and registered alike.
-            const buttons = container.querySelectorAll('.h-9.rounded-md');
+            const buttons = container.querySelectorAll('.h-9.rounded-ui');
             expect(buttons).toHaveLength(1);
         });
     });

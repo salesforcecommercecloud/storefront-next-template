@@ -85,7 +85,7 @@ export default function MaintenancePage() {
                     <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
                     <Link
                         to={returnTo}
-                        className="mt-8 inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                        className="mt-8 inline-block bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
                         {t('tryAgain')}
                     </Link>
                 </div>
@@ -119,7 +119,7 @@ export default function MaintenancePage() {
                 {/* Try Again button */}
                 <Link
                     to={returnTo}
-                    className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                    className="inline-block bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
                     {t('tryAgain')}
                 </Link>
             </div>

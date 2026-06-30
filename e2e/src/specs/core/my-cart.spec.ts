@@ -16,14 +16,6 @@
 
 Feature('My Cart on Checkout').tag('@core').tag('@my-cart').tag('@checkout');
 
-// TODO: Flaky on the new pre-merge pool target. The Before hook's
-// addToCartFlow.execute click on "Add to Cart" fires, but neither the
-// mini-cart sheet nor the error toast appears within 15s — UI feedback
-// times out under pool load. Same scenario also failed in the After
-// hook of the previous attempt, so this is broader than a one-off flake.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { I, checkoutPage, addToCartFlow, storefrontPage, cartPage } = inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
@@ -64,7 +56,7 @@ After(async () => {
     }
 });
 
-scenarioFn('My Cart displays cart items with price, product image, and promotions when expanded', async () => {
+Scenario('My Cart displays cart items with price, product image, and promotions when expanded', async () => {
     checkoutPage.expandMyCart();
     await checkoutPage.validateMyCartDisplaysItemsWithPriceImageAndPromotions();
 }).tag('@my-cart-display');

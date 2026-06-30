@@ -353,7 +353,7 @@
                 "minLength": "Kampagnen skal indeholde mindst 2 tegn."
             },
             "errors": {
-                "invalidCode": "Ugyldig kampagnekode",
+                "invalidCode": "Kampagnekoden “{{code}}” er ugyldig.",
                 "expiredCode": "Denne kampagnekode er udløbet.",
                 "alreadyApplied": "Denne kampagnekode er allerede blevet anvendt.",
                 "notApplicable": "Denne kampagnekode gælder ikke for din kurv",
@@ -1542,6 +1542,7 @@
         "failedToAddProductToCartError": "Kunne ikke lægge produktet i kurven:",
         "failedToAddProductToWishlistError": "Kunne ikke føje produktet til ønskelisten:",
         "price": {
+            "unavailable": "Pris ikke tilgængelig",
             "currentPriceFrom": "Nuværende pris fra {{price}}",
             "currentPrice": "Nuværende pris: {{price}}",
             "from": "Fra {{price}}",

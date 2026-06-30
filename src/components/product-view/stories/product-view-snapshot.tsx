@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { vi, expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 import * as ProductViewStories from './product-view.stories';
@@ -90,6 +91,16 @@ vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
     useStoreLocator: () => ({
         selectedStoreInfo: null,
     }),
+}));
+
+// Mock useWishlistActions and useIsInWishlist
+vi.mock('@/providers/wishlist', () => ({
+    WishlistProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useWishlistActions: () => ({
+        addItem: vi.fn(),
+        removeItem: vi.fn(),
+    }),
+    useIsInWishlist: () => false,
 }));
 
 const composed = composeStories(ProductViewStories);

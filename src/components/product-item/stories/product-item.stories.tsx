@@ -21,6 +21,12 @@ import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+// Vertical-aware UI flags — resolves to the active vertical's overlay (fashion = true, cosmetic = false),
+// matching what ProductItem renders. The default variant gates the "Bonus Product" title badge behind
+// this flag, so the play functions must only assert it when the flag is on.
+import { uiConfig } from '@/lib/config.ui';
+
+const { showLineItemBonusBadge } = uiConfig.pages.cart;
 
 const mockSite = mockSiteObject;
 
@@ -178,8 +184,12 @@ An auto bonus product that is automatically added to the cart as part of a promo
 
         // Verify basic rendering
         await expect(canvas.getByText(mockBonusProductItem.productName)).toBeInTheDocument();
-        // Verify bonus product badge is displayed
-        await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
+        // Verify bonus product badge is displayed (gated in default variant; hidden when the flag is off)
+        if (showLineItemBonusBadge) {
+            await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
+        } else {
+            await expect(canvas.queryByText('Bonus Product')).not.toBeInTheDocument();
+        }
         // Verify "Free" text is shown for bonus product with zero price
         await expect(canvas.getByText('Free')).toBeInTheDocument();
 
@@ -295,8 +305,12 @@ A choice-based bonus product that allows users to select from multiple bonus opt
 
         // Verify basic rendering
         await expect(canvas.getByText(mockChoiceBonusProductItem.productName)).toBeInTheDocument();
-        // Verify bonus product badge is displayed
-        await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
+        // Verify bonus product badge is displayed (gated in default variant; hidden when the flag is off)
+        if (showLineItemBonusBadge) {
+            await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
+        } else {
+            await expect(canvas.queryByText('Bonus Product')).not.toBeInTheDocument();
+        }
         // Verify "Free" text is shown for bonus product with zero price
         await expect(canvas.getByText('Free')).toBeInTheDocument();
 

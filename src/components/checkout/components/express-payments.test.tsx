@@ -681,11 +681,10 @@ describe('ExpressPayments Integration Tests', () => {
                 expect(image).toHaveClass('w-auto');
             });
 
-            test('has white logo styling (brightness and invert filter)', () => {
+            test('has correct styling', () => {
                 render(<VenmoLogo />);
                 const image = screen.getByAltText('Venmo');
                 expect(image).toHaveClass('object-contain');
-                expect(image.style.filter).toBe('brightness(0) invert(1)');
             });
         });
     });
@@ -885,7 +884,7 @@ describe('ExpressPayments Integration Tests', () => {
                 render(<StaticVenmoButton onClick={onClick} />);
 
                 const button = screen.getByRole('button');
-                expect(button).toHaveClass('hover:bg-[#2d7fb8]');
+                expect(button).toHaveClass('hover:bg-[#0077D9]');
             });
 
             test('has transition classes for smooth interactions', () => {

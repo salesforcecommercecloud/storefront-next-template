@@ -17,10 +17,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { OrderList, type Order } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { getSitePrefix, mockLocale, mockSiteObject } from '@/test-utils/config';
+
+const { t } = getTranslation();
 
 const testOrders: Order[] = [
     {
@@ -125,9 +128,7 @@ export const EmptyState: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(
-            canvas.getByText("You haven't placed an order yet. Once you place an order the details will show up here.")
-        ).toBeInTheDocument();
+        await expect(canvas.getByText(t('account:orders.empty'))).toBeInTheDocument();
         const continueShoppingLink = canvas.getByRole('link', { name: 'Continue Shopping' });
         await expect(continueShoppingLink).toHaveAttribute('href', `${getSitePrefix()}/`);
         await expect(canvas.queryAllByText('View Order Details')).toHaveLength(0);

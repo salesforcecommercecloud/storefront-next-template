@@ -27,7 +27,7 @@ import FaqQuestionItem from './faq-question-item';
  * Used only here on the PDP FAQ section header.
  */
 const AI_BADGE_CLASSES =
-    'inline-flex items-center justify-center rounded px-3 py-1 text-xs font-medium min-w-10 bg-muted text-foreground';
+    'inline-flex items-center justify-center rounded-ui px-3 py-1 text-xs font-medium min-w-10 bg-muted text-foreground';
 
 export interface FaqProps {
     /** FAQ questions resolved from the route loader. */

@@ -15,14 +15,14 @@
  */
 import type { Preview } from '@storybook/react-vite';
 import { StoryShell, withRouter } from './decorators';
-import '../src/theme/index.css'; // Import global CSS
+import '@/theme/index.css'; // Import global CSS — alias goes through vertical-first resolver
 
 const a11yTestMode: 'off' | 'todo' | 'error' =
     process.env.STORYBOOK_DISABLE_A11Y === 'true'
         ? 'off'
         : process.env.STORYBOOK_A11Y_TEST_MODE === 'error'
-            ? 'error'
-            : 'todo';
+          ? 'error'
+          : 'todo';
 
 const preview: Preview = {
     parameters: {

@@ -39,10 +39,10 @@ This component renders a generic Venmo wordmark used inside the placeholder \`Ex
 
 **Current Implementation:**
 - Local SVG from \`public/images/venmo.svg\`
-- Applies \`filter: brightness(0) invert(1)\` to render the logo in white — designed to be displayed inside a blue Venmo button
-- Because of the white filter, stories are rendered on Venmo's brand blue background so the logo is visible. On a light background the logo would appear invisible.
+- SVG paths use white fill — designed to be displayed inside a blue Venmo button
+- Stories are rendered on Venmo's brand blue background so the logo is visible. On a light background the logo would appear invisible.
 
-**Note:** On the storefront, this logo is rendered inside the \`StaticVenmoButton\`, which provides the official Venmo blue background (\`#3D95CE\`). The logo itself is background-agnostic (beyond the white filter) and relies on its parent button for the brand color — see the \`CHECKOUT/StaticVenmoButton\` stories to view the full branded button.
+**Note:** On the storefront, this logo is rendered inside the \`StaticVenmoButton\`, which provides the official Venmo blue background (\`#008CFF\`). The logo itself relies on its parent button for the brand color — see the \`CHECKOUT/StaticVenmoButton\` stories to view the full branded button.
 
 **Production Replacement:**
 When integrating real Venmo, replace this placeholder with the **official Venmo button** rendered through the PayPal JS SDK (Venmo is a PayPal-owned funding source and ships via the PayPal Smart Payment Buttons). Venmo has strict brand guidelines that mandate using their supplied button components. See:
@@ -62,7 +62,7 @@ When integrating real Venmo, replace this placeholder with the **official Venmo 
     tags: ['autodocs'],
     decorators: [
         (Story) => (
-            <div style={{ backgroundColor: '#3D95CE', padding: '20px', borderRadius: '8px' }}>
+            <div style={{ backgroundColor: '#008CFF', padding: '20px', borderRadius: '8px' }}>
                 <Story />
             </div>
         ),

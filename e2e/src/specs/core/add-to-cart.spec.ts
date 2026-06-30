@@ -16,7 +16,7 @@
 
 Feature('Storefront Add to Cart Tests').tag('@core').tag('@cart');
 
-const { cartPage, addToCartFlow, signupFlow, storefrontPage, loginFlow } = inject();
+const { cartPage, addToCartFlow, signupFlow, apiSignupFlow, storefrontPage, loginFlow } = inject();
 import { expect } from 'chai';
 
 /**
@@ -111,11 +111,12 @@ Scenario('Guest shopper should be able to add items to cart', async () => {
  * This test focuses on validating the new item is added, not exact cart count.
  */
 Scenario('Registered shopper should be able to add items to cart', async () => {
-    // Create a fresh account and auto-login. Using signupFlow (not loginFlow) ensures
+    // Create a fresh account and auto-login. Using a signup flow (not loginFlow) ensures
     // each execution — including retries — starts with an empty SFCC basket. Reusing a
     // stored account across retries causes basket accumulation (each retry adds 1 item,
-    // so qty grows to 2, 3, … and the qty===1 assertion fails).
-    await signupFlow.execute();
+    // so qty grows to 2, 3, … and the qty===1 assertion fails). apiSignupFlow registers
+    // via SCAPI and injects the session — login here is setup, not the subject.
+    await apiSignupFlow.execute();
 
     // Execute the add-to-cart flow with direct category navigation
     const productInfo = await addToCartFlow.execute('category/mens-clothing-jackets');
@@ -168,8 +169,10 @@ Scenario('Registered shopper should be able to add items to cart', async () => {
  * credential store's account with existing basket items).
  */
 Scenario('Guest item should persist in cart after login (basket merge)', async () => {
-    // Create a fresh account with no basket to ensure test isolation
-    const { signupData } = await signupFlow.execute({ createBasket: false });
+    // Create a fresh account with no basket to ensure test isolation. apiSignupFlow
+    // registers via SCAPI and injects the registered session — signup is setup here,
+    // not the subject. The merge itself is still driven through the UI loginFlow below.
+    const { signupData } = await apiSignupFlow.execute();
 
     // Logout to return to guest state before testing basket merge
     await storefrontPage.logout();

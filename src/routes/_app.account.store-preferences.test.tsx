@@ -17,9 +17,12 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { loader } from './_app.account.store-preferences';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
+
+const { t } = getTranslation();
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -88,7 +91,7 @@ describe('Store Preferences page', () => {
             expect(screen.getByTestId('store-preferences')).toBeInTheDocument();
 
             const seoMeta = screen.getByTestId('seo-meta');
-            expect(seoMeta).toHaveAttribute('data-title', 'Store Preferences');
+            expect(seoMeta).toHaveAttribute('data-title', t('account:meta.storePreferencesTitle'));
             expect(seoMeta).toHaveAttribute('data-no-index', 'true');
         });
     });
@@ -103,7 +106,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });
@@ -123,7 +127,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: mockStore, error: null });
@@ -143,7 +148,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.preferredStore).toBeNull();
@@ -167,7 +173,8 @@ describe('Store Preferences page', () => {
                 context,
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost/account/store-preferences'),
-                unstable_pattern: UNSTABLE_PATTERN,
+                url: new URL('http://localhost/account/store-preferences'),
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result).toEqual({ preferredStore: null, error: null });

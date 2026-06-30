@@ -78,7 +78,7 @@ export default function HeroCarouselSkeleton({
                             <Skeleton className="h-4 sm:h-5 md:h-6 lg:h-7 w-full bg-white/15 mb-4 sm:mb-6 md:mb-8" />
 
                             {/* CTA button skeleton */}
-                            <Skeleton className="h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-none" />
+                            <Skeleton className="h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25" />
                         </div>
                     </div>
                 </div>

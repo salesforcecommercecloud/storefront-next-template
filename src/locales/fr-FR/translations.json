@@ -358,7 +358,7 @@
                 "minLength": "La promo doit comporter au moins 2 caractères."
             },
             "errors": {
-                "invalidCode": "Code promo non valide",
+                "invalidCode": "Le code promo « {{code}} » n’est pas valide.",
                 "expiredCode": "Ce code promo a expiré.",
                 "alreadyApplied": "Ce code promo est déjà appliqué.",
                 "notApplicable": "Ce code promo ne s’applique pas à votre panier",
@@ -1563,6 +1563,7 @@
         "failedToAddProductToCartError": "Échec de l’ajout du produit au panier :",
         "failedToAddProductToWishlistError": "Échec de l’ajout du produit à la liste de souhaits :",
         "price": {
+            "unavailable": "Prix indisponible",
             "currentPriceFrom": "Prix actuel à partir de {{price}}",
             "currentPrice": "Prix actuel : {{price}}",
             "from": "À partir de {{price}}",

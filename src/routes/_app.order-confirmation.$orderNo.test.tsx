@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
-import type { ShopperOrders, ShopperStores } from '@/scapi';
+import { ApiError, type ShopperOrders, type ShopperStores } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import OrderConfirmationPage, { loader, ErrorBoundary } from './_app.order-confirmation.$orderNo';
@@ -43,6 +43,10 @@ vi.mock('@/providers/basket', () => ({
     useBasketReset: () => vi.fn(),
 }));
 
+vi.mock('@/middlewares/basket.server', () => ({
+    destroyBasket: vi.fn(),
+}));
+
 vi.mock('@/lib/api/customer.server', () => ({
     isRegisteredCustomer: vi.fn(() => false),
 }));
@@ -58,6 +62,7 @@ vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 import { fetchOrderWithProducts } from '@/lib/api/order.server';
+import { destroyBasket } from '@/middlewares/basket.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -203,6 +208,55 @@ describe('Order Confirmation Route', () => {
             expect(vi.mocked(fetchOrderWithProducts)).toHaveBeenCalledWith(mockContext, 'TEST-ORDER-12345');
         });
 
+        test('tears down basket once the order is confirmed (idempotent safety net)', async () => {
+            const orderPromise = Promise.resolve(baseOrder);
+            vi.mocked(fetchOrderWithProducts).mockReturnValue({
+                orderDataPromise: orderPromise.then((order) => ({ order, productsById: {} })),
+                orderPromise,
+            });
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            vi.mocked(fetchStoresForOrder).mockResolvedValue(new Map());
+
+            const mockContext = { get: vi.fn(() => undefined) };
+            loader({ context: mockContext, params: { orderNo: 'TEST-ORDER-12345' } } as any);
+
+            await waitFor(() => {
+                expect(vi.mocked(destroyBasket)).toHaveBeenCalledWith(mockContext);
+            });
+        });
+
+        test('does not tear down basket when the order lookup fails', async () => {
+            // Defer the rejection to a microtask so .catch handlers attach before it
+            // surfaces - direct Promise.reject() would fire as unhandled between
+            // construction and the next line.
+            const orderPromise = new Promise<typeof baseOrder>((_, reject) => {
+                queueMicrotask(() => reject(new Error('order not found')));
+            });
+            const orderDataPromise = orderPromise.then((order) => ({ order, productsById: {} }));
+            orderPromise.catch(() => undefined);
+            orderDataPromise.catch(() => undefined);
+            vi.mocked(fetchOrderWithProducts).mockReturnValue({
+                orderDataPromise,
+                orderPromise,
+            });
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            vi.mocked(fetchStoresForOrder).mockResolvedValue(new Map());
+
+            const mockContext = { get: vi.fn(() => undefined) };
+            const result = loader({ context: mockContext, params: { orderNo: 'INVALID' } } as any);
+            // Loader's combinedPromise also rejects; in production <Await> handles it,
+            // here we attach an explicit catch so the test runner doesn't see it as
+            // unhandled.
+            result.orderData.catch(() => undefined);
+
+            // Drive the rejection through the loader's .catch so the assertion runs after
+            // the loader has had its chance to react. Awaiting the promise itself is the
+            // observable signal we want, not an opaque microtask count.
+            await orderPromise.catch(() => undefined);
+
+            expect(vi.mocked(destroyBasket)).not.toHaveBeenCalled();
+        });
+
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         test('fetches stores for BOPIS orders', async () => {
             const orderPromise = Promise.resolve(baseOrder);
@@ -224,12 +278,23 @@ describe('Order Confirmation Route', () => {
     });
 
     describe('ErrorBoundary', () => {
-        test('renders order-not-found messaging', () => {
+        const createApiError = (status: number) =>
+            new ApiError({
+                status,
+                statusText: 'Test',
+                headers: new Headers(),
+                body: { type: '', title: '', detail: '' },
+                rawBody: '{}',
+                url: 'https://api.example.com/orders/INVALID',
+                method: 'GET',
+            });
+
+        test('renders order-not-found messaging when getOrder throws ApiError(404)', () => {
             const Stub = createRoutesStub([
                 {
                     path: '/order-confirmation/:orderNo',
                     Component: () => {
-                        throw new Error('Not found');
+                        throw createApiError(404);
                     },
                     ErrorBoundary,
                 },
@@ -244,6 +309,51 @@ describe('Order Confirmation Route', () => {
             expect(screen.getByText(t('checkout:confirmation.orderNotFound'))).toBeInTheDocument();
             expect(screen.getByText(t('checkout:confirmation.orderNotFoundDescription'))).toBeInTheDocument();
             expect(screen.getByText(t('checkout:confirmation.actions.continueShopping'))).toBeInTheDocument();
+        });
+
+        test('renders order-placed-but-details-unavailable messaging on 5xx, with the orderNo surfaced', () => {
+            const Stub = createRoutesStub([
+                {
+                    path: '/order-confirmation/:orderNo',
+                    Component: () => {
+                        throw createApiError(500);
+                    },
+                    ErrorBoundary,
+                },
+            ]);
+
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/order-confirmation/ORD-9001']} />
+                </AllProvidersWrapper>
+            );
+
+            expect(screen.getByText(t('checkout:confirmation.orderPlacedDetailsUnavailable'))).toBeInTheDocument();
+            expect(
+                screen.getByText(t('checkout:confirmation.orderPlacedDetailsUnavailableDescription'))
+            ).toBeInTheDocument();
+            // Surface the orderNo so the shopper / support can reconcile.
+            expect(screen.getByText(/ORD-9001/)).toBeInTheDocument();
+        });
+
+        test('renders order-placed-but-details-unavailable messaging on non-ApiError throws (network/timeout)', () => {
+            const Stub = createRoutesStub([
+                {
+                    path: '/order-confirmation/:orderNo',
+                    Component: () => {
+                        throw new Error('boom');
+                    },
+                    ErrorBoundary,
+                },
+            ]);
+
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/order-confirmation/ORD-9001']} />
+                </AllProvidersWrapper>
+            );
+
+            expect(screen.getByText(t('checkout:confirmation.orderPlacedDetailsUnavailable'))).toBeInTheDocument();
         });
     });
 
@@ -415,7 +525,7 @@ describe('Order Confirmation Route', () => {
                 const promotionsLabel = screen.getByText(t('checkout:confirmation.totals.promotions'));
                 const promotionsRow = promotionsLabel.closest('div');
                 const promotionsValue = promotionsRow?.querySelector('span:last-child');
-                expect(promotionsValue).toHaveClass('text-green-600');
+                expect(promotionsValue).toHaveClass('text-success');
             });
         });
 

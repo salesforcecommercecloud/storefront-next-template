@@ -20,6 +20,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { useToast } from '@/components/toast';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { WISHLIST_MERGE_COOKIE_NAME } from '@/lib/wishlist/constants';
 
 const PARAM = 'wishlistMerge';
@@ -77,6 +78,7 @@ export function WishlistMergeToast(): null {
     const { t } = useTranslation('account');
     const { trackWishlistItemMerged, trackWishlistMerged } = useAnalytics();
     const { site } = useSite();
+    const config = useConfig();
     const firedFor = useRef<string | null>(null);
 
     useEffect(() => {
@@ -118,9 +120,10 @@ export function WishlistMergeToast(): null {
                     });
                 }
 
-                // Delete cookie after reading (one-time use)
-                // Must pass domain to match the Domain attribute used when setting the cookie (RFC 6265)
-                deleteCookie(cookieName, site.cookies?.domain);
+                // Delete cookie after reading (one-time use). Must pass the SAME Domain that
+                // setWishlistMergeCookie used (RFC 6265): the per-site override, else the global
+                // app.cookies.domain. A host-only delete would not match a domain-scoped cookie.
+                deleteCookie(cookieName, site.cookies?.domain || config.cookies?.domain);
             } catch {
                 // Silently ignore parse errors — merge already succeeded, analytics failure shouldn't break UX
             }
@@ -140,6 +143,7 @@ export function WishlistMergeToast(): null {
         trackWishlistMerged,
         site.id,
         site.cookies?.domain,
+        config.cookies?.domain,
     ]);
 
     return null;

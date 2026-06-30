@@ -83,7 +83,7 @@ describe('fetchPage', () => {
     describe('falls back to getPages when no pageId is provided', () => {
         const fallbackTestCases = [
             {
-                description: 'forwards aspectType, categoryId, and productId as query params',
+                description: 'forwards both productId and categoryId when both are provided',
                 inputParameters: {
                     aspectType: 'pdpAspect',
                     categoryId: 'electronics',

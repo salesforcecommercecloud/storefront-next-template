@@ -50,6 +50,7 @@ import {
 } from '@/middlewares/auth.utils';
 import { isAbsoluteURL } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
+import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
@@ -58,6 +59,13 @@ import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies
 import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context/constants';
+
+/**
+ * Sentinel value stored in auth storage when a registered shopper's refresh token fails.
+ * The post-handler section reads this and emits a redirect to the login page instead of
+ * falling through to guest login.
+ */
+const SESSION_EXPIRED_REDIRECT = '__session_expired_redirect__';
 
 /**
  * Refresh access token using refresh token.
@@ -531,12 +539,16 @@ const retrieveAuthStorageData = async (
             logger.info('Auth: token refreshed', { userType: storage.get('userType') });
             return 'tokenRefreshed';
         } catch (error) {
-            // Invalid/expired refresh token: log and fall through to guest login. We do NOT
-            // record this in storage.error — only the FINAL outcome of this function should
-            // populate the error key, so a successful guest login below leaves clean state.
-            // (Previously this set storage.error here, which leaked into a successful guest
-            // login because updateAuthStorageDataByTokenResponse doesn't clear keys on success.)
-            logger.warn('Auth: refresh token failed, falling back to guest login', { error, storedUserType });
+            logger.warn('Auth: refresh token failed', { error, storedUserType });
+            // Registered shopper whose refresh failed: set a sentinel so the post-handler
+            // can redirect to login instead of silently creating a guest session. The guest
+            // login below still runs so next() has a valid token and does not crash; the
+            // post-handler replaces the response with the redirect before it is returned.
+            if (storedUserType === 'registered') {
+                storage.set('error', SESSION_EXPIRED_REDIRECT);
+                // Fall through so guest login runs and next() has a usable token.
+            }
+            // Guest refresh failure: fall through to guest login (no sentinel needed).
         }
     }
 
@@ -662,14 +674,17 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * - `usid`: User session ID (expires with refresh token). Mirrors the value derived from the access token JWT
  *   `sub` claim. sf-next reads `usid` from the JWT, not from this cookie; the cookie is kept so hybrid
  *   storefronts can forward it to ECOM, which does not parse the access token for `usid`.
- * - `cc-idp-at`: IDP access token (for social login, expires with SLAS access token)
+ * - `idp_access_token`: IDP access token (for social login, expires with SLAS access token)
  * - `cc-cv`: OAuth2 PKCE code verifier (server-only httpOnly cookie, short-lived, 5 min expiry)
  *
  * `customerId` is NOT persisted as a cookie — it is derived per-request from the SLAS access token JWT
  * `isb` claim (via `gcid`/`rcid`).
  *
- * User type is determined by which refresh token cookie exists (cc-nx-g = guest, cc-nx = registered).
- * Only one refresh token cookie exists at a time - a user cannot be both guest and registered.
+ * User type is derived from the access-token JWT (`rcid` present in the `isb` claim → registered,
+ * otherwise guest — see `deriveUserTypeFromClaims`), NOT from which refresh token cookie exists.
+ * The refresh-cookie name is only consulted as a cold-start fallback when no access token has been
+ * issued yet, and as the response-side decision for which refresh cookie to write/delete. Only one
+ * refresh token cookie exists at a time - a user cannot be both guest and registered.
  *
  * All cookies use httpOnly: true to prevent client-side JavaScript access (XSS protection).
  * ECOM hybrid storefronts can still read cookies from the incoming request headers server-side.
@@ -959,6 +974,32 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response = recovery.response;
     }
 
+    if (storedAuthError === SESSION_EXPIRED_REDIRECT) {
+        // Delete the sentinel before the isDestroyed/error block below so it does not
+        // trigger a full cookie clear on what is otherwise a valid guest token.
+        authStorage.delete('error');
+
+        if (hasAuthRecoveryGuard) {
+            // Guard is already set: a previous session-expired redirect already fired but
+            // the session is still broken. Fall through to guest login (already done above)
+            // to avoid an infinite redirect loop.
+            logger.warn('Auth middleware: registered refresh failure blocked by guard, falling back to guest');
+        } else {
+            // Redirect the registered shopper to the login page. The request path already
+            // carries the site/locale prefix (e.g. /uk/en-GB/checkout), so buildUrlFromContext
+            // applies the same prefix to /login and the current path is used as returnUrl.
+            const requestPath = new URL(request.url).pathname;
+            const loginPath = buildUrlFromContext('/login', context);
+            const loginUrl = `${loginPath}?returnUrl=${encodeURIComponent(requestPath)}&error=session_expired`;
+            logger.info('Auth middleware: registered refresh failed, redirecting to login', { requestPath });
+            authRecoveryTriggered = true;
+            response = new Response(null, {
+                status: 307,
+                headers: { Location: loginUrl },
+            });
+        }
+    }
+
     // After calling the handler: Write back storage data and cookies, if required
     if (authStorage.has('isDestroyed') || authStorage.has('error')) {
         logger.warn('Auth middleware: session destroyed or errored, clearing all auth cookies', {
@@ -1023,8 +1064,9 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Use correct cookie name based on user type (cc-nx-g for guest, cc-nx for registered)
         //
         // NOTE: userType itself is NOT written to cookies - only the refresh token is written
-        // to the appropriate cookie name (cc-nx-g or cc-nx). On next request, userType will
-        // be derived from which cookie exists.
+        // to the appropriate cookie name (cc-nx-g or cc-nx). On the next request userType is
+        // derived from the access-token JWT (see deriveUserTypeFromClaims); the cookie name is
+        // only a cold-start fallback when no access token is present.
         const refreshTokenValue = authStorage.get('refreshToken');
         if (refreshTokenValue && typeof refreshTokenValue === 'string' && refreshTokenExpiryValue && userTypeValue) {
             const refreshTokenCookie =

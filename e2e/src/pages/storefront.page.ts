@@ -94,6 +94,15 @@ class StorefrontPage {
     }
 
     /**
+     * Grab the full document title. Use when a substring check (validateTitle)
+     * isn't enough — e.g. asserting a non-empty brand suffix resolved, not just
+     * the static title prefix.
+     */
+    async getTitle(): Promise<string> {
+        return I.grabTitle();
+    }
+
+    /**
      * Validate that SFCC (Salesforce Commerce Cloud) cookies are set.
      * Only considers cookies scoped to the storefront domain (excludes proxy/external API cookies).
      * @param siteId - Site ID for cookie namespacing (defaults to environment SITE_ID)

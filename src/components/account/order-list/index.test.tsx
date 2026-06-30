@@ -16,8 +16,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, test, expect } from 'vitest';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { mockAltSiteObject } from '@/test-utils/config';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from './index';
+
+const { t } = getTranslation();
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
     const actual = await importOriginal<object>();
@@ -184,11 +187,7 @@ describe('OrderList Component', () => {
     describe('Empty State', () => {
         test('renders empty message when no orders', () => {
             renderOrderList({ orders: [] });
-            expect(
-                screen.getByText(
-                    "You haven't placed an order yet. Once you place an order the details will show up here."
-                )
-            ).toBeInTheDocument();
+            expect(screen.getByText(t('account:orders.empty'))).toBeInTheDocument();
         });
 
         test('renders Continue Shopping button in empty state', () => {
@@ -298,9 +297,7 @@ describe('OrderListBody Component', () => {
 
     test('renders empty state when no orders', () => {
         render(<OrderListBody orders={[]} />);
-        expect(
-            screen.getByText("You haven't placed an order yet. Once you place an order the details will show up here.")
-        ).toBeInTheDocument();
+        expect(screen.getByText(t('account:orders.empty'))).toBeInTheDocument();
     });
 
     test('renders custom empty message', () => {

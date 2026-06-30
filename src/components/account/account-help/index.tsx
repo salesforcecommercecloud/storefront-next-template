@@ -45,7 +45,7 @@ export function AccountHelp(): ReactElement {
     };
 
     return (
-        <Card className="py-0 rounded-none shadow-none">
+        <Card className="py-0">
             <CardContent className="p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-2">{t('shopperAgentEntry.title')}</h2>
                 <p className="text-sm text-muted-foreground mb-4">{t('shopperAgentEntry.description')}</p>

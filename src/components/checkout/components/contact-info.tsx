@@ -93,6 +93,8 @@ export default function ContactInfo({
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
     const authorizePasswordlessEmailPath = useResolvedPath(resourceRoutes.authorizePasswordlessEmail).pathname;
     const revalidator = useRevalidator();
+    // E2e tests can stub this fetcher's response per scenario via
+    // e2e/src/utils/login-prefs-stub.ts (`stubLoginPrefs({ branch })`).
     const passwordlessEmailFetcher = useFetcher<typeof authorizePasswordlessEmailAction>({
         key: 'contact-authorize-passwordless-email',
     });
@@ -150,13 +152,14 @@ export default function ContactInfo({
         setTurnstileToken(null);
     }, []);
 
-    // Interactive challenge timeout: Cloudflare's widget will auto-refresh (refresh-timeout
-    // 'auto'); we just clear our local token so the form stays in a "needs verification"
-    // state and tell the shopper their challenge was refreshed. Soft message — no escalation.
+    // Interactive challenge timeout: Cloudflare's widget auto-refreshes (refresh-timeout
+    // 'auto') and a fresh challenge is in flight. Clear our local token so the form waits
+    // for the new one; do not surface a message to the shopper since this is normal
+    // idle-time recovery, not an error. Genuine retry exhaustion is handled by
+    // handleTurnstileRetryExhausted below.
     const handleTurnstileTimeout = useCallback(() => {
         setTurnstileToken(null);
-        setVerificationError(t('contactInfo.verificationRefreshed'));
-    }, [t]);
+    }, []);
 
     const handleTurnstileBypass = useCallback(() => {
         setTurnstileBypassed(true);
@@ -177,6 +180,7 @@ export default function ContactInfo({
 
     const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
+        mode: 'onChange',
         defaultValues: {
             email: cart?.customerInfo?.email || customerContactInfo.email || '',
             countryCode: extractCountryCode(
@@ -599,7 +603,10 @@ export default function ContactInfo({
                             <div
                                 data-checkout-mobile-bar
                                 className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
-                                <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
+                                <Button
+                                    type="submit"
+                                    disabled={isLoading || turnstilePending || isOtpOpen || isLoginModalOpen}
+                                    className="w-full">
                                     {nextStepButtonLabel}
                                 </Button>
                             </div>

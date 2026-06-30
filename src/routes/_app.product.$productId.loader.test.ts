@@ -146,7 +146,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // product is now synchronous on the loaderData
@@ -187,7 +188,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             }).then(
                 () => {
                     throw new Error('expected loader to throw a Response');
@@ -213,7 +215,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             }).then(
                 () => {
                     throw new Error('expected loader to throw a Response');
@@ -236,7 +239,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             }).then(
                 () => {
                     throw new Error('expected loader to throw a Response');
@@ -261,7 +265,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Product still resolves
@@ -299,7 +304,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             expect(result.product).toEqual(variantProduct);
@@ -322,7 +328,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Should use the pid parameter instead of productId
@@ -350,7 +357,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Verify fetchProductById was called with inventoryIds parameter
@@ -376,7 +384,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Verify fetchProductById was called without inventoryIds parameter
@@ -401,7 +410,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Verify fetchProductById was called without inventoryIds parameter
@@ -425,7 +435,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Should use the pid parameter instead of productId
@@ -444,7 +455,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             // Should use the productId from params
@@ -463,7 +475,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             const callOptions = mockFetchProductById.mock.calls[0][2];
@@ -496,7 +509,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             const categoryData = await result.category;
@@ -522,7 +536,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             const categoryData = await result.category;
@@ -559,7 +574,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             const categoryData = await result.category;
@@ -581,7 +597,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             await expect(result.category).rejects.toThrow(NormalizedApiError);
@@ -598,7 +615,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
@@ -625,7 +643,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
@@ -650,7 +669,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context: mockContext,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
@@ -661,6 +681,52 @@ describe('Product Route Loaders', () => {
                     categoryId: 'variant-cat-123',
                 })
             );
+        });
+
+        test('falls back to the master product category for fetchPageWithComponentData when the variant has none', async () => {
+            const variantProduct = {
+                ...mockProduct,
+                id: 'variant-product-123',
+                primaryCategoryId: null,
+                master: { masterId: 'master-product-123' },
+            };
+            const masterProduct = {
+                ...mockProduct,
+                id: 'master-product-123',
+                primaryCategoryId: 'master-category-123',
+            };
+
+            mockFetchProductById
+                .mockResolvedValueOnce(variantProduct) // loader's awaited product fetch
+                .mockResolvedValueOnce(masterProduct); // shared master fetch
+            mockFetchCategory.mockResolvedValue(mockCategory);
+
+            const request = new Request('https://example.com/product/variant-product-123');
+            const params = { productId: 'variant-product-123' };
+
+            const result = await loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context: mockContext,
+                url: new URL(request.url),
+                pattern: '/product/:productId',
+            });
+
+            // Resolve the deferred page promise so the master-category fallback runs.
+            await result.page;
+
+            expect(mockFetchPageWithComponentData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({
+                    aspectType: 'pdp',
+                    productId: 'variant-product-123',
+                    categoryId: 'master-category-123',
+                })
+            );
+
+            // The master is fetched once and shared by both the breadcrumb category
+            // promise and the page-fallback promise — not re-fetched per consumer.
+            expect(mockFetchProductById).toHaveBeenCalledTimes(2);
         });
 
         test('handles variant product with master product category lookup', async () => {
@@ -692,7 +758,8 @@ describe('Product Route Loaders', () => {
                 request,
                 params: { siteId: 'test-site', localeId: 'en-US', ...params },
                 context,
-                unstable_pattern: '/product/:productId',
+                url: new URL(request.url),
+                pattern: '/product/:productId',
             });
 
             expect(result.product).toEqual(variantProduct);

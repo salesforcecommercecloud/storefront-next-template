@@ -252,7 +252,9 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
 
     return (
         <>
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
+            <div
+                data-section="auth"
+                className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <SeoMeta
                     title={t('meta.title', { defaultValue: 'Sign Up' })}
                     description={t('meta.description', {
@@ -266,7 +268,7 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
-                    <Card className="p-8 rounded-none shadow-none">
+                    <Card className="p-8">
                         <Form method="POST">
                             <SignupForm error={error} isPasswordless={isPasswordlessEnabled} />
 

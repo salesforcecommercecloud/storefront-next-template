@@ -66,3 +66,36 @@ export const Default: Story = {
         }
     },
 };
+
+/**
+ * Validation path: the email field is `type="email"`, so an invalid address
+ * fails native HTML5 constraint validation. Submitting blocks the form — the
+ * `alert` never fires — and the input reports itself as `:invalid`.
+ */
+export const InvalidEmailValidation: Story = {
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        const emailInput = canvas.getByPlaceholderText<HTMLInputElement>(/your email/i);
+        const subscribeButton = canvas.getByRole('button', { name: /subscribe/i });
+
+        const alertSpy = fn();
+        const originalAlert = window.alert;
+        window.alert = alertSpy;
+
+        try {
+            await userEvent.type(emailInput, 'not-an-email');
+            await userEvent.click(subscribeButton);
+
+            // The browser fails constraint validation on the email input...
+            await expect(emailInput.validity.valid).toBe(false);
+            await expect(emailInput.validity.typeMismatch).toBe(true);
+            await expect(emailInput.validationMessage.length).toBeGreaterThan(0);
+
+            // ...so submission is blocked and the signup handler never alerts.
+            await expect(alertSpy).not.toHaveBeenCalled();
+        } finally {
+            window.alert = originalAlert;
+        }
+    },
+};

@@ -15,10 +15,9 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { action } from 'storybook/actions';
-import { type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent, fn, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import type { ShopperProducts } from '@/scapi';
@@ -422,11 +421,47 @@ export const WithDisabledVariants: Story = {
     },
 };
 
+// Controlled-mode prop shape, derived from the component so it tracks any future
+// change to ProductInfo's controlled API instead of being re-declared here.
+type ControlledProps = Extract<Parameters<typeof ProductInfo>[0], { swatchMode: 'controlled' }>;
+
+/**
+ * Stateful host for the controlled swatch story. ProductInfo is a controlled
+ * component in this mode: `aria-checked` is derived from the `variationValues`
+ * prop, so it only moves if a parent owns that state and updates it on change.
+ * We seed state from the story args, forward every change to the `onAttributeChange`
+ * spy (so the play function can assert the callback contract), then advance the
+ * selection so the UI reflects it.
+ */
+const ControlledSwatchHost = ({
+    product,
+    variationValues: initialValues,
+    onAttributeChange,
+}: Pick<ControlledProps, 'product' | 'variationValues' | 'onAttributeChange'>): ReactElement => {
+    const [variationValues, setVariationValues] = useState(initialValues);
+    return (
+        <ProductInfo
+            product={product}
+            swatchMode="controlled"
+            variationValues={variationValues}
+            onAttributeChange={(attributeId, value) => {
+                onAttributeChange(attributeId, value);
+                setVariationValues((prev) => ({ ...prev, [attributeId]: value }));
+            }}
+        />
+    );
+};
+
 /**
  * Controlled swatch mode — distinct prop API where the parent owns variation
  * state via `variationValues` and `onAttributeChange`. Different enough from
  * the default uncontrolled URL flow that it warrants a dedicated story rather
  * than a Controls boolean.
+ *
+ * Interaction: clicking a color swatch must (1) fire `onAttributeChange` with the
+ * attribute id + value and (2) move `aria-checked` to the new swatch. Controlled
+ * mode renders swatches as `role="radio"` buttons (no `href`), so the click is a
+ * safe in-place selection — no URL navigation like uncontrolled mode.
  */
 export const ControlledSwatchMode: Story = {
     args: {
@@ -436,12 +471,34 @@ export const ControlledSwatchMode: Story = {
             color: 'blue',
             size: 'M',
         },
-        onAttributeChange: action('product-info-variation-change'),
+        onAttributeChange: fn(),
     },
-    play: async ({ canvasElement }) => {
+    render: (args) => (
+        <ControlledSwatchHost
+            product={args.product}
+            variationValues={(args as ControlledProps).variationValues}
+            onAttributeChange={(args as ControlledProps).onAttributeChange}
+        />
+    ),
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const selectedSwatch = canvas.getByRole('radio', { name: /blue/i });
-        await expect(selectedSwatch).toHaveAttribute('aria-checked', 'true');
+        const onAttributeChange = (args as ControlledProps).onAttributeChange;
+
+        // Seeded selection: Blue is checked, Red is not.
+        const blueSwatch = canvas.getByRole('radio', { name: /blue/i });
+        const redSwatch = canvas.getByRole('radio', { name: /red/i });
+        await expect(blueSwatch).toHaveAttribute('aria-checked', 'true');
+        await expect(redSwatch).toHaveAttribute('aria-checked', 'false');
+
+        // Select Red → callback fires with (attributeId, value).
+        await userEvent.click(redSwatch);
+        await expect(onAttributeChange).toHaveBeenCalledWith('color', 'red');
+
+        // Selection moves: Red becomes checked, Blue clears.
+        await waitFor(async () => {
+            await expect(canvas.getByRole('radio', { name: /red/i })).toHaveAttribute('aria-checked', 'true');
+            await expect(canvas.getByRole('radio', { name: /blue/i })).toHaveAttribute('aria-checked', 'false');
+        });
     },
 };

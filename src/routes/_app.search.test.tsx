@@ -21,6 +21,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
+import { shouldRevalidate as sharedShouldRevalidate } from '@/lib/revalidation/routes/category';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search.server';
@@ -102,7 +103,7 @@ const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] 
         typeId: 'plp',
         designMetadata: {
             regionDefinitions: regions.map((region) => ({ id: region.id })),
-        },
+        } as never,
         regions,
     }) as ShopperExperience.schemas['Page'];
 
@@ -311,7 +312,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes&offset=0'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
 
@@ -345,7 +346,7 @@ describe('SearchPage', () => {
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
                 ),
                 mockContext,
-                { unstable_pattern: '/search' }
+                { pattern: '/search' }
             );
 
             await loader(args);
@@ -364,15 +365,17 @@ describe('SearchPage', () => {
         test('should parse filters query param into initialFiltersOpen', async () => {
             const openArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=open'),
+                url: new URL('https://example.com/search?q=shoes&filters=open'),
                 context: mockContext,
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: '/search',
+                pattern: '/search',
             };
             const closedArgs: Route.LoaderArgs = {
                 request: new Request('https://example.com/search?q=shoes&filters=closed'),
+                url: new URL('https://example.com/search?q=shoes&filters=closed'),
                 context: mockContext,
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: '/search',
+                pattern: '/search',
             };
 
             const openResult = await loader(openArgs);
@@ -387,7 +390,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
 
@@ -428,7 +431,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -468,7 +471,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -503,7 +506,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -542,7 +545,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -581,7 +584,7 @@ describe('SearchPage', () => {
                 new Request('https://example.com/search?q=shoes'),
                 mockContext,
                 {
-                    unstable_pattern: '/search',
+                    pattern: '/search',
                 }
             );
             await loader(args);
@@ -1290,35 +1293,9 @@ describe('SearchPage', () => {
 });
 
 describe('SearchPage shouldRevalidate', () => {
-    test('returns false when only filters query param changes', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed&refine=color:red'),
-            nextUrl: new URL('http://localhost/search?q=shoes&filters=open&refine=color:red'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(false);
-    });
-
-    test('uses default behavior when non-filters query params change', () => {
-        const result = shouldRevalidate({
-            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed'),
-            nextUrl: new URL('http://localhost/search?q=boots&filters=closed'),
-            defaultShouldRevalidate: true,
-            actionStatus: 200,
-            formAction: undefined,
-            formData: undefined,
-            formEncType: 'application/x-www-form-urlencoded',
-            formMethod: 'GET',
-            actionResult: undefined,
-        } as any);
-
-        expect(result).toBe(true);
+    // The revalidation policy itself is covered by src/lib/revalidation/routes/category.test.ts. Here we
+    // only assert the route wires up that exact function, so the behavior isn't re-tested per route.
+    test('re-exports the shared listing revalidation policy', () => {
+        expect(shouldRevalidate).toBe(sharedShouldRevalidate);
     });
 });

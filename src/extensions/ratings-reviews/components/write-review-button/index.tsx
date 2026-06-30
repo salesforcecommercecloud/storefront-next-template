@@ -67,7 +67,7 @@ export default function WriteReviewButton({ formConfig }: WriteReviewButtonProps
                 type="button"
                 variant="default"
                 size="lg"
-                className="w-full rounded-none sm:w-auto"
+                className="w-full sm:w-auto"
                 onClick={() => void handleWriteReviewClick()}
                 data-testid="write-review-button"
                 aria-label={label}>

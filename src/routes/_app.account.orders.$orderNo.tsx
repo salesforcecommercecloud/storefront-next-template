@@ -81,7 +81,7 @@ export function loader({ context, params }: Route.LoaderArgs): OrderDetailsPageL
 function OrderNotFoundCard() {
     const { t } = useTranslation('account');
     return (
-        <Card className="rounded-none shadow-none">
+        <Card className="">
             <CardHeader>
                 <CardTitle className="text-center">{t('orders.orderNotFound')}</CardTitle>
             </CardHeader>

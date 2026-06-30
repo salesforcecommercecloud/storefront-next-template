@@ -15,7 +15,7 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { useFetcher } from 'react-router';
 import type { ActionResponse } from '@/routes/types/action-responses';
 
@@ -32,6 +32,13 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: vi.fn(),
     }),
+}));
+
+// Publishing the action-response basket into BasketProvider keeps the freshness reference
+// (useBasket) ahead of the basket-products revalidation round-trip — see the test below.
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', () => ({
+    useBasketUpdater: () => mockUpdateBasket,
 }));
 
 // Mock debounce to be synchronous for testing
@@ -87,6 +94,64 @@ describe('useCartQuantityUpdate', () => {
         vi.clearAllMocks();
         mockFetcher.state = 'idle';
         mockFetcher.data = null;
+    });
+
+    describe('BasketProvider sync', () => {
+        // The hook reads fetcher.state / fetcher.data from the fetcher passed in props (stableMockFetcher),
+        // so these tests mutate that object — not the module-scoped mockFetcher — to drive the response effect.
+        const setStableFetcher = (state: 'idle' | 'submitting' | 'loading', data: unknown): void => {
+            (stableMockFetcher as unknown as { state: string }).state = state;
+            (stableMockFetcher as unknown as { data: unknown }).data = data;
+        };
+
+        beforeEach(() => {
+            setStableFetcher('idle', null);
+        });
+
+        afterEach(() => {
+            setStableFetcher('idle', null);
+        });
+
+        test('publishes the action-response basket into BasketProvider on success', async () => {
+            // The basket-products fetcher revalidates when the panel is open and the quantity action returns a
+            // basket. Its load gate (`needsMiniCartLoad`) decides freshness off useBasket()'s lastModified. Unless
+            // this hook writes the action-response basket into BasketProvider, the reference revision lags one render
+            // behind the revalidation result, so the open mini-cart fires a redundant SECOND basket-products request.
+            // Publishing here lifts the reference to the new revision before the round-trip returns, closing the gap.
+            const basket = { basketId: 'basket-123', lastModified: '2026-06-24T10:00:01.000Z' };
+            const { rerender } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
+
+            act(() => {
+                setStableFetcher('idle', { success: true, basket });
+            });
+            rerender();
+
+            await waitFor(() => {
+                expect(mockUpdateBasket).toHaveBeenCalledWith(basket);
+            });
+        });
+
+        test('does not publish when the action response carries no basket', () => {
+            const { rerender } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
+
+            act(() => {
+                setStableFetcher('idle', { success: true });
+            });
+            rerender();
+
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
+        });
+
+        test('does not publish on a failed response', () => {
+            const { rerender } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
+
+            act(() => {
+                setStableFetcher('idle', { success: false, basket: { basketId: 'basket-123' } });
+            });
+            rerender();
+
+            expect(mockUpdateBasket).not.toHaveBeenCalled();
+        });
     });
 
     describe('Initial State', () => {

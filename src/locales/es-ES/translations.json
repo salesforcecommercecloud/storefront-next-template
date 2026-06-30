@@ -355,7 +355,7 @@
                 "minLength": "La promoción debe tener al menos 2 caracteres."
             },
             "errors": {
-                "invalidCode": "Código de cupón no válido",
+                "invalidCode": "El código de cupón «{{code}}» no es válido.",
                 "expiredCode": "Este código promocional ha caducado.",
                 "alreadyApplied": "Este código promocional ya está aplicado.",
                 "notApplicable": "Este código promocional no es aplicable a tu carrito",
@@ -1556,6 +1556,7 @@
         "failedToAddProductToCartError": "No se pudo agregar el producto al carrito:",
         "failedToAddProductToWishlistError": "Error al agregar el producto a la lista de deseos:",
         "price": {
+            "unavailable": "Precio no disponible",
             "currentPriceFrom": "Precio actual desde {{price}}",
             "currentPrice": "Precio actual: {{price}}",
             "from": "De {{price}}",

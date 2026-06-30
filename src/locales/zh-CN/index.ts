@@ -15,7 +15,7 @@
  */
 import type { ResourceLanguage } from 'i18next';
 import type { DeepPartial } from '@/locales/types';
-import type enGB from '@/locales/en-GB/';
+import type enUS from '@/locales/en-US/';
 import translations from '@/locales/zh-CN/translations.json';
 import extensionTranslations from '@/extensions/locales/zh-CN/';
 
@@ -24,4 +24,4 @@ const allTranslations = {
     ...extensionTranslations,
 };
 
-export default allTranslations satisfies ResourceLanguage satisfies DeepPartial<typeof enGB>;
+export default allTranslations satisfies ResourceLanguage satisfies DeepPartial<typeof enUS>;

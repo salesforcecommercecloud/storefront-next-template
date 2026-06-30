@@ -156,7 +156,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
         (React.Children.toArray(children)[0] as React.ReactElement<SwatchChild['props']>)?.props?.shape === 'label';
 
     const swatchesWrapperClasses = isSquareSwatchGroup
-        ? 'inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1'
+        ? 'inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg p-1'
         : 'flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none';
 
     return (
@@ -171,7 +171,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
                         {displayName && <span>{displayName}</span>}
                     </div>
                 )}
-                <div ref={wrapperRef} className={swatchesWrapperClasses}>
+                <div ref={wrapperRef} className={swatchesWrapperClasses} data-slot="swatch-container">
                     {Children.toArray(children).map((child, index) => {
                         const childElement = child as React.ReactElement<SwatchChild['props']>;
                         const selected = childElement.props?.value === value;

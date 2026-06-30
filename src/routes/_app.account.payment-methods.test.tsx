@@ -17,7 +17,10 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+
+const { t } = getTranslation();
 
 let capturedPaymentMethodsProps: { customer: any } = { customer: undefined };
 
@@ -113,7 +116,7 @@ describe('Payment Methods page', () => {
         await renderRoute(Promise.resolve(mockCustomer));
 
         const seoMeta = screen.getByTestId('seo-meta');
-        expect(seoMeta).toHaveAttribute('data-title', 'Payment Methods');
+        expect(seoMeta).toHaveAttribute('data-title', t('account:meta.paymentMethodsTitle'));
         expect(seoMeta).toHaveAttribute('data-no-index', 'true');
     });
 });

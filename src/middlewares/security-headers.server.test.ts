@@ -34,9 +34,10 @@ function makeArgs(): { args: Args; context: RouterContextProvider } {
     return {
         args: {
             request: new Request('http://localhost/'),
+            url: new URL('http://localhost/'),
             context,
             params: {},
-            unstable_pattern: '',
+            pattern: '',
         } as Args,
         context,
     };

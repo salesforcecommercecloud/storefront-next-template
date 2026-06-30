@@ -84,19 +84,33 @@ const baseConfig = defineConfig([
     jsonc.configs['flat/recommended-with-json'],
     {
         // Ignore generated SCAPI client files, ejected shadcn/ui components, and Claude settings
-       ignores: [
-        '**/src/scapi-client/generated/**',
-        '**/src/scapi/generated/**',
-        '**/src/scapi/custom-clients.ts',
-        '**/src/components/ui/**',
-        '**/src/dashboard/components/ui/**',
-        '.claude/**',
-        '**/lighthouserc.cjs',
-        '**/generate-config.cjs'
-      ]
+        ignores: [
+            '**/src/scapi-client/generated/**',
+            '**/src/scapi/generated/**',
+            '**/src/scapi/custom-clients.ts',
+            '**/src/components/ui/**',
+            '**/src/dashboard/components/ui/**',
+            // Pristine upstream shadcn snapshots used by the sync-shadcn skill as merge
+            // baselines. Verbatim upstream source (vanilla @/ imports, no copyright header) —
+            // not Salesforce code and never imported, so it is excluded from linting.
+            '**/.shadcn-baseline/**',
+            '**/src/lib/page-designer/static-registry.ts',
+            '.claude/**',
+            '**/lighthouserc.cjs',
+            '**/generate-config.cjs',
+        ],
     },
     {
-        files: ['**/*.js'],
+        // Plain Node scripts (.js / .mjs / .cjs / .mts / .cts) and the ambient
+        // declarations that type them (.d.mts / .d.cts) aren't part of the TS
+        // project, so typed typescript-eslint rules (e.g. `await-thenable`) can't
+        // load parser services for them. Without this disable block, generated/
+        // mirror projects (which lint `scripts/*.mjs` and their `.d.mts` type
+        // shims via the root config) crash with "You have used a rule which
+        // requires type information" — fatal exit 2. `.mts`/`.cts` are the
+        // explicit Node module-system extensions, the same script category as
+        // `.mjs`/`.cjs`; a typed `.mts` source would add its own override.
+        files: ['**/*.{js,mjs,cjs,mts,cts}'],
         settings: {
             react: {
                 version: 'detect', // Auto-detect React version
@@ -277,7 +291,12 @@ const baseConfig = defineConfig([
     {
         // Multi-site navigation wrappers — these legitimately import from react-router.
         // Also covers flat link.tsx used in packages without multi-site routing (e.g. storefront-next-ci).
-        files: ['**/src/components/link/index.tsx', '**/src/components/link.tsx', '**/src/dashboard/components/link.tsx', '**/src/hooks/use-navigate.ts'],
+        files: [
+            '**/src/components/link/index.tsx',
+            '**/src/components/link.tsx',
+            '**/src/dashboard/components/link.tsx',
+            '**/src/hooks/use-navigate.ts',
+        ],
         rules: {
             'no-restricted-imports': 'off',
             // These files export hooks/functions alongside any components
@@ -337,8 +356,7 @@ const baseConfig = defineConfig([
                                 '@salesforce/storefront-next-runtime/scapi',
                                 '@salesforce/storefront-next-runtime/scapi/*',
                             ],
-                            message:
-                                'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
+                            message: 'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
                         },
                     ],
                 },

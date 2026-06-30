@@ -54,20 +54,14 @@ describe('middlewares/correlation.server.ts', () => {
                 headers: { 'x-correlation-id': 'incoming-correlation-id' },
             });
 
-            await correlationMiddleware(
-                createLoaderArgs(requestWithHeader, mockContext, { unstable_pattern: '/' }),
-                mockNext
-            );
+            await correlationMiddleware(createLoaderArgs(requestWithHeader, mockContext, { pattern: '/' }), mockNext);
 
             expect(generateCorrelationId).not.toHaveBeenCalled();
             expect(mockContext.get(correlationContext)).toBe('incoming-correlation-id');
         });
 
         it('should generate a correlation ID when no headers are present', async () => {
-            await correlationMiddleware(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/' }),
-                mockNext
-            );
+            await correlationMiddleware(createLoaderArgs(mockRequest, mockContext, { pattern: '/' }), mockNext);
 
             expect(generateCorrelationId).toHaveBeenCalledOnce();
             expect(mockContext.get(correlationContext)).toBe('mock-correlation-id-12345');
@@ -78,7 +72,7 @@ describe('middlewares/correlation.server.ts', () => {
             mockNext.mockResolvedValue(expectedResponse);
 
             const result = await correlationMiddleware(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
+                { request: mockRequest, context: mockContext, params: {}, pattern: '/', url: new URL(mockRequest.url) },
                 mockNext
             );
 
@@ -94,10 +88,7 @@ describe('middlewares/correlation.server.ts', () => {
                 return Promise.resolve(new Response('test'));
             });
 
-            await correlationMiddleware(
-                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/' }),
-                mockNext
-            );
+            await correlationMiddleware(createLoaderArgs(mockRequest, mockContext, { pattern: '/' }), mockNext);
 
             expect(correlationIdDuringNext).toBe('mock-correlation-id-12345');
         });
@@ -113,10 +104,7 @@ describe('middlewares/correlation.server.ts', () => {
                 vi.clearAllMocks();
                 mockContext = createTestContext();
 
-                await correlationMiddleware(
-                    createLoaderArgs(request, mockContext, { unstable_pattern: '/' }),
-                    mockNext
-                );
+                await correlationMiddleware(createLoaderArgs(request, mockContext, { pattern: '/' }), mockNext);
 
                 expect(generateCorrelationId).toHaveBeenCalledOnce();
                 expect(mockContext.get(correlationContext)).toBe('mock-correlation-id-12345');
@@ -130,8 +118,8 @@ describe('middlewares/correlation.server.ts', () => {
             const context1 = createTestContext();
             const context2 = createTestContext();
 
-            await correlationMiddleware(createLoaderArgs(mockRequest, context1, { unstable_pattern: '/' }), mockNext);
-            await correlationMiddleware(createLoaderArgs(mockRequest, context2, { unstable_pattern: '/' }), mockNext);
+            await correlationMiddleware(createLoaderArgs(mockRequest, context1, { pattern: '/' }), mockNext);
+            await correlationMiddleware(createLoaderArgs(mockRequest, context2, { pattern: '/' }), mockNext);
 
             expect(context1.get(correlationContext)).toBe('id-1');
             expect(context2.get(correlationContext)).toBe('id-2');

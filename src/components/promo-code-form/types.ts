@@ -16,17 +16,20 @@
 import { type UseFormReturn } from 'react-hook-form';
 import type { FetcherWithComponents } from 'react-router';
 import type { ShopperBasketsV2 } from '@/scapi';
+import type { ActionError } from '@/lib/error-codes';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type PromoCodeFormData = {
     code: string;
 };
 
-// Type for the fetcher data response
+// Type for the fetcher data response.
+// `error` mirrors the `BasketActionResponse` shape the add/remove actions
+// return — an `ActionError` object (`{ code, message }`), not a bare string.
 export type PromoCodeFetcherData = {
     success: boolean;
     basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
+    error?: ActionError;
 };
 
 // Props interface for PromoCodeForm component

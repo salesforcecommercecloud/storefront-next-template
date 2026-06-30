@@ -24,7 +24,7 @@ export function AccountDetailSkeleton() {
     return (
         <div className="space-y-5">
             {/* Page Header Card Skeleton */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
                     <Skeleton className="h-6 w-40" />
                     <Skeleton className="h-4 w-64 mt-1" />
@@ -32,7 +32,7 @@ export function AccountDetailSkeleton() {
             </Card>
 
             {/* Personal Information Card Skeleton */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="p-6">
                     {/* Card Header with separator */}
                     <div className="mb-6 pb-4 border-b border-border space-y-1.5">
@@ -52,7 +52,7 @@ export function AccountDetailSkeleton() {
             </Card>
 
             {/* Password & Security Card Skeleton */}
-            <Card className="bg-card border-border rounded-none shadow-none">
+            <Card className="bg-card border-border">
                 <CardContent className="p-6">
                     {/* Card Header with separator */}
                     <div className="mb-6 pb-4 border-b border-border space-y-1.5">

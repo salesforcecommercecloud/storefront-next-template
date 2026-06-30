@@ -56,10 +56,6 @@ pnpm test src/components/foo     # Single file/dir
 pnpm storybook:test --type=snapshot     # Snapshot tests
 pnpm storybook:test --type=interaction  # Interaction tests
 pnpm storybook:test --type=a11y         # A11y tests
-
-# UITargets
-pnpm dev:ui-targets        # Visual overlay showing targets
-pnpm smoke-test:generate   # Sync target-config.json (additive)
 ```
 
 ### Less common command variants
@@ -220,6 +216,61 @@ Overlay components hidden on initial render **must** use `React.lazy()` with def
 
 See [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) for the full guide.
 
+### Shape Tokens (Critical — read before touching Card, Button, Input, or any shadcn primitive)
+
+Shape is token-driven. `rounded-ui` and `shadow-ui` apply to 19 primitives (Card, Button, Input, Dialog, Checkbox, etc.). `border-ui` applies to **Card only** — other primitives use Tailwind's built-in `border` (1px).
+
+**Always override the SOURCE tokens (`--ui-radius`, `--ui-shadow`, `--ui-border-width`), never the bridge variables (`--radius-ui`, `--shadow-ui`).**
+
+The bridge variables are inlined at compile time by Tailwind's `@theme inline { --radius-ui: var(--ui-radius); }`, so `.rounded-ui` actually compiles to `border-radius: var(--ui-radius)` directly. Writing to `--radius-ui` at runtime has no effect — the bridge name doesn't survive into the served CSS. Only `--ui-radius` / `--ui-shadow` / `--ui-border-width` are real runtime variables. See [docs/README-SHAPE-TOKENS.md](./docs/README-SHAPE-TOKENS.md) for the full mechanism.
+
+**Never** add explicit shape classes to components that already use these token utilities.
+
+**Rules:**
+
+1. **Never add `rounded-none`, `shadow-none`, or `border-0` to neutralize shape** — change the token value in `core.css` instead. These classes are redundant when the token is already 0/none.
+2. **Never add `rounded-xl`, `rounded-lg`, etc. directly to shadcn primitives** — use `[--ui-radius:var(--radius-xl)]` to override the source token for that instance.
+3. **Never hardcode `border-radius: 0.75rem` in CSS** — use `var(--radius-xl)` or set `--ui-radius` via scoped override.
+4. **Use `[--ui-border-width:1px]` to opt a Card into visible borders** — not `border` or `border-1` (those don't override `border-ui`'s variable). This only applies to Card; Input/Dialog/etc. use plain `border`.
+5. **Use `:where()` for section-scoped overrides** — preserves per-card className overridability.
+6. **`border-primary`, `border-transparent` override color only** — they work alongside `border-ui` on Card (which controls width). Never use `border-2` to override `border-ui` width; use `[--ui-border-width:2px]`.
+
+```tsx
+// ✅ Correct — source-token overrides
+<Card className="[--ui-border-width:2px] border-primary">
+<Card className="[--ui-radius:var(--radius-2xl)]">
+<Card className="[--ui-shadow:none]">
+
+// ❌ Wrong — bridge-token writes do nothing at runtime (Tailwind inlines them at compile time)
+<Card className="[--radius-ui:var(--radius-2xl)]">
+<Card className="[--shadow-ui:none]">
+
+// ❌ Wrong — redundant, fights the token system
+<Card className="rounded-none shadow-none">
+<Card className="rounded-xl">
+<Card className="border border-border">  // border sets width:1px but border-ui overrides it
+```
+
+```css
+/* ✅ Correct — source-token scoped override in base.css */
+.product-card[data-slot="card"] {
+    --ui-radius: var(--radius-2xl);
+    --ui-shadow: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+
+/* ❌ Wrong — bridge-token writes do nothing (compile-time inlined) */
+.product-card[data-slot="card"] {
+    --radius-ui: var(--radius-2xl);
+    --shadow-ui: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+
+/* ❌ Wrong — hardcoded values, not token-driven */
+.product-card[data-slot="card"] {
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+}
+```
+
 ## Testing
 
 Three strategies — see [docs/README-TESTS.md](./docs/README-TESTS.md) for patterns.
@@ -234,6 +285,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 
 **Architecture & patterns:**
 - [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
+- [docs/README-REVALIDATION.md](./docs/README-REVALIDATION.md) — Revalidation control: when loaders re-run after actions, the scale cost of the default, and gating with `shouldRevalidate`
 - [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) — Loading states and Suspense patterns
 - [docs/README-STATE.md](./docs/README-STATE.md) — State management: server state, URL state, optimistic UI
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter pattern for data fetching (Einstein, Active Data, custom)
@@ -241,6 +293,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system (including `PUBLIC__` prefix behavior)
 - [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
+- [docs/README-COOKIE-DOMAIN.md](./docs/README-COOKIE-DOMAIN.md) — Configurable cookie domains: storefront config (`app.cookies.domain` + per-site), the matching Business Manager setting, verification, rollout
 - [docs/README-EMAIL-VERIFICATION.md](./docs/README-EMAIL-VERIFICATION.md) — Email verification: OTP flows, passwordless registration/login, account details badge, Change Email
 - [docs/README-TURNSTILE.md](./docs/README-TURNSTILE.md) — Cloudflare Turnstile bot protection (BFF verification, three-tier health, fail-open)
 - [docs/README-SECURITY-HEADERS.md](./docs/README-SECURITY-HEADERS.md) — Default security response headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
@@ -250,6 +303,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 
 **UI & frontend:**
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — Tailwind, shadcn, design tokens
+- [docs/README-SHAPE-TOKENS.md](./docs/README-SHAPE-TOKENS.md) — Shape tokens: source vs bridge variables, scoped overrides for Card/Button/Input shape
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance entry point: web fonts, third-party scripts, bundles, client-side transform anti-patterns; links to all other performance guides
 - [docs/README-IMAGES.md](./docs/README-IMAGES.md) — DIS integration, `<DynamicImage>`, alt text
 - [docs/README-SEO.md](./docs/README-SEO.md) — Page titles, meta tags, canonical URLs
@@ -259,7 +313,7 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns
 - [docs/README-ESLINT.md](./docs/README-ESLINT.md) — ESLint configuration
 - [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) — Story coverage enforcement
-- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) — Storybook setup
+- [docs/README-STORYBOOK.md](./docs/README-STORYBOOK.md) — Storybook setup
 
 **Development:**
 - [docs/README-HYBRID-PROXY.md](./docs/README-HYBRID-PROXY.md) — Hybrid proxy for local development

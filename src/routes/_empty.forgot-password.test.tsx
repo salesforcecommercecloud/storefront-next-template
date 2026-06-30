@@ -89,9 +89,10 @@ describe('forgot-password route', () => {
             const mockRequest = new Request('http://localhost/forgot-password');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'forgot-password',
+                pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -112,9 +113,10 @@ describe('forgot-password route', () => {
             const mockRequest = new Request('http://localhost/forgot-password');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'forgot-password',
+                pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -131,9 +133,10 @@ describe('forgot-password route', () => {
             const mockRequest = new Request('http://localhost/forgot-password');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'forgot-password',
+                pattern: 'forgot-password',
             };
 
             const result = loader(args);
@@ -157,9 +160,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -183,9 +187,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -214,9 +219,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -247,9 +253,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -282,9 +289,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -315,9 +323,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -345,9 +354,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -374,9 +384,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 await action(args);
@@ -405,9 +416,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);
@@ -436,9 +448,10 @@ describe('forgot-password route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'forgot-password',
+                    pattern: 'forgot-password',
                 };
 
                 const result = await action(args);

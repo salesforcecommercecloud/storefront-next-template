@@ -118,8 +118,15 @@ vi.mock('@/providers/basket', () => ({
         }
         return undefined;
     },
-    useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => vi.fn(),
+}));
+
+vi.mock('@/hooks/mini-cart-store', () => ({
+    useMiniCartStore: () => true,
+    setMiniCartOpen: vi.fn(),
+    markMiniCartPanelMounted: vi.fn(),
+    markMiniCartPanelUnmounted: vi.fn(),
+    isMiniCartPanelMounted: () => true,
 }));
 
 import { composeStories } from '@storybook/react-vite';

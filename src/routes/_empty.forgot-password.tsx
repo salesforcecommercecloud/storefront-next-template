@@ -78,7 +78,7 @@ export default function ForgotPassword(): ReactElement {
 
     if (actionData?.success && actionData?.email) {
         return (
-            <div className="flex items-center justify-center bg-background py-12 section-container">
+            <div data-section="auth" className="flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('checkEmailTitle')}</h2>
@@ -87,7 +87,7 @@ export default function ForgotPassword(): ReactElement {
                         </p>
                     </div>
 
-                    <Card className="p-8 rounded-none shadow-none">
+                    <Card className="p-8">
                         <div className="space-y-6">
                             <Link to={routes.login}>
                                 <Button className="w-full cursor-pointer">{t('backToSignIn')}</Button>
@@ -101,14 +101,14 @@ export default function ForgotPassword(): ReactElement {
 
     // Initial form state
     return (
-        <div className="flex items-center justify-center bg-background py-12 section-container">
+        <div data-section="auth" className="flex items-center justify-center bg-background py-12 section-container">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                 </div>
 
-                <Card className="p-8 rounded-none shadow-none">
+                <Card className="p-8">
                     <ForgotPasswordForm error={actionData?.error} />
                 </Card>
             </div>

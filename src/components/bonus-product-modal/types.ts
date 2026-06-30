@@ -28,5 +28,4 @@ export interface BonusProductModalProps {
     promotionId: string;
     bonusDiscountLineItemId: string;
     bonusDiscountSlots: BonusDiscountSlot[];
-    maxQuantity: number;
 }

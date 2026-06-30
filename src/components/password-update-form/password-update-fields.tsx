@@ -59,7 +59,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.currentPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -81,7 +81,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.newPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -103,7 +103,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                             <Input
                                 type="password"
                                 placeholder={t('password.confirmPasswordPlaceholder')}
-                                className="rounded-none border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                className="border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -116,7 +116,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
             <PasswordRequirement password={password} />
 
             <div className="flex gap-2 pt-2">
-                <Button type="submit" disabled={isSubmitting} className="rounded-none">
+                <Button type="submit" disabled={isSubmitting} className="">
                     {isSubmitting ? 'Saving...' : t('password.saveButton')}
                 </Button>
                 {onCancel && (
@@ -125,7 +125,7 @@ export function PasswordUpdateFields({ form, updateFetcher, onCancel }: Password
                         variant="outline"
                         onClick={onCancel}
                         disabled={isSubmitting}
-                        className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                        className="bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                         {t('password.cancelButton')}
                     </Button>
                 )}

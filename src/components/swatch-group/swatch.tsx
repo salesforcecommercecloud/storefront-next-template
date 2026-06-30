@@ -116,6 +116,7 @@ export const Swatch: FC<SwatchProps> = ({
         'aria-label': name || label,
         'aria-checked': selected,
         'data-labeled': labeled || undefined,
+        'data-swatch-type': shape,
         position: 'relative',
         role: 'radio',
         tabIndex: isFocusable ? 0 : -1,
@@ -127,9 +128,13 @@ export const Swatch: FC<SwatchProps> = ({
     if (href) {
         return (
             <NavLink to={href} preventScrollReset={true} {...commonProps}>
-                <div className={innerClasses}>
+                <div className={innerClasses} data-slot="swatch-content">
                     {children}
-                    {label && <span className="ml-1">{label}</span>}
+                    {label && (
+                        <span className="ml-1" data-slot="swatch-label">
+                            {label}
+                        </span>
+                    )}
                 </div>
             </NavLink>
         );
@@ -137,9 +142,13 @@ export const Swatch: FC<SwatchProps> = ({
 
     return (
         <button type="button" {...commonProps} disabled={disabled}>
-            <div className={innerClasses}>
+            <div className={innerClasses} data-slot="swatch-content">
                 {children}
-                {label && <span className="ml-1">{label}</span>}
+                {label && (
+                    <span className="ml-1" data-slot="swatch-label">
+                        {label}
+                    </span>
+                )}
             </div>
         </button>
     );

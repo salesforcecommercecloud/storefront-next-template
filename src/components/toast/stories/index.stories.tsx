@@ -16,8 +16,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { Button } from '@/components/ui/button';
 import { AppToaster, toast, useToast } from '../index';
-import { Button } from '../../ui/button';
 
 /**
  * Story scaffold that mirrors how toasts work in production — the page

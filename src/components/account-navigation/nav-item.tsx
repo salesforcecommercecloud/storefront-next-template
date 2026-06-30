@@ -24,7 +24,7 @@ import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { NavLink } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface AccountNavItemProps {
@@ -45,7 +45,7 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const Icon = item.icon;
     const baseClasses =
-        'w-full px-3 py-2 text-left text-sm font-normal leading-none rounded-none flex items-center justify-start gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sidebar-foreground';
+        'w-full px-3 py-2 text-left text-sm font-normal leading-none flex items-center justify-start gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sidebar-foreground';
     const mobileClasses = `${baseClasses} border`;
     const disabledClasses = 'opacity-50 cursor-not-allowed pointer-events-none';
 

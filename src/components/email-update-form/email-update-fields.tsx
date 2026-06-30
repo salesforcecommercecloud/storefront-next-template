@@ -54,7 +54,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
                             <Input
                                 type="email"
                                 placeholder={t('email.newEmailPlaceholder')}
-                                className="rounded-sm border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                className="rounded-ui border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -77,7 +77,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
                                 <Input
                                     type="password"
                                     placeholder={t('email.currentPasswordPlaceholder')}
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-ring focus:border-transparent"
+                                    className="rounded-ui border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -88,7 +88,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
             )}
 
             <div className="flex gap-2 pt-2">
-                <Button type="submit" disabled={isSubmitting} className="rounded-sm">
+                <Button type="submit" disabled={isSubmitting} className="rounded-ui">
                     {isSubmitting ? t('email.saving') : t('email.saveButton')}
                 </Button>
                 {onCancel && (
@@ -97,7 +97,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
                         variant="outline"
                         onClick={onCancel}
                         disabled={isSubmitting}
-                        className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                        className="rounded-ui bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                         {t('email.cancelButton')}
                     </Button>
                 )}

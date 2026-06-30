@@ -20,13 +20,13 @@ exports[`HeroSkeleton stories snapshot > Default story renders and matches snaps
         class="max-w-2xl"
       >
         <div
-          class="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded mb-3 sm:mb-4 md:mb-6"
+          class="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded-ui mb-3 sm:mb-4 md:mb-6"
         />
         <div
-          class="h-4 sm:h-5 md:h-6 lg:h-8 bg-white/15 w-1/2 rounded mb-4 sm:mb-6 md:mb-8"
+          class="h-4 sm:h-5 md:h-6 lg:h-8 bg-white/15 w-1/2 rounded-ui mb-4 sm:mb-6 md:mb-8"
         />
         <div
-          class="h-10 sm:h-12 md:h-14 lg:h-16 bg-white/25 w-32 sm:w-36 md:w-40 lg:w-44 rounded"
+          class="h-10 sm:h-12 md:h-14 lg:h-16 bg-white/25 w-32 sm:w-36 md:w-40 lg:w-44 rounded-ui"
         />
       </div>
     </div>

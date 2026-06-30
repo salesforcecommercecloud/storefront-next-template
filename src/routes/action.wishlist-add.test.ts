@@ -134,7 +134,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const result = await action(args);
@@ -150,7 +151,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             // When productId is missing, Error is thrown and caught
@@ -193,7 +195,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -238,7 +241,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -289,7 +293,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -354,7 +359,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             // No timer advancement needed for fallback path - creation fails immediately
@@ -416,7 +422,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation
@@ -473,7 +480,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -518,7 +526,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -554,7 +563,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -605,7 +615,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -638,7 +649,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -672,7 +684,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             const response = await action(args);
@@ -735,7 +748,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation
@@ -789,7 +803,8 @@ describe('action.wishlist-add', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-add',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-add',
             };
 
             // Start the async operation

@@ -19,8 +19,9 @@ import type { SessionData as AuthData } from '@/lib/api/types';
 import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } from '@/middlewares/auth.utils';
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
+import { getSitePrefix, mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 import { buildMockAccessToken, buildMockTokenResponse } from '@/test-utils/auth';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
@@ -1524,7 +1525,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify parseAllCookies was called
             expect(mockParseAllCookies).toHaveBeenCalledWith('cc-nx-g=guest-refresh-token; cc-at=access-token');
@@ -1571,7 +1572,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             expect(storage.get('userType')).toBe('guest');
         });
@@ -1612,7 +1613,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             expect(storage.get('userType')).toBe('registered');
             expect(storage.get('customerId')).toBe('reg-cust-1');
@@ -1653,7 +1654,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify accessTokenExpiry was set from JWT
             const expiry = storage.get('accessTokenExpiry');
@@ -1701,7 +1702,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify all 14 cookies were deleted:
             // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
@@ -1749,7 +1750,7 @@ describe('auth middleware (server)', () => {
             const mockTokenResponse = getMockTokenResponse();
             mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse, 'refresh-dwsid'));
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             expect(mockSerialize).toHaveBeenCalled();
             expect(mockSerialize.mock.calls.length).toBeGreaterThanOrEqual(4);
@@ -1800,7 +1801,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify the "other" refresh token cookie (guest in this case) was deleted
             // One call should be to delete the guest cookie with empty string
@@ -1848,7 +1849,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify all 14 cookies were deleted due to error
             // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
@@ -1880,7 +1881,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify getCookieNameWithSiteId was called for each cookie that the middleware
             // reads from the request. `customerId` is intentionally absent: the middleware
@@ -1916,7 +1917,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Should fall back to guest login when no cookies present
             expect(mockAuth.loginAsGuest).toHaveBeenCalled();
@@ -1959,7 +1960,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Refresh ran against the registered refresh-cookie; final JWT is registered-shaped
             expect(mockAuth.refreshToken).toHaveBeenCalledWith(
@@ -2008,7 +2009,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify IDP access token was reconstructed from cookies
             expect(storage.get('idpAccessToken')).toBe('idp-access-token');
@@ -2052,7 +2053,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             expect(storage.get('idToken')).toBe('id-token-from-cookie');
         });
@@ -2095,7 +2096,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             expect(storage.get('idpRefreshToken')).toBe('idp-refresh-token-from-cookie');
         });
@@ -2140,7 +2141,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify code verifier was reconstructed from cookie
             expect(storage.get('codeVerifier')).toBe('code-verifier-abc123');
@@ -2186,7 +2187,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // Verify code verifier cookie was deleted (empty string with expired date)
             const deleteCodeVerifierCalls = mockSerialize.mock.calls.filter(
@@ -2236,7 +2237,7 @@ describe('auth middleware (server)', () => {
             const next = vi.fn().mockRejectedValue(createAuthTokenInvalidError());
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2291,7 +2292,7 @@ describe('auth middleware (server)', () => {
             });
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2322,9 +2323,9 @@ describe('auth middleware (server)', () => {
 
             const next = vi.fn().mockRejectedValue(createAuthTokenInvalidError());
 
-            await expect(authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next)).rejects.toThrow(
-                'Access token is invalid or revoked'
-            );
+            await expect(
+                authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next)
+            ).rejects.toThrow('Access token is invalid or revoked');
         });
 
         it('should recover when authStorage error sentinel is set after next()', async () => {
@@ -2357,7 +2358,7 @@ describe('auth middleware (server)', () => {
             });
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2394,7 +2395,7 @@ describe('auth middleware (server)', () => {
             const next = vi.fn().mockResolvedValue(new Response('OK'));
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2456,7 +2457,7 @@ describe('auth middleware (server)', () => {
                 const mockResponse = new Response('OK');
                 const next = vi.fn().mockResolvedValue(mockResponse);
 
-                await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+                await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
                 expect(storage.get('customerId')).toBe(expectedCustomerId);
                 expect(storage.get('usid')).toBe(expectedUsid);
@@ -2502,7 +2503,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // JWT-derived values still land in storage; cookie value is ignored
             expect(storage.get('customerId')).toBe('fresh-id');
@@ -2551,7 +2552,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // JWT value wins, and the cookie is rewritten to match
             expect(storage.get('usid')).toBe('fresh-usid');
@@ -2588,7 +2589,7 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // The middleware should have asked the cookie helper to namespace `usid`
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
@@ -2634,7 +2635,7 @@ describe('auth middleware (server)', () => {
             const next = vi.fn().mockResolvedValue(new Response('OK'));
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2679,7 +2680,7 @@ describe('auth middleware (server)', () => {
             const next = vi.fn().mockResolvedValue(new Response('OK'));
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2739,7 +2740,7 @@ describe('auth middleware (server)', () => {
             const next = vi.fn().mockResolvedValue(new Response('OK'));
 
             const response = (await authMiddleware(
-                { request, context, params: {}, unstable_pattern: '/' },
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
                 next
             )) as Response;
 
@@ -2788,12 +2789,161 @@ describe('auth middleware (server)', () => {
             const mockResponse = new Response('OK');
             const next = vi.fn().mockResolvedValue(mockResponse);
 
-            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+            await authMiddleware({ request, context, params: {}, pattern: '/', url: new URL(request.url) }, next);
 
             // The middleware must have invoked guest login with the preserved usid for continuity
             expect(mockAuth.loginAsGuest).toHaveBeenCalledWith(
                 expect.objectContaining({ usid: 'usid-continuity-value' })
             );
+        });
+
+        it('should redirect registered shopper to login when refresh token fails and no guard is set', async () => {
+            // Cold-start with a registered refresh cookie but no valid access token.
+            // Refresh fails (SLAS 400) → middleware must redirect to /login?...&error=session_expired
+            // instead of silently falling through to guest login.
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx': 'registered-refresh-token',
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockRejectedValue(new Error('SLAS 400: invalid refresh token'));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/en-US/checkout', {
+                headers: {
+                    Cookie: 'cc-nx=registered-refresh-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const serializeCalls: Array<[string, unknown]> = [];
+            mockCreateCookie.mockImplementation(() => ({
+                serialize: vi.fn().mockImplementation((value, options) => {
+                    serializeCalls.push([value, options]);
+                    return Promise.resolve('Set-Cookie: mock=value');
+                }),
+            }));
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
+                next
+            )) as Response;
+
+            expect(response.status).toBe(307);
+            const location = response.headers.get('Location');
+            expect(location).toContain('/login');
+            expect(location).toContain('error=session_expired');
+            expect(location).toContain('returnUrl=');
+            expect(location).toContain(encodeURIComponent('/en-US/checkout'));
+            // Guard cookie must be set to prevent a redirect loop on the next request.
+            expect(serializeCalls.some(([value]) => value === '1')).toBe(true);
+        });
+
+        it('should fall through to guest login when registered refresh fails and guard is already set', async () => {
+            // Same setup as above but with the recovery guard cookie already present.
+            // The middleware must NOT redirect again - it falls through to the guest session
+            // that was created by the fallback guest login.
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx': 'registered-refresh-token',
+                'cc-auth-recover': '1',
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockRejectedValue(new Error('SLAS 400: invalid refresh token'));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/en-US/checkout', {
+                headers: {
+                    Cookie: 'cc-nx=registered-refresh-token; cc-auth-recover=1',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
+                next
+            )) as Response;
+
+            // No redirect - falls through to the guest session.
+            expect(response.status).toBe(200);
+            expect(next).toHaveBeenCalled();
+            expect(mockAuth.loginAsGuest).toHaveBeenCalled();
+        });
+
+        it('applies the site/locale prefix to the login redirect path', async () => {
+            // Regression guard for the buildUrlFromContext call: a populated siteContext must
+            // produce a prefixed login path (e.g. /RefArchGlobal/en-GB/login), not a bare
+            // /login. This exercises the real buildUrlFromContext, so swapping it for a literal
+            // '/login' would fail here.
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx': 'registered-refresh-token',
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockRejectedValue(new Error('SLAS 400: invalid refresh token'));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const requestPath = `${getSitePrefix()}/checkout`;
+            const request = new Request(`https://example.com${requestPath}`, {
+                headers: {
+                    Cookie: 'cc-nx=registered-refresh-token',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                // Populate site context so buildUrlFromContext applies the URL prefix instead
+                // of returning the bare path.
+                if (key === siteContext) {
+                    return {
+                        site: { id: mockSiteObject.id },
+                        locale: { id: mockSiteObject.defaultLocale },
+                    } as unknown as SiteContext;
+                }
+                return originalGet(key);
+            });
+
+            mockCreateCookie.mockImplementation(() => ({
+                serialize: vi.fn().mockResolvedValue('Set-Cookie: mock=value'),
+            }));
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, pattern: '/', url: new URL(request.url) },
+                next
+            )) as Response;
+
+            expect(response.status).toBe(307);
+            const location = response.headers.get('Location');
+            // The login path itself carries the prefix - this is what buildUrlFromContext adds.
+            expect(location?.startsWith(`${getSitePrefix()}/login`)).toBe(true);
+            expect(location).toContain('error=session_expired');
+            expect(location).toContain(encodeURIComponent(requestPath));
         });
     });
 

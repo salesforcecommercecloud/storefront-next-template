@@ -254,6 +254,118 @@ export const profileCancelButtonRecipe: HealingRecipe = {
     fallbackStrategy: 'Look for Cancel button in profile form',
 };
 
+// ─── Email Verification Elements ─────────────────────────────────────────────
+
+/**
+ * Verify Email Button - Visible when email verification is enabled and email is unverified
+ * Primary: button with text "Verify Email" in email card
+ */
+export const verifyEmailButtonRecipe: HealingRecipe = {
+    name: 'verifyEmailButton',
+    description: 'Button to trigger OTP verification flow for unverified email',
+    selectors: [
+        '[data-testid="sf-toggle-card-email"] button:has-text("Verify Email")',
+        'button:has-text("Verify Email")',
+        'button[aria-label*="verify email" i]',
+        '[data-testid*="verify-email"]',
+    ],
+    context: 'Button in email card to start OTP-based email verification',
+    fallbackStrategy: 'Look for button with "Verify Email" text within the email card',
+};
+
+/**
+ * Change Email Button - Visible when email verification is enabled
+ * Primary: button with text "Change email" in email card
+ */
+export const changeEmailButtonRecipe: HealingRecipe = {
+    name: 'changeEmailButton',
+    description: 'Button to initiate email address change',
+    selectors: [
+        '[data-testid="sf-toggle-card-email"] button:has-text("Change email")',
+        'button:has-text("Change email")',
+        'button:has-text("Change Email")',
+        'button[aria-label*="change email" i]',
+        '[data-testid*="change-email"]',
+    ],
+    context: 'Button in email card to open email update form or OTP flow',
+    fallbackStrategy: 'Look for button with "Change email" text within the email card',
+};
+
+/**
+ * Email Verified Badge - Shown when email is verified
+ * Primary: [data-testid="email-verified-badge"]
+ */
+export const emailVerifiedBadgeRecipe: HealingRecipe = {
+    name: 'emailVerifiedBadge',
+    description: 'Badge indicating the email address is verified',
+    selectors: ['[data-testid="email-verified-badge"]', '[data-testid*="verified-badge"]'],
+    context: 'Badge in email card showing verified status',
+    fallbackStrategy: 'Look for badge or span with "Verified" text near email display',
+};
+
+/**
+ * Email Unverified Badge - Shown when email is not verified
+ * Primary: [data-testid="email-unverified-badge"]
+ */
+export const emailUnverifiedBadgeRecipe: HealingRecipe = {
+    name: 'emailUnverifiedBadge',
+    description: 'Badge indicating the email address is not yet verified',
+    selectors: ['[data-testid="email-unverified-badge"]', '[data-testid*="unverified-badge"]'],
+    context: 'Badge in email card showing unverified status',
+    fallbackStrategy: 'Look for badge or span with "Unverified" text near email display',
+};
+
+/**
+ * OTP Modal - Dialog container for OTP code entry
+ * Primary: [data-testid="otp-modal"]
+ */
+export const otpModalRecipe: HealingRecipe = {
+    name: 'otpModal',
+    description: 'Modal dialog for entering one-time password verification code',
+    selectors: [
+        '[data-testid="otp-modal"]',
+        '[role="dialog"]:has(input[type="text"][maxlength="1"])',
+        '[role="dialog"]:has-text("verification code")',
+        '[role="dialog"][aria-modal="true"]',
+    ],
+    context: 'Modal dialog shown during email verification or passwordless email change',
+    fallbackStrategy: 'Look for dialog containing single-character text inputs or verification code text',
+};
+
+/**
+ * OTP Resend Code Button - Resend code button inside OTP modal
+ * Primary: button with text "Resend Code" in OTP modal
+ */
+export const otpResendButtonRecipe: HealingRecipe = {
+    name: 'otpResendButton',
+    description: 'Button to resend OTP verification code',
+    selectors: [
+        '[data-testid="otp-modal"] button:has-text("Resend Code")',
+        'button:has-text("Resend Code")',
+        'button:has-text("Resend")',
+        '[data-testid*="resend"]',
+    ],
+    context: 'Button inside OTP modal to request a new verification code',
+    fallbackStrategy: 'Look for button with "Resend" text inside the OTP modal dialog',
+};
+
+/**
+ * Email Update Form - Form for changing email address
+ * Primary: [data-testid="email-update-form"]
+ */
+export const emailUpdateFormRecipe: HealingRecipe = {
+    name: 'emailUpdateForm',
+    description: 'Form for updating email address, may require current password',
+    selectors: [
+        '[data-testid="email-update-form"]',
+        'form[data-testid*="email"]',
+        '[data-testid="sf-toggle-card-email"] form',
+        'form:has(input[name="email"]):has(button[type="submit"])',
+    ],
+    context: 'Email update form shown after clicking "Change email" (for password-based shoppers)',
+    fallbackStrategy: 'Look for form with email input inside the email toggle card',
+};
+
 // ─── Password Card Elements ───────────────────────────────────────────────────
 
 /**
@@ -518,6 +630,14 @@ export const accountDetailsRecipes: HealingRecipe[] = [
     // Profile actions
     profileSaveButtonRecipe,
     profileCancelButtonRecipe,
+    // Email verification
+    verifyEmailButtonRecipe,
+    changeEmailButtonRecipe,
+    emailVerifiedBadgeRecipe,
+    emailUnverifiedBadgeRecipe,
+    otpModalRecipe,
+    otpResendButtonRecipe,
+    emailUpdateFormRecipe,
     // Password card
     passwordCardRecipe,
     changePasswordButtonRecipe,

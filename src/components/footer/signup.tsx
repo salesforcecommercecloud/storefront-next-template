@@ -49,7 +49,7 @@ export default function Signup(): ReactElement {
                     type="submit"
                     variant="secondary"
                     size="lg"
-                    className="bg-primary-foreground rounded-md shadow-2xs">
+                    className="bg-primary-foreground rounded-ui shadow-2xs">
                     {t('newsletter.subscribeButton')}
                 </Button>
             </form>

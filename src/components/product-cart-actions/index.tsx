@@ -17,7 +17,6 @@ import { type ReactElement, Suspense, lazy, startTransition, useState, useEffect
 import type { ShopperProducts } from '@/scapi';
 import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
-import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
@@ -63,13 +62,16 @@ export default function ProductCartActions({
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
 
-    const currentVariant = useCurrentVariant({ product });
-
-    // Get shared state from context
+    // Get shared state from context. currentVariant comes from the SAME source
+    // that derives canAddToCart (the provider's controlled/URL variant) so the
+    // "select all options" message and the Add-to-Cart enabled state can never
+    // disagree — e.g. in the Quick Add modal where the variant is passed in as
+    // controlled state and a local useCurrentVariant({ product }) would miss it.
     const {
         mode,
         isAddingToOrUpdatingCart,
         canAddToCart,
+        currentVariant,
         isMasterOrVariantProduct,
         handleAddToCart,
         handleUpdateCart,
@@ -173,6 +175,7 @@ export default function ProductCartActions({
                 {!isCompactAddMode && !isProductASet && !isProductABundle && (
                     <Button
                         data-testid="add-to-cart"
+                        data-slot="add-to-cart-button"
                         onClick={() => void onAddOrUpdateToCart()}
                         disabled={!canAddToCart || isAddingToOrUpdatingCart}
                         className="w-full text-base font-semibold leading-6"

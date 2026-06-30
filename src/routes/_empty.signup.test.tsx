@@ -183,9 +183,10 @@ describe('signup route', () => {
             const mockRequest = new Request('http://localhost/signup');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -205,9 +206,10 @@ describe('signup route', () => {
             const mockRequest = new Request('http://localhost/signup');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -230,9 +232,10 @@ describe('signup route', () => {
             const mockRequest = new Request('http://localhost/signup?otp=true');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -250,9 +253,10 @@ describe('signup route', () => {
             );
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -274,9 +278,10 @@ describe('signup route', () => {
             );
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -295,9 +300,10 @@ describe('signup route', () => {
             const mockRequest = new Request('http://localhost/signup');
             const args = {
                 request: mockRequest,
+                url: new URL(mockRequest.url),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: 'signup',
+                pattern: 'signup',
             };
 
             const result = loader(args);
@@ -333,9 +339,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -363,9 +370,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -393,9 +401,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -423,9 +432,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -453,9 +463,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -484,9 +495,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -517,9 +529,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -554,9 +567,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -599,9 +613,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -633,9 +648,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -671,9 +687,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -705,9 +722,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -747,9 +765,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 await action(args);
@@ -782,9 +801,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(result).toBeInstanceOf(Response);
@@ -818,9 +838,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(result).toBeInstanceOf(Response);
@@ -844,9 +865,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(result).toEqual({ error: t('signup:allFieldsRequired') });
@@ -870,9 +892,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(result).toHaveProperty('error');
@@ -899,9 +922,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
@@ -947,9 +971,10 @@ describe('signup route', () => {
 
                 const result = await action({
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 });
 
                 expect(mockRegisterCustomer).toHaveBeenCalled();
@@ -981,9 +1006,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);
@@ -1014,9 +1040,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 await action(args);
@@ -1053,9 +1080,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 await action(args);
@@ -1090,9 +1118,10 @@ describe('signup route', () => {
 
                 const args = {
                     request: mockRequest,
+                    url: new URL(mockRequest.url),
                     params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
-                    unstable_pattern: 'signup',
+                    pattern: 'signup',
                 };
 
                 const result = await action(args);

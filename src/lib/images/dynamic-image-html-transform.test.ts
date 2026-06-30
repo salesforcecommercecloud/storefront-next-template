@@ -381,14 +381,14 @@ describe('transformHtmlImageUrls()', () => {
             const html = `
                 <a href="/category/women">
                     <img src="https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/category-women.jpg"
-                         alt="Women's Fashion"
+                         alt="Women's Category"
                          class="category-banner">
                 </a>
             `;
             const result = transformHtmlImageUrls(html, mockConfig);
 
             expect(result).toContain('category-women.webp?sfrm=jpg');
-            expect(result).toContain('alt="Women\'s Fashion"');
+            expect(result).toContain('alt="Women\'s Category"');
             expect(result).toContain('class="category-banner"');
             expect(result).toContain('<a href="/category/women">');
         });

@@ -26,6 +26,10 @@
  * reintroduces a second SCAPI round-trip per mini-cart open. If you need the basket somewhere else, use `useBasket()`.
  * The cart-sheet specifically needs basket AND productsById from the same SCAPI snapshot to render correctly — that's
  * why it reads both from here.
+ *
+ * This hook does call `useBasket()`, but only as the freshness *reference* for the staleness check (`needsMiniCartLoad`
+ * compares the context basket's `lastModified` against the fetcher's) — never as the basket it renders. The rendered
+ * basket and products still come exclusively from the fetcher.
  */
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -34,8 +38,100 @@ import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import type { loader as basketProductsLoader } from '@/routes/resource.basket-products';
 import type { ProductsWithPromotionsMap } from '@/lib/cart/bonus-product-utils';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
-import { useBasketSnapshot, useBasketUpdater } from '@/providers/basket';
+import { useBasket, useBasketSnapshot, useBasketUpdater } from '@/providers/basket';
 import { resourceRoutes } from '@/route-paths';
+import { markMiniCartPanelMounted, markMiniCartPanelUnmounted } from '@/hooks/mini-cart-store';
+
+/**
+ * Identity key for a basket, derived from the fields the cookie snapshot carries (`basketId`, total item quantity,
+ * unique line count). Used as the staleness signal in `needsMiniCartLoad`'s fallback branch — when no full basket
+ * (with a SCAPI `lastModified`) has been loaded into context, the cookie's item counts are the only client-readable
+ * change signal. A count-neutral change (e.g. a variant swap) is invisible to this key; that case is covered by the
+ * `lastModified` comparison whenever a full basket for the current basket is available.
+ */
+const snapshotKey = (basketId: string, totalItemCount: number, uniqueProductCount: number): string =>
+    `${basketId}:${totalItemCount}:${uniqueProductCount}`;
+
+/**
+ * Identity key for the basket the cookie snapshot now describes, or null when there is nothing to enrich (no basket,
+ * or an empty basket). The empty case is the load gate's "skip" signal — the panel renders the empty-cart state and
+ * hover-prefetch is a no-op. Empty-basket trust is cookie-based; see the docblock on useMiniCartDataLoader for the
+ * divergence tradeoff.
+ */
+const currentSnapshotKey = (
+    snapshot: { basketId?: string; totalItemCount?: number; uniqueProductCount?: number } | null | undefined
+): string | null =>
+    snapshot?.basketId && (snapshot.totalItemCount ?? 0) > 0
+        ? snapshotKey(snapshot.basketId, snapshot.totalItemCount ?? 0, snapshot.uniqueProductCount ?? 0)
+        : null;
+
+/**
+ * Identity key for the basket the persisted fetcher data represents, computed from the same fields the cookie snapshot
+ * uses so a load makes the two keys converge (no reload loop). Null when the fetcher has no basket yet.
+ */
+const fetchedSnapshotKey = (basket: ShopperBasketsV2.schemas['Basket'] | null | undefined): string | null => {
+    if (!basket?.basketId) {
+        return null;
+    }
+    const productItems = basket.productItems ?? [];
+    const totalItemCount = productItems.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+    return snapshotKey(basket.basketId, totalItemCount, productItems.length);
+};
+
+/**
+ * Whether the basket-products resource needs a (re)load. Always false when there is nothing to enrich (no basket id, or
+ * an empty basket per the cookie snapshot) — that gate wins over every freshness signal below.
+ *
+ * Freshness is decided by `lastModified` whenever a full basket for the current basket has been loaded into
+ * `BasketProvider` (`referenceBasket`): the add/edit/remove handlers and this hook's own publish-back effect write the
+ * action-response basket — which carries the SCAPI-set `lastModified` — into context, so after any mutation the
+ * reference revision is fresh even when item counts are unchanged (e.g. a variant swap). The comparison is directional:
+ * reload only when the reference is strictly NEWER than the persisted fetcher data (a revision the cache hasn't pulled
+ * yet). A reference OLDER than the cache is not staleness — it is the publish-back render-lag. When the panel is open
+ * and `resource.basket-products` revalidates the fetcher post-action, the fetcher holds the new revision a render
+ * before `useBasket()` (a parent `setState`) converges to it; a symmetric `!==` would read that benign lag as stale
+ * and fire a redundant second load. Equal revisions mean the cache is current and is reused without a round-trip.
+ * `lastModified` is SCAPI's ISO-8601 UTC timestamp, so a lexicographic `>` is a chronological comparison.
+ *
+ * When no full basket reference is available — only the cookie snapshot, which has no `lastModified` (returning
+ * visitor, nothing added this session, panel never opened) — the count-derived key is the fallback signal. It cannot
+ * see a count-neutral change, so the load decision errs toward the cache only when the counts also match; a divergent
+ * count always reloads. Once the first load resolves and publishes into context, subsequent decisions use the
+ * `lastModified` path. Shared by the hover-prefetch and panel-open paths; callers still gate on `fetcher.state`.
+ */
+const needsMiniCartLoad = (
+    snapshot: { basketId?: string; totalItemCount?: number; uniqueProductCount?: number } | null | undefined,
+    fetchedBasket: ShopperBasketsV2.schemas['Basket'] | null | undefined,
+    referenceBasket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): boolean => {
+    // The cookie reports nothing to enrich (no basket id, or an empty basket). Normally a skip — but the shared
+    // fetcher cache outlives panel close, so after a closed-panel empty-out (cart-page remove, post-checkout return,
+    // cross-tab clear) it can still hold the pre-empty line items. The panel reads `basket` straight from the fetcher,
+    // so leaving the cache as-is renders ghost items while the cookie-driven badge shows 0. Reload to flush the cache
+    // when it still holds items; once the reload brings back the emptied (item-less) basket this returns false, so it
+    // converges. A cold/empty fetcher has no items → still a skip, preserving the cold-visitor no-round-trip path.
+    if (currentSnapshotKey(snapshot) === null) {
+        return (fetchedBasket?.productItems?.length ?? 0) > 0;
+    }
+
+    // A full basket for the current basket is the reference: compare on its SCAPI `lastModified`, which moves on every
+    // mutation including count-neutral ones. Guard on matching basketId so a stale reference from a prior basket
+    // (guest → registered handoff) can't suppress a needed load.
+    const referenceLastModified =
+        referenceBasket?.basketId && referenceBasket.basketId === snapshot?.basketId
+            ? referenceBasket.lastModified
+            : undefined;
+    if (referenceLastModified) {
+        // Directional: reload only when the reference revision is strictly newer than what the fetcher holds. An older
+        // reference is the publish-back render-lag (post-action revalidation lands in the fetcher a render before
+        // useBasket() converges), not a stale cache — reloading on it fires a redundant second request.
+        const fetchedLastModified = fetchedBasket?.lastModified;
+        return !fetchedLastModified || referenceLastModified > fetchedLastModified;
+    }
+
+    // Cookie-only fallback: no full basket reference, so the count key is the only signal available.
+    return fetchedSnapshotKey(fetchedBasket) !== currentSnapshotKey(snapshot);
+};
 
 /**
  * A basket product item enriched with full product details (images, variations, etc.)
@@ -61,11 +157,14 @@ const MINI_CART_FETCHER_KEY = 'basket-products';
 const MINI_CART_RESOURCE_URL = resourceRoutes.basketProducts;
 
 /**
- * Imperative loader for the mini-cart resource. Returns a reference-stable callback that dispatches a load if
- * the shared fetcher is idle and has no data, and is a no-op otherwise. Calling this hook allocates a React Router
- * fetcher slot on every page that mounts it, but no network call fires until the returned callback is invoked.
+ * Imperative loader for the mini-cart resource. Returns a reference-stable callback that dispatches a load when the
+ * shared fetcher is idle and the persisted basket-products data is stale (see `needsMiniCartLoad` for the freshness
+ * rule), and is a no-op otherwise. Calling this hook allocates a React Router fetcher slot on every page that mounts
+ * it, but no network call fires until the returned callback is invoked.
  *
  * Used by the cart-badge to pre-warm on hover/focus so basket + product data is in cache by the time the panel mounts.
+ * Because post-action revalidation is suppressed while the panel is closed (see `resource.basket-products`), a basket
+ * mutation can leave the persisted data stale; the hover re-fetches in that case, not just on the very first warm.
  *
  * Skips when no basketId is known in the snapshot or when the snapshot reports an empty basket — without an existing
  * basket there's nothing to enrich, and an empty basket has no line items to enrich either; triggering the resource
@@ -75,21 +174,20 @@ const MINI_CART_RESOURCE_URL = resourceRoutes.basketProducts;
 export function useMiniCartDataLoader(): () => void {
     const fetcher = useFetcher<typeof basketProductsLoader>({ key: MINI_CART_FETCHER_KEY });
     const snapshot = useBasketSnapshot();
+    const referenceBasket = useBasket();
 
-    // useFetcher returns a fresh object every render and the snapshot can flip on cookie updates. Mirror both
-    // into refs so the returned callback can have empty useCallback deps and stay reference-stable across renders.
+    // useFetcher returns a fresh object every render and the snapshot/reference can flip on cookie or context updates.
+    // Mirror all three into refs so the returned callback can have empty useCallback deps and stay reference-stable.
     const fetcherRef = useRef(fetcher);
     fetcherRef.current = fetcher;
     const snapshotRef = useRef(snapshot);
     snapshotRef.current = snapshot;
+    const referenceBasketRef = useRef(referenceBasket);
+    referenceBasketRef.current = referenceBasket;
 
     return useCallback(() => {
-        const snap = snapshotRef.current;
-        if (!snap?.basketId || snap.totalItemCount === 0) {
-            return;
-        }
         const f = fetcherRef.current;
-        if (f.state === 'idle' && !f.data) {
+        if (f.state === 'idle' && needsMiniCartLoad(snapshotRef.current, f.data?.basket, referenceBasketRef.current)) {
             void f.load(MINI_CART_RESOURCE_URL);
         }
     }, []);
@@ -144,21 +242,36 @@ export function useMiniCartData(): UseMiniCartDataResult {
     const snapshot = useBasketSnapshot();
     const snapshotBasketId = snapshot?.basketId;
     const snapshotTotalItemCount = snapshot?.totalItemCount ?? 0;
+    // Read-only (no autoLoad): the full basket BasketProvider already holds, used as the freshness reference. It carries
+    // the SCAPI `lastModified` that the count-derived snapshot key cannot — so a count-neutral mutation is still
+    // detected. This hook publishes the fetched basket back into the same context below, so the reference converges to
+    // the fetched revision after a load (no reload loop).
+    const referenceBasket = useBasket();
 
-    // Trigger the load once on mount. The fetcher dedupes against in-flight or completed loads. Skip when no basketId
-    // is known or when the snapshot reports an empty basket — without an existing basket there is nothing to fetch,
-    // and an empty basket has no line items to enrich; the panel renders the empty-cart state via the gate in
-    // `isLoading` below. Re-fires when totalItemCount transitions 0 → N (add-to-cart from an empty cart updates the
-    // cookie) so the first load dispatches at that point. Empty-basket trust is cookie-based — see the docblock on
-    // useMiniCartDataLoader for the divergence tradeoff.
+    // Mark the panel mounted for the lifetime of this hook. Only the open cart sheet mounts `useMiniCartData`, so this
+    // tracks the panel's visibility in the mini-cart store. `resource.basket-products`' `shouldRevalidate` reads it to
+    // suppress post-action revalidation while the panel is closed — see the mini-cart-store module.
     useEffect(() => {
-        if (!snapshotBasketId || snapshotTotalItemCount === 0) {
-            return;
-        }
-        if (fetcherState === 'idle' && !fetcherData) {
+        markMiniCartPanelMounted();
+        return () => markMiniCartPanelUnmounted();
+    }, []);
+
+    // Staleness decision, shared with the hover-prefetch path via `needsMiniCartLoad`. The fetcher data outlives panel
+    // close/reopen (the cart badge holds the shared fetcher key), so a divergence from the reference means a mutation
+    // landed while the fetcher was idle. After a load this hook publishes the fetched basket into the same context the
+    // reference reads from, so the two converge — no reload loop. `needsMiniCartLoad` is pure, so the derived boolean is
+    // a value-stable effect dep (true on a stale or cold cache, false when current).
+    const needsLoad = needsMiniCartLoad(snapshot, fetcherData?.basket, referenceBasket);
+
+    // Load when the fetcher is idle and the cached data is stale for the current basket — a cold open (no data yet) or
+    // a mutation that landed while the panel was closed and revalidation was suppressed. When the data is current it is
+    // reused without a round-trip. Revalidation while the panel is open is handled separately by the resource route's
+    // `shouldRevalidate` (footer totals on in-panel removals); this effect only covers the open transition.
+    useEffect(() => {
+        if (fetcherState === 'idle' && needsLoad) {
             void loadMiniCart(MINI_CART_RESOURCE_URL);
         }
-    }, [snapshotBasketId, snapshotTotalItemCount, fetcherState, fetcherData, loadMiniCart]);
+    }, [needsLoad, fetcherState, loadMiniCart]);
 
     // Publish the fetched basket into BasketProvider so badge count and other useBasket() consumers stay in sync.
     // Reads no value from BasketContext, so writing back here cannot create a render loop. updateBasket is
@@ -169,6 +282,9 @@ export function useMiniCartData(): UseMiniCartDataResult {
     // every harmless revalidation would call updateBasket(), and even though the basket updater dedups by lastModified
     // internally, running the publisher body N times per session is wasted work. The basket payload is read through a
     // ref so the effect body sees the current value while the dep array tracks only the identity-defining fields.
+    //
+    // Shape-safe: no basket read or mutation sets `expand`, so every response carries the SCAPI default and can't
+    // down-shape provider consumers.
     const updateBasket = useBasketUpdater();
     const fetchedBasket = fetcherData?.basket;
     const fetchedBasketRef = useRef(fetchedBasket);

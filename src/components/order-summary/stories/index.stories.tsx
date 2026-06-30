@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import OrderSummary from '../index';
@@ -43,7 +43,7 @@ const meta: Meta<typeof OrderSummary> = {
                 component: `
 \`<OrderSummary>\` renders subtotal, shipping, tax, promo summary, and the checkout CTA. Used by both the cart route (\`<CartContent>\`) and the checkout page; bucketed under **CHECKOUT/** because checkout has the higher importer count (3 callers including order details vs. 1 in cart).
 
-The component exposes several boolean toggles (\`showCartItems\`, \`showHeading\`, \`showPromoCodeForm\`, \`itemsExpanded\`, \`isEstimate\`) which were previously expanded into separate stories. Per Pattern 10 those are now exposed via the controls panel on the **Default** story and the dedicated stories cover *semantic* configurations only.
+The component exposes several boolean toggles (\`showCartItems\`, \`showHeading\`, \`showPromoCodeForm\`, \`itemsExpanded\`, \`isEstimate\`). Rather than a story per combination, those are exposed via the controls panel on the **Default** story, and the dedicated stories cover *semantic* configurations only.
                 `,
             },
         },
@@ -121,7 +121,7 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Standard order summary. Use the controls panel to toggle `showCartItems`, `showHeading`, `showPromoCodeForm`, `itemsExpanded`, and `isEstimate` — separate stories for each combination were collapsed into controls (Pattern 10).',
+                story: 'Standard order summary. Use the controls panel to toggle `showCartItems`, `showHeading`, `showPromoCodeForm`, `itemsExpanded`, and `isEstimate` — exposed as controls rather than a separate story per combination.',
             },
         },
     },
@@ -509,5 +509,60 @@ export const NetTaxation: Story = {
         await waitForStorybookReady(canvasElement);
         const taxLabel = Array.from(canvasElement.querySelectorAll('span')).find((el) => el.textContent === 'Tax');
         await expect(taxLabel).toBeInTheDocument();
+    },
+};
+
+// Exported last on purpose. Snapshot tests render every story in this file in
+// export order through one shared React tree, and the cart-items accordion
+// consumes `useId`. Placing this interaction story before the promo-code-form
+// stories (WithAppliedPromotions / WithCouponDiscount) would bump their
+// auto-generated `useId` form-field IDs and churn unrelated snapshots. Keeping
+// it last means it perturbs nothing that follows.
+export const CartItemsAccordionInteraction: Story = {
+    args: {
+        basket: basketWithMultipleItems,
+        showPromoCodeForm: false,
+        showCartItems: true,
+        showHeading: true,
+        // Start collapsed (itemsExpanded:false) so the click drives the
+        // closed→open transition rather than asserting an already-open accordion.
+        itemsExpanded: false,
+        isEstimate: false,
+        productsByItemId: mockProductMap,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Clicks the cart-items accordion trigger and asserts it expands. The accordion is a Radix primitive, so expanded state lives in `aria-expanded` / `data-state="open"` — not a native `open` attribute. Crucially it then asserts the revealed content (the "Edit cart" link inside `AccordionContent`) becomes accessible, so the test verifies the component shows its items rather than merely that Radix toggled an attribute.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // The cart-items trigger is labelled by its item-count text ("N items in cart").
+        const trigger = canvas.getByRole('button', { name: /items in cart/i });
+
+        // Starts collapsed: the trigger is closed and Radix renders the content with
+        // `hidden`, so the "Edit cart" link inside it is not yet in the accessibility
+        // tree (a role query with the default `hidden: false` can't see it).
+        await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+        await expect(trigger).toHaveAttribute('data-state', 'closed');
+        await expect(canvas.queryByRole('link', { name: /edit cart/i })).not.toBeInTheDocument();
+
+        // Click expands it.
+        await userEvent.click(trigger);
+
+        // Radix toggles aria-expanded + data-state (not a native `open`)...
+        await waitFor(async () => {
+            await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+            await expect(trigger).toHaveAttribute('data-state', 'open');
+        });
+
+        // ...and — the actual point of the accordion — the content is revealed. The
+        // "Edit cart" link rendered inside AccordionContent becomes accessible, proving
+        // the component shows its cart items, not merely that an attribute flipped.
+        await expect(await canvas.findByRole('link', { name: /edit cart/i })).toBeInTheDocument();
     },
 };

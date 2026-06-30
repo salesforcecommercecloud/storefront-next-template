@@ -144,7 +144,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            unstable_pattern: 'resource/api/client/:resource',
+            url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         describe('successful requests', () => {
@@ -282,7 +283,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: null as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
-                    unstable_pattern: 'resource/api/client/:resource',
+                    url: new URL('http://localhost/test'),
+                    pattern: 'resource/api/client/:resource',
                 });
 
                 const result = await loader(createLoaderArgsWithNullResource());
@@ -297,7 +299,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: undefined as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
-                    unstable_pattern: 'resource/api/client/:resource',
+                    url: new URL('http://localhost/test'),
+                    pattern: 'resource/api/client/:resource',
                 });
 
                 const result = await loader(createLoaderArgsWithUndefinedResource());
@@ -361,7 +364,8 @@ describe('Commerce SDK resource', () => {
                 params: { resource },
                 context: mockContextProvider,
                 request,
-                unstable_pattern: 'resource/api/client/:resource',
+                url: new URL(request.url),
+                pattern: 'resource/api/client/:resource',
             };
         };
 
@@ -526,7 +530,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource },
                     context: mockContextProvider,
                     request,
-                    unstable_pattern: 'resource/api/client/:resource',
+                    url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 } as never);
 
                 expect(result).toEqual({
@@ -559,7 +564,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource },
                     context: mockContextProvider,
                     request,
-                    unstable_pattern: 'resource/api/client/:resource',
+                    url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 } as never);
 
                 expect(result).toEqual({
@@ -679,7 +685,8 @@ describe('Commerce SDK resource', () => {
                         params: { resource: null as any },
                         context: mockContextProvider,
                         request,
-                        unstable_pattern: 'resource/api/client/:resource',
+                        url: new URL(request.url),
+                        pattern: 'resource/api/client/:resource',
                     };
                 };
 
@@ -702,7 +709,8 @@ describe('Commerce SDK resource', () => {
                         params: { resource: undefined as any },
                         context: mockContextProvider,
                         request,
-                        unstable_pattern: 'resource/api/client/:resource',
+                        url: new URL(request.url),
+                        pattern: 'resource/api/client/:resource',
                     };
                 };
 
@@ -793,7 +801,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            unstable_pattern: 'resource/api/client/:resource',
+            url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         it('should handle empty form data in action', async () => {
@@ -822,7 +831,8 @@ describe('Commerce SDK resource', () => {
                     params: { resource: encodedValidActionResource },
                     context: mockContextProvider,
                     request,
-                    unstable_pattern: 'resource/api/client/:resource',
+                    url: new URL(request.url),
+                    pattern: 'resource/api/client/:resource',
                 };
             };
 
@@ -955,7 +965,8 @@ describe('Commerce SDK resource', () => {
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
-            unstable_pattern: 'resource/api/client/:resource',
+            url: new URL('http://localhost/test'),
+            pattern: 'resource/api/client/:resource',
         });
 
         const createActionArgs = (resource: string, formData?: Record<string, string>) => {
@@ -969,7 +980,8 @@ describe('Commerce SDK resource', () => {
                 params: { resource },
                 context: mockContextProvider,
                 request,
-                unstable_pattern: 'resource/api/client/:resource',
+                url: new URL(request.url),
+                pattern: 'resource/api/client/:resource',
             };
         };
 
@@ -1208,5 +1220,15 @@ describe('Commerce SDK resource', () => {
                 expect(mockGetErrorMessage).toHaveBeenCalledWith(mockApiError);
             });
         });
+    });
+});
+
+describe('shouldRevalidate export', () => {
+    // The policy itself is covered by src/lib/revalidation/routes/api-client.test.ts. Here we only
+    // assert the route wires up that exact function, so the behavior isn't re-tested at the route.
+    it('re-exports the api-client revalidation policy', async () => {
+        const { shouldRevalidate } = await import('./resource.api.client.$resource');
+        const { shouldRevalidate: shouldRevalidatePolicy } = await import('@/lib/revalidation/routes/api-client');
+        expect(shouldRevalidate).toBe(shouldRevalidatePolicy);
     });
 });

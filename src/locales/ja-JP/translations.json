@@ -356,7 +356,7 @@
                 "minLength": "プロモーションは 2 文字以上で入力してください。"
             },
             "errors": {
-                "invalidCode": "無効なクーポンコードです",
+                "invalidCode": "クーポンコード「{{code}}」は無効です。",
                 "expiredCode": "このプロモーションコードの有効期限が切れています。",
                 "alreadyApplied": "このプロモーションコードはすでに適用されています。",
                 "notApplicable": "このプロモーションコードはお客様の買い物カゴには適用できません。",
@@ -1606,6 +1606,7 @@
         "failedToAddProductToCartError": "買い物カゴに商品を追加できませんでした:",
         "failedToAddProductToWishlistError": "ほしい物リストに商品を追加できませんでした:",
         "price": {
+            "unavailable": "価格情報がありません",
             "currentPriceFrom": "現在価格: {{price}} から",
             "currentPrice": "現在価格: {{price}}",
             "from": "{{price}} から",

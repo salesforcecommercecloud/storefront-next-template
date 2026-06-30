@@ -355,7 +355,7 @@
                 "minLength": "Kampanjkoden måste bestå av minst 2 tecken."
             },
             "errors": {
-                "invalidCode": "Ogiltig kupongkod",
+                "invalidCode": "Kupongkoden ”{{code}}” är ogiltig.",
                 "expiredCode": "Denna kampanjkod har löpt ut.",
                 "alreadyApplied": "Denna kampanjkod är redan tillämpad.",
                 "notApplicable": "Denna kampanjkod går inte att använda med din kundvagn.",
@@ -1544,6 +1544,7 @@
         "failedToAddProductToCartError": "Det gick inte att lägga till produkten i kundvagnen:",
         "failedToAddProductToWishlistError": "Det gick inte att lägga till produkten i önskelistan:",
         "price": {
+            "unavailable": "Pris ej tillgängligt",
             "currentPriceFrom": "Nuvarande pris från {{price}}",
             "currentPrice": "Nuvarande pris: {{price}}",
             "from": "Från {{price}}",

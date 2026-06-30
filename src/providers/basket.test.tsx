@@ -26,7 +26,6 @@ import BasketProvider, {
     useBasketReset,
     useBasketSnapshot,
     useBasketUpdater,
-    useMiniCart,
 } from './basket';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { BASKET_COOKIE_NAME } from '@/lib/basket/cookie';
@@ -96,6 +95,7 @@ describe('BasketProvider hooks', () => {
         basketId: 'basket-123',
         totalItemCount: 0,
         uniqueProductCount: 0,
+        lastModified: '',
     };
 
     beforeEach(() => {
@@ -742,6 +742,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-from-cookie',
                 totalItemCount: 5,
                 uniqueProductCount: 2,
+                lastModified: '',
             };
             writeBasketCookie(btoa(JSON.stringify(cookieSnapshot)));
 
@@ -790,6 +791,7 @@ describe('BasketProvider hooks', () => {
                         basketId: 'cookie-id-1',
                         totalItemCount: 1,
                         uniqueProductCount: 1,
+                        lastModified: '',
                     })
                 )
             );
@@ -808,6 +810,7 @@ describe('BasketProvider hooks', () => {
                         basketId: 'cookie-id-2',
                         totalItemCount: 4,
                         uniqueProductCount: 2,
+                        lastModified: '',
                     })
                 )
             );
@@ -889,6 +892,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-abc',
                 totalItemCount: 5,
                 uniqueProductCount: 2,
+                lastModified: '',
             });
         });
 
@@ -908,6 +912,7 @@ describe('BasketProvider hooks', () => {
                 basketId: '',
                 totalItemCount: 0,
                 uniqueProductCount: 0,
+                lastModified: '',
             });
         });
 
@@ -932,6 +937,7 @@ describe('BasketProvider hooks', () => {
                 basketId: 'basket-xyz',
                 totalItemCount: 0,
                 uniqueProductCount: 1,
+                lastModified: '',
             });
         });
 
@@ -1157,35 +1163,12 @@ describe('BasketProvider hooks', () => {
         });
     });
 
-    describe('useMiniCart', () => {
-        it('defaults miniCartOpen to false and toggles via setter', () => {
-            const { result } = renderHook(() => useMiniCart(), {
-                wrapper: wrapperWithProps({}),
-            });
-
-            expect(result.current.miniCartOpen).toBe(false);
-
-            act(() => {
-                result.current.setMiniCartOpen(true);
-            });
-
-            expect(result.current.miniCartOpen).toBe(true);
-        });
-
-        it('falls back to a noop setter and closed state without a provider', () => {
-            const { result } = renderHook(() => useMiniCart());
-
-            expect(result.current.miniCartOpen).toBe(false);
-            expect(() => result.current.setMiniCartOpen(true)).not.toThrow();
-            expect(result.current.miniCartOpen).toBe(false);
-        });
-    });
-
     describe('SSR', () => {
         const foreignCookieSnapshot: BasketSnapshot = {
             basketId: 'cookie-id-from-another-shopper',
             totalItemCount: 7,
             uniqueProductCount: 3,
+            lastModified: '',
         };
 
         const SnapshotProbe = () => {

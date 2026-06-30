@@ -90,7 +90,7 @@ describe('Account Overview page', () => {
         test('fetches the 5 most recent orders for the authenticated customer', async () => {
             const context = createTestContext();
             const args = createLoaderArgs<Route.LoaderArgs>(new Request('http://localhost/account/overview'), context, {
-                unstable_pattern: '/account/overview',
+                pattern: '/account/overview',
             });
 
             const result = loader(args);
@@ -110,7 +110,7 @@ describe('Account Overview page', () => {
             const context = createTestContext({ currency: 'USD' });
             const request = new Request('http://localhost/account/overview');
             const args = createLoaderArgs<Route.LoaderArgs>(request, context, {
-                unstable_pattern: '/account/overview',
+                pattern: '/account/overview',
             });
 
             const result = loader(args);

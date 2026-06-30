@@ -75,7 +75,7 @@ export default function PickupPreferences(): ReactElement {
     const preferences = isEditing ? editingPreferences : savedPreferences;
 
     return (
-        <Card className="rounded-none shadow-none">
+        <Card className="">
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <CardTitle className="text-lg">{t('storePreferences.pickupPreferences.heading')}</CardTitle>

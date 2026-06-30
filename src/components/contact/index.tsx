@@ -43,10 +43,10 @@ export default function Contact(): ReactElement {
                 duration: 5000,
                 unstyled: true,
                 classNames: {
-                    toast: 'flex w-full max-w-md items-center gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-lg',
+                    toast: 'flex w-full max-w-md items-center gap-3 rounded-ui border border-border bg-card p-4 text-card-foreground shadow-lg',
                     title: 'text-sm font-medium text-foreground',
                     actionButton:
-                        'inline-flex shrink-0 items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                        'inline-flex shrink-0 items-center justify-center rounded-ui border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
                 },
                 action: {
                     label: 'Close',
@@ -59,7 +59,7 @@ export default function Contact(): ReactElement {
     );
 
     return (
-        <Card className="max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12 rounded-none shadow-none">
+        <Card className="max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12">
             <div className="flex-1 p-6">
                 <div className="flex flex-col gap-1.5">
                     <Typography variant="h3" className="tracking-tight text-card-foreground">

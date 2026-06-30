@@ -25,7 +25,7 @@ vi.mock('react-router', async (importOriginal) => {
         createCookie: vi.fn(() => ({
             parse: vi.fn(),
         })),
-        unstable_createContext: vi.fn(),
+        createContext: vi.fn(),
     };
 });
 

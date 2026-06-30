@@ -16,6 +16,7 @@
 import { useEffect, useRef, Suspense, Fragment } from 'react';
 import { Await, useRouteLoaderData } from 'react-router';
 import type { loader as rootLoader } from '@/root';
+import { shouldRevalidate as shouldRevalidateProduct } from '@/lib/revalidation/routes/product';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';
@@ -31,7 +32,7 @@ import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import { CategoryBreadcrumbsSkeleton } from '@/components/category-breadcrumbs/skeleton';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ProductRecommendations from '@/components/product-recommendations';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/product/einstein-recommenders';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
@@ -213,21 +214,30 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         throw new Response('Product not found', { status: 404 });
     }
 
+    const masterProductPromise = (() => {
+        if (product.master?.masterId) {
+            return fetchProductById(context, product.master.masterId, {
+                ...(currency ? { currency } : {}),
+            });
+        }
+
+        return null;
+    })();
+
     // Build the deferred category promise. Category is optional context for the
     // breadcrumbs — failures degrade silently via the route-level <Await errorElement={null}>.
     const categoryPromise: Promise<ShopperProducts.schemas['Category'] | undefined> = (async () => {
         if (product.primaryCategoryId) {
             return fetchCategory(context, product.primaryCategoryId, 1);
         }
+
         // For variant products, try to get the master product's category.
-        if (product.master?.masterId) {
-            const masterProduct = await fetchProductById(context, product.master.masterId, {
-                ...(currency ? { currency } : {}),
-            });
-            if (masterProduct?.primaryCategoryId) {
-                return fetchCategory(context, masterProduct.primaryCategoryId, 1);
-            }
+        const masterProduct = await masterProductPromise;
+
+        if (masterProduct?.primaryCategoryId) {
+            return fetchCategory(context, masterProduct.primaryCategoryId, 1);
         }
+
         return undefined;
     })();
 
@@ -255,6 +265,16 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         }
     );
 
+    const pagePromise = (async () => {
+        const primaryCategoryId = product.primaryCategoryId ?? (await masterProductPromise)?.primaryCategoryId;
+
+        return fetchPageWithComponentData(args, {
+            aspectType: 'pdp',
+            productId: productLookupId,
+            ...(primaryCategoryId ? { categoryId: primaryCategoryId } : {}),
+        });
+    })();
+
     // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     // Await the summary started earlier (ran in parallel with fetchProductById).
     const reviewsSummary = await reviewsSummaryPromise;
@@ -269,13 +289,7 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
          * Fetch page data from Page Designer API with nested componentData promises.
          * Handle errors gracefully - return page with empty componentData if fetch failed.
          */
-        page: fetchPageWithComponentData(args, {
-            aspectType: 'pdp',
-            productId: productLookupId,
-            // Lets the manifest resolver fall back to a category-level PDP
-            // assignment when no page is assigned to this product directly.
-            ...(product.primaryCategoryId ? { categoryId: product.primaryCategoryId } : {}),
-        }),
+        page: pagePromise,
         pageKey: productId,
         pageUrl,
         productSchema: productSchemaPromise,
@@ -304,45 +318,10 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
     };
 }
 
-/**
- * Prevent loader from re-running on variant parameter changes to avoid skeleton
- * https://reactrouter.com/start/data/route-object#shouldrevalidate
- * we don't want the page to show skeleton when loading variant product after first initial load
- */
-export function shouldRevalidate({
-    currentUrl,
-    nextUrl,
-    defaultShouldRevalidate,
-}: {
-    currentUrl: string;
-    nextUrl: string;
-    defaultShouldRevalidate: boolean;
-}) {
-    const currentUrlObj = new URL(currentUrl);
-    const nextUrlObj = new URL(nextUrl);
-
-    // Revalidate if pathname changes (different product)
-    if (currentUrlObj.pathname !== nextUrlObj.pathname) {
-        return true;
-    }
-
-    // Revalidate if pid parameter changes (different variant product)
-    const currentPid = currentUrlObj.searchParams.get('pid');
-    const nextPid = nextUrlObj.searchParams.get('pid');
-    if (currentPid !== nextPid) {
-        return true;
-    }
-
-    // If defaultShouldRevalidate is true (e.g., from explicit revalidator.revalidate() call),
-    // allow it to proceed even if URL hasn't changed
-    // This allows store changes to trigger revalidation
-    if (defaultShouldRevalidate) {
-        return true;
-    }
-
-    // Don't revalidate for other search parameter changes (color, size, etc.)
-    return false;
-}
+// Gates both the navigation axis (skip client-only param changes like color/size) and the action axis (skip the
+// expensive loader re-run after cart/wishlist/account mutations that touch nothing the loader reads). The policy and
+// its denylist live in the shared module so the rationale is documented and unit-tested in one place.
+export const shouldRevalidate = shouldRevalidateProduct;
 
 function ProductContent({
     product,

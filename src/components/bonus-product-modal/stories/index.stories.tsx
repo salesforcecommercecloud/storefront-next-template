@@ -19,6 +19,7 @@ import { action } from 'storybook/actions';
 import { useState, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperProducts } from '@/scapi';
 
 import { BonusProductModal, type BonusDiscountSlot } from '../index';
@@ -174,7 +175,6 @@ function BonusProductModalWrapper(): ReactElement {
                 promotionId="BonusPromotionTies"
                 bonusDiscountLineItemId="7a5795b50cb1b228c805334cde"
                 bonusDiscountSlots={mockBonusDiscountSlots}
-                maxQuantity={3}
             />
         </>
     );
@@ -215,12 +215,16 @@ export const Default: Story = {
         await expect(openButton).toBeInTheDocument();
         await userEvent.click(openButton);
 
-        // Modal title — target the dialog title via its unique "of N selected"
-        // suffix since the product name also appears in the ProductInfo section.
+        // Modal title — target the dialog title via its selection-count suffix since the
+        // product name also appears in the ProductInfo section. Derive the count text from
+        // the resolved translation rather than hardcoding the canonical "0 of 3 selected"
+        // wording — verticals (e.g. cosmetic) override `selectionCount` to a compact "0/3" form.
         const documentBody = within(document.body);
+        const { t } = getTranslation();
+        const countText = t('cart:bonusProducts.selectionCount', { selected: 0, max: 3 }).trim();
         const modalTitle = await documentBody.findByRole(
             'heading',
-            { name: /striped silk tie.*0 of 3 selected/i },
+            { name: (name: string) => /striped silk tie/i.test(name) && name.includes(countText) },
             { timeout: 5000 }
         );
         await expect(modalTitle).toBeInTheDocument();

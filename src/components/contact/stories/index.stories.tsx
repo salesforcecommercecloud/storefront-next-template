@@ -31,11 +31,9 @@ const meta: Meta<typeof Contact> = {
         docs: {
             description: {
                 component: `
-Contact component with support details and a static contact form layout.
+Page-level Contact component used on the about-us / contact route. Two-column layout: localized support copy + phone link on the left, and a contact form (Full Name / Email / Topic / Message) on the right. Uses HTML5 \`required\` validation and the standard React Router \`<Form>\`. On successful submit, raises a Sonner toast and clears all fields.
 
-### Features:
-- Two-column layout with support text and form fields
-- HTML5 form validation
+Page-level coverage per WI Step 5 — the story renders the entire surface with form + sidebar, not isolated form controls.
                 `,
             },
         },
@@ -104,9 +102,15 @@ export const FormValidationAndSubmission: Story = {
 
         await userEvent.click(submitButton);
 
+        // Post-submission state (AC #5 / WI Step 6): form clears and the success toast appears.
         await expect(fullNameInput).toHaveValue('');
         await expect(emailInput).toHaveValue('');
         await expect(topicInput).toHaveValue('');
         await expect(messageInput).toHaveValue('');
+
+        // Sonner portals the toast to document.body, not into the canvas root.
+        // Use within(document.body) to find it.
+        const body = within(document.body);
+        await expect(await body.findByText(t('aboutUs:contact.toast.success'))).toBeInTheDocument();
     },
 };

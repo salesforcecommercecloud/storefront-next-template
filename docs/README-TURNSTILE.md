@@ -448,9 +448,9 @@ The outer key (e.g. `'production'`, `'staging'`) is purely organizational - the 
 {
   security: {
     turnstile: {
-      enabled: true,                // master switch
-      verification: { enabled: true }, // server-side verification toggle
-      mode: 'managed',              // 'managed' | 'non-interactive' | 'invisible'
+      enabled: true,                          // master switch
+      verification: { mode: 'enforce' },      // 'enforce' | 'log-only' | 'disabled'
+      mode: 'managed',                        // 'managed' | 'non-interactive' | 'invisible'
       sites: { /* see Site key resolution above */ },
     },
   },
@@ -459,20 +459,48 @@ The outer key (e.g. `'production'`, `'staging'`) is purely organizational - the 
 
 Each top-level flag can be overridden by env var via the `PUBLIC__` prefix (per the project's config system). For local development, the template's `.env.example` shows all options.
 
+### Verification mode
+
+`verification.mode` controls server-side enforcement:
+
+| Value | Behaviour |
+|---|---|
+| `'enforce'` | Full verification; blocks requests that fail (default when `TURNSTILE_VERIFICATION_ENABLED=true`). |
+| `'log-only'` | Full verification pipeline runs — siteverify is called, health signal is updated — but the result is only logged. No shopper is ever blocked. |
+| `'disabled'` | Verification is skipped entirely. Equivalent to `TURNSTILE_VERIFICATION_ENABLED=false`. |
+
+`mode` takes precedence over the legacy `enabled` boolean. When neither is set, `disabled` is assumed.
+
+### Safe rollout with log-only mode
+
+Use `log-only` to observe real traffic before committing to enforcement:
+
+1. Deploy with `PUBLIC__app__security__turnstile__verification__mode=log-only`
+2. Monitor logs — filter on `mode: log-only` and group by `would_block`:
+   ```
+   fields @timestamp, would_block, reason, action, siteKey
+   | filter mode = "log-only"
+   | stats count() by would_block, reason
+   ```
+3. Once the `would_block: true` rate is acceptably low, switch to `mode=enforce`.
+
+> **Cutover note:** During log-only mode, shoppers who passed verification receive a `cc-tv` session cookie (30-minute TTL). When you flip to `enforce`, any shoppers still holding that cookie bypass enforcement until it expires — a maximum 30-minute residual window after cutover. This is by design and self-heals without any action.
+
 ### Required environment variables
 
 | Variable | Purpose | Notes |
 |---|---|---|
-| `TURNSTILE_SECRET_KEYS` | JSON map of `siteKey → secretKey` for server verification | Server-only. Required if `verification.enabled` is true. |
-| `TURNSTILE_VERIFICATION_ENABLED` | Boolean toggle for server-side verification | Useful for staging environments where you want the widget to render but not gate requests. |
+| `TURNSTILE_SECRET_KEYS` | JSON map of `siteKey → secretKey` for server verification | Server-only. Required if verification mode is `enforce` or `log-only`. |
+| `PUBLIC__app__security__turnstile__verification__mode` | Verification mode | `enforce`, `log-only`, or `disabled`. Takes precedence over `TURNSTILE_VERIFICATION_ENABLED`. |
 | `PUBLIC__security__turnstile__enabled` | Master switch (client-visible) | When `false`, the widget never renders and `enforceTurnstile` returns `true`. |
 | `PUBLIC__security__turnstile__sites` | JSON site config | Same shape as `config.server.ts` `sites` field. |
-| `PUBLIC__security__turnstile__mode` | Mode override | One of `managed` / `non-interactive` / `invisible`. |
+| `PUBLIC__security__turnstile__mode` | Widget mode override | One of `managed` / `non-interactive` / `invisible`. |
 
-### Optional environment variables
+### Optional / deprecated environment variables
 
 | Variable | Default | Purpose |
 |---|---|---|
+| `TURNSTILE_VERIFICATION_ENABLED` | `false` | **Deprecated.** Use `PUBLIC__app__security__turnstile__verification__mode` instead. Maps `true` → `enforce`, `false` → `disabled`. |
 | `TURNSTILE_CDN_PROBE_URL` | `https://challenges.cloudflare.com/turnstile/v0/api.js` | Override the URL the CDN probe hits (useful for tests / staging). |
 
 ### Cloudflare test site keys (local development)

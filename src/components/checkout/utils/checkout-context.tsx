@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
     CHECKOUT_STEPS,
     CheckoutContext,
@@ -30,13 +30,26 @@ interface CheckoutProviderProps {
     children: ReactNode;
     customerProfile?: CustomerProfile;
     shippingDefaultSet: Promise<undefined>;
+    /**
+     * True when at least one delivery shipment in the basket has no valid, selectable shipping
+     * method. Threaded into the initial step computation so refreshing on an "invalid" shipping
+     * address keeps the shopper on the Shipping Address step instead of advancing them to an
+     * empty Shipping Methods list. See `hasValidShippingMethodForEveryShipment` in `checkout-utils`.
+     */
+    hasNoValidShippingMethods?: boolean;
 }
 
-export default function CheckoutProvider({ children, customerProfile, shippingDefaultSet }: CheckoutProviderProps) {
+export default function CheckoutProvider({
+    children,
+    customerProfile,
+    shippingDefaultSet,
+    hasNoValidShippingMethods = false,
+}: CheckoutProviderProps) {
     const basket = useBasket();
     const shipmentDistribution = getShipmentDistribution(basket);
     const [editingStep, setEditingStep] = useState<CheckoutStep | null>(null);
     const [currentStep, setCurrentStep] = useState<CheckoutStep>(CHECKOUT_STEPS.CONTACT_INFO);
+    const currentStepRef = useRef<CheckoutStep>(CHECKOUT_STEPS.CONTACT_INFO);
     const [isActiveCheckoutFlow, setIsActiveCheckoutFlow] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState<ShopperCustomers.schemas['CustomerAddress'][]>([]);
     // sfdc-extension-line SFDC_EXT_MULTISHIP
@@ -60,19 +73,43 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
 
     // Compute the initial step from basket or customer profile
     const computedStep = customerProfile
-        ? computeFinalStepForReturningCustomer(basket, customerProfile, shipmentDistribution) ||
-          computeStepFromBasket(basket, shipmentDistribution)
-        : computeStepFromBasket(basket, shipmentDistribution);
+        ? computeFinalStepForReturningCustomer(
+              basket,
+              customerProfile,
+              shipmentDistribution,
+              hasNoValidShippingMethods
+          ) || computeStepFromBasket(basket, shipmentDistribution, hasNoValidShippingMethods)
+        : computeStepFromBasket(basket, shipmentDistribution, hasNoValidShippingMethods);
+
+    // Keep currentStepRef in sync with currentStep state so effects that read the ref
+    // (without adding currentStep to their dep arrays) always see the latest value.
+    useEffect(() => {
+        currentStepRef.current = currentStep;
+    }, [currentStep]);
 
     // Update current step when basket changes, but only if not actively editing
     // For active checkout flow, only ignore basket-based step computation for guest users
     // Returning customers should still benefit from auto-population
     useEffect(() => {
         if (editingStep === null) {
-            // If we have a customer profile (returning customer), always use basket-based computation
-            // If no customer profile (guest user) and active checkout flow, use sequential progression
-            if (customerProfile || !isActiveCheckoutFlow) {
+            // Returning customers: always jump to computed step (profile auto-population).
+            if (customerProfile) {
+                currentStepRef.current = computedStep;
                 setCurrentStep(computedStep);
+            } else if (!isActiveCheckoutFlow) {
+                // Guests before isActiveCheckoutFlow: follow computedStep but never skip past
+                // SHIPPING_OPTIONS. SCAPI auto-sets a shipping method when processing an address
+                // submission, which would cause computedStep to jump to PAYMENT. We stop at
+                // SHIPPING_OPTIONS so the shopper can review and confirm their shipping choice.
+                // currentStepRef (not state) is read here to avoid adding currentStep to deps,
+                // which would turn this effect into a render loop.
+                const nextStep =
+                    currentStepRef.current < CHECKOUT_STEPS.SHIPPING_OPTIONS &&
+                    computedStep > CHECKOUT_STEPS.SHIPPING_OPTIONS
+                        ? CHECKOUT_STEPS.SHIPPING_OPTIONS
+                        : computedStep;
+                currentStepRef.current = nextStep;
+                setCurrentStep(nextStep);
             }
         }
     }, [computedStep, editingStep, isActiveCheckoutFlow, customerProfile]);
@@ -94,6 +131,7 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
     // Force shopper back to `step` despite what the basket would compute
     const pinToStep = (step: CheckoutStep) => {
         setEditingStep(step);
+        currentStepRef.current = step;
         setCurrentStep(step);
         if (!customerProfile) {
             setIsActiveCheckoutFlow(true);
@@ -111,9 +149,11 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
             // Returning customers should continue to benefit from auto-population
             setIsActiveCheckoutFlow(true);
             // manual advancement because effect and action advance are disabled for non-edit
+            currentStepRef.current = stepOrder[bestIndex];
             setCurrentStep(stepOrder[bestIndex]);
             setEditingStep(stepOrder[bestIndex]);
         } else {
+            currentStepRef.current = stepOrder[bestIndex];
             setCurrentStep(stepOrder[bestIndex]);
             setEditingStep(null);
         }

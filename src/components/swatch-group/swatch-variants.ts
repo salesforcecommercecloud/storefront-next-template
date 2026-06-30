@@ -27,8 +27,8 @@ const swatchVariants = cva(
                 auto: 'min-w-8 min-h-8',
             },
             shape: {
-                color: 'rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)]',
-                label: 'rounded-none px-3 py-1',
+                color: ' w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)]',
+                label: ' px-3 py-1',
             },
             selected: {
                 true: 'border-black',

@@ -37,6 +37,18 @@ vi.mock('@/lib/url', () => ({
     encodeBase64Url: vi.fn((str) => btoa(str)),
 }));
 
+// Mock the fetcher registry so we can assert the registration lifecycle. `createFetcherRegistration(key)` returns a
+// handle whose `register(...)` records the fetcher's `load` lazily and whose `unregister` tears the entry down.
+const mockRegister = vi.fn();
+const mockUnregister = vi.fn();
+const mockCreateFetcherRegistration = vi.fn((_key: string) => ({
+    register: mockRegister,
+    unregister: mockUnregister,
+}));
+vi.mock('@/lib/scapi/fetcher-registry', () => ({
+    createFetcherRegistration: (key: string) => mockCreateFetcherRegistration(key),
+}));
+
 describe('useScapiFetcher', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -431,6 +443,99 @@ describe('useScapiFetcher', () => {
             // Both should return promises
             expect(result.current.load()).toBeInstanceOf(Promise);
             expect(result.current.load()).toBeInstanceOf(Promise);
+        });
+    });
+
+    describe('fetcher registry integration', () => {
+        const customerResourceKey = btoa(
+            JSON.stringify(['shopperCustomers', 'getCustomer', { params: { path: { customerId: 'test' } } }])
+        );
+
+        it('opens a registration handle keyed by the resource on mount', () => {
+            renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'getCustomer', {
+                    params: { path: { customerId: 'test' } },
+                })
+            );
+
+            expect(mockCreateFetcherRegistration).toHaveBeenCalledTimes(1);
+            // The registry key must equal the encoded resource (the useFetcher key).
+            expect(mockCreateFetcherRegistration).toHaveBeenCalledWith(customerResourceKey);
+        });
+
+        it('does not record any invocation until load() is called', () => {
+            renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'getCustomer', { params: { path: { customerId: 'test' } } })
+            );
+
+            // Opening the handle is lazy — a mounted-but-never-loaded fetcher records nothing.
+            expect(mockRegister).not.toHaveBeenCalled();
+        });
+
+        it('records the load invocation against the resource URL when load() runs', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'getCustomer', { params: { path: { customerId: 'test' } } })
+            );
+
+            act(() => {
+                void result.current.load();
+            });
+
+            expect(mockRegister).toHaveBeenCalledTimes(1);
+            const [method, href] = mockRegister.mock.calls[0];
+            // The recorded method is the underlying react-router fetcher.load, replayed with the resource URL.
+            expect(method).toBe(mockFetcher.load);
+            expect(href).toBe(`/resource/api/client/${customerResourceKey}`);
+        });
+
+        it('never registers anything for submit() — a submit is a write and must not be replayable', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'updateCustomer', {
+                    params: { path: { organizationId: 'org-123', customerId: 'test' } },
+                    body: {},
+                })
+            );
+
+            act(() => {
+                void result.current.submit({ email: 'new@example.com' });
+            });
+
+            // The mutation still fires, but it leaves no registry entry, so a later revalidation pass can never
+            // re-issue it.
+            expect(mockFetcher.submit).toHaveBeenCalledTimes(1);
+            expect(mockRegister).not.toHaveBeenCalled();
+        });
+
+        it('unregisters on unmount', () => {
+            const { unmount } = renderHook(() =>
+                useScapiFetcher('shopperCustomers', 'getCustomer', { params: { path: { customerId: 'test' } } })
+            );
+
+            expect(mockUnregister).not.toHaveBeenCalled();
+            unmount();
+            expect(mockUnregister).toHaveBeenCalledTimes(1);
+        });
+
+        it('unregisters the prior handle and opens a fresh one when the resource changes', () => {
+            const { rerender } = renderHook(
+                ({ id }) =>
+                    useScapiFetcher('shopperCustomers', 'getCustomer', {
+                        params: { path: { customerId: id } },
+                    }),
+                { initialProps: { id: 'test' } }
+            );
+
+            expect(mockCreateFetcherRegistration).toHaveBeenCalledTimes(1);
+            expect(mockUnregister).not.toHaveBeenCalled();
+
+            // A new resource key yields a new handle; the effect cleanup tears the previous one down first.
+            rerender({ id: 'other' });
+
+            expect(mockUnregister).toHaveBeenCalledTimes(1);
+            expect(mockCreateFetcherRegistration).toHaveBeenCalledTimes(2);
+            expect(mockCreateFetcherRegistration).toHaveBeenLastCalledWith(
+                btoa(JSON.stringify(['shopperCustomers', 'getCustomer', { params: { path: { customerId: 'other' } } }]))
+            );
         });
     });
 });

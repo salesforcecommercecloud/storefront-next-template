@@ -16,12 +16,6 @@
 
 Feature('Storefront Checkout Tests').tag('@core').tag('@checkout');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, addToCartFlow, apiCartSetupFlow, apiLoginFlow, registeredShopperSetupFlow, storefrontPage } =
     inject();
 import { expect } from 'chai';
@@ -31,6 +25,13 @@ import {
     TEST_PRODUCT_CATEGORIES,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
+
+// The deployed e2e target has no login-preferences entry, so the real BFF
+// returns `requiresLogin: true` on email blur and pops the login modal.
+// Stub every scenario in this file with the 'guest' branch so the contact
+// step stays open and checkout can proceed.
+installLoginPrefsStubHooks();
 
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
@@ -39,13 +40,7 @@ After(async (test: unknown) => {
     }
 });
 
-// Additional context (W-22677587): the e2e MRT target's RefArchGlobal site
-// has no `RefArchGlobal-login-preferences` data-store entry, so login
-// preferences middleware falls back to `emailVerificationEnabled: false`. With
-// that fallback, the checkout-login design routes any email-blur to the
-// standard login modal, which blocks the "Continue to Shipping" click for a
-// guest. Re-enable once the data-store entry is seeded on the e2e target.
-scenarioFn('Guest shopper should complete checkout and place order', async () => {
+Scenario('Guest shopper should complete checkout and place order', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -64,7 +59,7 @@ scenarioFn('Guest shopper should complete checkout and place order', async () =>
     .tag('@place-order')
     .tag('@smoke');
 
-scenarioFn('Registered shopper should complete checkout', async () => {
+Scenario('Registered shopper should complete checkout', async () => {
     await apiLoginFlow.executeWithEnsuredCredentials();
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -88,7 +83,7 @@ scenarioFn('Registered shopper should complete checkout', async () => {
     .tag('@place-order')
     .tag('@smoke');
 
-scenarioFn('Registered shopper with full profile should place order with prefilled checkout', async () => {
+Scenario('Registered shopper with full profile should place order with prefilled checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -105,7 +100,7 @@ scenarioFn('Registered shopper with full profile should place order with prefill
     .tag('@place-order')
     .tag('@prefilled-checkout');
 
-scenarioFn('Basket context syncs when navigating to checkout', async () => {
+Scenario('Basket context syncs when navigating to checkout', async () => {
     const productInfo = await addToCartFlow.execute(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
@@ -135,7 +130,7 @@ scenarioFn('Basket context syncs when navigating to checkout', async () => {
  * This validates the acceptance criteria: when checking "Use a different billing address",
  * billing address fields should be pre-filled with the shipping address as a starting point.
  */
-scenarioFn(
+Scenario(
     'Guest shopper billing address fields are pre-filled with shipping address when checking "Use a different billing address"',
     async () => {
         const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
@@ -175,7 +170,8 @@ scenarioFn(
     }
 )
     .tag('@billing-address')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
 /**
  * Billing Address Can Be Filled After Checking "Use a Different Billing Address"
@@ -192,7 +188,7 @@ scenarioFn(
  * This validates that after checking "Use a different billing address", the user can
  * fill a custom billing address and complete checkout successfully.
  */
-scenarioFn('Guest shopper can fill custom billing address and place order', async () => {
+Scenario('Guest shopper can fill custom billing address and place order', async () => {
     const customBillingAddress = {
         firstName: 'Jane',
         lastName: 'Smith',
@@ -233,7 +229,8 @@ scenarioFn('Guest shopper can fill custom billing address and place order', asyn
     .tag('@billing-address')
     .tag('@custom-billing')
     .tag('@guest-checkout')
-    .tag('@place-order');
+    .tag('@place-order')
+    .tag('@smoke');
 
 /**
  * Payment Validation: Empty Card Fields Block Place Order
@@ -249,7 +246,7 @@ scenarioFn('Guest shopper can fill custom billing address and place order', asyn
  * This validates that clicking Place Order with empty payment fields does not
  * silently succeed — the shopper must see inline validation errors.
  */
-scenarioFn('Place order is blocked with validation errors when payment fields are empty', async () => {
+Scenario('Place order is blocked with validation errors when payment fields are empty', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
     checkoutPage.validatePageLoaded();
@@ -268,4 +265,5 @@ scenarioFn('Place order is blocked with validation errors when payment fields ar
     expect(currentUrl, 'Should NOT have redirected to order confirmation').to.not.include('/order-confirmation');
 })
     .tag('@payment-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');

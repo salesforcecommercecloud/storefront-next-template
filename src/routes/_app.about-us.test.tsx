@@ -454,9 +454,10 @@ describe('AboutUs', () => {
             mockContext = createTestContext();
             baseLoaderArgs = {
                 request: new Request('http://localhost/about-us'),
+                url: new URL('http://localhost/about-us'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
-                unstable_pattern: '/about-us',
+                pattern: '/about-us',
             };
         });
 

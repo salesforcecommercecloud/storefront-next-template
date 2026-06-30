@@ -95,6 +95,41 @@ describe('fetchPromotionsForBasket', () => {
         expect(calledIds).toEqual(['promo-1', 'promo-2']);
     });
 
+    test('collects promotion IDs from bonusDiscountLineItems (bonus-only basket)', async () => {
+        const context = createTestContext();
+        const items = [{ itemId: 'i1', productId: 'p1', quantity: 1 }] as ShopperBasketsV2.schemas['ProductItem'][];
+        const bonusItems = [
+            { id: 'b1', promotionId: 'bonus-promo' },
+        ] as ShopperBasketsV2.schemas['BonusDiscountLineItem'][];
+        vi.mocked(fetchPromotionsByIds).mockResolvedValue([
+            { id: 'bonus-promo', name: 'Bonus Promo', calloutMsg: 'Buy one, get two' } as any,
+        ]);
+
+        const result = await fetchPromotionsForBasket(context, items, bonusItems);
+
+        expect(vi.mocked(fetchPromotionsByIds).mock.calls[0][1]).toEqual(['bonus-promo']);
+        expect(result).toEqual({
+            'bonus-promo': { id: 'bonus-promo', name: 'Bonus Promo', calloutMsg: 'Buy one, get two' },
+        });
+    });
+
+    test('deduplicates promotion IDs shared between priceAdjustments and bonusDiscountLineItems', async () => {
+        const context = createTestContext();
+        const items = [
+            { itemId: 'i1', productId: 'p1', quantity: 1, priceAdjustments: [{ promotionId: 'promo-1' }] },
+        ] as unknown as ShopperBasketsV2.schemas['ProductItem'][];
+        const bonusItems = [
+            { id: 'b1', promotionId: 'promo-1' },
+            { id: 'b2', promotionId: 'bonus-promo' },
+        ] as ShopperBasketsV2.schemas['BonusDiscountLineItem'][];
+        vi.mocked(fetchPromotionsByIds).mockResolvedValue([]);
+
+        await fetchPromotionsForBasket(context, items, bonusItems);
+
+        const calledIds = vi.mocked(fetchPromotionsByIds).mock.calls[0][1].slice().sort();
+        expect(calledIds).toEqual(['bonus-promo', 'promo-1']);
+    });
+
     test('propagates NormalizedApiError when fetchPromotionsByIds rejects', async () => {
         const context = createTestContext();
         const items = [

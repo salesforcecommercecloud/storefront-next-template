@@ -26,7 +26,10 @@ import { basketWithOneItem, inBasketProductDetails } from '@/components/__mocks_
 // Transform array of products into Record<productId, product> format
 // expected by useMiniCartData hook
 const mockProductsById = inBasketProductDetails.data.reduce(
-    (acc: Record<string, (typeof inBasketProductDetails.data)[0]>, product: (typeof inBasketProductDetails.data)[0]) => {
+    (
+        acc: Record<string, (typeof inBasketProductDetails.data)[0]>,
+        product: (typeof inBasketProductDetails.data)[0]
+    ) => {
         acc[product.id] = product;
         return acc;
     },
@@ -59,11 +62,17 @@ export function StoryTestWrapper({
 
     const content = (
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={siteWithAlias} locale={locale} language={site.defaultLocale} currency={site.defaultCurrency}>
+            <SiteProvider
+                site={siteWithAlias}
+                locale={locale}
+                language={site.defaultLocale}
+                currency={site.defaultCurrency}>
                 <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
                     <BasketProvider basket={undefined}>
                         <StoreLocatorProvider>
-                            <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
+                            <CheckoutOneClickProvider
+                                customerProfile={undefined}
+                                shippingDefaultSet={Promise.resolve(undefined)}>
                                 {children}
                             </CheckoutOneClickProvider>
                         </StoreLocatorProvider>
@@ -99,4 +108,3 @@ export function StoryTestWrapper({
 
     return <RouterProvider router={router} />;
 }
-

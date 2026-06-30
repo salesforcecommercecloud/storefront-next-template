@@ -30,12 +30,13 @@
         "nextImage": "Next image",
         "productGrid": {
             "loadFailed": "Unable to load additional products."
-        }
+        },
+        "quickCategoryFilters": "Quick category filters"
     },
     "search": {
         "results": "Search Results for",
         "shopperAgent": {
-            "title": "Shop with your Shopper Agent",
+            "title": "Ask Shopper Agent",
             "description": "I can help you find the perfect piece for your space. Shop with me."
         },
         "suggestions": {
@@ -135,9 +136,8 @@
         "redirecting": "Signing you in...",
         "otpModalTitle": "Enter Verification Code",
         "otpModalDescription": "We've sent a {{otpLength}}-digit code to {{email}}",
-        "otpRequired": "Verification code is required",
-        "otpInvalidFormat": "Please enter a valid {{otpLength}}-digit code",
         "verifying": "Verifying...",
+        "verify": "Verify",
         "checkoutAsGuest": "Checkout as Guest",
         "resendCode": "Resend Code",
         "resendCodeTimer": "Resend in {{timer}}s",
@@ -270,7 +270,8 @@
             "stockNotAvailable": "Insufficient stock for one or more items in your cart.",
             "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
-            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address."
+            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
+            "placeOrderFailed": "Failed to finalize order. Try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -368,7 +369,7 @@
                 "minLength": "Promo must be at least 2 characters long."
             },
             "errors": {
-                "invalidCode": "Invalid coupon code",
+                "invalidCode": "Coupon code '{{code}}' is invalid.",
                 "expiredCode": "This promo code has expired.",
                 "alreadyApplied": "This promo code is already applied.",
                 "notApplicable": "This promo code isn't applicable to your cart",
@@ -460,8 +461,7 @@
             "lookupFallbackMessage": "Customer lookup failed. Continuing as guest.",
             "saveError": "Failed to save contact information",
             "sessionExpired": "Session expired. Sign in again.",
-            "verificationFailed": "We couldn't verify your information. Please try again.",
-            "verificationRefreshed": "Verification timed out. We've refreshed it - please try again."
+            "verificationFailed": "We couldn't verify your information. Please try again."
         },
         "addressModal": {
             "title": "Add New Address",
@@ -598,7 +598,7 @@
             "billingCountryRequired": "Country is required"
         },
         "expressPayments": {
-            "separator": "Or",
+            "separator": "or continue below",
             "venmoUnavailable": "Venmo is not available on this device.",
             "applePayLabel": "Apple Pay",
             "googlePayLabel": "Google Pay",
@@ -642,6 +642,9 @@
             "confirmationEmailSent": "We've sent a confirmation email to {{email}}",
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
+            "orderPlacedDetailsUnavailable": "You placed an order",
+            "orderPlacedDetailsUnavailableDescription": "You placed an order, but we can't load the full details right now. Check your email for confirmation. If you don't receive an email, contact Salesforce Customer Support.",
+            "orderNumberLabel": "Order number: {{orderNo}}",
             "orderNumberRequired": "Order number is required",
             "sections": {
                 "orderSummary": "Order Summary",
@@ -751,6 +754,14 @@
         "title": "Account Details",
         "subtitle": "Manage your personal information",
         "myAccount": "My Account",
+        "meta": {
+            "wishlistTitle": "Wishlist",
+            "paymentMethodsTitle": "Payment Methods",
+            "addressesTitle": "Addresses",
+            "orderHistoryTitle": "Order History",
+            "orderDetailsTitle": "Order Details",
+            "storePreferencesTitle": "Store Preferences"
+        },
         "navigation": {
             "overview": "Overview",
             "accountDetails": "Account Details",
@@ -1780,6 +1791,7 @@
         "failedToAddProductToCartError": "Failed to add product to cart:",
         "failedToAddProductToWishlistError": "Failed to add product to wishlist:",
         "price": {
+            "unavailable": "Price unavailable",
             "currentPriceFrom": "Current price from {{price}}",
             "currentPrice": "Current price: {{price}}",
             "from": "From {{price}}",

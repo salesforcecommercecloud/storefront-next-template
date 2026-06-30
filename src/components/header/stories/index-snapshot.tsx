@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import type { ReactNode } from 'react';
 
 type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
 type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
@@ -32,6 +33,7 @@ vi.mock('react-router', () => ({
     createCookie: vi.fn().mockImplementation((name) => ({ name, parse: vi.fn(), serialize: vi.fn() })),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
+    useMatches: () => [{ id: 'root', pathname: '/', params: {}, handle: {} }],
 
     useNavigate: () => () => {},
     useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
@@ -47,6 +49,7 @@ vi.mock('react-router', () => ({
         navigate: vi.fn(),
         state: { location: { pathname: '/', search: '', hash: '', state: null } },
     })),
+    Await: ({ children }: { resolve: Promise<unknown>; children: (data: unknown) => ReactNode }) => children([]),
     Link: (props: MockLinkProps) => {
         const { to, href, children, ...rest } = props ?? {};
         return (
@@ -55,6 +58,9 @@ vi.mock('react-router', () => ({
             </a>
         );
     },
+    // Synthesize Await's resolved value so the snapshot captures the
+    // empty-state baseline instead of the suspended fallback.
+    Await: ({ children }: { resolve: Promise<unknown>; children: (data: unknown) => ReactNode }) => children([]),
 }));
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
@@ -105,9 +111,7 @@ afterEach(() => {
 });
 
 describe('Header stories snapshot', () => {
-    const snapshotStories = Object.entries(composed).filter(
-        ([, Story]) => Story?.parameters?.snapshot !== false
-    );
+    const snapshotStories = Object.entries(composed).filter(([, Story]) => Story?.parameters?.snapshot !== false);
 
     if (snapshotStories.length === 0) {
         // Every story opted out (e.g., they mount a Suspense/Await tree the harness's

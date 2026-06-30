@@ -20,10 +20,10 @@ import type { PropsWithChildren } from 'react';
 import CartBadge from './cart-badge';
 import { useBasketSnapshot } from '@/providers/basket';
 import { useMiniCartDataLoader } from '@/hooks/use-mini-cart-data';
+import { setMiniCartOpen } from '@/hooks/mini-cart-store';
 
 vi.mock('@/providers/basket', () => ({
     useBasketSnapshot: vi.fn(),
-    useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
 }));
 
 vi.mock('@/hooks/use-mini-cart-data', () => ({
@@ -49,6 +49,9 @@ describe('CartBadge', () => {
         mockUseBasketSnapshot.mockReset();
         loadMiniCartData.mockReset();
         mockUseMiniCartDataLoader.mockReturnValue(loadMiniCartData);
+        // The mini-cart store is module-scoped shared state and the click handler mutates it; reset so an open state
+        // can't leak from one case into the next.
+        setMiniCartOpen(false);
     });
 
     it('renders a badge with the snapshot count', () => {
@@ -56,6 +59,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 2,
             uniqueProductCount: 2,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -78,6 +82,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -89,11 +94,29 @@ describe('CartBadge', () => {
         expect(screen.getByRole('button', { name: 'My Cart (1)' })).toBeInTheDocument();
     });
 
+    it('mounts the cart sheet when the store opens externally without a prior click', () => {
+        // Add-to-cart opens the flyout via the mini-cart store, not via the badge click. The badge must lazy-mount the
+        // sheet when it observes the store already open (the `miniCartOpen && !clicked` branch), so the panel appears
+        // without the shopper ever clicking the cart icon.
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+            lastModified: '',
+        });
+        setMiniCartOpen(true);
+
+        render(<CartBadge />);
+
+        expect(screen.getByTestId('cart-sheet')).toBeInTheDocument();
+    });
+
     it('triggers prefetch on hover without opening the cart sheet', async () => {
         mockUseBasketSnapshot.mockReturnValue({
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -110,6 +133,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -127,6 +151,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 0,
             uniqueProductCount: 0,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -155,6 +180,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);
@@ -178,6 +204,7 @@ describe('CartBadge', () => {
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
+            lastModified: '',
         });
 
         render(<CartBadge />);

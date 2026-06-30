@@ -75,7 +75,7 @@ export default function AddressCard({
     return (
         <Card
             data-testid="address-card"
-            className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'} rounded-none shadow-none`}>
+            className={`gap-0 py-4 relative ${isPreferred ? '[--ui-border-width:2px] border-primary' : ''}`}>
             <CardContent className="px-6 pt-4">
                 <AddressDisplay address={address} showName={true} isPreferred={isPreferred} />
             </CardContent>
@@ -117,7 +117,7 @@ export default function AddressCard({
             )}
             {/* Loading Spinner Overlay */}
             {isLoading && (
-                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center rounded-none">
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center">
                     <Spinner size="lg" />
                 </div>
             )}

@@ -360,7 +360,7 @@
                 "minLength": "Promo musi zawierać co najmniej 2 znaki."
             },
             "errors": {
-                "invalidCode": "Nieważny kod kuponu",
+                "invalidCode": "Kod kuponu „{{code}}” jest nieważny.",
                 "expiredCode": "Ten kod promocyjny wygasł.",
                 "alreadyApplied": "Ten kod promocyjny został już zastosowany.",
                 "notApplicable": "Ten kod promocyjny nie ma zastosowania do Twojego koszyka",
@@ -1580,6 +1580,7 @@
         "failedToAddProductToCartError": "Nie udało się dodać produktu do koszyka:",
         "failedToAddProductToWishlistError": "Nie udało się dodać produktu do listy życzeń:",
         "price": {
+            "unavailable": "Cena niedostępna",
             "currentPriceFrom": "Bieżąca cena od {{price}}",
             "currentPrice": "Bieżąca cena: {{price}}",
             "from": "Od {{price}}",

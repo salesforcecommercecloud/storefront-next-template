@@ -82,9 +82,10 @@ const mockContext = { get: vi.fn(), set: vi.fn() } as any;
 function createArgs(formFields: Record<string, string>): ActionFunctionArgs {
     return {
         request: createRequest(formFields),
+        url: new URL('http://localhost/action/post-order-register'),
         params: {},
         context: mockContext,
-        unstable_pattern: 'action/post-order-register',
+        pattern: 'action/post-order-register',
     };
 }
 

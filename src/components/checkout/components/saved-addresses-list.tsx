@@ -114,7 +114,7 @@ export function SavedAddressesList({
                                 key={addr.id}
                                 className={cn(
                                     'group flex items-start gap-2 transition-all duration-200',
-                                    isSelected ? 'border border-primary p-4' : 'gap-3'
+                                    isSelected ? 'rounded-ui border border-primary p-4' : 'gap-3'
                                 )}>
                                 <RadioGroupItem
                                     value={addr.id}

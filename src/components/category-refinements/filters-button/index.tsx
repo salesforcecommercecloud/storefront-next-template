@@ -66,7 +66,7 @@ export default function FiltersButton({
             {hasSelectedFilters && (
                 <Badge
                     variant="outline"
-                    className="ml-2 min-w-5 px-1.5 rounded-none border-0 bg-background text-foreground"
+                    className="ml-2 min-w-5 px-1.5 border-0 bg-background text-foreground"
                     aria-hidden>
                     {normalizedSelectedFiltersCount}
                 </Badge>

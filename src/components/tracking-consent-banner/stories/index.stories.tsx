@@ -45,7 +45,7 @@ function withTrackingConsentPosition(position: 'bottom-left' | 'bottom-right' | 
 }
 
 const meta: Meta<typeof TrackingConsentBanner> = {
-    title: 'Tracking Consent Banner',
+    title: 'COMMON/Tracking Consent Banner',
     component: TrackingConsentBanner,
     parameters: {
         layout: 'fullscreen',

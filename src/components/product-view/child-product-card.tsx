@@ -67,6 +67,12 @@ interface ChildProductCardProps {
      *   route revalidation on every click.
      */
     selectionSource?: 'url' | 'local';
+    /**
+     * True when the parent ChildProducts is in edit mode (cart-edit modal). In edit mode the
+     * per-child price gate is bypassed so a child whose catalog price went missing for the active
+     * currency doesn't block the parent's Update button via `hasUnorderableChildProducts`.
+     */
+    isEditMode?: boolean;
 }
 
 /**
@@ -114,6 +120,7 @@ export default function ChildProductCard({
     onSelectionChange,
     onOrderabilityChange,
     selectionSource = 'url',
+    isEditMode = false,
 }: ChildProductCardProps): ReactElement {
     const { t } = useTranslation('product');
     const isParentProductASet = isProductSet(parentProduct);
@@ -156,6 +163,12 @@ export default function ChildProductCard({
         product,
         isChildProduct: true,
         currentVariant,
+        // Set children are added as individual lines at their own price, so they normally must have
+        // one — except in edit mode, where the line is already in the basket and shouldn't be
+        // blocked by a now-missing catalog price (mirrors the hook's itemId bypass for variants).
+        // Bundle children are charged at the parent bundle price, so don't block them on a missing
+        // child price — the bundle-level gate checks the parent's price instead.
+        allowMissingPrice: !isParentProductASet || isEditMode,
     });
 
     const variationAttributes = useVariationAttributes({
@@ -248,7 +261,7 @@ export default function ChildProductCard({
     }, [canAddChildToCart, product.id, onOrderabilityChange, t]);
 
     return (
-        <Card className="h-full rounded-none shadow-none" data-testid="child-product">
+        <Card className="h-full" data-testid="child-product">
             <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold text-card-foreground tracking-tight">{product?.name}</CardTitle>
                 <ProductPrice
@@ -257,6 +270,11 @@ export default function ChildProductCard({
                     currency={currency}
                     labelForA11y={product?.name}
                     quantity={quantity}
+                    // Match the purchasability gate above so display and gate apply the same rule:
+                    // bundle children are charged at the parent price, and set children in edit
+                    // mode (an in-basket line) shouldn't be flagged as "Price unavailable" if the
+                    // catalog price has since gone missing for the active currency.
+                    allowMissingPrice={!isParentProductASet || isEditMode}
                     currentPriceProps={{
                         className: 'text-lg font-bold text-card-foreground tracking-tight',
                     }}
@@ -285,7 +303,8 @@ export default function ChildProductCard({
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
                         const content = image ? (
                             <div
-                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
+                                data-slot="swatch-dot"
+                                className="w-full h-full bg-cover bg-center bg-no-repeat"
                                 style={{ backgroundImage: `url(${image.link})` }}
                                 aria-label={image.alt || valueName}
                             />

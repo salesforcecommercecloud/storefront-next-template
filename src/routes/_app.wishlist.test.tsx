@@ -15,9 +15,8 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { loader, shouldRevalidate } from './_app.wishlist';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
-import { resourceRoutes } from '@/route-paths';
+import { loader } from './_app.wishlist';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 
 // SCAPI clients are exercised by loadWishlistPageData; mock them so the loader
 // path can run without hitting the network.
@@ -107,8 +106,9 @@ describe('_app.wishlist loader', () => {
         const thrown = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         }).then(
             () => {
                 throw new Error('Loader should have thrown a redirect Response');
@@ -139,8 +139,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();
@@ -178,8 +179,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toEqual(mockWishlist);
@@ -199,8 +201,9 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();
@@ -220,47 +223,15 @@ describe('_app.wishlist loader', () => {
         const result = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
+            url: new URL('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
-            unstable_pattern: UNSTABLE_PATTERN,
+            pattern: ROUTE_PATTERN,
         });
 
         expect(result.wishlist).toBeNull();
         expect(result.items).toEqual([]);
         await expect(result.productsByProductId).resolves.toEqual({});
         expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
-    });
-});
-
-describe('_app.wishlist shouldRevalidate', () => {
-    // shouldRevalidate only reads `formAction` and `defaultShouldRevalidate` from its arg;
-    // build a typed fixture so each test asserts intent rather than padding the call site.
-    type ShouldRevalidateArgs = Parameters<typeof shouldRevalidate>[0];
-    const buildArgs = (overrides: Partial<ShouldRevalidateArgs>): ShouldRevalidateArgs =>
-        ({
-            currentUrl: new URL('http://localhost/wishlist'),
-            nextUrl: new URL('http://localhost/wishlist'),
-            defaultShouldRevalidate: true,
-            ...overrides,
-        }) as ShouldRevalidateArgs;
-
-    test('returns false for wishlist-remove actions', () => {
-        expect(shouldRevalidate(buildArgs({ formAction: resourceRoutes.wishlistRemove }))).toBe(false);
-    });
-
-    test('uses default behavior for non-wishlist-remove actions', () => {
-        expect(
-            shouldRevalidate(buildArgs({ formAction: resourceRoutes.cartItemAdd, defaultShouldRevalidate: true }))
-        ).toBe(true);
-    });
-
-    test('uses default behavior when formAction is undefined', () => {
-        expect(shouldRevalidate(buildArgs({ formAction: undefined, defaultShouldRevalidate: false }))).toBe(false);
-    });
-
-    test('returns false when defaultShouldRevalidate is false but action is wishlist-remove', () => {
-        expect(
-            shouldRevalidate(buildArgs({ formAction: resourceRoutes.wishlistRemove, defaultShouldRevalidate: false }))
-        ).toBe(false);
     });
 });
 

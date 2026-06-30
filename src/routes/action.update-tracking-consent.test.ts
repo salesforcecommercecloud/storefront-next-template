@@ -74,9 +74,10 @@ describe('action.update-tracking-consent', () => {
                 method: 'POST',
                 body: formData,
             }),
+            url: new URL('http://localhost/action/update-tracking-consent'),
             params: {},
             context: mockContextProvider,
-            unstable_pattern: '/action/update-tracking-consent',
+            pattern: '/action/update-tracking-consent',
         };
     };
 

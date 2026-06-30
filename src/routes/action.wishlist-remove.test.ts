@@ -131,7 +131,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const result = await action(args);
@@ -147,7 +148,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             // When both itemId and productId are missing, Error is thrown and caught
@@ -187,7 +189,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -230,7 +233,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -280,7 +284,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -336,7 +341,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -397,7 +403,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -433,7 +440,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -462,7 +470,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -484,7 +493,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);
@@ -515,7 +525,8 @@ describe('action.wishlist-remove', () => {
                 request,
                 context: mockContext,
                 params: {},
-                unstable_pattern: 'action/wishlist-remove',
+                url: new URL(request.url),
+                pattern: 'action/wishlist-remove',
             };
 
             const response = await action(args);

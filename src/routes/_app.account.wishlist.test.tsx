@@ -19,8 +19,7 @@ import { render, screen } from '@testing-library/react';
 import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { loader } from './_app.account.wishlist';
 import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
-import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
-import { resourceRoutes } from '@/route-paths';
+import { createTestContext, ROUTE_PATTERN } from '@/lib/test-utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
@@ -603,8 +602,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toBeNull();
@@ -625,8 +625,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toBeNull();
@@ -657,8 +658,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toEqual(mockWishlist);
@@ -701,8 +703,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toEqual(mockWishlist);
@@ -731,8 +734,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toBeNull();
@@ -752,8 +756,9 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toBeNull();
@@ -768,8 +773,9 @@ describe('account.wishlist loaders', () => {
                 loader({
                     context: mockContext,
                     request: new Request('http://localhost/account/wishlist'),
+                    url: new URL('http://localhost/account/wishlist'),
                     params: { siteId: 'test-site', localeId: 'en-US' },
-                    unstable_pattern: UNSTABLE_PATTERN,
+                    pattern: ROUTE_PATTERN,
                 })
             ).rejects.toThrow();
         });
@@ -794,83 +800,14 @@ describe('account.wishlist loaders', () => {
             const result = await loader({
                 context: mockContext,
                 request: new Request('http://localhost/account/wishlist'),
+                url: new URL('http://localhost/account/wishlist'),
                 params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
+                pattern: ROUTE_PATTERN,
             });
 
             expect(result.wishlist).toEqual(mockWishlist);
             expect(result.items).toHaveLength(1);
         });
-    });
-});
-
-describe('shouldRevalidate', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
-
-    test('should return false for wishlist-remove actions', async () => {
-        const { shouldRevalidate } = await import('./_app.account.wishlist');
-
-        const result = shouldRevalidate({
-            formAction: resourceRoutes.wishlistRemove,
-            defaultShouldRevalidate: true,
-            currentUrl: new URL('http://localhost/account/wishlist'),
-            nextUrl: new URL('http://localhost/account/wishlist'),
-            actionStatus: 200,
-            actionResult: { success: true },
-            unstable_actionStatus: 200,
-        } as any);
-
-        expect(result).toBe(false);
-    });
-
-    test('should use default behavior for non-wishlist-remove actions', async () => {
-        const { shouldRevalidate } = await import('./_app.account.wishlist');
-
-        const result = shouldRevalidate({
-            formAction: resourceRoutes.cartItemAdd,
-            defaultShouldRevalidate: true,
-            currentUrl: new URL('http://localhost/account/wishlist'),
-            nextUrl: new URL('http://localhost/account/wishlist'),
-            actionStatus: 200,
-            actionResult: { success: true },
-            unstable_actionStatus: 200,
-        } as any);
-
-        expect(result).toBe(true);
-    });
-
-    test('should use default behavior when formAction is undefined', async () => {
-        const { shouldRevalidate } = await import('./_app.account.wishlist');
-
-        const result = shouldRevalidate({
-            formAction: undefined,
-            defaultShouldRevalidate: false,
-            currentUrl: new URL('http://localhost/account/wishlist'),
-            nextUrl: new URL('http://localhost/account/wishlist'),
-            actionStatus: 200,
-            actionResult: { success: true },
-            unstable_actionStatus: 200,
-        } as any);
-
-        expect(result).toBe(false);
-    });
-
-    test('should return false when defaultShouldRevalidate is false but action is wishlist-remove', async () => {
-        const { shouldRevalidate } = await import('./_app.account.wishlist');
-
-        const result = shouldRevalidate({
-            formAction: resourceRoutes.wishlistRemove,
-            defaultShouldRevalidate: false,
-            currentUrl: new URL('http://localhost/account/wishlist'),
-            nextUrl: new URL('http://localhost/account/wishlist'),
-            actionStatus: 200,
-            actionResult: { success: true },
-            unstable_actionStatus: 200,
-        } as any);
-
-        expect(result).toBe(false);
     });
 });
 

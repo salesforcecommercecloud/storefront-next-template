@@ -82,7 +82,11 @@ vi.mock('@/providers/basket', () => ({
         }
         return undefined;
     },
-    useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
+}));
+
+vi.mock('@/hooks/mini-cart-store', () => ({
+    useMiniCartStore: () => false,
+    setMiniCartOpen: vi.fn(),
 }));
 
 vi.mock('@/hooks/use-mini-cart-data', () => ({

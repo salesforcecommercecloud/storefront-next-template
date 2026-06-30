@@ -149,6 +149,31 @@ export const OnSale: Story = {
 };
 
 /**
+ * Price unavailable — the product has no price for the active currency (e.g. a currency with no
+ * price-book entry, where SCAPI omits `price`). Instead of a misleading "0.00", the component
+ * renders a localized "Price unavailable" message. An explicit price of `0` is NOT treated this
+ * way — it renders as a real "0.00".
+ */
+export const PriceUnavailable: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            price: undefined,
+            pricePerUnit: undefined,
+            priceMax: undefined,
+            tieredPrices: undefined,
+            productPromotions: undefined,
+        },
+        currency: 'DKK',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getAllByText(/Price unavailable/i).length).toBeGreaterThan(0);
+    },
+};
+
+/**
  * With promo callout — adds a `productPromotions` entry with `calloutMsg`.
  * Distinct from OnSale because it renders an extra `<PromoCallout>` block
  * below the price.

@@ -18,6 +18,8 @@ import { render } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
 import { WishlistMergeToast } from './wishlist-merge-toast';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { mockBuildConfig, mockSiteObject } from '@/test-utils/config';
+import { WISHLIST_MERGE_COOKIE_NAME } from '@/lib/wishlist/constants';
 
 const mockAddToast = vi.fn();
 const mockNavigate = vi.fn();
@@ -25,6 +27,10 @@ const mockTranslate = vi.fn((key: string) => key);
 
 vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: mockAddToast }),
+}));
+
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({ trackWishlistItemMerged: vi.fn(), trackWishlistMerged: vi.fn() }),
 }));
 
 vi.mock('@/hooks/use-navigate', () => ({
@@ -88,5 +94,44 @@ describe('WishlistMergeToast', () => {
         renderAt('/account/wishlist?from=login&wishlistMerge=success');
 
         expect(mockNavigate).toHaveBeenCalledWith('/account/wishlist?from=login', { replace: true });
+    });
+
+    test('deletes the merge cookie with the global app.cookies.domain so a host-only delete cannot strand it', () => {
+        // Regression guard: setWishlistMergeCookie stamps Domain from app.cookies.domain, so the
+        // client delete must use the same domain or (per RFC 6265) it won't clear the cookie.
+        const cookieName = `${WISHLIST_MERGE_COOKIE_NAME}_${mockSiteObject.id}`;
+        const seeded = `${cookieName}=${encodeURIComponent(
+            JSON.stringify({ merged: 1, skipped: 0, failed: 0, mergedProductIds: ['p1'] })
+        )}`;
+
+        const writes: string[] = [];
+        const original = Object.getOwnPropertyDescriptor(document, 'cookie');
+        Object.defineProperty(document, 'cookie', {
+            configurable: true,
+            get: () => seeded,
+            set: (v: string) => {
+                writes.push(v);
+            },
+        });
+
+        try {
+            render(
+                <AllProvidersWrapper config={{ ...mockBuildConfig.app, cookies: { domain: '.global.com' } }}>
+                    <MemoryRouter initialEntries={['/account/wishlist?wishlistMerge=success']}>
+                        <WishlistMergeToast />
+                    </MemoryRouter>
+                </AllProvidersWrapper>
+            );
+        } finally {
+            if (original) {
+                Object.defineProperty(document, 'cookie', original);
+            } else {
+                delete (document as { cookie?: string }).cookie;
+            }
+        }
+
+        const deleteWrite = writes.find((w) => w.startsWith(`${cookieName}=`) && w.includes('Max-Age=0'));
+        expect(deleteWrite).toBeDefined();
+        expect(deleteWrite).toContain('Domain=.global.com');
     });
 });

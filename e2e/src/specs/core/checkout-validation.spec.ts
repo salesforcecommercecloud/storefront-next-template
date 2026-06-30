@@ -16,12 +16,6 @@
 
 Feature('Checkout Validation Tests').tag('@core').tag('@checkout').tag('@checkout-validation');
 
-// TODO: Skipped pending fix to CheckoutPage.fillContactInfo —
-// "Continue to Shipping Address" click times out on pool topology since
-// 2026-06-01. Re-enable when the checkout team lands the fix.
-const isBroken = true;
-const scenarioFn = isBroken ? Scenario.skip : Scenario;
-
 const { checkoutPage, apiCartSetupFlow } = inject();
 import { expect } from 'chai';
 import {
@@ -31,8 +25,11 @@ import {
     INVALID_TEST_DATA,
     generateTestEmail,
 } from '../../test-data/checkout.data';
+import { installLoginPrefsStubHooks } from '../../utils/login-prefs-stub';
 
-scenarioFn('Contact info rejects invalid input', async () => {
+installLoginPrefsStubHooks();
+
+Scenario('Contact info rejects invalid input', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -56,9 +53,10 @@ scenarioFn('Contact info rejects invalid input', async () => {
 })
     .config({ retries: 0 })
     .tag('@contact-info-validation')
-    .tag('@guest-checkout');
+    .tag('@guest-checkout')
+    .tag('@smoke');
 
-scenarioFn('Shipping address rejects empty fields', async () => {
+Scenario('Shipping address rejects empty fields', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -78,7 +76,7 @@ scenarioFn('Shipping address rejects empty fields', async () => {
     .tag('@shipping-address-validation')
     .tag('@guest-checkout');
 
-scenarioFn('Payment rejects empty card fields', async () => {
+Scenario('Payment rejects empty card fields', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -100,7 +98,7 @@ scenarioFn('Payment rejects empty card fields', async () => {
     .tag('@payment-validation')
     .tag('@guest-checkout');
 
-scenarioFn('Payment rejects expired card and invalid CVV', async () => {
+Scenario('Payment rejects expired card and invalid CVV', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -129,7 +127,7 @@ scenarioFn('Payment rejects expired card and invalid CVV', async () => {
     .tag('@payment-validation')
     .tag('@guest-checkout');
 
-scenarioFn('Payment rejects empty custom billing address', async () => {
+Scenario('Payment rejects empty custom billing address', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -161,7 +159,7 @@ scenarioFn('Payment rejects empty custom billing address', async () => {
     .tag('@billing-validation')
     .tag('@guest-checkout');
 
-scenarioFn('Empty cart shows informative message instead of checkout form', async () => {
+Scenario('Empty cart shows informative message instead of checkout form', async () => {
     checkoutPage.navigate();
     checkoutPage.waitForMainContent();
 
@@ -174,7 +172,7 @@ scenarioFn('Empty cart shows informative message instead of checkout form', asyn
     .config({ retries: 0 })
     .tag('@empty-cart');
 
-scenarioFn('Promo code rejects too-short and invalid codes', async () => {
+Scenario('Promo code rejects too-short and invalid codes', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
@@ -195,7 +193,7 @@ scenarioFn('Promo code rejects too-short and invalid codes', async () => {
     .tag('@promo-code-validation')
     .tag('@guest-checkout');
 
-scenarioFn('Payment rejects too-short card number', async () => {
+Scenario('Payment rejects too-short card number', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 

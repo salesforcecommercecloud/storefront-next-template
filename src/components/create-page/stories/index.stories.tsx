@@ -15,27 +15,12 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { createPage } from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
-function CreatePageStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+type ExampleLoaderData = { title: string; content: string };
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logRender = action('create-page-render');
-        logRender({ component: 'PageComponent' });
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-// Example component to use with createPage
-function ExamplePageComponent({ loaderData }: { loaderData?: { title: string; content: string } }) {
+function ExamplePageComponent({ loaderData }: { loaderData?: ExampleLoaderData }) {
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">{loaderData?.title || 'Default Title'}</h1>
@@ -44,137 +29,130 @@ function ExamplePageComponent({ loaderData }: { loaderData?: { title: string; co
     );
 }
 
-const ExamplePage = createPage({
-    component: ExamplePageComponent,
-    fallback: <div className="p-6">Loading...</div>,
-});
+type CreatePageArgs = {
+    title: string;
+    content: string;
+    withPageKey: boolean;
+    withCustomFallback: boolean;
+};
 
-const ExamplePageWithKey = createPage({
-    component: ExamplePageComponent,
-    fallback: <div className="p-6">Loading...</div>,
-    getPageKey: (data) => data?.title || 'default',
-});
-
-const meta: Meta<typeof ExamplePage> = {
+// CreatePageArgs is a synthetic args shape that drives createPage() factory invocation, so it
+// doesn't share a prop signature with ExamplePageComponent. Drop `component:` from the meta —
+// Storybook's autodocs will fall back to the title.
+const meta: Meta<CreatePageArgs> = {
     title: 'COMMON/Create Page',
-    component: ExamplePage,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-A higher-order component factory that creates page components with Suspense boundaries and page key handling.
-
-### Features:
-- Automatic Suspense wrapping
-- Custom fallback components
-- Page key generation for navigation transitions
-- Promise resolution support
-                `,
+                component:
+                    'A higher-order component factory that wraps a route component with Suspense + an optional page-key Fragment for navigation transitions. Used by every route in the storefront via `createPage({ component, fallback?, getPageKey? })`. The story demos use a small `ExamplePageComponent` to show the factory output; in production the component is your route view (e.g. `CategoryView`, `ProductView`).',
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <CreatePageStoryHarness>
-                <Story />
-            </CreatePageStoryHarness>
-        ),
-    ],
+    argTypes: {
+        title: { control: 'text', description: 'loaderData.title passed to the wrapped component' },
+        content: { control: 'text', description: 'loaderData.content passed to the wrapped component' },
+        withPageKey: {
+            control: 'boolean',
+            description:
+                'Synthetic toggle: when on, calls createPage with a getPageKey that returns loaderData.title. The page is wrapped in <Fragment key={pageKey}> so navigation transitions remount cleanly.',
+            table: { category: 'Synthetic' },
+        },
+        withCustomFallback: {
+            control: 'boolean',
+            description:
+                'Synthetic toggle: when on, supplies a custom Suspense fallback (default fallback is a 7-skeleton stack).',
+            table: { category: 'Synthetic' },
+        },
+    },
+    args: {
+        title: 'Example Page',
+        content: 'This is an example page created with createPage.',
+        withPageKey: false,
+        withCustomFallback: false,
+    },
+    render: ({ title, content, withPageKey, withCustomFallback }) => {
+        const Page = createPage<ExampleLoaderData>({
+            component: ExamplePageComponent,
+            getPageKey: withPageKey ? (data) => data?.title || 'default' : undefined,
+            fallback: withCustomFallback ? (
+                <div className="p-6 bg-muted rounded">Custom loading state...</div>
+            ) : undefined,
+        });
+        return <Page loaderData={{ title, content }} />;
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof ExamplePage>;
+type Story = StoryObj<CreatePageArgs>;
 
-export const Default: Story = {
-    render: () => (
-        <ExamplePage
-            loaderData={{ title: 'Example Page', content: 'This is an example page created with createPage.' }}
-        />
-    ),
+export const Playground: Story = {
     parameters: {
         docs: {
-            story: `
-Basic page created with createPage HOC.
+            description: {
+                story: 'Toggle the title/content via Controls; flip `withPageKey` and `withCustomFallback` to observe the HOC factory variants.',
+            },
+        },
+    },
+};
 
-### Features:
-- Suspense boundary
-- Default fallback
-- Loader data passed to component
-            `,
+export const Default: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Basic page created with `createPage` — Suspense + default fallback.',
+            },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Check for title - use findByRole for h1 to avoid multiple matches
-        const title = await canvas.findByRole('heading', { name: /example page/i }, { timeout: 5000 });
+        const title = await canvas.findByRole('heading', { name: /example page/i });
         await expect(title).toBeInTheDocument();
     },
 };
 
 export const WithPageKey: Story = {
-    render: () => (
-        <ExamplePageWithKey
-            loaderData={{ title: 'Page With Key', content: 'This page uses a custom page key function.' }}
-        />
-    ),
+    args: {
+        title: 'Page With Key',
+        content:
+            'This page uses a custom page key function — wraps in <Fragment key={pageKey}> for navigation transitions.',
+        withPageKey: true,
+    },
     parameters: {
         docs: {
-            story: `
-Page created with createPage using a custom page key function.
-
-### Features:
-- Custom page key generation
-- Fragment wrapping with key
-- Navigation transition support
-            `,
+            description: {
+                story: 'Demonstrates `getPageKey` — the wrapped page is keyed off loader data so navigation between two routes that resolve to the same component still triggers a remount.',
+            },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Check for title
-        const title = await canvas.findByText(/page with key/i, {}, { timeout: 5000 });
+        const title = await canvas.findByRole('heading', { name: /page with key/i });
         await expect(title).toBeInTheDocument();
     },
 };
 
 export const WithCustomFallback: Story = {
-    render: () => {
-        const CustomPage = createPage({
-            component: ExamplePageComponent,
-            fallback: <div className="p-6 bg-muted rounded">Custom loading state...</div>,
-        });
-        return (
-            <CustomPage
-                loaderData={{ title: 'Custom Fallback', content: 'This page uses a custom fallback component.' }}
-            />
-        );
+    args: {
+        title: 'Custom Fallback',
+        content: 'This page uses a custom fallback component (visible only while a Suspense boundary is pending).',
+        withCustomFallback: true,
     },
     parameters: {
         docs: {
-            story: `
-Page created with createPage using a custom fallback component.
-
-### Features:
-- Custom fallback UI
-- Better loading experience
-            `,
+            description: {
+                story: 'Demonstrates the custom-`fallback` arg. The fallback only renders when the wrapped component (or one of its children) suspends; with synchronous loader data the resolved view shows immediately.',
+            },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Check for title - use findByRole for h1 to avoid multiple matches
-        const title = await canvas.findByRole('heading', { name: /custom fallback/i }, { timeout: 5000 });
+        const title = await canvas.findByRole('heading', { name: /custom fallback/i });
         await expect(title).toBeInTheDocument();
     },
 };

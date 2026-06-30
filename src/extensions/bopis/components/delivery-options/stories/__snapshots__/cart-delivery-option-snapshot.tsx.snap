@@ -5,7 +5,7 @@ exports[`CartDeliveryOption stories snapshot > Default story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_0_"
@@ -50,7 +50,7 @@ exports[`CartDeliveryOption stories snapshot > Desktop story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_6_"
@@ -95,7 +95,7 @@ exports[`CartDeliveryOption stories snapshot > Mobile story renders and matches 
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_4_"
@@ -141,7 +141,7 @@ exports[`CartDeliveryOption stories snapshot > PickupSelected story renders and 
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="mb-1 w-fit px-2 rounded-none border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
+      class="mb-1 w-fit px-2 border-0 bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
       data-slot="dropdown-menu-trigger"
       data-state="closed"
       id="radix-_r_2_"

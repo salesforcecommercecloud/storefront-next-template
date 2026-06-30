@@ -148,6 +148,33 @@ export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
 };
 
 /**
+ * With a `categoryLabel` supplied, a "Shop by {label}" header (sparkles icon +
+ * text) renders before the chips. Verticals opt into this via the category
+ * route (gated on `uiConfig.pages.category.showCategoryLabel`); the component
+ * itself just renders the header when the prop is present.
+ */
+export const WithCategoryLabel: Story = {
+    render: () => {
+        const category: ShopperProducts.schemas['Category'] = {
+            id: 'womens',
+            name: 'Women',
+            categories: ALL_SUBCATEGORIES.slice(0, 4),
+        };
+        return (
+            <>
+                <RouteSetter initialEntries={['/']} />
+                <QuickFilters category={category} categoryLabel="Women" />
+            </>
+        );
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Shop by Women')).toBeInTheDocument();
+    },
+};
+
+/**
  * Empty `category.categories` makes the component return null. Worth a
  * bookmarkable URL to assert this null-render explicitly.
  */

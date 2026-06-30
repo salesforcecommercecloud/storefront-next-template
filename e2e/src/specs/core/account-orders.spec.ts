@@ -44,8 +44,15 @@ import { buildSitePath } from '../../utils/url-utils';
 const testUserEmail = process.env.E2E_TEST_USER_EMAIL || 'e2e.test.user@gmail.com';
 const testUserPassword = process.env.E2E_TEST_USER_PASSWORD;
 
+// TODO: The spec-level Before hook (establishSessionAndLogin -> waitForSessionCookies)
+// intermittently times out at 30s waiting for the guest SLAS cookie cc-nx-g_RefArchGlobal
+// on stg-016. The hook gates every scenario in this file, so a single flake there can
+// sink whichever scenario runs first. Tracked in W-22970888 (CC Sharks). Re-enable when
+// the underlying flake is fixed.
+const isOrderSessionFlaky = true;
+
 // When E2E_TEST_USER_PASSWORD is not set, skip all order scenarios (e.g. CI without secrets, local run)
-const orderScenario = testUserPassword ? Scenario : Scenario.skip;
+const orderScenario = testUserPassword && !isOrderSessionFlaky ? Scenario : Scenario.skip;
 
 /**
  * Login once per spec-file run, re-authenticating if the session was cleared.

@@ -47,6 +47,21 @@ const mockUseFetcher = vi.fn(() => ({
 
 const { mockAddToast } = vi.hoisted(() => ({ mockAddToast: vi.fn() }));
 
+// Open-flyout side effect lives in the standalone mini-cart store; spy on it so the success-effect assertions never
+// mutate the shared module and stay isolated from the cart-badge/cart-sheet suites that read the real store.
+const { mockSetMiniCartOpen } = vi.hoisted(() => ({ mockSetMiniCartOpen: vi.fn() }));
+vi.mock('@/hooks/mini-cart-store', () => ({
+    setMiniCartOpen: mockSetMiniCartOpen,
+}));
+
+// Controllable item-fetcher stubs, keyed by the componentName the hook passes. The cart success effect reads
+// `cartFetcher.data`; tests flip `.data` to a settled response and rerender to drive the effect. Keeping the cart and
+// bundle fetchers as distinct objects prevents one effect from firing the other's branch.
+const { cartItemFetcher, bundleItemFetcher } = vi.hoisted(() => ({
+    cartItemFetcher: { data: null as unknown, state: 'idle', submit: vi.fn() },
+    bundleItemFetcher: { data: null as unknown, state: 'idle', submit: vi.fn() },
+}));
+
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
@@ -54,11 +69,8 @@ vi.mock('@/components/toast', () => ({
 }));
 
 vi.mock('@/hooks/use-item-fetcher', () => ({
-    useItemFetcher: () => ({
-        data: null,
-        state: 'idle',
-        submit: vi.fn(),
-    }),
+    useItemFetcher: ({ componentName }: { componentName?: string } = {}) =>
+        componentName === 'product-bundle-actions' ? bundleItemFetcher : cartItemFetcher,
 }));
 
 vi.mock('@/hooks/product/use-current-variant', () => ({
@@ -173,6 +185,14 @@ describe('useProductActions', () => {
         // Use vi.spyOn to mock useFetcher while keeping real router exports
         vi.spyOn(ReactRouter, 'useFetcher').mockImplementation(mockUseFetcher as any);
         mockAddToast.mockClear();
+        mockSetMiniCartOpen.mockClear();
+        // Reset the controllable item-fetcher stubs so a settled response can't leak between cases.
+        cartItemFetcher.data = null;
+        cartItemFetcher.state = 'idle';
+        cartItemFetcher.submit = vi.fn();
+        bundleItemFetcher.data = null;
+        bundleItemFetcher.state = 'idle';
+        bundleItemFetcher.submit = vi.fn();
     });
 
     afterEach(() => {
@@ -182,6 +202,7 @@ describe('useProductActions', () => {
         id: 'standard-123',
         name: 'Standard Product',
         type: { item: true },
+        price: 29.99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -193,6 +214,7 @@ describe('useProductActions', () => {
         id: 'variant-123',
         name: 'Variant Product',
         type: { variant: true },
+        price: 29.99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -204,6 +226,7 @@ describe('useProductActions', () => {
         id: 'bundle-123',
         name: 'Bundle Product',
         type: { bundle: true },
+        price: 99,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -215,6 +238,7 @@ describe('useProductActions', () => {
         id: 'set-123',
         name: 'Set Product',
         type: { set: true },
+        price: 49,
         inventory: {
             id: 'inventory-123',
             ats: 10,
@@ -323,11 +347,14 @@ describe('useProductActions', () => {
             expect(result.current.canAddToCart).toBe(false);
         });
 
-        test('prevents adding master product', () => {
+        test('prevents adding master product without a selected variant', () => {
+            // Give the master a priced variant so the price gate doesn't short-circuit first —
+            // this test isolates the master-needs-variant rule, not the no-price rule.
             const product: ShopperProducts.schemas['Product'] = {
                 id: 'master-123',
                 name: 'Master Product',
                 type: { master: true },
+                variants: [{ productId: 'master-123-v1', price: 29.99, orderable: true }],
                 inventory: {
                     id: 'inventory-123',
                     ats: 10,
@@ -340,6 +367,123 @@ describe('useProductActions', () => {
                     useProductActions({
                         product,
                         currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('prevents adding a product with no price for the active currency', () => {
+            const product = createStandardProduct();
+            // Simulate a currency with no price-book entry: SCAPI omits the price field.
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('allows adding a product with an explicit price of 0', () => {
+            const product = createStandardProduct();
+            product.price = 0;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('allows adding a no-price product when allowMissingPrice is set (e.g. bonus products)', () => {
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        allowMissingPrice: true,
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('does NOT bypass the price gate when itemId is an empty string', () => {
+            // Defensive: itemId='' must not be treated as edit-mode. Several callers in the repo
+            // pass `itemId || ''`, and a future drift could feed the empty string into this hook.
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        itemId: '',
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(false);
+        });
+
+        test('allows updating a no-price product when itemId is set (edit mode)', () => {
+            // Edit-mode bypass: an item already in the basket must remain editable even if its
+            // catalog price is missing for the active currency (e.g. shopper switched currencies).
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        itemId: 'cart-line-1',
+                    }),
+                {
+                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                }
+            );
+
+            expect(result.current.canAddToCart).toBe(true);
+        });
+
+        test('blocks a no-price product in the wishlist (skipInventoryValidation) path', () => {
+            const product = createStandardProduct();
+            delete product.price;
+
+            const { result } = renderHook(
+                () =>
+                    useProductActions({
+                        product,
+                        currentVariant: null,
+                        skipInventoryValidation: true,
                     }),
                 {
                     wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
@@ -465,6 +609,100 @@ describe('useProductActions', () => {
             });
 
             expect(mockSubmit).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('opens the mini-cart flyout on a successful add', () => {
+        // The open-flyout side effect fires from the success effects once the item fetcher settles with a basket
+        // payload. Drive it by flipping the controllable stub's `.data` to a settled response and rerendering, the same
+        // sequence React Router produces when the action resolves.
+        const settledAddResponse = { success: true, basket: mockBasket };
+
+        test('opens the flyout when an add-to-cart action returns a basket (add mode)', async () => {
+            const { result, rerender } = renderHook(
+                () => useProductActions({ product: createStandardProduct(), currentVariant: null }),
+                { wrapper: ({ children }) => wrapper({ children, basket: mockBasket }) }
+            );
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            expect(mockSetMiniCartOpen).not.toHaveBeenCalled();
+
+            // The action resolved: settle the cart fetcher and rerender so the success effect observes the payload.
+            cartItemFetcher.data = settledAddResponse;
+            act(() => {
+                rerender();
+            });
+
+            expect(mockSetMiniCartOpen).toHaveBeenCalledWith(true);
+        });
+
+        test('does not open the flyout in edit mode (itemId present)', async () => {
+            // Editing an existing line item must not pop the flyout — only first adds do. The success effect skips the
+            // open call when `itemId` is set.
+            const { result, rerender } = renderHook(
+                () => useProductActions({ product: createStandardProduct(), currentVariant: null, itemId: 'item-1' }),
+                { wrapper: ({ children }) => wrapper({ children, basket: mockBasket }) }
+            );
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            cartItemFetcher.data = settledAddResponse;
+            act(() => {
+                rerender();
+            });
+
+            expect(mockSetMiniCartOpen).not.toHaveBeenCalled();
+        });
+
+        test('does not open the flyout when the add action reports failure', async () => {
+            // A failed add surfaces an error toast; the flyout stays closed so the shopper isn't shown an unchanged cart.
+            const { result, rerender } = renderHook(
+                () => useProductActions({ product: createStandardProduct(), currentVariant: null }),
+                { wrapper: ({ children }) => wrapper({ children, basket: mockBasket }) }
+            );
+
+            await act(async () => {
+                await result.current.handleAddToCart();
+            });
+
+            cartItemFetcher.data = { success: false, error: { code: 'ERR', message: 'nope' } };
+            act(() => {
+                rerender();
+            });
+
+            expect(mockSetMiniCartOpen).not.toHaveBeenCalled();
+        });
+
+        test('opens the flyout when a bundle add returns a basket', async () => {
+            const { result, rerender } = renderHook(
+                () => useProductActions({ product: createBundleProduct(), currentVariant: null }),
+                { wrapper: ({ children }) => wrapper({ children, basket: mockBasket }) }
+            );
+
+            const standardProduct = createStandardProduct();
+            await act(async () => {
+                await result.current.handleProductBundleAddToCart(1, [
+                    {
+                        product: standardProduct,
+                        variant: { productId: standardProduct.id } as ShopperProducts.schemas['Variant'],
+                        quantity: 1,
+                    },
+                ]);
+            });
+
+            expect(mockSetMiniCartOpen).not.toHaveBeenCalled();
+
+            bundleItemFetcher.data = settledAddResponse;
+            act(() => {
+                rerender();
+            });
+
+            expect(mockSetMiniCartOpen).toHaveBeenCalledWith(true);
         });
     });
 

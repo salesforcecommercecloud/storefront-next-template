@@ -41,7 +41,7 @@ interface UserMenuProps {
 
 // Common className for menu item links
 const menuItemClassName = cn(
-    'flex items-center gap-2 px-3 py-2 text-sm text-popover-foreground rounded-none',
+    'flex items-center gap-2 px-3 py-2 text-sm text-popover-foreground ',
     'hover:bg-muted/50 transition-colors',
     'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
 );
@@ -235,9 +235,9 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                 {trigger}
             </PopoverTrigger>
             <PopoverContent {...popoverContentProps}>
-                <div className="p-4 bg-muted/50 rounded-none">
+                <div className="p-4 bg-muted/50 ">
                     <p className="text-sm text-muted-foreground mb-4">{t('menu.signInForBestExperience')}</p>
-                    <Button asChild className="w-full mb-3 rounded-none">
+                    <Button asChild className="w-full mb-3 ">
                         <Link to={routes.login} onMouseEnter={handleMenuItemMouseEnter}>
                             {t('signIn')}
                         </Link>
@@ -247,7 +247,7 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                         <Link
                             to={routes.signup}
                             className={cn(
-                                'text-popover-foreground hover:underline rounded-none px-1 py-0.5',
+                                'text-popover-foreground hover:underline px-1 py-0.5',
                                 'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
                             )}
                             onMouseEnter={handleMenuItemMouseEnter}>

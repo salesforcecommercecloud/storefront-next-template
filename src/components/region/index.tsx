@@ -32,8 +32,13 @@ import { ComponentDataProvider, useComponentData } from './component-data-contex
 
 export type { RegionDesignMetadata };
 
-// Extended Page type with design metadata
-type PageWithDesignMetadata = PageDecoratorProps<ShopperExperience.schemas['Page']> & {
+// Page shape accepted by `<Region page={...}>`. Aligns with `PageWithComponentData`
+// returned by `fetchPageWithComponentData` — the SCAPI `Page` type plus an
+// optional `componentData` map. Decorator metadata (`PageDesignMetadata`) is
+// accessed through a cast at the use site, since SCAPI's generated `Page` types
+// `designMetadata` as `Record<string, never>` while the runtime payload follows
+// the `PageDesignMetadata` shape.
+type PageWithDesignMetadata = ShopperExperience.schemas['Page'] & {
     componentData?: Record<string, Promise<unknown>>;
 };
 
@@ -163,12 +168,22 @@ export function Region(props: RegionProps) {
             return errorElement ?? null;
         }
 
-        const metadata = resolvedPage.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
+        // SCAPI types `designMetadata` as `Record<string, never>` but the runtime
+        // payload follows `PageDesignMetadata` — cast through `unknown` so we can
+        // read `regionDefinitions`.
+        const designMetadata = resolvedPage.designMetadata as
+            | { regionDefinitions?: RegionDesignMetadata[] }
+            | undefined;
+        const metadata = designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
         const { componentData: pageComponentData, ...pageData } = resolvedPage;
 
         const content = (
             <>
-                {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
+                {!regionContext && (
+                    <PageDesignerPageMetadataProvider
+                        page={pageData as PageDecoratorProps<ShopperExperience.schemas['Page']>}
+                    />
+                )}
                 {renderRegionContent(region, regionId, metadata, className, rest, errorElement, isDesignMode)}
             </>
         );

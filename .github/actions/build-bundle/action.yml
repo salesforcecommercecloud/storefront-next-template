@@ -34,3 +34,5 @@ runs:
     - name: Build
       run: pnpm build
       shell: bash
+      env:
+        NODE_OPTIONS: '--max-old-space-size=4096'

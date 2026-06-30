@@ -196,6 +196,33 @@ describe('ResponsiveNavigationMenu Component', () => {
         });
     });
 
+    describe('Hydration', () => {
+        it('does not mount the subscribing category subtree while the menu is closed', async () => {
+            const { getByRole, queryByRole, container } = renderComponent();
+
+            await waitFor(() => {
+                expect(getByRole('button', { name: /open menu/i })).toBeInTheDocument();
+            });
+
+            // While closed, the mobile category list must not be mounted. Each MobileMenuCategory subscribes to the
+            // sub-category store via useSubCategory (useSyncExternalStore). If it stays mounted while hidden, the
+            // post-hydration store update re-renders the header and cascades into a whole-page flicker. Mounting it
+            // only on open keeps the subscribers out of the SSR/hydration tree.
+            expect(container.querySelector('[aria-label="Mobile navigation menu"]')).not.toBeInTheDocument();
+            expect(queryByRole('link', { name: /^category 1$/i })).not.toBeInTheDocument();
+
+            // Opening the menu mounts the subscribing subtree on demand.
+            act(() => {
+                fireEvent.click(getByRole('button', { name: /open menu/i }));
+            });
+
+            await waitFor(() => {
+                expect(container.querySelector('[aria-label="Mobile navigation menu"]')).toBeInTheDocument();
+            });
+            expect(getByRole('link', { name: /^category 1$/i })).toBeInTheDocument();
+        });
+    });
+
     describe('Keyboard Accessibility (Critical)', () => {
         it('should use onPointerDown for navigation, not onClick', () => {
             // This test verifies the fix for the accessibility issue where

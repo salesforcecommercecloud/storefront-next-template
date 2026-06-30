@@ -18,6 +18,7 @@ import { ApiError } from '@/scapi';
 import { NormalizedApiError } from './normalized-api-error';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { mockConfig } from '@/test-utils/config';
 import {
     appendWishlistMergeFlag,
     captureGuestWishlistSnapshot,
@@ -61,6 +62,13 @@ vi.mock('@/lib/logger.server', () => ({
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: (...args: unknown[]) => mockGetAuth(...args),
+}));
+
+// setWishlistMergeCookie -> getCookieConfig -> resolveCookieDomain reads app config via
+// getConfig(), as does the product fetcher (config.search.products.hits.limit). getConfig()
+// throws when app config is absent from the router context, so provide the full mock config.
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    getConfig: vi.fn(() => mockConfig),
 }));
 
 const usableSession = {

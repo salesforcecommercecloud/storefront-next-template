@@ -20,6 +20,7 @@ const basketWithOneItemSnapshot: BasketSnapshot = {
     basketId: basketWithOneItem.basketId ?? '',
     totalItemCount: 1,
     uniqueProductCount: 1,
+    lastModified: '',
 };
 
 export default basketWithOneItemSnapshot;

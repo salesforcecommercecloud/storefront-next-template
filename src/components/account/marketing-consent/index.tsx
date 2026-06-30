@@ -199,7 +199,7 @@ export function MarketingConsent({
     const statusLabel = (optIn: boolean) => (optIn ? t('marketingConsent.optedIn') : t('marketingConsent.optedOut'));
 
     return (
-        <Card className="rounded-none shadow-none" data-section="marketing-consent">
+        <Card className="" data-section="marketing-consent">
             <CardHeader className="border-b border-muted-foreground/20 pb-4">
                 <CardTitle>{t('marketingConsent.title')}</CardTitle>
                 <CardAction>

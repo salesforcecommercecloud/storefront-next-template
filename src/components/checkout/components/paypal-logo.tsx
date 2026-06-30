@@ -38,8 +38,8 @@ export default function PayPalLogo({
         <img
             src={paypalLogo}
             alt={decorative ? '' : label}
-            width="48"
-            height="16"
+            width="74"
+            height="18"
             {...(decorative ? { 'aria-hidden': true } : {})}
             className={`${className || ''} h-4 w-auto object-contain`}
         />

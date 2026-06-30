@@ -19,6 +19,7 @@ import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { createActionArgs, expectStatus } from '@/lib/test-utils';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
+import { ApiError } from '@/scapi';
 
 vi.mock('@/middlewares/basket.server');
 vi.mock('@/lib/api-clients.server');
@@ -57,13 +58,13 @@ describe('createBasketAction', () => {
     /** Send a POST request to the action with the given form data. */
     function postFormData(action: ReturnType<typeof buildAction>, data: Record<string, string> = { itemId: '123' }) {
         const request = createFormDataRequest('http://localhost/test', 'POST', data);
-        return action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
+        return action(createActionArgs(request, {} as any, { pattern: '/test' }));
     }
 
     it('returns 405 when request method does not match', async () => {
         const action = buildAction(() => Promise.resolve(mockBasket as any));
         const request = createFormDataRequest('http://localhost/test', 'PATCH', { itemId: '123' });
-        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
+        const result = await action(createActionArgs(request, {} as any, { pattern: '/test' }));
 
         expectStatus(result, 405);
         expect(result.data.success).toBe(false);
@@ -105,8 +106,36 @@ describe('createBasketAction', () => {
         expect(updateBasketResource).not.toHaveBeenCalled();
     });
 
-    it('returns 500 when handler throws', async () => {
+    it('returns 500 when handler throws a non-API error', async () => {
         const result = await postFormData(buildAction(() => Promise.reject(new Error('API failure'))));
+
+        expectStatus(result, 500);
+        expect(result.data.success).toBe(false);
+    });
+
+    /** Build an ApiError with the given HTTP status. */
+    const apiError = (status: number) =>
+        new ApiError({
+            status,
+            statusText: 'Test Error',
+            headers: new Headers(),
+            body: { type: '', title: '', detail: 'boom' },
+            rawBody: '{}',
+            url: 'https://api.example.com/test',
+            method: 'POST',
+        });
+
+    it('passes a thrown SCAPI 4xx status through instead of masking it as 500', async () => {
+        // Regression: an unknown coupon code makes SCAPI throw a 400, which the
+        // catch-all previously reported as a 500 in error-rate monitoring.
+        const result = await postFormData(buildAction(() => Promise.reject(apiError(400))));
+
+        expectStatus(result, 400);
+        expect(result.data.success).toBe(false);
+    });
+
+    it('still returns 500 when SCAPI throws a 5xx', async () => {
+        const result = await postFormData(buildAction(() => Promise.reject(apiError(503))));
 
         expectStatus(result, 500);
         expect(result.data.success).toBe(false);

@@ -21,6 +21,7 @@ import {
     computeStepFromBasket,
     getCompletedSteps,
     hasAnyValidShippingMethod,
+    hasValidShippingMethodForEveryShipment,
     shouldAutoAdvanceForReturningCustomer,
 } from './checkout-utils';
 
@@ -192,6 +193,66 @@ describe('Checkout Utils', () => {
             };
             const result = computeStepFromBasket(basket, distributionNeedingMethods); // User hasn't completed shipping options
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_OPTIONS);
+        });
+
+        // Refreshing on an address with no deliverable methods must stay on Shipping Address
+        it('should return SHIPPING_ADDRESS when address exists but no valid shipping methods are available', () => {
+            const basket = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'test@example.com' },
+                shipments: [
+                    {
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'Anytown',
+                            stateCode: 'CA',
+                            postalCode: '12345',
+                            countryCode: 'US',
+                        },
+                    },
+                ],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            const distributionNeedingMethods = {
+                ...mockShipmentDistribution,
+                hasUnaddressedDeliveryItems: false,
+                needsShippingMethods: true,
+            };
+            const result = computeStepFromBasket(
+                basket,
+                distributionNeedingMethods,
+                /*hasNoValidShippingMethods*/ true
+            );
+            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+        });
+
+        it('should not pin to SHIPPING_ADDRESS for pickup-only baskets without delivery items', () => {
+            const basket = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'test@example.com' },
+                shipments: [],
+                paymentInstruments: [
+                    {
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Visa',
+                            expirationMonth: 12,
+                            expirationYear: 2025,
+                            maskedNumber: '************1234',
+                        },
+                    },
+                ],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            const pickupOnlyDistribution = {
+                ...mockShipmentDistribution,
+                hasDeliveryItems: false,
+                hasPickupItems: true,
+            };
+            const result = computeStepFromBasket(basket, pickupOnlyDistribution, /*hasNoValidShippingMethods*/ true);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
     });
 
@@ -398,6 +459,114 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
+        // For a returning registered customer, refreshing with an address but no shipping
+        // methods must NOT short-circuit to PLACE_ORDER — pin to SHIPPING_ADDRESS instead.
+        it('should return SHIPPING_ADDRESS when address exists but no shipping methods, even for a complete profile', () => {
+            const basket = {
+                basketId: 'test',
+                customerInfo: { email: 'test@example.com' },
+                shipments: [
+                    {
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'Anytown',
+                            stateCode: 'CA',
+                            postalCode: '12345',
+                            countryCode: 'US',
+                        },
+                    },
+                ],
+                paymentInstruments: [
+                    {
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Visa',
+                            expirationMonth: 12,
+                            expirationYear: 2025,
+                            maskedNumber: '************1234',
+                        },
+                    },
+                ],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            const customerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [{ addressId: 'addr_1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'card_123',
+                        paymentMethodId: 'CREDIT_CARD',
+                    },
+                ],
+            } as CustomerProfile;
+
+            const result = computeFinalStepForReturningCustomer(
+                basket,
+                customerProfile,
+                mockShipmentDistribution,
+                /*hasNoValidShippingMethods*/ true
+            );
+            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+        });
+
+        it('should still pin to SHIPPING_ADDRESS when delivery items have no methods, even before payment is set', () => {
+            const basket = {
+                basketId: 'test',
+                customerInfo: { email: 'test@example.com' },
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            const customerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [{ addressId: 'addr_1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = computeFinalStepForReturningCustomer(
+                basket,
+                customerProfile,
+                mockShipmentDistribution,
+                /*hasNoValidShippingMethods*/ true
+            );
+            expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
+        });
+
+        it('should not pin to SHIPPING_ADDRESS when unaddressed delivery items still exist', () => {
+            const basket = {
+                basketId: 'test',
+                customerInfo: { email: 'test@example.com' },
+                shipments: [{}],
+            } as ShopperBasketsV2.schemas['Basket'];
+
+            const customerProfile = {
+                customer: { login: 'test@example.com' },
+                addresses: [{ addressId: 'addr_1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'card_123',
+                        paymentMethodId: 'CREDIT_CARD',
+                    },
+                ],
+            } as CustomerProfile;
+
+            // hasUnaddressedDeliveryItems=true means no address has been entered yet — the new branch
+            // should not fire (it only pins when an address is in place but methods are missing).
+            const distributionWithUnaddressedItems = {
+                ...mockShipmentDistribution,
+                hasUnaddressedDeliveryItems: true,
+            };
+            const result = computeFinalStepForReturningCustomer(
+                basket,
+                customerProfile,
+                distributionWithUnaddressedItems,
+                /*hasNoValidShippingMethods*/ true
+            );
+            // Complete-profile branch still wins — but the user is on Shipping Address anyway via
+            // computeStepFromBasket's unaddressed branch in the provider's fallback chain.
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
+        });
+
         it('should return PLACE_ORDER when customer has addresses and valid payment instrument in basket, even without saved payment methods', () => {
             const basket = {
                 basketId: 'test',
@@ -486,6 +655,54 @@ describe('Checkout Utils', () => {
                     s2: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: 5 }] },
                 })
             ).toBe(true);
+        });
+    });
+
+    // Empty/undefined map MUST be treated as vacuously satisfied (no shipment has failed yet),
+    // not as evidence of failure. The checkout loader's initial map is `{}` for a basket without
+    // an address, and after a step action the loader skips revalidation — so the route still
+    // sees `{}` and would otherwise pin the shopper to Shipping Address mid-flow.
+    describe('hasValidShippingMethodForEveryShipment', () => {
+        it('returns true for undefined map (vacuous truth — no failure observed)', () => {
+            expect(hasValidShippingMethodForEveryShipment(undefined)).toBe(true);
+        });
+
+        it('returns true for empty map (vacuous truth — no failure observed)', () => {
+            expect(hasValidShippingMethodForEveryShipment({})).toBe(true);
+        });
+
+        it('returns false when a single shipment has no valid methods', () => {
+            expect(hasValidShippingMethodForEveryShipment({ me: { applicableShippingMethods: [] } })).toBe(false);
+        });
+
+        it('returns false when one shipment in a multi-shipment map lacks methods', () => {
+            expect(
+                hasValidShippingMethodForEveryShipment({
+                    s1: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: 5 }] },
+                    s2: { applicableShippingMethods: [] },
+                })
+            ).toBe(false);
+        });
+
+        it('returns true when every shipment has at least one valid method', () => {
+            expect(
+                hasValidShippingMethodForEveryShipment({
+                    s1: { applicableShippingMethods: [{ id: '001', name: 'Ground', price: 5 }] },
+                    s2: { applicableShippingMethods: [{ id: '002', name: 'Express', price: 10 }] },
+                })
+            ).toBe(true);
+        });
+
+        it('returns false when methods lack required fields (no id)', () => {
+            expect(
+                hasValidShippingMethodForEveryShipment({
+                    me: {
+                        applicableShippingMethods: [
+                            { name: 'Ground', price: 5 } as ShopperBasketsV2.schemas['ShippingMethod'],
+                        ],
+                    },
+                })
+            ).toBe(false);
         });
     });
 });

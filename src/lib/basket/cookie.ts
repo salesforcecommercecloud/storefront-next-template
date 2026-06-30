@@ -27,19 +27,21 @@ const basketCookieRegExp = new RegExp(`(?:^|;\\s*)${BASKET_COOKIE_NAME}=([^;]+)`
 const isNonNegativeSafeInteger = (value: unknown): value is number =>
     typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 
-// SFCC `basketId` values are UUID-style ASCII (alphanumeric + hyphen). The writer never emits anything else, so a
-// non-ASCII `basketId` arriving on the read side means either (a) the client decoder misread a non-ASCII payload
-// as Latin-1 Mojibake (see ASCII-only pipeline limits below), or (b) cookie tampering. Either way, refuse to use
-// the value. A corrupted id flowing into a downstream basket fetch would be issued against the wrong (or no)
-// basket, and a tampered id with control bytes could become a vector for downstream string handling.
-const ASCII_BASKET_ID = /^[\x20-\x7E]+$/;
+// Printable-ASCII guard for the snapshot's string fields (`basketId`, `lastModified`). SFCC `basketId` values are
+// UUID-style ASCII and `lastModified` is ISO-8601 ASCII; the writer never emits anything else. A non-ASCII value
+// arriving on the read side means either (a) the client decoder misread a non-ASCII payload as Latin-1 Mojibake
+// (see ASCII-only pipeline limits below), or (b) cookie tampering. Either way, refuse the value: a corrupted id
+// flowing into a downstream basket fetch would target the wrong (or no) basket, and control bytes could become a
+// vector for downstream string handling.
+const ASCII_PRINTABLE = /^[\x20-\x7E]+$/;
 
 /**
  * Validates that an arbitrary value matches the {@link BasketSnapshot} shape.
  *
  * Returns the value as a `BasketSnapshot` when it has a non-empty string `basketId` and non-negative integer
- * `totalItemCount` and `uniqueProductCount`. Returns `null` for everything else (wrong type, missing field,
- * `NaN`, `Infinity`, negative count, fractional count, etc.).
+ * `totalItemCount` and `uniqueProductCount`. Returns `null` for everything else (wrong type, missing required field,
+ * `NaN`, `Infinity`, negative count, fractional count, etc.). A missing `lastModified` is tolerated (cookies written
+ * before that field existed) and normalized to `''`; a present but non-string or non-ASCII `lastModified` is rejected.
  *
  * Shared between the client cookie reader (`parseBasketCookie`) and the server basket middleware so that
  * a malformed or tampered cookie can never surface in the UI as e.g. `"NaN items"` regardless of which
@@ -53,16 +55,24 @@ export function validateBasketSnapshot(value: unknown): BasketSnapshot | null {
     if (
         typeof candidate.basketId !== 'string' ||
         !candidate.basketId ||
-        !ASCII_BASKET_ID.test(candidate.basketId) ||
+        !ASCII_PRINTABLE.test(candidate.basketId) ||
         // Guard the numeric fields: Reject the snapshot rather than serving a corrupt value (malformed cookie,
         // tampering, or future writer regression). Non-negative safe integers only — the writer never emits
         // anything else, and a tampered `-5` would render as "-5 items" / a `1e20` would overflow the badge.
         !isNonNegativeSafeInteger(candidate.totalItemCount) ||
-        !isNonNegativeSafeInteger(candidate.uniqueProductCount)
+        !isNonNegativeSafeInteger(candidate.uniqueProductCount) ||
+        // `lastModified` is tolerated as absent (a cookie written before this field existed) and normalized to ''
+        // below — rejecting it would discard otherwise-valid cookies on the first read after a deploy. When present
+        // it must be a string, and when non-empty it must be ASCII (the writer only ever emits ASCII ISO-8601);
+        // a present non-string or non-ASCII value indicates tampering or an incompatible writer revision.
+        (candidate.lastModified !== undefined &&
+            (typeof candidate.lastModified !== 'string' ||
+                (candidate.lastModified !== '' && !ASCII_PRINTABLE.test(candidate.lastModified))))
     ) {
         return null;
     }
-    return candidate as BasketSnapshot;
+    // Normalize a missing `lastModified` to '' so the returned value satisfies the required-string field.
+    return { ...candidate, lastModified: candidate.lastModified ?? '' } as BasketSnapshot;
 }
 
 /**

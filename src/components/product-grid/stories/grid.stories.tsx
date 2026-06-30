@@ -17,8 +17,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import type { ComponentType } from 'react';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperSearch } from '@/scapi';
 import ProductGrid from '../grid';
+
+const { t } = getTranslation();
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { WishlistProvider } from '@/providers/wishlist';
@@ -73,7 +76,7 @@ const MAX_PRODUCTS = ALL_PRODUCTS.length;
 const meta: Meta<typeof ProductGrid> = {
     title: 'PRODUCTS/Product Grid',
     component: ProductGrid,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs', 'interaction', 'chromatic-core'],
     parameters: {
         docs: {
             description: {
@@ -204,7 +207,7 @@ export const EmptyState: StoryObj<typeof ProductGrid> = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const emptyMessage = canvasElement.querySelector('p');
-        await expect(emptyMessage).toHaveTextContent(/no products/i);
+        await expect(emptyMessage).toHaveTextContent(t('common:noProductsFound'));
     },
 };
 

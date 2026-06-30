@@ -27,7 +27,8 @@ import {
 import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasketUpdater, useMiniCart } from '@/providers/basket';
+import { useBasketUpdater } from '@/providers/basket';
+import { setMiniCartOpen, useMiniCartStore } from '@/hooks/mini-cart-store';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import {
     Sheet,
@@ -113,6 +114,9 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
             processedDataRef.current = fetcher.data;
             if (fetcher.data.success) {
                 if (fetcher.data.basket) {
+                    // Publish the new revision so useBasket() consumers stay in sync, matching the other basket
+                    // mutation handlers. Dedups by `lastModified`. Shape-safe: no basket read or mutation sets
+                    // `expand`, so every response carries the SCAPI default and can't down-shape provider consumers.
                     updateBasket(fetcher.data.basket);
                 }
                 addToast(t('success'), 'success');
@@ -229,7 +233,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     titleElement?.focus();
                 }
             }}>
-            <SheetClose className="ring-offset-background focus:ring-ring rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none absolute top-4 right-4">
+            <SheetClose className="ring-offset-background focus:ring-ring rounded-ui opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none absolute top-4 right-4">
                 <XIcon className="size-6" strokeWidth={1.5} />
                 <span className="sr-only">{tMiniCart('closeAriaLabel')}</span>
             </SheetClose>
@@ -318,7 +322,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     {isCartUpdating && <p className="text-xs text-muted-foreground">{tMiniCart('loading')}</p>}
                     <Button
                         asChild
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 text-primary-foreground font-sans rounded-none shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 text-primary-foreground font-sans shadow-2xs"
                         size="lg">
                         <Link
                             to={routes.checkout}
@@ -343,7 +347,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     <UITarget targetId="sfcc.miniCart.bnpl.message" />
                     <Button
                         variant="secondary"
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans shadow-2xs"
                         size="lg"
                         onClick={onClose}>
                         {t('continueShopping')}
@@ -352,7 +356,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-semibold leading-5 text-foreground rounded-none"
+                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-semibold leading-5 text-foreground"
                             size="lg">
                             <Link to={routes.cart} onClick={onClose}>
                                 {tMiniCart('viewCart')}
@@ -395,7 +399,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
  * ```
  */
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
-    const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+    const miniCartOpen = useMiniCartStore((s) => s.open);
     const { pathname } = useLocation();
     const prevPathnameRef = useRef(pathname);
 
@@ -407,7 +411,7 @@ export default function CartSheet({ children }: PropsWithChildren): ReactElement
             prevPathnameRef.current = pathname;
             setMiniCartOpen(false);
         }
-    }, [pathname, setMiniCartOpen]);
+    }, [pathname]);
 
     return (
         <Sheet open={miniCartOpen} onOpenChange={setMiniCartOpen}>

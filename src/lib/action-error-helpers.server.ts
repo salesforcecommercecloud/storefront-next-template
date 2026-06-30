@@ -57,3 +57,33 @@ function mapStatusCode(status: number): string | undefined {
             return undefined;
     }
 }
+
+/**
+ * Inverse of `mapStatusCode`. Returns the canonical HTTP status for an
+ * `ErrorCode` so action routes don't have to spell out both halves of the pair
+ * inline (and drift apart later). Codes without a canonical 1:1 status fall
+ * through to 500.
+ */
+export function httpStatusForErrorCode(code: string): number {
+    switch (code) {
+        case ErrorCode.INVALID_INPUT:
+        case ErrorCode.REQUIRED_FIELD:
+            return 400;
+        case ErrorCode.NOT_AUTHENTICATED:
+            return 401;
+        case ErrorCode.NOT_AUTHORIZED:
+            return 403;
+        case ErrorCode.NOT_FOUND:
+            return 404;
+        case ErrorCode.METHOD_NOT_ALLOWED:
+            return 405;
+        case ErrorCode.CONFLICT:
+            return 409;
+        case ErrorCode.EXPIRED:
+            return 410;
+        case ErrorCode.RATE_LIMITED:
+            return 429;
+        default:
+            return 500;
+    }
+}

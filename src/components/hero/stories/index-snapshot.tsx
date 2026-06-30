@@ -87,7 +87,6 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     SiteProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-
 import { composeStories } from '@storybook/react-vite';
 
 import * as HeroStories from './index.stories';

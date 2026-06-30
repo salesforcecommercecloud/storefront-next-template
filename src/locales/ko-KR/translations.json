@@ -354,7 +354,7 @@
                 "minLength": "프로모션은 2자 이상이어야 합니다."
             },
             "errors": {
-                "invalidCode": "유효하지 않은 쿠폰 코드",
+                "invalidCode": "쿠폰 코드 '{{code}}'은(는) 유효하지 않습니다.",
                 "expiredCode": "이 프로모션 코드는 만료되었습니다.",
                 "alreadyApplied": "이 프로모션 코드는 이미 적용되었습니다.",
                 "notApplicable": "이 프로모션 코드는 카트에 적용할 수 없습니다.",
@@ -1602,6 +1602,7 @@
         "failedToAddProductToCartError": "카트에 제품을 추가하지 못함:",
         "failedToAddProductToWishlistError": "위시리스트에 제품을 추가하지 못함:",
         "price": {
+            "unavailable": "가격 정보 없음",
             "currentPriceFrom": "현재 가격(시작가: {{price}})",
             "currentPrice": "현재 가격: {{price}}",
             "from": "{{price}}부터 시작",

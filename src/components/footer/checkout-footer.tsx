@@ -15,7 +15,7 @@
  */
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import LegalLinks from './legal-links';
+import LegalLinks from '@/components/footer/legal-links';
 
 export default function CheckoutFooter(): ReactElement {
     const { t } = useTranslation('footer');

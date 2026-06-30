@@ -83,6 +83,7 @@ vi.mock('@/components/product-price/utils', () => ({
         isASet: false,
         isMaster: false,
         isRange: false,
+        hasPrice: true,
     }),
 }));
 
@@ -180,6 +181,7 @@ describe('MyCart', () => {
             pricePerUnit: 19.99,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(<MyCart basket={basket} productMap={productMap} />);
@@ -199,6 +201,7 @@ describe('MyCart', () => {
             pricePerUnit: 15,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(<MyCart basket={basket} productMap={productMap} />);
@@ -325,6 +328,7 @@ describe('MyCart', () => {
             pricePerUnit: 25.0,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(
@@ -350,6 +354,7 @@ describe('MyCart', () => {
             pricePerUnit: 29.99,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(
@@ -380,6 +385,7 @@ describe('MyCart', () => {
             pricePerUnit: 29.99,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(
@@ -415,6 +421,7 @@ describe('MyCart', () => {
             pricePerUnit: 29.99,
             tieredPrice: undefined,
             maxPrice: undefined,
+            hasPrice: true,
         });
 
         render(

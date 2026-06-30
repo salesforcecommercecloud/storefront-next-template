@@ -23,9 +23,24 @@ Scenario('Homepage loads and sets SFCC cookies', async () => {
     // Navigate to the storefront homepage
     storefrontPage.navigate();
 
-    // Verify page has loaded (waits for nav), then check title
+    // Verify page has loaded (waits for nav), then check title.
+    // Assert on the brand-agnostic 'Storefront Next:' prefix rather than a
+    // specific store name: this spec ships flattened into every vertical mirror
+    // (fashion → "Market Street", cosmetic → "Dazzle") and into customer
+    // projects that rebrand the store. Coupling to one brand would break the
+    // others.
     storefrontPage.validatePageLoaded();
-    storefrontPage.validateTitle('Storefront Next: Market Street');
+    storefrontPage.validateTitle('Storefront Next:');
+
+    // The prefix substring alone passes even on an empty/fallback title
+    // ("Storefront Next: " with nothing after the colon). Grab the full title
+    // and assert a non-whitespace brand suffix to confirm the site name actually
+    // resolved — still brand-agnostic (matches "Market Street", "Dazzle", or any
+    // rebrand), but no longer satisfied by a bare prefix.
+    const title = await storefrontPage.getTitle();
+    expect(title, 'Homepage title should resolve a non-empty store name after the prefix').to.match(
+        /Storefront Next:\s*\S+/
+    );
 
     // Validate that SFCC cookies are properly set (storefront domain only)
     await storefrontPage.validateSFCCCookies();

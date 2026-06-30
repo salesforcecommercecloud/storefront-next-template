@@ -154,7 +154,7 @@ export default function ExpressPayments({
         <div className="space-y-6" data-testid="express-payments">
             {separatorPosition === 'top' && separator}
 
-            <Card className="flex flex-col items-center gap-3 p-6 shadow-none">
+            <Card className="flex flex-col items-center gap-3 p-6">
                 <p className="text-sm font-normal text-card-foreground">{t('expressPayments.title')}</p>
                 <div className={`${gridClasses} w-full`}>
                     {/* Google Pay Button */}
@@ -163,7 +163,7 @@ export default function ExpressPayments({
                         disabled={disabled}
                         className="w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
                         aria-label={googlePayLabel}>
-                        <GooglePayLogo className="flex-shrink-0" inverted decorative />
+                        <GooglePayLogo className="flex-shrink-0" decorative />
                     </Button>
 
                     {/* Apple Pay Button */}

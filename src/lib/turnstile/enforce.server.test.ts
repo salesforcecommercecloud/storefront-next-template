@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { enforceTurnstile } from './enforce.server';
+import { enforceTurnstile, resolveVerificationMode } from './enforce.server';
 import { redactEmailForLog } from './log-redact.server';
 import type { AppConfig } from '@/types/config';
 
@@ -45,7 +45,7 @@ vi.mock('@/lib/turnstile/health.server', () => ({
 }));
 
 function mockLogger() {
-    return { warn: vi.fn(), debug: vi.fn() };
+    return { info: vi.fn(), warn: vi.fn(), debug: vi.fn() };
 }
 
 function makeRequest(origin = 'https://storefront.example.com') {
@@ -1348,6 +1348,330 @@ describe('enforceTurnstile', () => {
             expect(mockGetTurnstileSecretKey).not.toHaveBeenCalled();
             expect(mockVerifyTurnstileToken).not.toHaveBeenCalled();
             expect(mockIsTurnstileDegraded).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('resolveVerificationMode', () => {
+        it('returns enforce when mode is enforce', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: false, mode: 'enforce' } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('enforce');
+        });
+
+        it('returns log-only when mode is log-only', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: true, mode: 'log-only' } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('log-only');
+        });
+
+        it('returns disabled when mode is disabled', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: true, mode: 'disabled' } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('disabled');
+        });
+
+        it('mode takes precedence over conflicting enabled flag', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: true, mode: 'disabled' } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('disabled');
+        });
+
+        it('falls back to enforce when enabled=true and no mode set', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: true } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('enforce');
+        });
+
+        it('falls back to disabled when enabled=false and no mode set', () => {
+            const config = {
+                security: { turnstile: { verification: { enabled: false } } },
+            } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('disabled');
+        });
+
+        it('returns disabled when verification config is absent', () => {
+            const config = { security: { turnstile: {} } } as unknown as AppConfig;
+            expect(resolveVerificationMode(config)).toBe('disabled');
+        });
+    });
+
+    describe('log-only mode', () => {
+        const LOG_ONLY_CONFIG = {
+            security: {
+                turnstile: {
+                    enabled: true,
+                    verification: { enabled: false, mode: 'log-only' },
+                    sites: {},
+                },
+            },
+        } as unknown as AppConfig;
+
+        beforeEach(() => {
+            mockGetTurnstileSiteKey.mockReturnValue('test-sitekey');
+            mockGetTurnstileSecretKey.mockReturnValue('test-secret');
+        });
+
+        it('always returns true when token passes', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({ success: true, errorCodes: [], challengeTs: '2026-01-01' });
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'valid-token',
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('always returns true even when bot is detected (would_block=true)', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({
+                success: false,
+                errorCodes: ['invalid-input-response'],
+            });
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'bot-token',
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('always returns true even when token is missing and platform is healthy', async () => {
+            mockIsTurnstileDegraded.mockResolvedValue(false);
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: undefined,
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('always returns true even when infrastructure error occurs', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({
+                success: false,
+                errorCodes: ['internal-error'],
+            });
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'some-token',
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('runs full pipeline — calls verifyTurnstileToken', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({ success: true, errorCodes: [] });
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(mockVerifyTurnstileToken).toHaveBeenCalledOnce();
+        });
+
+        it('runs full pipeline — calls isTurnstileDegraded when token is missing', async () => {
+            mockIsTurnstileDegraded.mockResolvedValue(false);
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: undefined,
+                logger: mockLogger(),
+                actionName: 'test',
+            });
+
+            expect(mockIsTurnstileDegraded).toHaveBeenCalledOnce();
+        });
+
+        it('logs at info level with would_block=true when bot would be blocked', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({
+                success: false,
+                errorCodes: ['invalid-input-response'],
+            });
+            const logger = mockLogger();
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'bot-token',
+                logger,
+                actionName: 'checkout',
+            });
+
+            expect(logger.info).toHaveBeenCalledOnce();
+            expect(logger.warn).not.toHaveBeenCalled();
+            const [, meta] = logger.info.mock.calls[0];
+            expect(meta).toMatchObject({ mode: 'log-only', would_block: true, action: 'checkout' });
+        });
+
+        it('logs at info level with would_block=false when token would pass', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({ success: true, errorCodes: [], challengeTs: '2026-01-01' });
+            const logger = mockLogger();
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'valid-token',
+                logger,
+                actionName: 'checkout',
+            });
+
+            expect(logger.info).toHaveBeenCalledOnce();
+            const [, meta] = logger.info.mock.calls[0];
+            expect(meta).toMatchObject({ mode: 'log-only', would_block: false });
+        });
+
+        it('emits exactly one log call per request', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({ success: true, errorCodes: [] });
+            const logger = mockLogger();
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger,
+                actionName: 'test',
+            });
+
+            expect(logger.info).toHaveBeenCalledOnce();
+            expect(logger.warn).not.toHaveBeenCalled();
+        });
+
+        it('cc-tv cookie path skips pipeline and does not emit log-only log', async () => {
+            const request = new Request('https://storefront.example.com/action/test', {
+                method: 'POST',
+                headers: {
+                    origin: 'https://storefront.example.com',
+                    cookie: 'cc-tv=1',
+                },
+            });
+            const logger = mockLogger();
+
+            const result = await enforceTurnstile({
+                request,
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: undefined,
+                logger,
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+            expect(logger.info).not.toHaveBeenCalled();
+            expect(mockVerifyTurnstileToken).not.toHaveBeenCalled();
+        });
+
+        it('includes errorCodes in log meta when bot detected', async () => {
+            mockVerifyTurnstileToken.mockResolvedValue({
+                success: false,
+                errorCodes: ['timeout-or-duplicate'],
+            });
+            const logger = mockLogger();
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger,
+                actionName: 'test',
+            });
+
+            const [, meta] = logger.info.mock.calls[0];
+            expect(meta).toHaveProperty('errorCodes', ['timeout-or-duplicate']);
+        });
+
+        it('includes metrics in log meta when platform is degraded', async () => {
+            const metricsSnapshot = {
+                sampleCount: 5,
+                failureCount: 3,
+                failureRate: 0.6,
+                p95LatencyMs: 1000,
+                currentVerdict: true,
+            };
+            mockGetSiteverifyMetricsSnapshot.mockReturnValue(metricsSnapshot);
+            mockIsTurnstileDegraded.mockResolvedValue(true);
+
+            const logger = mockLogger();
+
+            await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: undefined,
+                logger,
+                actionName: 'test',
+            });
+
+            const [, meta] = logger.info.mock.calls[0];
+            expect(meta).toHaveProperty('metrics', metricsSnapshot);
+        });
+
+        it('returns true when no origin/referer header in log-only mode', async () => {
+            const request = new Request('https://storefront.example.com/action/test', {
+                method: 'POST',
+            });
+            const logger = mockLogger();
+
+            const result = await enforceTurnstile({
+                request,
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger,
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('returns true when no site key match in log-only mode', async () => {
+            mockGetTurnstileSiteKey.mockReturnValue(null);
+            const logger = mockLogger();
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger,
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
+        });
+
+        it('returns true when no secret key configured in log-only mode', async () => {
+            mockGetTurnstileSecretKey.mockReturnValue(null);
+            const logger = mockLogger();
+
+            const result = await enforceTurnstile({
+                request: makeRequest(),
+                config: LOG_ONLY_CONFIG,
+                turnstileToken: 'token',
+                logger,
+                actionName: 'test',
+            });
+
+            expect(result).toBe(true);
         });
     });
 });

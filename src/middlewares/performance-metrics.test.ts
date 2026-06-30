@@ -390,7 +390,7 @@ describe('Performance Metrics Middlewares', () => {
             const mockContext = createTestContext();
 
             const result = await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
+                { request: mockRequest, context: mockContext, params: {}, pattern: '/', url: new URL(mockRequest.url) },
                 mockNext
             );
 
@@ -410,7 +410,7 @@ describe('Performance Metrics Middlewares', () => {
             const setSpy = vi.spyOn(mockContext, 'set');
 
             const result = await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
+                { request: mockRequest, context: mockContext, params: {}, pattern: '/', url: new URL(mockRequest.url) },
                 mockNext
             );
 
@@ -439,7 +439,7 @@ describe('Performance Metrics Middlewares', () => {
             });
 
             await performanceMetricsMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
+                { request: mockRequest, context: mockContext, params: {}, pattern: '/', url: new URL(mockRequest.url) },
                 mockNext
             );
 
@@ -460,7 +460,13 @@ describe('Performance Metrics Middlewares', () => {
             const mockContext = createTestContext();
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
+                {
+                    context: mockContext,
+                    params: {},
+                    request: {} as Request,
+                    pattern: '/',
+                    url: new URL('http://localhost/'),
+                },
                 mockNext
             );
 
@@ -478,7 +484,13 @@ describe('Performance Metrics Middlewares', () => {
             const setSpy = vi.spyOn(mockContext, 'set');
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
+                {
+                    context: mockContext,
+                    params: {},
+                    request: {} as Request,
+                    pattern: '/',
+                    url: new URL('http://localhost/'),
+                },
                 mockNext
             );
 
@@ -505,7 +517,13 @@ describe('Performance Metrics Middlewares', () => {
             });
 
             await performanceMetricsMiddlewareClient(
-                { context: mockContext, params: {}, request: {} as Request, unstable_pattern: '/' },
+                {
+                    context: mockContext,
+                    params: {},
+                    request: {} as Request,
+                    pattern: '/',
+                    url: new URL('http://localhost/'),
+                },
                 mockNext
             );
 
@@ -558,7 +576,13 @@ describe('Performance Metrics Middlewares', () => {
             const firstContext = createTestContext({ appConfig: appConfigOverride });
 
             await performanceMetricsMiddlewareClient(
-                { context: firstContext, params: {}, request: {} as Request, unstable_pattern: '/' },
+                {
+                    context: firstContext,
+                    params: {},
+                    request: {} as Request,
+                    pattern: '/',
+                    url: new URL('http://localhost/'),
+                },
                 firstNext
             );
 
@@ -596,7 +620,13 @@ describe('Performance Metrics Middlewares', () => {
             const secondNext = vi.fn().mockResolvedValue(undefined);
             const secondContext = createTestContext({ appConfig: appConfigOverride });
             await performanceMetricsMiddlewareClient(
-                { context: secondContext, params: {}, request: {} as Request, unstable_pattern: '/' },
+                {
+                    context: secondContext,
+                    params: {},
+                    request: {} as Request,
+                    pattern: '/',
+                    url: new URL('http://localhost/'),
+                },
                 secondNext
             );
 

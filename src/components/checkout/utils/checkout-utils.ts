@@ -38,7 +38,8 @@ function hasValidPaymentCard(
 export function computeFinalStepForReturningCustomer(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     customerProfile: CustomerProfile,
-    shipmentDistribution: ShipmentDistribution
+    shipmentDistribution: ShipmentDistribution,
+    hasNoValidShippingMethods = false
 ): CheckoutStep | null {
     if (!customerProfile?.customer || !basket) {
         return null;
@@ -53,6 +54,18 @@ export function computeFinalStepForReturningCustomer(
     // allow checkout even if payment section complete even without SPM
     const paymentInstrument = basket.paymentInstruments?.[0];
     const paymentValid = paymentInstrument && hasValidPaymentCard(paymentInstrument);
+
+    // If the basket has a delivery address but no valid shipping methods (e.g. shopper entered an
+    // address with no deliverable options, then refreshed), pin to Shipping Address so we never
+    // advance past it — otherwise refresh would jump straight to Place Order for a returning
+    // customer with a complete profile.
+    if (
+        hasNoValidShippingMethods &&
+        shipmentDistribution.hasDeliveryItems &&
+        !shipmentDistribution.hasUnaddressedDeliveryItems
+    ) {
+        return CHECKOUT_STEPS.SHIPPING_ADDRESS;
+    }
 
     // If customer has complete profile (email, addresses, payment methods), go straight to review/place order
     if (hasCustomerEmail && hasCustomerAddresses && (hasCustomerPaymentMethods || paymentValid)) {
@@ -112,7 +125,8 @@ export function handlePickupContinueAction(
 
 export function computeStepFromBasket(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined,
-    shipmentDistribution: ShipmentDistribution
+    shipmentDistribution: ShipmentDistribution,
+    hasNoValidShippingMethods = false
 ): CheckoutStep {
     if (!basket) {
         return CHECKOUT_STEPS.CONTACT_INFO;
@@ -124,6 +138,13 @@ export function computeStepFromBasket(
 
     if (shipmentDistribution.hasDeliveryItems) {
         if (shipmentDistribution.hasUnaddressedDeliveryItems) {
+            return CHECKOUT_STEPS.SHIPPING_ADDRESS;
+        }
+
+        // Address is present but no deliverable shipping methods exist for it. On refresh, stay
+        // on Shipping Address — advancing to Shipping Options would render an empty list and a
+        // disabled Continue button.
+        if (hasNoValidShippingMethods) {
             return CHECKOUT_STEPS.SHIPPING_ADDRESS;
         }
 
@@ -176,6 +197,15 @@ export function getCompletedSteps(
     return completed;
 }
 
+function shipmentHasValidMethod(result: ShopperBasketsV2.schemas['ShippingMethodResult'] | undefined): boolean {
+    const methods = result?.applicableShippingMethods;
+    return (
+        !!methods &&
+        methods.length > 0 &&
+        methods.some((m) => !!m.id && !!m.name && typeof m.price === 'number' && !Number.isNaN(m.price))
+    );
+}
+
 /**
  * Returns true when the shipping-methods map contains at least one valid, selectable method
  * across all shipments. A method is valid when it has an id, a name, and a numeric price.
@@ -186,17 +216,26 @@ export function hasAnyValidShippingMethod(
     map: Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']> | undefined
 ): boolean {
     if (!map) return false;
-    for (const result of Object.values(map)) {
-        const methods = result?.applicableShippingMethods;
-        if (
-            methods &&
-            methods.length > 0 &&
-            methods.some((m) => m.id && m.name && typeof m.price === 'number' && !Number.isNaN(m.price))
-        ) {
-            return true;
-        }
-    }
-    return false;
+    return Object.values(map).some(shipmentHasValidMethod);
+}
+
+/**
+ * Returns true when every shipment present in the map has at least one valid, selectable method.
+ * Used by the route to detect the "address entered but no deliverable methods" state on refresh,
+ * which pins the shopper to Shipping Address. In a multi-shipment basket, even one shipment
+ * lacking methods means the order cannot be completed.
+ *
+ * **Empty/undefined map returns `true`** (vacuous truth). This matters because the checkout
+ * loader skips revalidation after a step action and the loader's initial `shippingMethodsMap`
+ * is `{}` for a basket without an address yet; we MUST NOT treat that empty map as evidence of
+ * failure, or we would pin the shopper to Shipping Address before they have even submitted one.
+ * A populated map with at least one shipment lacking methods returns `false`.
+ */
+export function hasValidShippingMethodForEveryShipment(
+    map: Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']> | undefined
+): boolean {
+    if (!map) return true;
+    return Object.values(map).every(shipmentHasValidMethod);
 }
 
 export function shouldAutoAdvanceForReturningCustomer(
